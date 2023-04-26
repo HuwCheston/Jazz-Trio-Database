@@ -166,7 +166,7 @@ class ItemMaker:
             dt = datetime.strptime(self.item['timestamps'][timestamp], fmt)
             return int(timedelta(hours=dt.hour, minutes=dt.minute, seconds=dt.second).total_seconds())
         # TODO: figure out the required exception type to go here
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             return None
 
     def get_item(
@@ -198,7 +198,7 @@ class ItemMaker:
 
     @staticmethod
     def _check_item_present_locally(
-            fname
+            fname: str
     ) -> bool:
         """
         Returns whether a given filepath is present locally or not
@@ -257,7 +257,7 @@ class ItemMaker:
             out, err = p.communicate(timeout=timeout)
         except subprocess.TimeoutExpired:
             p.kill()
-            self._logger_wrapper(f'... error when separating: process timed out after {timeout} seconds')
+            raise TimeoutError(f'... error when separating: process timed out after {timeout} seconds')
         else:
             # Check to make sure the expected output is returned by subprocess
             if good_pattern not in out:
