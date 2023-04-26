@@ -75,8 +75,8 @@ target/
 # Jupyter NB Checkpoints
 .ipynb_checkpoints/
 
-# exclude data from source control by default
-# /data/
+# exclude clean from source control by default
+# /clean/
 
 # Mac OS-specific storage files
 .DS_Store
@@ -89,7 +89,7 @@ target/
 .mypy_cache/
 
 # exclude spleeter models from source control
-/src/data/pretrained_models/
+/src/clean/pretrained_models/
 
 # exclude docs from source control, until I've written them
 /docs/

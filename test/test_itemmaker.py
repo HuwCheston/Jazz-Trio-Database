@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Test suite for ItemMaker class in src/data/make_dataset.py
+Test suite for ItemMaker class in src/clean/make_dataset.py
 """
 
 import json
@@ -11,7 +11,7 @@ import warnings
 
 from yt_dlp.utils import DownloadError
 
-from src.data.make_dataset import ItemMaker
+from src.clean.make_dataset import ItemMaker
 
 
 class ItemMakerTest(unittest.TestCase):

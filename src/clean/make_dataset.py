@@ -379,14 +379,14 @@ class ItemMaker:
 )
 def main(input_filepath, output_filepath):
     """
-    Runs data processing scripts to turn raw data from (../raw) into cleaned data ready to be analyzed
+    Runs clean processing scripts to turn raw clean from (../raw) into cleaned clean ready to be analyzed
     (saved in ../processed)
     """
 
     start = time()
 
     logger = logging.getLogger(__name__)
-    logger.info("making final data set from raw data...")
+    logger.info("making final clean set from raw clean...")
 
     js = []
     # Open the corpus json file
