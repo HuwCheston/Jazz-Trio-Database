@@ -250,6 +250,7 @@ class ItemMaker:
         string is not contained, it will be assumed that the process has failed, and logged accordingly.
         """
 
+        # TODO: we could check for a pretrained_models folder, as if that isn't present then execution will be longer
         # Get the timeout value: the duration of the item, times the multiplier
         timeout = int((self.end - self.start) * self.timeout_multiplier)
         # Open the subprocess. The additional arguments allow us to capture the output
@@ -362,6 +363,7 @@ class ItemMaker:
         """
 
         self.item["output"] = {}
+        self.item['fname'] = self.fname
         self.item["log"] = self.logging_messages
         for name, fpath in zip(
             [*sorted(self.instrs), "mix"], [*sorted(self.out_files), self.in_file]
