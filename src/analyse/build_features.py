@@ -3,9 +3,10 @@ import warnings
 
 import librosa
 import numpy as np
-import soundfile as sf
-import scipy.signal as signal
 import pandas as pd
+import scipy.signal as signal
+import scipy.stats as stats
+import soundfile as sf
 from mir_eval.onset import f_measure
 
 
@@ -19,10 +20,10 @@ class OnsetDetectionMaker:
     # These are passed whenever onset_strength is called for this particular instrument's audio
     onset_strength_params = {
         'piano': dict(
-            fmin=110,   # Minimum frequency to use
-            fmax=4100,    # Maximum frequency to use
-            center=False,    # Use left-aligned frame analysis in STFT
-            max_size=1,    # Size of local maximum filter in frequency bins (1 = no filtering)
+            fmin=110,  # Minimum frequency to use
+            fmax=4100,  # Maximum frequency to use
+            center=False,  # Use left-aligned frame analysis in STFT
+            max_size=1,  # Size of local maximum filter in frequency bins (1 = no filtering)
         ),
         'bass': dict(
             fmin=30,
@@ -40,13 +41,13 @@ class OnsetDetectionMaker:
     # These are passed whenever onset_detect is called for this particular instrument's audio
     onset_detection_params = {
         'piano': dict(
-            backtrack=False,    # Whether to roll back detected onset to nearest preceding minima, i.e. start of a note
-            wait=3,    # How many samples must pass from one detected onset to the next
-            delta=0.06,    # Hard threshold a sample must exceed to be picked as an onset
-            pre_max=4,    # Number of samples to consider before a sample when computing max of a window
-            post_max=4,    # Number of samples to consider after a sample when computing max of a window
-            pre_avg=10,    # Number of samples to consider before a sample when computing average of a window
-            post_avg=10    # Number of samples to consider after a sample when computing average of a window
+            backtrack=False,  # Whether to roll back detected onset to nearest preceding minima, i.e. start of a note
+            wait=3,  # How many samples must pass from one detected onset to the next
+            delta=0.06,  # Hard threshold a sample must exceed to be picked as an onset
+            pre_max=4,  # Number of samples to consider before a sample when computing max of a window
+            post_max=4,  # Number of samples to consider after a sample when computing max of a window
+            pre_avg=10,  # Number of samples to consider before a sample when computing average of a window
+            post_avg=10  # Number of samples to consider after a sample when computing average of a window
         ),
         'bass': dict(
             backtrack=True,
@@ -66,6 +67,9 @@ class OnsetDetectionMaker:
             post_max=6,
             pre_avg=19,
             post_avg=19
+        ),
+        'mix': dict(
+            win_length=960
         )
     }
     data_dir = r'..\..\data'
@@ -117,8 +121,78 @@ class OnsetDetectionMaker:
             audio[track] = y.T
         return audio
 
-    def _beat_track_full_mix(self):
-        pass
+    @staticmethod
+    def _iqr_filter(
+            arr: np.ndarray,
+            low: int = 25,
+            high: int = 75,
+            mult: float = 1.5
+    ) -> np.ndarray:
+        """
+
+        """
+
+        min_ = np.percentile(arr, low)
+        max_ = np.percentile(arr, high)
+        iqr = max_ - min_
+        return np.array([b for b in arr if (mult * iqr) - min_ < b < (mult * iqr) + max_])
+
+    def beat_track_full_mix(
+            self,
+            lower_bound: int = 5,
+            upper_bound: int = 95,
+            first_pass_only: bool = False,
+            passes: int = 2,
+            **kwargs
+    ):
+        """
+
+        """
+
+        def plp(
+                tempo_min: int = 100,
+                tempo_max: int = 300,
+                prior: stats.rv_continuous = None,
+                win_length: int = 384,
+        ) -> np.ndarray:
+            """
+
+            """
+
+            if prior is None:
+                prior = stats.uniform(tempo_min, tempo_max)
+            pulse = librosa.beat.plp(
+                y=self.audio['mix'].mean(axis=1),  # Load in the full mix, transposed as necessary
+                sr=self.sample_rate,
+                hop_length=self.hop_length,
+                win_length=win_length,
+                tempo_min=tempo_min,
+                tempo_max=tempo_max,
+                prior=prior
+            )
+            return librosa.frames_to_time(np.flatnonzero(librosa.util.localmax(pulse)), sr=made.sample_rate)
+
+        self.onset_detection_params['mix'].update(**kwargs)
+        pass_ = plp()
+        if first_pass_only:
+            return pass_
+        for i in range(passes):
+            bpms = np.array([60 / p for p in np.diff(pass_)])
+            clean = self._iqr_filter(bpms)
+            min_ = np.nanmin(clean)
+            max_ = np.nanmax(clean)
+            mean_ = np.nanmean(clean)
+            std_ = np.nanstd(clean)
+            prior = stats.truncnorm(
+                (min_ - mean_) / std_, (max_ - mean_) / std_, loc=mean_, scale=std_
+            )
+            pass_ = plp(
+                tempo_min=min_,
+                tempo_max=max_,
+                prior=prior,
+                win_length=self.onset_detection_params['mix']['win_length']
+            )
+        return pass_
 
     def onset_strength(
             self,
@@ -268,8 +342,8 @@ class OnsetDetectionMaker:
         # Create an empty list to store our click track audio arrays
         clicks = []
         # Get the frequencies for each of our clicks
-        start_freq = kwargs.get('start_freq', 750)    # The lowest click frequency
-        width = kwargs.get('width', 100)    # The width of the click frequency: other frequencies attenuated
+        start_freq = kwargs.get('start_freq', 750)  # The lowest click frequency
+        width = kwargs.get('width', 100)  # The width of the click frequency: other frequencies attenuated
         # Iterate through all of our passed onsets, with a counter (used to increase click output frequency)
         for num, times in enumerate(onsets, 1):
             # Render the onsets to clicks, apply the bandpass filter, and append to our list
@@ -348,21 +422,39 @@ class OnsetDetectionMaker:
 if __name__ == '__main__':
     with open(r'..\..\data\processed\processing_results.json', "r+") as in_file:
         corpus = json.load(in_file)
+        res = []
         # Iterate through each entry in the corpus, with the index as well
         for corpus_item in corpus:
-            made = OnsetDetectionMaker(item=corpus_item)
-            res = []
-            for ins, freq in zip(['piano', 'bass', 'drums'], [3000, 1000, 1000]):
-                made.env[ins] = made.onset_strength(ins)
-                made.ons[ins] = made.onset_detect(ins)
+            if corpus_item['track_name'] == "T.T.T. (Twelve Tone Tune)" or corpus_item['track_name'] == "Autumn Leaves":
+                made = OnsetDetectionMaker(item=corpus_item)
+                first_pass = made.beat_track_full_mix(first_pass_only=True)
+                second_pass = made.beat_track_full_mix(first_pass_only=False, passes=1)
+                third_pass = made.beat_track_full_mix(first_pass_only=False, passes=2)
+                fourth_pass = made.beat_track_full_mix(first_pass_only=False, passes=3)
+                df = pd.DataFrame(made.compare_onset_detection_accuracy(
+                    fname=rf'..\..\references\manual_annotation\{made.item["fname"]}_mix.txt',
+                    onsets=[first_pass, second_pass, third_pass, fourth_pass],
+                    onsets_name=['First', 'Second', 'Third', 'Fourth']
+                ))
+                df['track'] = corpus_item['track_name']
+                res.append(df)
+        pass
 
-                default = librosa.onset.onset_detect(
-                    y=made.audio[ins].mean(axis=1),
-                    units='time',
-                    sr=made.sample_rate
-                )
-                made.output_click_track(
-                    instr=ins,
-                    onsets=[made.ons[ins], default],
-                    start_freq=freq
-                )
+        #         res = []
+        #         for ins in ['piano', 'bass', 'drums']:
+        #             made.env[ins] = made.onset_strength(ins)
+        #             made.ons[ins] = made.onset_detect(ins)
+        #
+        #             default = librosa.onset.onset_detect(
+        #                 y=made.audio[ins].mean(axis=1),
+        #                 units='time',
+        #                 sr=made.sample_rate
+        #             )
+        #             df = pd.DataFrame(made.compare_onset_detection_accuracy(
+        #                 fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
+        #                 onsets=[made.ons[ins], default],
+        #                 onsets_name=['optimised', 'default'],
+        #                 instr=ins
+        #             ))
+        #             res.append(df)
+        # big = pd.concat(res)
