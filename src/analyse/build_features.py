@@ -1,19 +1,49 @@
 import json
+import os
+import sys
 import warnings
 
+import basic_pitch.inference as bp
 import librosa
 import numpy as np
 import pandas as pd
 import scipy.signal as signal
 import scipy.stats as stats
 import soundfile as sf
+import tensorflow as tf
+from basic_pitch import ICASSP_2022_MODEL_PATH
 from mir_eval.onset import f_measure
+
+BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
+
+
+class HidePrints:
+    """
+    Helper class that prevents a function from printing to stdout when used as a context manager
+    """
+
+    def __enter__(
+            self
+    ) -> None:
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
+
+    def __exit__(
+            self,
+            exc_type,
+            exc_val,
+            exc_tb
+    ) -> None:
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
 
 
 class OnsetDetectionMaker:
     # These values are hard-coded and used throughout: we probably shouldn't change them
     sample_rate = 44100
     hop_length = 512
+    # The threshold to use when matching onsets
+    window = 0.05
     # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
     # These defaults were found through a parameter search against a reference set of onsets, annotated manually
     # TODO: we need to expand the number of recordings used in our parameter search
@@ -70,6 +100,31 @@ class OnsetDetectionMaker:
         ),
         'mix': dict(
             win_length=960
+        )
+    }
+    # These are passed whenever onset_detect is called for this particular instrument's audio
+    polyphonic_onset_detect_params = {
+        'bass': dict(
+            minimum_frequency=30,
+            maximum_frequency=500,
+            onset_threshold=0.6,
+            frame_threshold=0.4,
+            minimum_note_length=90,
+            melodia_trick=True,
+            multiple_pitch_bends=True
+        ),
+        'piano': dict(
+            minimum_frequency=110,
+            maximum_frequency=4100,
+            onset_threshold=0.8,
+            frame_threshold=0.3,
+            minimum_note_length=60,
+            melodia_trick=True,
+            multiple_pitch_bends=False
+        ),
+        'drums': dict(
+            minimum_frequency=3500,
+            maximum_frequency=11000,
         )
     }
     data_dir = r'..\..\data'
@@ -129,69 +184,90 @@ class OnsetDetectionMaker:
             mult: float = 1.5
     ) -> np.ndarray:
         """
-
+        Simple IQR-based range filter that subsets array b by q1(b) - 1.5 * iqr(b) < b[n] < q3(b) + 1.5 * iqr(b)
         """
 
-        min_ = np.percentile(arr, low)
-        max_ = np.percentile(arr, high)
+        # Get our upper and lower bound from the array
+        min_ = np.nanpercentile(arr, low)
+        max_ = np.nanpercentile(arr, high)
+        # Construct the IQR
         iqr = max_ - min_
+        # Filter the array between our two bounds and return the result
         return np.array([b for b in arr if (mult * iqr) - min_ < b < (mult * iqr) + max_])
 
     def beat_track_full_mix(
             self,
-            lower_bound: int = 5,
-            upper_bound: int = 95,
-            first_pass_only: bool = False,
             passes: int = 2,
+            tempo_min: int = 100,
+            tempo_max: int = 300,
+            use_uniform: bool = False,
             **kwargs
-    ):
+    ) -> np.ndarray:
         """
-
+        Wrapper function around librosa.beat.plp that allows for per-instrument defaults and multiple passes. This
+        allows for the output of predominant local pulse estimation to be passed 'back into' the algorithm several
+        times, with the goal of
         """
 
         def plp(
-                tempo_min: int = 100,
-                tempo_max: int = 300,
-                prior: stats.rv_continuous = None,
-                win_length: int = 384,
+                tempo_min_: int = 100,
+                tempo_max_: int = 300,
+                prior_: stats.rv_continuous = None,
         ) -> np.ndarray:
             """
-
+            Wrapper function around librosa.beat.plp that takes in arguments from a current pass and converts the
+            output to timestamps automatically.
             """
 
-            if prior is None:
-                prior = stats.uniform(tempo_min, tempo_max)
+            # Obtain our predominant local pulse estimation envelope
             pulse = librosa.beat.plp(
                 y=self.audio['mix'].mean(axis=1),  # Load in the full mix, transposed as necessary
                 sr=self.sample_rate,
                 hop_length=self.hop_length,
-                win_length=win_length,
-                tempo_min=tempo_min,
-                tempo_max=tempo_max,
-                prior=prior
+                win_length=self.onset_detection_params['mix']['win_length'],
+                tempo_min=tempo_min_,
+                tempo_max=tempo_max_,
+                prior=prior_
             )
-            return librosa.frames_to_time(np.flatnonzero(librosa.util.localmax(pulse)), sr=made.sample_rate)
+            # Extract the local maxima from our envelope, flatten the array, and convert from frames to timestamps
+            return librosa.frames_to_time(
+                np.flatnonzero(
+                    librosa.util.localmax(pulse)
+                ), sr=made.sample_rate
+            )
 
+        # Update our default parameters with any kwargs we've passed in
         self.onset_detection_params['mix'].update(**kwargs)
-        pass_ = plp()
-        if first_pass_only:
-            return pass_
-        for i in range(passes):
+        # Get our first pass: this always uses a uniform distribution over our starting minimum and maximum tempo
+        pass_ = plp(
+            prior_=stats.uniform(tempo_min, tempo_max),
+            tempo_min_=tempo_min,
+            tempo_max_=tempo_max
+        )
+        # Start creating our passes
+        for i in range(passes - 1):
+            # This extracts the BPM value for each IOI obtained from our most recent pass
             bpms = np.array([60 / p for p in np.diff(pass_)])
+            # This cleans any outliers from our BPMs by removing values +/- 1.5 * IQR
             clean = self._iqr_filter(bpms)
+            # Now we extract our features from our cleaned BPM array
             min_ = np.nanmin(clean)
             max_ = np.nanmax(clean)
-            mean_ = np.nanmean(clean)
-            std_ = np.nanstd(clean)
-            prior = stats.truncnorm(
-                (min_ - mean_) / std_, (max_ - mean_) / std_, loc=mean_, scale=std_
-            )
+            # Use a uniform distribution over cleaned minimum and maximum
+            if use_uniform:
+                prior = stats.uniform(min_, max_)
+            # Use a truncated normal distribution over cleaned minimum, maximum, mean, and standard deviation
+            else:
+                mean_ = np.nanmean(clean)
+                std_ = np.nanstd(clean)
+                prior = stats.truncnorm((min_ - mean_) / std_, (max_ - mean_) / std_, loc=mean_, scale=std_)
+            # Construct the next pass using our extracted features and prior distribution, and repeat
             pass_ = plp(
-                tempo_min=min_,
-                tempo_max=max_,
-                prior=prior,
-                win_length=self.onset_detection_params['mix']['win_length']
+                tempo_min_=min_,
+                tempo_max_=max_,
+                prior_=prior,
             )
+        # Once we've completed all of our passes, return the most recent one
         return pass_
 
     def onset_strength(
@@ -211,13 +287,16 @@ class OnsetDetectionMaker:
             aud = self.audio[instr].mean(axis=1)
         # Update our default parameters with any kwargs we've passed in
         self.onset_strength_params[instr].update(**kwargs)
-        # Return the onset strength envelope using our default (i.e. hard-coded) sample rate and hop length
-        return librosa.onset.onset_strength(
-            y=aud,
-            sr=self.sample_rate,
-            hop_length=self.hop_length,
-            **self.onset_strength_params[instr]
-        )
+        # Suppress any user warnings that Librosa might throw
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', UserWarning)
+            # Return the onset strength envelope using our default (i.e. hard-coded) sample rate and hop length
+            return librosa.onset.onset_strength(
+                y=aud,
+                sr=self.sample_rate,
+                hop_length=self.hop_length,
+                **self.onset_strength_params[instr]
+            )
 
     @staticmethod
     def _try_get_kwarg_and_remove(
@@ -297,6 +376,74 @@ class OnsetDetectionMaker:
                 **self.onset_detection_params[instr]
             )
 
+    def _clean_polyphonic_midi_output(
+            self,
+            midi: np.ndarray,
+            window: float = None,
+    ) -> np.ndarray:
+        """
+        Cleans the PrettyMidi output from basic_pitch.inference.predict by removing onsets where the distance between
+        the preceding onset is below a threshold (usually multiple pitches in one chord).
+        """
+
+        # Use the default window unless we've passed one in
+        if window is None:
+            window = self.window
+
+        def cleaner(
+                ons1: float,
+                ons2: float
+        ) -> float:
+            """
+            Compares two onsets, ons1 and ons2 (where ons2 >= ons1), and sets ons2 equal to ons1 if the distance
+            is below the given window.
+            """
+
+            if ons2 - ons1 < window:
+                # Little hack: we set the two onsets equal to each other here, then remove non-unique elements later
+                ons2 = ons1
+            return ons2
+
+        # Define our NumPy ufunc from our Python function
+        cleaner_np = np.frompyfunc(cleaner, 2, 1)
+        # Remove invalid MIDI notes from our PrettyMidi output, get the onsets, and then sort
+        midi.remove_invalid_notes()
+        ons = np.sort(midi.get_onsets())
+        # Run the cleaner on our onsets and extract only the unique values
+        return np.unique(
+            cleaner_np.accumulate(
+                ons,
+                dtype=object,
+                out=ons
+            ).astype(float)
+        )
+
+    def polyphonic_onset_detect(
+            self,
+            instr: str,
+            **kwargs
+    ) -> np.ndarray:
+        """
+        Wrapper around basic_pitch.inference.predict that enables per-instrument defaults to be used. Arguments passed
+        as kwargs should be accepted by this function. Output is a numpy array consisting of predicted onset locations,
+        after cleaning directly-adjacent onsets (i.e. multiple notes in the same chord).
+        """
+
+        # Update the default parameters for the input instrument with any kwargs we've passed in
+        self.polyphonic_onset_detect_params[instr].update(**kwargs)
+        # We need to hide printing in basic_pitch and catch any Librosa warnings to keep stdout looking nice
+        with HidePrints() as _, warnings.catch_warnings() as __:
+            warnings.simplefilter('ignore', UserWarning)
+            # Run the polyphonic automatic transcription model over the given audio.
+            model_output, midi_data, note_events = bp.predict(
+                # basic_pitch doesn't accept objects that have already been loaded in Librosa, so pass in the filename
+                self.item['output'][instr],
+                BASIC_PITCH_MODEL,
+                **self.polyphonic_onset_detect_params[instr]
+            )
+        # Clean the MIDI output and return
+        return self._clean_polyphonic_midi_output(midi_data)
+
     def _bandpass_filter(
             self,
             y: np.ndarray,
@@ -372,13 +519,13 @@ class OnsetDetectionMaker:
         with open(rf'{self.data_dir}\processed\click_tracks\{self.item["fname"]}_{instr}_clicks.{ext}', 'wb') as f:
             sf.write(f, process, self.sample_rate)
 
-    @staticmethod
     def compare_onset_detection_accuracy(
+            self,
             fname: str,
             instr: str = None,
             onsets: list = None,
             onsets_name: list = None,
-            window: float = 0.05
+            window: float = None
     ) -> dict:
         """
         Evaluates a given list of onset detection algorithm results, given as onsets, against an array of reference
@@ -402,6 +549,9 @@ class OnsetDetectionMaker:
         # If we haven't provided any names for our different onset lists, create these now
         if onsets_name is None:
             onsets_name = [None for _ in range(len(onsets))]
+        # If we haven't provided a window value, use our default (50 ms)
+        if window is None:
+            window = self.window
         # Iterate through all the onset detection algorithms
         for (name, estimate) in zip(onsets_name, onsets):
             # Generate the F, precision, and recall values from mir_eval and yield as a dictionary
@@ -420,25 +570,41 @@ class OnsetDetectionMaker:
 
 
 if __name__ == '__main__':
+    has_manual_annotations = [
+        'T.T.T. (Twelve Tone Tune)',
+        'Autumn Leaves'
+    ]
     with open(r'..\..\data\processed\processing_results.json', "r+") as in_file:
         corpus = json.load(in_file)
-        res = []
         # Iterate through each entry in the corpus, with the index as well
         for corpus_item in corpus:
-            if corpus_item['track_name'] == "T.T.T. (Twelve Tone Tune)" or corpus_item['track_name'] == "Autumn Leaves":
-                made = OnsetDetectionMaker(item=corpus_item)
-                first_pass = made.beat_track_full_mix(first_pass_only=True)
-                second_pass = made.beat_track_full_mix(first_pass_only=False, passes=1)
-                third_pass = made.beat_track_full_mix(first_pass_only=False, passes=2)
-                fourth_pass = made.beat_track_full_mix(first_pass_only=False, passes=3)
-                df = pd.DataFrame(made.compare_onset_detection_accuracy(
-                    fname=rf'..\..\references\manual_annotation\{made.item["fname"]}_mix.txt',
-                    onsets=[first_pass, second_pass, third_pass, fourth_pass],
-                    onsets_name=['First', 'Second', 'Third', 'Fourth']
-                ))
-                df['track'] = corpus_item['track_name']
-                res.append(df)
-        pass
+            if corpus_item['track_name'] in has_manual_annotations:
+                for ins in ['piano', 'bass', 'drums']:
+                    made = OnsetDetectionMaker(item=corpus_item)
+                    made.env[ins] = made.onset_strength(ins)
+                    made.ons[ins] = made.onset_detect(ins)
+                    made.ons[f'{ins}_poly'] = made.polyphonic_onset_detect(instr=ins)
+
+                    # made.output_click_track('piano', onsets=[made.ons['piano'], mid], start_freq=1000)
+                    df = pd.DataFrame(made.compare_onset_detection_accuracy(
+                        fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
+                        onsets=[made.ons[ins], made.ons[f'{ins}_poly']],
+                        onsets_name=['optimised_librosa', 'optimised_basic-pitch'],
+                        instr=ins
+                    ))
+                    print(df)
+
+                # first_pass = made.beat_track_full_mix(first_pass_only=True)
+                # second_pass = made.beat_track_full_mix(first_pass_only=False, passes=1)
+                # third_pass = made.beat_track_full_mix(first_pass_only=False, passes=2)
+                # fourth_pass = made.beat_track_full_mix(first_pass_only=False, passes=3)
+                # df = pd.DataFrame(made.compare_onset_detection_accuracy(
+                #     fname=rf'..\..\references\manual_annotation\{made.item["fname"]}_mix.txt',
+                #     onsets=[first_pass, second_pass, third_pass, fourth_pass],
+                #     onsets_name=['First', 'Second', 'Third', 'Fourth']
+                # ))
+                # df['track'] = corpus_item['track_name']
+                # res.append(df)
 
         #         res = []
         #         for ins in ['piano', 'bass', 'drums']:
