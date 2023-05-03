@@ -13,6 +13,7 @@ import soundfile as sf
 import tensorflow as tf
 from basic_pitch import ICASSP_2022_MODEL_PATH
 from mir_eval.onset import f_measure
+from mir_eval.util import match_events
 
 BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
 
@@ -52,7 +53,7 @@ class OnsetDetectionMaker:
         'piano': dict(
             fmin=110,  # Minimum frequency to use
             fmax=4100,  # Maximum frequency to use
-            center=False,  # Use left-aligned frame analysis in STFT
+            center=False,  # Use left-aligned frame analysis in short term Fourier transform
             max_size=1,  # Size of local maximum filter in frequency bins (1 = no filtering)
         ),
         'bass': dict(
@@ -66,6 +67,10 @@ class OnsetDetectionMaker:
             fmax=11000,
             center=False,
             max_size=1,
+        ),
+        'mix': dict(
+            fmin=10,
+            fmax=16000
         )
     }
     # These are passed whenever onset_detect is called for this particular instrument's audio
@@ -141,6 +146,8 @@ class OnsetDetectionMaker:
         self.env = {}
         # Dictionary to hold arrays of detected onsets for each instrument
         self.ons = {}
+        # Empty attribute to hold our tempo
+        self.tempo = None
 
     def _load_audio(
             self,
@@ -159,9 +166,9 @@ class OnsetDetectionMaker:
         dtype = kwargs.get('dtype', np.float64)
         # Empty dictionary to hold audio
         audio = {}
-        # Iterate through all the tracks and filepaths in the output key of our JSON item
+        # Iterate through all the tracks and paths in the output key of our JSON item
         for track, fpath in self.item['output'].items():
-            # Catch any UserWarnings that might be raised, usually to do with pysoundfile
+            # Catch any UserWarnings that might be raised, usually to do with different algorithms being used to load
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore', UserWarning)
                 y, sr = librosa.load(
@@ -245,7 +252,7 @@ class OnsetDetectionMaker:
             tempo_max_=tempo_max
         )
         # Start creating our passes
-        for i in range(passes - 1):
+        for i in range(1, passes):
             # This extracts the BPM value for each IOI obtained from our most recent pass
             bpms = np.array([60 / p for p in np.diff(pass_)])
             # This cleans any outliers from our BPMs by removing values +/- 1.5 * IQR
@@ -267,13 +274,15 @@ class OnsetDetectionMaker:
                 tempo_max_=max_,
                 prior_=prior,
             )
-        # Once we've completed all of our passes, return the most recent one
+        # Once we've completed all of our passes, set our tempo attribute to the mean bpm from the most recent pass
+        self.tempo = np.nanmean(np.array([60 / p for p in np.diff(pass_)]))
         return pass_
 
     def onset_strength(
             self,
             instr: str,
             aud: np.ndarray = None,
+            use_nonoptimised_defaults: bool = False,
             **kwargs
     ) -> np.ndarray:
         """
@@ -287,6 +296,8 @@ class OnsetDetectionMaker:
             aud = self.audio[instr].mean(axis=1)
         # Update our default parameters with any kwargs we've passed in
         self.onset_strength_params[instr].update(**kwargs)
+        # If we're using defaults, set kwargs to an empty dictionary
+        kws = self.onset_strength_params[instr] if not use_nonoptimised_defaults else dict()
         # Suppress any user warnings that Librosa might throw
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', UserWarning)
@@ -295,7 +306,7 @@ class OnsetDetectionMaker:
                 y=aud,
                 sr=self.sample_rate,
                 hop_length=self.hop_length,
-                **self.onset_strength_params[instr]
+                **kws
             )
 
     @staticmethod
@@ -325,6 +336,7 @@ class OnsetDetectionMaker:
             aud: np.ndarray = None,
             env: np.ndarray = None,
             units: str = 'time',
+            use_nonoptimised_defaults: bool = False,
             **kwargs
     ) -> np.ndarray:
         """
@@ -349,6 +361,8 @@ class OnsetDetectionMaker:
             kwargs=self.onset_detection_params[instr],
             default_=False
         )
+        # If we're using defaults, set kwargs to an empty dictionary
+        kws = self.onset_detection_params[instr] if not use_nonoptimised_defaults else dict()
         # If we're backtracking onsets from the picked peak
         if self.onset_detection_params[instr]['backtrack']:
             # If we want to use RMS values instead of our onset envelope when back tracking onsets
@@ -363,7 +377,7 @@ class OnsetDetectionMaker:
                 units=units,
                 energy=energy,
                 onset_envelope=env,
-                **self.onset_detection_params[instr]
+                **kws
             )
         # If we're not backtracking, and using the picked peaks themselves
         else:
@@ -373,7 +387,7 @@ class OnsetDetectionMaker:
                 hop_length=self.hop_length,
                 units=units,
                 onset_envelope=env,
-                **self.onset_detection_params[instr]
+                **kws
             )
 
     def _clean_polyphonic_midi_output(
@@ -404,12 +418,12 @@ class OnsetDetectionMaker:
                 ons2 = ons1
             return ons2
 
-        # Define our NumPy ufunc from our Python function
+        # Define our NumPy function from our Python function
         cleaner_np = np.frompyfunc(cleaner, 2, 1)
         # Remove invalid MIDI notes from our PrettyMidi output, get the onsets, and then sort
         midi.remove_invalid_notes()
         ons = np.sort(midi.get_onsets())
-        # Run the cleaner on our onsets and extract only the unique values
+        # Run the cleaner on our onsets and extract only the unique values (removes duplicates we created on purpose)
         return np.unique(
             cleaner_np.accumulate(
                 ons,
@@ -469,7 +483,7 @@ class OnsetDetectionMaker:
         # Apply the filter to the audio signal
         return signal.lfilter(b, a, y)
 
-    def output_click_track(
+    def generate_click_track(
             self,
             instr: str,
             onsets: list = None,
@@ -560,67 +574,54 @@ class OnsetDetectionMaker:
                 estimate,
                 window=window
             )
+            # Calculate the mean asynchrony between the reference and estimate onsets
+            mean_async = np.nanmean([estimate[e] - ref[r] for r, e in match_events(ref, estimate, window)])
             yield {
                 'name': name,
+                'instr': instr,
                 'f_score': f,
                 'precision': p,
                 'recall': r,
-                'instr': instr
+                'mean_asynchrony': mean_async
             }
 
 
 if __name__ == '__main__':
     has_manual_annotations = [
         'T.T.T. (Twelve Tone Tune)',
-        'Autumn Leaves'
+        'Autumn Leaves',
+        'Israel'
     ]
+    res = []
     with open(r'..\..\data\processed\processing_results.json', "r+") as in_file:
         corpus = json.load(in_file)
         # Iterate through each entry in the corpus, with the index as well
         for corpus_item in corpus:
             if corpus_item['track_name'] in has_manual_annotations:
-                for ins in ['piano', 'bass', 'drums']:
-                    made = OnsetDetectionMaker(item=corpus_item)
-                    made.env[ins] = made.onset_strength(ins)
-                    made.ons[ins] = made.onset_detect(ins)
-                    made.ons[f'{ins}_poly'] = made.polyphonic_onset_detect(instr=ins)
-
-                    # made.output_click_track('piano', onsets=[made.ons['piano'], mid], start_freq=1000)
-                    df = pd.DataFrame(made.compare_onset_detection_accuracy(
-                        fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
-                        onsets=[made.ons[ins], made.ons[f'{ins}_poly']],
-                        onsets_name=['optimised_librosa', 'optimised_basic-pitch'],
-                        instr=ins
-                    ))
-                    print(df)
-
-                # first_pass = made.beat_track_full_mix(first_pass_only=True)
-                # second_pass = made.beat_track_full_mix(first_pass_only=False, passes=1)
-                # third_pass = made.beat_track_full_mix(first_pass_only=False, passes=2)
-                # fourth_pass = made.beat_track_full_mix(first_pass_only=False, passes=3)
-                # df = pd.DataFrame(made.compare_onset_detection_accuracy(
-                #     fname=rf'..\..\references\manual_annotation\{made.item["fname"]}_mix.txt',
-                #     onsets=[first_pass, second_pass, third_pass, fourth_pass],
-                #     onsets_name=['First', 'Second', 'Third', 'Fourth']
-                # ))
-                # df['track'] = corpus_item['track_name']
-                # res.append(df)
-
-        #         res = []
-        #         for ins in ['piano', 'bass', 'drums']:
-        #             made.env[ins] = made.onset_strength(ins)
-        #             made.ons[ins] = made.onset_detect(ins)
-        #
-        #             default = librosa.onset.onset_detect(
-        #                 y=made.audio[ins].mean(axis=1),
-        #                 units='time',
-        #                 sr=made.sample_rate
-        #             )
-        #             df = pd.DataFrame(made.compare_onset_detection_accuracy(
-        #                 fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
-        #                 onsets=[made.ons[ins], default],
-        #                 onsets_name=['optimised', 'default'],
-        #                 instr=ins
-        #             ))
-        #             res.append(df)
-        # big = pd.concat(res)
+                for bo in [False, True]:
+                    for ins in ['piano', 'bass', 'drums']:
+                        made = OnsetDetectionMaker(item=corpus_item)
+                        made.env[ins] = made.onset_strength(ins, use_nonoptimised_defaults=bo)
+                        made.ons[ins] = made.onset_detect(ins, use_nonoptimised_defaults=bo)
+                        made.ons[f'{ins}_poly'] = made.polyphonic_onset_detect(instr=ins)
+                        made.generate_click_track(ins, onsets=[made.ons[ins]], start_freq=1000)
+                        df = pd.DataFrame(made.compare_onset_detection_accuracy(
+                            fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
+                            onsets=[made.ons[ins], made.ons[f'{ins}_poly']],
+                            onsets_name=['optimised_librosa', 'optimised_basic-pitch'],
+                            instr=ins
+                        ))
+                        df['track'] = corpus_item['track_name']
+                        df['optimised'] = not bo
+                        res.append(df)
+                made = OnsetDetectionMaker(item=corpus_item)
+                bpm = made.beat_track_full_mix(passes=3, use_uniform=False)
+                df = pd.DataFrame(made.compare_onset_detection_accuracy(
+                    fname=rf'..\..\references\manual_annotation\{made.item["fname"]}_mix.txt',
+                    onsets=[bpm],
+                    onsets_name=['plp'],
+                    instr='mix'
+                ))
+                df['track'] = corpus_item['track_name']
+                res.append(df)
+    big = pd.concat(res).reset_index(drop=True)
