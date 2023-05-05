@@ -49,69 +49,125 @@ class OnsetDetectionMaker:
     # These defaults were found through a parameter search against a reference set of onsets, annotated manually
     # TODO: we need to expand the number of recordings used in our parameter search
     # These are passed whenever onset_strength is called for this particular instrument's audio
+    # onset_strength_params = {
+    #     'piano': dict(
+    #         fmin=110,  # Minimum frequency to use
+    #         fmax=4100,  # Maximum frequency to use
+    #         center=False,  # Use left-aligned frame analysis in short term Fourier transform
+    #         max_size=1,  # Size of local maximum filter in frequency bins (1 = no filtering)
+    #     ),
+    #     'bass': dict(
+    #         fmin=30,
+    #         fmax=500,
+    #         center=False,
+    #         max_size=167,
+    #     ),
+    #     'drums': dict(
+    #         fmin=3500,
+    #         fmax=11000,
+    #         center=False,
+    #         max_size=1,
+    #     ),
+    #     'mix': dict(
+    #         fmin=10,
+    #         fmax=16000
+    #     )
+    # }
+    # # These are passed whenever onset_detect is called for this particular instrument's audio
+    # onset_detection_params = {
+    #     'piano': dict(
+    #         backtrack=False,  # Whether to roll back detected onset to nearest preceding minima, i.e. start of a note
+    #         wait=3,  # How many samples must pass from one detected onset to the next
+    #         delta=0.06,  # Hard threshold a sample must exceed to be picked as an onset
+    #         pre_max=4,  # Number of samples to consider before a sample when computing max of a window
+    #         post_max=4,  # Number of samples to consider after a sample when computing max of a window
+    #         pre_avg=10,  # Number of samples to consider before a sample when computing average of a window
+    #         post_avg=10  # Number of samples to consider after a sample when computing average of a window
+    #     ),
+    #     'bass': dict(
+    #         backtrack=True,
+    #         rms=True,
+    #         wait=4,
+    #         delta=0.04,
+    #         pre_max=6,
+    #         post_max=6,
+    #         pre_avg=15,
+    #         post_avg=15
+    #     ),
+    #     'drums': dict(
+    #         backtrack=False,
+    #         wait=4,
+    #         delta=0.09,
+    #         pre_max=6,
+    #         post_max=6,
+    #         pre_avg=19,
+    #         post_avg=19
+    #     ),
+    #     'mix': dict(
+    #         win_length=960
+    #     )
+    # }
     onset_strength_params = {
-        'piano': dict(
-            fmin=110,  # Minimum frequency to use
-            fmax=4100,  # Maximum frequency to use
-            center=False,  # Use left-aligned frame analysis in short term Fourier transform
-            max_size=1,  # Size of local maximum filter in frequency bins (1 = no filtering)
-        ),
-        'bass': dict(
-            fmin=30,
-            fmax=500,
-            center=False,
-            max_size=167,
-        ),
-        'drums': dict(
-            fmin=3500,
-            fmax=11000,
-            center=False,
-            max_size=1,
-        ),
-        'mix': dict(
-            fmin=10,
-            fmax=16000
-        )
+        'piano': {
+            'fmin': 110,
+            'fmax': 4100,
+            'center': True,
+            'max_size': 1
+        },
+        'bass': {
+            'fmin': 30,
+            'fmax': 500,
+            'center': True,
+            'max_size': 47
+        },
+        'drums': {
+            'fmin': 3500,
+            'fmax': 11000,
+            'center': True,
+            'max_size': 1
+        },
+        'mix': {
+            'fmin': 10,
+            'fmax': 16000
+        }
     }
-    # These are passed whenever onset_detect is called for this particular instrument's audio
     onset_detection_params = {
-        'piano': dict(
-            backtrack=False,  # Whether to roll back detected onset to nearest preceding minima, i.e. start of a note
-            wait=3,  # How many samples must pass from one detected onset to the next
-            delta=0.06,  # Hard threshold a sample must exceed to be picked as an onset
-            pre_max=4,  # Number of samples to consider before a sample when computing max of a window
-            post_max=4,  # Number of samples to consider after a sample when computing max of a window
-            pre_avg=10,  # Number of samples to consider before a sample when computing average of a window
-            post_avg=10  # Number of samples to consider after a sample when computing average of a window
-        ),
-        'bass': dict(
-            backtrack=True,
-            rms=True,
-            wait=4,
-            delta=0.04,
-            pre_max=6,
-            post_max=6,
-            pre_avg=15,
-            post_avg=15
-        ),
-        'drums': dict(
-            backtrack=False,
-            wait=4,
-            delta=0.09,
-            pre_max=6,
-            post_max=6,
-            pre_avg=19,
-            post_avg=19
-        ),
-        'mix': dict(
-            win_length=960
-        )
+        'piano': {
+            'backtrack': False,
+            'delta': 0.06,
+            'post_avg': 6,
+            'post_max': 5,
+            'pre_avg': 1,
+            'pre_max': 4,
+            'wait': 4
+        },
+        'bass': {
+            'backtrack': False,
+            'delta': 0.07,
+            'post_avg': 10,
+            'post_max': 17,
+            'pre_avg': 6,
+            'pre_max': 5,
+            'wait': 5
+        },
+        'drums': {
+            'backtrack': False,
+            'delta': 0.08,
+            'post_avg': 13,
+            'post_max': 6,
+            'pre_avg': 1,
+            'pre_max': 4,
+            'wait': 5
+        },
+        'mix': {
+            'win_length': 960
+        }
     }
-    # These are passed whenever onset_detect is called for this particular instrument's audio
+    # These are passed whenever polyphonic_onset_detect is called for this particular instrument's audio
     polyphonic_onset_detect_params = {
         'bass': dict(
-            minimum_frequency=30,
-            maximum_frequency=500,
+            minimum_frequency=30,   # Same as passed to onset_strength
+            maximum_frequency=500,    # Same as passed to onset_strength
             onset_threshold=0.6,
             frame_threshold=0.4,
             minimum_note_length=90,
@@ -294,10 +350,11 @@ class OnsetDetectionMaker:
         # If we haven't passed any audio in, then construct this using the instrument name that we've passed
         if aud is None:
             aud = self.audio[instr].mean(axis=1)
-        # Update our default parameters with any kwargs we've passed in
-        self.onset_strength_params[instr].update(**kwargs)
         # If we're using defaults, set kwargs to an empty dictionary
         kws = self.onset_strength_params[instr] if not use_nonoptimised_defaults else dict()
+        # Update our default parameters with any kwargs we've passed in
+        kws.update(**kwargs)
+        # TODO: check that the correct kwargs are being passed through
         # Suppress any user warnings that Librosa might throw
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', UserWarning)
@@ -363,6 +420,10 @@ class OnsetDetectionMaker:
         )
         # If we're using defaults, set kwargs to an empty dictionary
         kws = self.onset_detection_params[instr] if not use_nonoptimised_defaults else dict()
+        # Update our default parameters with any kwargs we've passed in
+        kws.update(**kwargs)
+        # TODO: check that the correct kwargs are being passed through
+        # TODO: does this code make sense?
         # If we're backtracking onsets from the picked peak
         if self.onset_detection_params[instr]['backtrack']:
             # If we want to use RMS values instead of our onset envelope when back tracking onsets
@@ -435,6 +496,7 @@ class OnsetDetectionMaker:
     def polyphonic_onset_detect(
             self,
             instr: str,
+            use_nonoptimised_defaults: bool = False,
             **kwargs
     ) -> np.ndarray:
         """
@@ -445,6 +507,8 @@ class OnsetDetectionMaker:
 
         # Update the default parameters for the input instrument with any kwargs we've passed in
         self.polyphonic_onset_detect_params[instr].update(**kwargs)
+        # If we're using defaults, set kwargs to an empty dictionary
+        kws = self.polyphonic_onset_detect_params[instr] if not use_nonoptimised_defaults else dict()
         # We need to hide printing in basic_pitch and catch any Librosa warnings to keep stdout looking nice
         with HidePrints() as _, warnings.catch_warnings() as __:
             warnings.simplefilter('ignore', UserWarning)
@@ -453,7 +517,7 @@ class OnsetDetectionMaker:
                 # basic_pitch doesn't accept objects that have already been loaded in Librosa, so pass in the filename
                 self.item['output'][instr],
                 BASIC_PITCH_MODEL,
-                **self.polyphonic_onset_detect_params[instr]
+                **kws
             )
         # Clean the MIDI output and return
         return self._clean_polyphonic_midi_output(midi_data)
@@ -539,7 +603,8 @@ class OnsetDetectionMaker:
             instr: str = None,
             onsets: list = None,
             onsets_name: list = None,
-            window: float = None
+            window: float = None,
+            **kwargs
     ) -> dict:
         """
         Evaluates a given list of onset detection algorithm results, given as onsets, against an array of reference
@@ -547,15 +612,14 @@ class OnsetDetectionMaker:
         onset per row, the default in Sonic Visualiser). window is the length of time wherein an onset is matched as
         'correct' against the reference.
 
-        Returns a dataframe containing F-score, precision, and
-        recall values, defined as:
+        Returns a dataframe containing F-score, precision, recall, and mean asynchrony values, defined as:
 
             - Precision: number of true positive matches / (number of true positives + number of false positives)
             - Recall: number of true positive matches / (number of true positives + number of false negatives)
             - F-score:  (2 * precision * recall) / (precision + recall)
+            - Asynchrony: the average time between matched onsets in reference and estimate
 
-        Note that, for all metrics, greater values are suggestive of a stronger match between reference and estimated
-        onsets, such that a score of 1.0 for any metric indicates equality.
+        Additional **kwargs will be passed in as key-value pairs to the dictionary yielded by the function
         """
 
         # Generate the array of reference onsets from our passed file
@@ -566,31 +630,39 @@ class OnsetDetectionMaker:
         # If we haven't provided a window value, use our default (50 ms)
         if window is None:
             window = self.window
-        # Iterate through all the onset detection algorithms
+        # Iterate through all the onset detection algorithms passed in
         for (name, estimate) in zip(onsets_name, onsets):
-            # Generate the F, precision, and recall values from mir_eval and yield as a dictionary
-            f, p, r = f_measure(
-                ref,
-                estimate,
-                window=window
-            )
-            # Calculate the mean asynchrony between the reference and estimate onsets
-            mean_async = np.nanmean([estimate[e] - ref[r] for r, e in match_events(ref, estimate, window)])
+            with warnings.catch_warnings():
+                # If we have no onsets, both mir_eval and numpy will throw warnings, so catch them here
+                warnings.simplefilter('ignore', RuntimeWarning)
+                warnings.simplefilter('ignore', UserWarning)
+                # Calculate the mean asynchrony between the reference and estimate onsets
+                mean_async = np.nanmean([estimate[e] - ref[r] for r, e in match_events(ref, estimate, window)])
+                # Generate the F, precision, and recall values from mir_eval and yield as a dictionary
+                f, p, r = f_measure(
+                    ref,
+                    estimate,
+                    window=window
+                )
+
             yield {
                 'name': name,
                 'instr': instr,
                 'f_score': f,
                 'precision': p,
                 'recall': r,
-                'mean_asynchrony': mean_async
+                'mean_asynchrony': mean_async,
+                **kwargs
             }
 
 
 if __name__ == '__main__':
     has_manual_annotations = [
         'T.T.T. (Twelve Tone Tune)',
+        'T.T.T.T. (Twelve Tone Tune Two)',
         'Autumn Leaves',
-        'Israel'
+        'Israel',
+        'Our Love Is Here To Stay'
     ]
     res = []
     with open(r'..\..\data\processed\processing_results.json', "r+") as in_file:
@@ -598,30 +670,29 @@ if __name__ == '__main__':
         # Iterate through each entry in the corpus, with the index as well
         for corpus_item in corpus:
             if corpus_item['track_name'] in has_manual_annotations:
-                for bo in [False, True]:
-                    for ins in ['piano', 'bass', 'drums']:
-                        made = OnsetDetectionMaker(item=corpus_item)
-                        made.env[ins] = made.onset_strength(ins, use_nonoptimised_defaults=bo)
-                        made.ons[ins] = made.onset_detect(ins, use_nonoptimised_defaults=bo)
-                        made.ons[f'{ins}_poly'] = made.polyphonic_onset_detect(instr=ins)
-                        made.generate_click_track(ins, onsets=[made.ons[ins]], start_freq=1000)
-                        df = pd.DataFrame(made.compare_onset_detection_accuracy(
-                            fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
-                            onsets=[made.ons[ins], made.ons[f'{ins}_poly']],
-                            onsets_name=['optimised_librosa', 'optimised_basic-pitch'],
-                            instr=ins
-                        ))
-                        df['track'] = corpus_item['track_name']
-                        df['optimised'] = not bo
-                        res.append(df)
+                for ins in ['drums', 'piano', 'bass']:
+                    made = OnsetDetectionMaker(item=corpus_item)
+                    made.env[ins] = made.onset_strength(ins, use_nonoptimised_defaults=False)
+                    made.ons[ins] = made.onset_detect(ins, use_nonoptimised_defaults=False)
+                    made.ons[f'{ins}_poly'] = made.polyphonic_onset_detect(instr=ins)
+                    # made.generate_click_track(ins, onsets=[], start_freq=1000)
+                    df = pd.DataFrame(made.compare_onset_detection_accuracy(
+                        fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
+                        onsets=[made.ons[ins], made.ons[f'{ins}_poly']],
+                        onsets_name=['optimised_librosa', 'optimised_basic-pitch'],
+                        instr=ins
+                    ))
+                    df['track'] = corpus_item['track_name']
+                    res.append(df)
+
                 made = OnsetDetectionMaker(item=corpus_item)
                 bpm = made.beat_track_full_mix(passes=3, use_uniform=False)
                 df = pd.DataFrame(made.compare_onset_detection_accuracy(
                     fname=rf'..\..\references\manual_annotation\{made.item["fname"]}_mix.txt',
                     onsets=[bpm],
-                    onsets_name=['plp'],
-                    instr='mix'
+                    onsets_name=['mix'],
                 ))
+                # made.generate_click_track('mix', onsets=[bpm], start_freq=1000)
                 df['track'] = corpus_item['track_name']
                 res.append(df)
     big = pd.concat(res).reset_index(drop=True)
