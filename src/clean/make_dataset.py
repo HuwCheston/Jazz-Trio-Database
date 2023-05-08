@@ -4,7 +4,6 @@
 Generates the final dataset of recordings from the items listed in \references\corpus.json
 """
 
-import json
 import logging
 import os
 import re
@@ -20,20 +19,7 @@ import yt_dlp
 from dotenv import find_dotenv, load_dotenv
 from yt_dlp.utils import download_range_func, DownloadError
 
-
-class _YtDlpFakeLogger:
-    """
-    Fake logging class passed to yt-dlp instances to disable overly-verbose logging and unnecessary warnings
-    """
-
-    def debug(self, msg=None):
-        pass
-
-    def warning(self, msg=None):
-        pass
-
-    def error(self, msg=None):
-        pass
+from src.utils import analyse_utils as autils
 
 
 class ItemMaker:
@@ -53,7 +39,7 @@ class ItemMaker:
         "quiet": True,
         "extract_audio": True,
         "overwrites": True,
-        "logger": _YtDlpFakeLogger,
+        "logger": autils.YtDlpFakeLogger,
     }
     # Model to use in Spleeter
     model = "spleeter:5stems-16kHz"
@@ -379,46 +365,49 @@ class ItemMaker:
 @click.option(
     "-o", "output_filepath", type=click.Path(exists=True), default="..\..\data"
 )
-def main(input_filepath, output_filepath):
+def main(
+        input_filepath: str,
+        output_filepath: str,
+) -> None:
     """
     Runs clean processing scripts to turn raw clean from (../raw) into cleaned clean ready to be analyzed
     (saved in ../processed)
     """
 
+    # Start the timer
     start = time()
-
+    # Initialise the logger
     logger = logging.getLogger(__name__)
     logger.info("making final clean set from raw clean...")
-
+    # Create an empty list for storing the json results
     js = []
     # Open the corpus json file
-    with open(input_filepath + "\corpus.json", "r+") as in_file:
-        corpus = json.load(in_file)
-        # Iterate through each entry in the corpus, with the index as well
-        for index, item in enumerate(corpus, 1):
-            # Initialise the ItemMaker instance for this item
-            made = ItemMaker(
-                item=item,
-                album_name_len=5,
-                track_name_len=10,
-                logger=logger,
-                index=index,
-                output_filepath=output_filepath,
-            )
-            # Download the item, separate the audio, and finalize the output
-            made.get_item()
-            made.separate_audio()
-            made.finalize_output()
-            # Append our output to the list
-            js.append(made.item)
-
+    corpus = autils.load_json(input_filepath, 'corpus')
+    # Iterate through each entry in the corpus, with the index as well
+    for index, item in enumerate(corpus, 1):
+        # Initialise the ItemMaker instance for this item
+        made = ItemMaker(
+            item=item,
+            album_name_len=5,
+            track_name_len=10,
+            logger=logger,
+            index=index,
+            output_filepath=output_filepath,
+        )
+        # Download the item, separate the audio, and finalize the output
+        made.get_item()
+        made.separate_audio()
+        made.finalize_output()
+        # Append our output to the list
+        js.append(made.item)
     # Dump our finalized output to a new json and save in the output directory
-    output_fname = output_filepath + "\processed\processing_results.json"
-    with open(output_fname, "w") as out_file:
-        json.dump(js, out_file)
-
+    autils.save_json(
+        obj=js,
+        fpath=output_filepath + '\processed',
+        fname='processing_results'
+    )
     logger.info(
-        f"dataset made in {round(time() - start)} secs, see output JSON at {os.path.abspath(output_fname)}"
+        f"dataset made in {round(time() - start)} secs !"
     )
 
 

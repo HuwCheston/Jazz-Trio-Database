@@ -1,6 +1,3 @@
-import json
-import os
-import sys
 import warnings
 
 import basic_pitch.inference as bp
@@ -10,184 +7,58 @@ import pandas as pd
 import scipy.signal as signal
 import scipy.stats as stats
 import soundfile as sf
-import tensorflow as tf
-from basic_pitch import ICASSP_2022_MODEL_PATH
 from mir_eval.onset import f_measure
 from mir_eval.util import match_events
 
-BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
+from src.utils import analyse_utils as autils
 
 
-class HidePrints:
-    """
-    Helper class that prevents a function from printing to stdout when used as a context manager
-    """
-
-    def __enter__(
-            self
-    ) -> None:
-        self._original_stdout = sys.stdout
-        sys.stdout = open(os.devnull, 'w')
-
-    def __exit__(
-            self,
-            exc_type,
-            exc_val,
-            exc_tb
-    ) -> None:
-        sys.stdout.close()
-        sys.stdout = self._original_stdout
-
-
-class OnsetDetectionMaker:
+class OnsetMaker:
     # These values are hard-coded and used throughout: we probably shouldn't change them
     sample_rate = 44100
     hop_length = 512
+    detection_value = 1/16    # Count onsets a semiquaver away from a detected beat as marking the beat
     # The threshold to use when matching onsets
     window = 0.05
     # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
     # These defaults were found through a parameter search against a reference set of onsets, annotated manually
-    # TODO: we need to expand the number of recordings used in our parameter search
-    # These are passed whenever onset_strength is called for this particular instrument's audio
-    # onset_strength_params = {
-    #     'piano': dict(
-    #         fmin=110,  # Minimum frequency to use
-    #         fmax=4100,  # Maximum frequency to use
-    #         center=False,  # Use left-aligned frame analysis in short term Fourier transform
-    #         max_size=1,  # Size of local maximum filter in frequency bins (1 = no filtering)
-    #     ),
-    #     'bass': dict(
-    #         fmin=30,
-    #         fmax=500,
-    #         center=False,
-    #         max_size=167,
-    #     ),
-    #     'drums': dict(
-    #         fmin=3500,
-    #         fmax=11000,
-    #         center=False,
-    #         max_size=1,
-    #     ),
-    #     'mix': dict(
-    #         fmin=10,
-    #         fmax=16000
-    #     )
-    # }
-    # # These are passed whenever onset_detect is called for this particular instrument's audio
-    # onset_detection_params = {
-    #     'piano': dict(
-    #         backtrack=False,  # Whether to roll back detected onset to nearest preceding minima, i.e. start of a note
-    #         wait=3,  # How many samples must pass from one detected onset to the next
-    #         delta=0.06,  # Hard threshold a sample must exceed to be picked as an onset
-    #         pre_max=4,  # Number of samples to consider before a sample when computing max of a window
-    #         post_max=4,  # Number of samples to consider after a sample when computing max of a window
-    #         pre_avg=10,  # Number of samples to consider before a sample when computing average of a window
-    #         post_avg=10  # Number of samples to consider after a sample when computing average of a window
-    #     ),
-    #     'bass': dict(
-    #         backtrack=True,
-    #         rms=True,
-    #         wait=4,
-    #         delta=0.04,
-    #         pre_max=6,
-    #         post_max=6,
-    #         pre_avg=15,
-    #         post_avg=15
-    #     ),
-    #     'drums': dict(
-    #         backtrack=False,
-    #         wait=4,
-    #         delta=0.09,
-    #         pre_max=6,
-    #         post_max=6,
-    #         pre_avg=19,
-    #         post_avg=19
-    #     ),
-    #     'mix': dict(
-    #         win_length=960
-    #     )
-    # }
-    onset_strength_params = {
-        'piano': {
-            'fmin': 110,
-            'fmax': 4100,
-            'center': True,
-            'max_size': 1
-        },
-        'bass': {
-            'fmin': 30,
-            'fmax': 500,
-            'center': True,
-            'max_size': 47
-        },
-        'drums': {
-            'fmin': 3500,
-            'fmax': 11000,
-            'center': True,
-            'max_size': 1
-        },
-        'mix': {
-            'fmin': 10,
-            'fmax': 16000
-        }
-    }
-    onset_detection_params = {
-        'piano': {
-            'backtrack': False,
-            'delta': 0.06,
-            'post_avg': 6,
-            'post_max': 5,
-            'pre_avg': 1,
-            'pre_max': 4,
-            'wait': 4
-        },
-        'bass': {
-            'backtrack': False,
-            'delta': 0.07,
-            'post_avg': 10,
-            'post_max': 17,
-            'pre_avg': 6,
-            'pre_max': 5,
-            'wait': 5
-        },
-        'drums': {
-            'backtrack': False,
-            'delta': 0.08,
-            'post_avg': 13,
-            'post_max': 6,
-            'pre_avg': 1,
-            'pre_max': 4,
-            'wait': 5
-        },
-        'mix': {
-            'win_length': 960
-        }
-    }
-    # These are passed whenever polyphonic_onset_detect is called for this particular instrument's audio
-    polyphonic_onset_detect_params = {
-        'bass': dict(
-            minimum_frequency=30,   # Same as passed to onset_strength
-            maximum_frequency=500,    # Same as passed to onset_strength
-            onset_threshold=0.6,
-            frame_threshold=0.4,
-            minimum_note_length=90,
-            melodia_trick=True,
-            multiple_pitch_bends=True
+    onset_strength_params = autils.try_and_load(
+        attempt_func=autils.unserialise_object,
+        attempt_kwargs=dict(
+            fpath=r'..\..\references\optimised_parameters',
+            fname='onset_strength_optimised'
         ),
-        'piano': dict(
-            minimum_frequency=110,
-            maximum_frequency=4100,
-            onset_threshold=0.8,
-            frame_threshold=0.3,
-            minimum_note_length=60,
-            melodia_trick=True,
-            multiple_pitch_bends=False
-        ),
-        'drums': dict(
-            minimum_frequency=3500,
-            maximum_frequency=11000,
+        backup_func=autils.load_json,
+        backup_kwargs=dict(
+            fpath=r'..\..\references\optimised_parameters',
+            fname='onset_strength_default'
         )
-    }
+    )
+    onset_detect_params = autils.try_and_load(
+        attempt_func=autils.unserialise_object,
+        attempt_kwargs=dict(
+            fpath=r'..\..\references\optimised_parameters',
+            fname='onset_detect_optimised'
+        ),
+        backup_func=autils.load_json,
+        backup_kwargs=dict(
+            fpath=r'..\..\references\optimised_parameters',
+            fname='onset_detect_default'
+        )
+    )
+    # These are passed whenever polyphonic_onset_detect is called for this particular instrument's audio
+    polyphonic_onset_detect_params = autils.try_and_load(
+        attempt_func=autils.unserialise_object,
+        attempt_kwargs=dict(
+            fpath=r'..\..\references\optimised_parameters',
+            fname='polyphonic_onset_detect_optimised'
+        ),
+        backup_func=autils.load_json,
+        backup_kwargs=dict(
+            fpath=r'..\..\references\optimised_parameters',
+            fname='polyphonic_onset_detect_default'
+        )
+    )
     data_dir = r'..\..\data'
 
     def __init__(
@@ -239,38 +110,31 @@ class OnsetDetectionMaker:
             audio[track] = y.T
         return audio
 
-    @staticmethod
-    def _iqr_filter(
-            arr: np.ndarray,
-            low: int = 25,
-            high: int = 75,
-            mult: float = 1.5
-    ) -> np.ndarray:
-        """
-        Simple IQR-based range filter that subsets array b by q1(b) - 1.5 * iqr(b) < b[n] < q3(b) + 1.5 * iqr(b)
-        """
-
-        # Get our upper and lower bound from the array
-        min_ = np.nanpercentile(arr, low)
-        max_ = np.nanpercentile(arr, high)
-        # Construct the IQR
-        iqr = max_ - min_
-        # Filter the array between our two bounds and return the result
-        return np.array([b for b in arr if (mult * iqr) - min_ < b < (mult * iqr) + max_])
-
     def beat_track_full_mix(
             self,
-            passes: int = 2,
+            passes: int = 3,
+            env: np.ndarray = None,
             tempo_min: int = 100,
             tempo_max: int = 300,
             use_uniform: bool = False,
+            use_nonoptimised_defaults: bool = False,
             **kwargs
     ) -> np.ndarray:
         """
         Wrapper function around librosa.beat.plp that allows for per-instrument defaults and multiple passes. This
         allows for the output of predominant local pulse estimation to be passed 'back into' the algorithm several
-        times, with the goal of
+        times, with the goal of gradually narrowing down the range of possible tempos that can be estimated.
         """
+
+        # If we haven't passed in an onset strength envelope, get this now
+        if env is None:
+            env = self.env['mix']
+        # If we're using defaults, set kwargs to an empty dictionary
+        kws = self.onset_detect_params['mix'] if not use_nonoptimised_defaults else dict()
+        # Update our default parameters with any kwargs we've passed in
+        kws.update(**kwargs)
+        self._try_get_kwarg_and_remove('passes', kws, default_=3)
+        print(passes)
 
         def plp(
                 tempo_min_: int = 100,
@@ -281,26 +145,24 @@ class OnsetDetectionMaker:
             Wrapper function around librosa.beat.plp that takes in arguments from a current pass and converts the
             output to timestamps automatically.
             """
-
             # Obtain our predominant local pulse estimation envelope
             pulse = librosa.beat.plp(
                 y=self.audio['mix'].mean(axis=1),  # Load in the full mix, transposed as necessary
                 sr=self.sample_rate,
+                onset_envelope=env,
                 hop_length=self.hop_length,
-                win_length=self.onset_detection_params['mix']['win_length'],
                 tempo_min=tempo_min_,
                 tempo_max=tempo_max_,
-                prior=prior_
+                prior=prior_,
+                **kws
             )
             # Extract the local maxima from our envelope, flatten the array, and convert from frames to timestamps
             return librosa.frames_to_time(
                 np.flatnonzero(
                     librosa.util.localmax(pulse)
-                ), sr=made.sample_rate
+                ), sr=self.sample_rate
             )
 
-        # Update our default parameters with any kwargs we've passed in
-        self.onset_detection_params['mix'].update(**kwargs)
         # Get our first pass: this always uses a uniform distribution over our starting minimum and maximum tempo
         pass_ = plp(
             prior_=stats.uniform(tempo_min, tempo_max),
@@ -309,27 +171,33 @@ class OnsetDetectionMaker:
         )
         # Start creating our passes
         for i in range(1, passes):
-            # This extracts the BPM value for each IOI obtained from our most recent pass
+            # Extract the BPM value for each IOI obtained from our most recent pass
             bpms = np.array([60 / p for p in np.diff(pass_)])
-            # This cleans any outliers from our BPMs by removing values +/- 1.5 * IQR
-            clean = self._iqr_filter(bpms)
+            # Clean any outliers from our BPMs by removing values +/- 1.5 * IQR
+            clean = autils.iqr_filter(bpms)
             # Now we extract our features from our cleaned BPM array
-            min_ = np.nanmin(clean)
-            max_ = np.nanmax(clean)
-            # Use a uniform distribution over cleaned minimum and maximum
-            if use_uniform:
-                prior = stats.uniform(min_, max_)
-            # Use a truncated normal distribution over cleaned minimum, maximum, mean, and standard deviation
-            else:
-                mean_ = np.nanmean(clean)
-                std_ = np.nanstd(clean)
-                prior = stats.truncnorm((min_ - mean_) / std_, (max_ - mean_) / std_, loc=mean_, scale=std_)
-            # Construct the next pass using our extracted features and prior distribution, and repeat
-            pass_ = plp(
-                tempo_min_=min_,
-                tempo_max_=max_,
-                prior_=prior,
-            )
+            # If we didn't detect any beats, we'll raise a ValueError here, so catch and return an empty list
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore', RuntimeWarning)
+                try:
+                    min_ = np.nanmin(clean)
+                except ValueError:
+                    return np.array([0])
+                max_ = np.nanmax(clean)
+                # Use a uniform distribution over cleaned minimum and maximum
+                if use_uniform:
+                    prior = stats.uniform(min_, max_)
+                # Use a truncated normal distribution over cleaned minimum, maximum, mean, and std. dev (default)
+                else:
+                    mean_ = np.nanmean(clean)
+                    std_ = np.nanstd(clean)
+                    prior = stats.truncnorm((min_ - mean_) / std_, (max_ - mean_) / std_, loc=mean_, scale=std_)
+                # Construct the next pass using our extracted features and prior distribution, and repeat
+                pass_ = plp(
+                    tempo_min_=min_,
+                    tempo_max_=max_,
+                    prior_=prior,
+                )
         # Once we've completed all of our passes, set our tempo attribute to the mean bpm from the most recent pass
         self.tempo = np.nanmean(np.array([60 / p for p in np.diff(pass_)]))
         return pass_
@@ -354,7 +222,6 @@ class OnsetDetectionMaker:
         kws = self.onset_strength_params[instr] if not use_nonoptimised_defaults else dict()
         # Update our default parameters with any kwargs we've passed in
         kws.update(**kwargs)
-        # TODO: check that the correct kwargs are being passed through
         # Suppress any user warnings that Librosa might throw
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', UserWarning)
@@ -411,21 +278,19 @@ class OnsetDetectionMaker:
             env = self.env[instr]
 
         # Update the default parameters for the input instrument with any kwargs we've passed in
-        self.onset_detection_params[instr].update(**kwargs)
+        self.onset_detect_params[instr].update(**kwargs)
         # The RMS argument can't be passed to .onset_detect(). We need to try and get it, then remove it from our dict
         rms = self._try_get_kwarg_and_remove(
             kwarg='rms',
-            kwargs=self.onset_detection_params[instr],
+            kwargs=self.onset_detect_params[instr],
             default_=False
         )
         # If we're using defaults, set kwargs to an empty dictionary
-        kws = self.onset_detection_params[instr] if not use_nonoptimised_defaults else dict()
+        kws = self.onset_detect_params[instr] if not use_nonoptimised_defaults else dict()
         # Update our default parameters with any kwargs we've passed in
         kws.update(**kwargs)
-        # TODO: check that the correct kwargs are being passed through
-        # TODO: does this code make sense?
         # If we're backtracking onsets from the picked peak
-        if self.onset_detection_params[instr]['backtrack']:
+        if self.onset_detect_params[instr]['backtrack']:
             # If we want to use RMS values instead of our onset envelope when back tracking onsets
             if rms:
                 energy = librosa.feature.rms(S=np.abs(librosa.stft(self.audio[instr].mean(axis=1))))[0]
@@ -510,13 +375,13 @@ class OnsetDetectionMaker:
         # If we're using defaults, set kwargs to an empty dictionary
         kws = self.polyphonic_onset_detect_params[instr] if not use_nonoptimised_defaults else dict()
         # We need to hide printing in basic_pitch and catch any Librosa warnings to keep stdout looking nice
-        with HidePrints() as _, warnings.catch_warnings() as __:
+        with autils.HidePrints() as _, warnings.catch_warnings() as __:
             warnings.simplefilter('ignore', UserWarning)
             # Run the polyphonic automatic transcription model over the given audio.
             model_output, midi_data, note_events = bp.predict(
                 # basic_pitch doesn't accept objects that have already been loaded in Librosa, so pass in the filename
                 self.item['output'][instr],
-                BASIC_PITCH_MODEL,
+                autils.BASIC_PITCH_MODEL,
                 **kws
             )
         # Clean the MIDI output and return
@@ -655,44 +520,81 @@ class OnsetDetectionMaker:
                 **kwargs
             }
 
+    def match_onsets_and_beats(
+            self,
+            beats: np.ndarray,
+            onsets: np.ndarray = None,
+            instr: str = None,
+            use_hard_threshold: bool = False,
+            threshold: float = None
+    ) -> np.ndarray:
+        """
+
+        """
+
+        # If we haven't passed an onsets list but we have passed an instrument as a string, try and get the onset list
+        if onsets is None and instr is not None:
+            onsets = self.ons[instr]
+        # If we haven't passed an onset list or instrument string, raise an error
+        if onsets is None and instr is None:
+            raise ValueError('At least one of onsets, instr must be provided')
+        # Define the onset detection threshold: either hard or tempo-adjustable
+        if use_hard_threshold and threshold is None:
+            threshold = self.window
+        elif not use_hard_threshold:
+            threshold = ((60 / self.tempo) * 4) * self.detection_value
+        # Define the matching function and return the list of matched onsets below our threshold
+        sub_ = lambda b: np.abs(b - onsets)
+        return np.array([onsets[sub_(be).argmin()] if sub_(be).min() <= threshold else np.nan for be in beats])
+
+    def generate_matched_onsets_dataframe(
+            self,
+            beats: np.ndarray,
+            onsets_list: list[np.ndarray] = None,
+            instrs_list: list = None,
+            **kwargs
+    ) -> pd.DataFrame:
+        """
+
+        """
+
+        if onsets_list and instrs_list is None:
+            raise ValueError('At least one of onsets_list and instrs_list must be provided')
+        if onsets_list is None:
+            onsets_list = [self.ons[ins_] for ins_ in instrs_list]
+        if instrs_list is None:
+            instrs_list = [i for i in range(len(onsets_list))]
+        matches = [
+            pd.Series(
+                beats,
+                name='beats',
+                dtype=np.float64
+            )
+        ]
+        for ons_, name in zip(onsets_list, instrs_list):
+            matches.append(
+                pd.Series(
+                    self.match_onsets_and_beats(
+                        beats=beats,
+                        onsets=ons_,
+                        **kwargs
+                    ),
+                    name=name,
+                    dtype=np.float64
+                )
+            )
+        return pd.concat(matches, axis=1)
+
 
 if __name__ == '__main__':
-    has_manual_annotations = [
-        'T.T.T. (Twelve Tone Tune)',
-        'T.T.T.T. (Twelve Tone Tune Two)',
-        'Autumn Leaves',
-        'Israel',
-        'Our Love Is Here To Stay'
-    ]
-    res = []
-    with open(r'..\..\data\processed\processing_results.json', "r+") as in_file:
-        corpus = json.load(in_file)
-        # Iterate through each entry in the corpus, with the index as well
-        for corpus_item in corpus:
-            if corpus_item['track_name'] in has_manual_annotations:
-                for ins in ['drums', 'piano', 'bass']:
-                    made = OnsetDetectionMaker(item=corpus_item)
-                    made.env[ins] = made.onset_strength(ins, use_nonoptimised_defaults=False)
-                    made.ons[ins] = made.onset_detect(ins, use_nonoptimised_defaults=False)
-                    made.ons[f'{ins}_poly'] = made.polyphonic_onset_detect(instr=ins)
-                    # made.generate_click_track(ins, onsets=[], start_freq=1000)
-                    df = pd.DataFrame(made.compare_onset_detection_accuracy(
-                        fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
-                        onsets=[made.ons[ins], made.ons[f'{ins}_poly']],
-                        onsets_name=['optimised_librosa', 'optimised_basic-pitch'],
-                        instr=ins
-                    ))
-                    df['track'] = corpus_item['track_name']
-                    res.append(df)
-
-                made = OnsetDetectionMaker(item=corpus_item)
-                bpm = made.beat_track_full_mix(passes=3, use_uniform=False)
-                df = pd.DataFrame(made.compare_onset_detection_accuracy(
-                    fname=rf'..\..\references\manual_annotation\{made.item["fname"]}_mix.txt',
-                    onsets=[bpm],
-                    onsets_name=['mix'],
-                ))
-                # made.generate_click_track('mix', onsets=[bpm], start_freq=1000)
-                df['track'] = corpus_item['track_name']
-                res.append(df)
-    big = pd.concat(res).reset_index(drop=True)
+    annotated = autils.get_tracks_with_manual_annotations()
+    corpus = autils.load_json(r'..\..\data\processed', 'processing_results')
+    # Iterate through each entry in the corpus, with the index as well
+    for corpus_item in corpus:
+        made = OnsetMaker(item=corpus_item)
+        for ins in ['drums', 'piano', 'bass']:
+            made.env[ins] = made.onset_strength(ins, use_nonoptimised_defaults=False)
+            made.ons[ins] = made.onset_detect(ins, use_nonoptimised_defaults=False)
+        made.env['mix'] = made.onset_strength('mix', use_nonoptimised_defaults=False)
+        made.ons['mix'] = made.beat_track_full_mix(passes=3, use_uniform=False)
+        pass

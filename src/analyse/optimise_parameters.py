@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 """
 Optimises the parameters used in build_features.py by running a large-scale search over multiple items in
 the corpus and comparing the accuracy of the detected onsets to a reference (manually-detected onsets)
 """
 
-import json
 import logging
-import os
+import warnings
 from ast import literal_eval
 
 import pandas as pd
 
-from src.analyse.build_features import OnsetDetectionMaker
+from src.analyse.build_features import OnsetMaker
+from src.utils import analyse_utils as autils
 
 # These are the already optimised parameters that will be passed in to the relevant function
 onset_strength_optimised_params = {
@@ -30,7 +31,9 @@ onset_strength_optimised_params = {
     ),
     'mix': dict(
         fmin=10,
-        fmax=16000
+        fmax=16000,
+        max_size=1,
+        center=True
     )
 }
 onset_detect_optimised_params = {
@@ -51,7 +54,7 @@ polyphonic_onset_detect_optimised_params = {
     'drums': dict(
         minimum_frequency=3500,
         maximum_frequency=11000,
-    )
+    ),
 }
 
 # These are the parameters that we will seek to optimise. The key of each dictionary should be an argument that is
@@ -69,8 +72,9 @@ onset_detect_test_params = dict(
     pre_avg=range(1, 100),
     post_avg=range(1, 100)
 )
-beat_track_full_mix_test_Params = dict(
-    win_length=range(10, 1000)
+beat_track_full_mix_test_params = dict(
+    win_length=range(10, 1000, 10),
+    passes=range(1, 10)
 )
 polyphonic_onset_detect_test_params = dict(
     onset_threshold=[i / 100 for i in range(1, 10)],
@@ -81,29 +85,7 @@ polyphonic_onset_detect_test_params = dict(
 )
 # These constants are the extensions used to identify individual tracks
 source_sep = ['bass', 'drums', 'piano']
-raw_audio = 'mix'
-all_tracks = [raw_audio, *source_sep]
-
-
-def get_tracks_with_manual_annotations(
-        annotation_dir: str = r'..\..\references\manual_annotation',
-        annotation_ext: str = 'txt',
-) -> list:
-    """
-
-    """
-
-    res = {}
-    for file in os.listdir(annotation_dir):
-        if file.endswith(annotation_ext):
-            split = file.split('_')
-            try:
-                res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
-            except KeyError:
-                res[split[0]] = []
-                res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
-
-    return [k for k, v in res.items() if sorted(v) == sorted(list(all_tracks))]
+raw_audio = ['mix']
 
 
 def set_new_optimised_values(
@@ -111,7 +93,7 @@ def set_new_optimised_values(
         dic: dict,
 ) -> None:
     """
-
+    Updates parameters dictionary with arguments that lead to best results in onset detection, i.e. highest F-score
     """
 
     # Create a dataframe from our passed results list
@@ -137,9 +119,8 @@ def set_new_optimised_values(
 def _optimise_onset_strength(
         param: str,
         vals: list,
-        made_: OnsetDetectionMaker,
+        made_: OnsetMaker,
         instr: str,
-        **kwargs
 ):
     """
     This function should be passed in as the optimise_func to a call to optimise_parameters to run optimisation over
@@ -165,9 +146,8 @@ def _optimise_onset_strength(
 def _optimise_onset_detect(
         param: str,
         vals: list,
-        made_: OnsetDetectionMaker,
+        made_: OnsetMaker,
         instr: str,
-        **kwargs
 ):
     """
     This function should be passed in as the optimise_func to a call to optimise_parameters to run optimisation over
@@ -192,6 +172,54 @@ def _optimise_onset_detect(
         )
 
 
+def _optimise_polyphonic_onset_detect(
+        param: str,
+        vals: list,
+        made_: OnsetMaker,
+        instr: str,
+):
+    """
+    This function should be passed in as the optimise_func to a call to optimise_parameters to run optimisation over
+    the OnsetDetectionMaker.polyphonic_onset_detect function
+    """
+
+    # Iterate through all of the values we're testing for this parameter
+    for val in vals:
+        # Detect the onsets, with our current parameter as a kwarg
+        yield made_.polyphonic_onset_detect(
+            instr=instr,
+            use_nonoptimised_defaults=True,
+            **polyphonic_onset_detect_optimised_params[instr],
+            **{param: val}
+        )
+
+
+def _optimise_beat_track_full_mix(
+        param: str,
+        vals: list,
+        made_: OnsetMaker,
+        instr: str,
+):
+    """
+    This function should be passed in as the optimise_func to a call to optimise_parameters to run optimisation over
+    the OnsetDetectionMaker.beat_track_full_mix function
+    """
+
+    made_.env[instr] = made_.onset_strength(
+        instr,
+        use_nonoptimised_defaults=True,
+        **onset_strength_optimised_params[instr]
+    )
+    for val in vals:
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', RuntimeWarning)
+            yield made_.beat_track_full_mix(
+                env=made_.env[instr],
+                **onset_detect_optimised_params[instr],
+                **{param: val}
+            )
+
+
 def optimise_parameters(
         annotated: list,
         corpus: list,
@@ -199,10 +227,10 @@ def optimise_parameters(
         params_to_test: dict,
         params_to_optimise: dict,
         optimise_func,
-        **kwargs
+        append_in_progress: bool = True,
 ) -> None:
     """
-    Run optimisation for one function across all
+    Run optimisation for one function across all reference tracks and instruments
 
     Arguments:
         - annotated: a list of track file names with annotated onsets present for all parts, returned from
@@ -213,56 +241,80 @@ def optimise_parameters(
         - params_to_optimise: the dictionary of parameters where our optimised values will be stored
         - optimise_func: a function used to run optimisation
         - **kwargs: passed to optimise_func
-
     """
 
     res = []
-    # Iterate through every item in the corpus
-    for corpus_item in corpus:
-        # If we have manually-annotated onsets for this item
-        if corpus_item['fname'] in annotated:
-            # Create the onset detection maker instance
-            made = OnsetDetectionMaker(item=corpus_item)
-            # Iterate over all the instruments we want to run optimisation for and log to stdout
-            for ins in instrs_to_optimise:
-                logger.info(f'Optimising track {corpus_item["fname"]}, {ins} ...')
-                # Iterate over the individual parameters we want to test and log some summary info
-                for k, v in params_to_test.items():
-                    logger.info(f'... {k} ({len(v)} values being tested, range {min(v)} -> {max(v)})')
+    for k, v in params_to_test.items():
+        counter = 0
+        logger.info(f'optimising parameter {k}: {len(v)} values, range [{min(v)} ... {max(v)}]')
+        # Iterate through every item in the corpus
+        for corpus_item in corpus:
+            # If we have manually-annotated onsets for this item
+            if corpus_item['fname'] in annotated:
+                counter += 1
+                # Create the onset detection maker instance for this item
+                made = OnsetMaker(item=corpus_item)
+                logger.info(f'... track {counter}/{len(annotated)}, {corpus_item["fname"]}')
+                # Iterate over all the instruments we want to run optimisation for and log to stdout
+                for ins in instrs_to_optimise:
                     # Run the optimisation function with our required arguments to obtain a list of detected onsets
                     ons = optimise_func(
-                        k,
-                        v,
-                        made,
-                        ins,
-                        **kwargs
+                        k,    # The name of the parameter to be optimised
+                        v,    # The iterable of possible values this parameter can take
+                        made,    # The maker class for this track in the corpus
+                        ins,    # The instrument name we're optimising
                     )
                     # Calculate the F-score for each of our parameters and append to the list
-                    res.append(list(made.compare_onset_detection_accuracy(
+                    li = list(made.compare_onset_detection_accuracy(
                         fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
                         instr=ins,
                         onsets=ons,
                         onsets_name=v,
                         param=k,
                         track=corpus_item['track_name']
-                    )))
+                    ))
+                    res.append(li)
+        # If we're updating our parameters during optimisation, do so now
+        if append_in_progress:
+            set_new_optimised_values(
+                res=[item for sublist in res for item in sublist],
+                dic=params_to_optimise
+            )
+            res.clear()
+    # Otherwise, update our parameters after completing optimisation across all tracks/instruments/parameters
+    if not append_in_progress:
+        set_new_optimised_values(
+            res=[item for sublist in res for item in sublist],
+            dic=params_to_optimise
+        )
     # Set the dictionary values to our optimised results
-    set_new_optimised_values(
-        res=[item for sublist in res for item in sublist],
-        dic=params_to_optimise
-    )
+    if not append_in_progress:
+        set_new_optimised_values(
+            res=[item for sublist in res for item in sublist],
+            dic=params_to_optimise
+        )
 
 
 if __name__ == "__main__":
-    annotated_tracks = get_tracks_with_manual_annotations()
+    annotated_tracks = autils.get_tracks_with_manual_annotations()
+
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
-
     logger = logging.getLogger(__name__)
     logger.info(f"optimising parameters using manual annotations obtained for {len(annotated_tracks)} tracks ...")
 
-    with open(r'..\..\data\processed\processing_results.json', "r+") as in_file:
-        corpus_json = json.load(in_file)
+    corpus_json = autils.load_json(r'..\..\data\processed', 'processing_results')
+
+    # Optimise the made.beat_track_full_mix function
+    optimise_parameters(
+        annotated=annotated_tracks,
+        corpus=corpus_json,
+        instrs_to_optimise=raw_audio,
+        params_to_test=beat_track_full_mix_test_params,
+        params_to_optimise=onset_detect_optimised_params,
+        optimise_func=_optimise_beat_track_full_mix
+    )
+    # Optimise the made.onset_strength function
     optimise_parameters(
         annotated=annotated_tracks,
         corpus=corpus_json,
@@ -271,7 +323,7 @@ if __name__ == "__main__":
         params_to_optimise=onset_strength_optimised_params,
         optimise_func=_optimise_onset_strength
     )
-    print(onset_strength_optimised_params)
+    # Optimise the made.onset_detect function
     optimise_parameters(
         annotated=annotated_tracks,
         corpus=corpus_json,
@@ -280,4 +332,14 @@ if __name__ == "__main__":
         params_to_optimise=onset_detect_optimised_params,
         optimise_func=_optimise_onset_detect
     )
-    print(onset_detect_optimised_params)
+    # Serialise the results
+    autils.serialise_object(
+        obj=onset_strength_optimised_params,
+        fpath=r'..\..\references\optimised_parameters',
+        fname='onset_strength_optimised'
+    )
+    autils.serialise_object(
+        obj=onset_detect_optimised_params,
+        fpath=r'..\..\references\optimised_parameters',
+        fname='onset_detect_optimised'
+    )
