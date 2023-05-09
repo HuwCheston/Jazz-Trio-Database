@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Optimises the parameters used in build_features.py by running a large-scale search over multiple items in
+Optimises the parameters used in detect_onsets.py by running a large-scale search over multiple items in
 the corpus and comparing the accuracy of the detected onsets to a reference (manually-detected onsets)
 """
 
@@ -12,7 +12,7 @@ from ast import literal_eval
 
 import pandas as pd
 
-from src.analyse.build_features import OnsetMaker
+from src.analyse.detect_onsets import OnsetMaker
 from src.utils import analyse_utils as autils
 
 # These are the already optimised parameters that will be passed in to the relevant function
@@ -72,7 +72,7 @@ onset_detect_test_params = dict(
     pre_avg=range(1, 100),
     post_avg=range(1, 100)
 )
-beat_track_full_mix_test_params = dict(
+beat_track_test_params = dict(
     win_length=range(10, 1000, 10),
     passes=range(1, 10)
 )
@@ -194,7 +194,7 @@ def _optimise_polyphonic_onset_detect(
         )
 
 
-def _optimise_beat_track_full_mix(
+def _optimise_beat_track(
         param: str,
         vals: list,
         made_: OnsetMaker,
@@ -213,7 +213,7 @@ def _optimise_beat_track_full_mix(
     for val in vals:
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', RuntimeWarning)
-            yield made_.beat_track_full_mix(
+            yield made_.beat_track(
                 env=made_.env[instr],
                 **onset_detect_optimised_params[instr],
                 **{param: val}
@@ -310,9 +310,9 @@ if __name__ == "__main__":
         annotated=annotated_tracks,
         corpus=corpus_json,
         instrs_to_optimise=raw_audio,
-        params_to_test=beat_track_full_mix_test_params,
+        params_to_test=beat_track_test_params,
         params_to_optimise=onset_detect_optimised_params,
-        optimise_func=_optimise_beat_track_full_mix
+        optimise_func=_optimise_beat_track
     )
     # Optimise the made.onset_strength function
     optimise_parameters(
@@ -333,12 +333,12 @@ if __name__ == "__main__":
         optimise_func=_optimise_onset_detect
     )
     # Serialise the results
-    autils.serialise_object(
+    autils.save_json(
         obj=onset_strength_optimised_params,
         fpath=r'..\..\references\optimised_parameters',
         fname='onset_strength_optimised'
     )
-    autils.serialise_object(
+    autils.save_json(
         obj=onset_detect_optimised_params,
         fpath=r'..\..\references\optimised_parameters',
         fname='onset_detect_optimised'

@@ -19,3 +19,5 @@ numpy
 audioread
 dill
 seaborn
+numba
+demucs<=2.0.3

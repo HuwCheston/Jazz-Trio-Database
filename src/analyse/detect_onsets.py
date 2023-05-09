@@ -1,9 +1,16 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Optimises the parameters used in detect_onsets.py by running a large-scale search over multiple items in
+the corpus and comparing the accuracy of the detected onsets to a reference (manually-detected onsets)
+"""
+
 import warnings
 
 import basic_pitch.inference as bp
 import librosa
 import numpy as np
-import pandas as pd
 import scipy.signal as signal
 import scipy.stats as stats
 import soundfile as sf
@@ -15,60 +22,45 @@ from src.utils import analyse_utils as autils
 
 class OnsetMaker:
     # These values are hard-coded and used throughout: we probably shouldn't change them
-    sample_rate = 44100
+    sample_rate = autils.SAMPLE_RATE
     hop_length = 512
-    detection_value = 1/16    # Count onsets a semiquaver away from a detected beat as marking the beat
+    detection_note_value = 1 / 16  # Count onsets a semiquaver away from a detected beat as marking the beat
     # The threshold to use when matching onsets
     window = 0.05
     # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
     # These defaults were found through a parameter search against a reference set of onsets, annotated manually
-    onset_strength_params = autils.try_and_load(
-        attempt_func=autils.unserialise_object,
-        attempt_kwargs=dict(
-            fpath=r'..\..\references\optimised_parameters',
-            fname='onset_strength_optimised'
-        ),
-        backup_func=autils.load_json,
-        backup_kwargs=dict(
-            fpath=r'..\..\references\optimised_parameters',
-            fname='onset_strength_default'
-        )
+    onset_strength_params = autils.load_json(
+        fpath=r'..\..\references\optimised_parameters',
+        fname='onset_strength_default'
     )
-    onset_detect_params = autils.try_and_load(
-        attempt_func=autils.unserialise_object,
-        attempt_kwargs=dict(
-            fpath=r'..\..\references\optimised_parameters',
-            fname='onset_detect_optimised'
-        ),
-        backup_func=autils.load_json,
-        backup_kwargs=dict(
-            fpath=r'..\..\references\optimised_parameters',
-            fname='onset_detect_default'
-        )
+    onset_detect_params = autils.load_json(
+        fpath=r'..\..\references\optimised_parameters',
+        fname='onset_detect_default'
     )
     # These are passed whenever polyphonic_onset_detect is called for this particular instrument's audio
-    polyphonic_onset_detect_params = autils.try_and_load(
-        attempt_func=autils.unserialise_object,
-        attempt_kwargs=dict(
-            fpath=r'..\..\references\optimised_parameters',
-            fname='polyphonic_onset_detect_optimised'
-        ),
-        backup_func=autils.load_json,
-        backup_kwargs=dict(
-            fpath=r'..\..\references\optimised_parameters',
-            fname='polyphonic_onset_detect_default'
-        )
+    polyphonic_onset_detect_params = autils.load_json(
+        fpath=r'..\..\references\optimised_parameters',
+        fname='polyphonic_onset_detect_default'
     )
     data_dir = r'..\..\data'
+    reports_dir = r'..\..\reports'
 
     def __init__(
             self,
-            item: dict,
+            item: dict = None,
             **kwargs
     ):
         self.item = item
+        # Construct the default file paths where our audio is saved
+        self.instrs = {
+            'mix': rf'{self.data_dir}\raw\audio\{self.item["fname"]}.{autils.FILE_FMT}',
+            'piano': rf'{self.data_dir}\processed\spleeter_audio\{self.item["fname"]}_piano.{autils.FILE_FMT}',
+            'bass': rf'{self.data_dir}\processed\demucs_audio\{self.item["fname"]}_bass.{autils.FILE_FMT}',
+            'drums': rf'{self.data_dir}\processed\demucs_audio\{self.item["fname"]}_drums.{autils.FILE_FMT}'
+        }
         # Load our audio file in when we initialise the item: we won't be changing this much
-        self.audio = self._load_audio(**kwargs)
+        if self.item is not None:
+            self.audio = self._load_audio(**kwargs)
         # Dictionary to hold arrays of onset envelopes for each instrument
         self.env = {}
         # Dictionary to hold arrays of detected onsets for each instrument
@@ -93,8 +85,8 @@ class OnsetMaker:
         dtype = kwargs.get('dtype', np.float64)
         # Empty dictionary to hold audio
         audio = {}
-        # Iterate through all the tracks and paths in the output key of our JSON item
-        for track, fpath in self.item['output'].items():
+        # Iterate through all the source separated tracks
+        for name, fpath in self.instrs.items():
             # Catch any UserWarnings that might be raised, usually to do with different algorithms being used to load
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore', UserWarning)
@@ -107,10 +99,10 @@ class OnsetMaker:
                     dtype=dtype,
                     res_type=res_type,
                 )
-            audio[track] = y.T
+            audio[name] = y.T
         return audio
 
-    def beat_track_full_mix(
+    def beat_track(
             self,
             passes: int = 3,
             env: np.ndarray = None,
@@ -134,7 +126,6 @@ class OnsetMaker:
         # Update our default parameters with any kwargs we've passed in
         kws.update(**kwargs)
         self._try_get_kwarg_and_remove('passes', kws, default_=3)
-        print(passes)
 
         def plp(
                 tempo_min_: int = 100,
@@ -199,7 +190,9 @@ class OnsetMaker:
                     prior_=prior,
                 )
         # Once we've completed all of our passes, set our tempo attribute to the mean bpm from the most recent pass
-        self.tempo = np.nanmean(np.array([60 / p for p in np.diff(pass_)]))
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', RuntimeWarning)
+            self.tempo = np.nanmean(np.array([60 / p for p in np.diff(pass_)]))
         return pass_
 
     def onset_strength(
@@ -318,7 +311,7 @@ class OnsetMaker:
 
     def _clean_polyphonic_midi_output(
             self,
-            midi: np.ndarray,
+            midi,
             window: float = None,
     ) -> np.ndarray:
         """
@@ -459,7 +452,7 @@ class OnsetMaker:
         # Sum the audio and click signals together
         process = audio + sum(clicks)
         # Create the audio file and save into the click tracks directory
-        with open(rf'{self.data_dir}\processed\click_tracks\{self.item["fname"]}_{instr}_clicks.{ext}', 'wb') as f:
+        with open(rf'{self.reports_dir}\click_tracks\{self.item["fname"]}_{instr}_clicks.{ext}', 'wb') as f:
             sf.write(f, process, self.sample_rate)
 
     def compare_onset_detection_accuracy(
@@ -471,11 +464,11 @@ class OnsetMaker:
             window: float = None,
             **kwargs
     ) -> dict:
-        """
-        Evaluates a given list of onset detection algorithm results, given as onsets, against an array of reference
-        onsets. fname should be a filepath to a text file containing the detected onsets, as a single column (i.e. one
-        onset per row, the default in Sonic Visualiser). window is the length of time wherein an onset is matched as
-        'correct' against the reference.
+        """Evaluates onset detection algorithm results against reference onsets.
+
+        `fname` should be a filepath to a text file containing the detected onsets, as a single column (i.e. one
+        onset per row, the default in Sonic Visualiser). `window` is the length of time wherein an onset is matched as
+        correct against the reference.
 
         Returns a dataframe containing F-score, precision, recall, and mean asynchrony values, defined as:
 
@@ -522,13 +515,47 @@ class OnsetMaker:
 
     def match_onsets_and_beats(
             self,
-            beats: np.ndarray,
-            onsets: np.ndarray = None,
+            beats: np.array,
+            onsets: np.array = None,
             instr: str = None,
             use_hard_threshold: bool = False,
             threshold: float = None
     ) -> np.ndarray:
-        """
+        """Matches event onsets with crotchet beat locations.
+
+        For every beat in the iterable `beats`, find the closest proximate onset in the iterable `onsets`, within a
+        given window. If no onset can be found within this window, set the matched onset to NaN. Window type can either
+        be a hard, fixed value by setting `use_hard_threshold`, or flexible and dependant on a particular rhythmic value
+        within the underlying tempo (set using the `detection_note_value` class attribute). The latter option is
+        recommended and used as a default, given that hard thresholds for matching onsets at one tempo may not be
+        appropriate for other tempi.
+
+        Examples:
+            >>> om = OnsetMaker()
+            >>> bea = np.array([0, 0.5, 1.0, 1.5])
+            >>> ons = np.array([0.1, 0.6, 1.25, 1.55])
+            >>> print(om.match_onsets_and_beats(beats=bea, onsets=ons, use_hard_threshold=True, threshold=0.1))
+            np.array([0.1 0.6 nan 1.55])
+
+            >>> om = OnsetMaker()
+            >>> om.tempo = 160
+            >>> bea = np.array([0, 0.5, 1.0, 1.5])
+            >>> ons = np.array([0.1, 0.6, 1.25, 1.55])
+            >>> print(om.match_onsets_and_beats(beats=bea, onsets=ons, use_hard_threshold=False))
+            np.array([nan nan nan 1.55])
+
+        Arguments:
+            beats (np.ndarray): iterable containing crotchet beat positions, typically tracked from the full mix
+            onsets (np.ndarray): iterable containing onset positions, typically tracked from a source separated file
+            instr (str): the name of an instrument, to be used if onsets is not provided
+            use_hard_threshold (bool): whether to use a hard or tempo-dependent (default) threshold for matching onsets
+            threshold (float): the hard threshold to use, if not provided then defaults to self.window
+
+        Returns:
+            np.array: the matched onset array, with shape == len(beats)
+
+        Raises:
+            AttributeError: if neither onsets or instr are provided
 
         """
 
@@ -537,64 +564,100 @@ class OnsetMaker:
             onsets = self.ons[instr]
         # If we haven't passed an onset list or instrument string, raise an error
         if onsets is None and instr is None:
-            raise ValueError('At least one of onsets, instr must be provided')
+            raise AttributeError('At least one of onsets, instr must be provided')
         # Define the onset detection threshold: either hard or tempo-adjustable
         if use_hard_threshold and threshold is None:
             threshold = self.window
         elif not use_hard_threshold:
-            threshold = ((60 / self.tempo) * 4) * self.detection_value
+            threshold = ((60 / self.tempo) * 4) * self.detection_note_value
         # Define the matching function and return the list of matched onsets below our threshold
         sub_ = lambda b: np.abs(b - onsets)
         return np.array([onsets[sub_(be).argmin()] if sub_(be).min() <= threshold else np.nan for be in beats])
 
-    def generate_matched_onsets_dataframe(
+    def generate_matched_onsets_dictionary(
             self,
             beats: np.ndarray,
             onsets_list: list[np.ndarray] = None,
             instrs_list: list = None,
             **kwargs
-    ) -> pd.DataFrame:
-        """
+    ) -> dict:
+        """Matches onsets from multiple instruments with crotchet beat positions and returns a dictionary.
+
+        Wrapper function for `OnsetMaker.match_onsets_and_beats`. `onsets_list` should be a list of arrays corresponding
+        to onset positions tracked from multiple source-separated instruments. These will then be sent individually to
+        `OnsetMaker.match_onsets_and_beats` and matched with the provided `beats` array, then returned as the values in
+        a dictionary, where the keys are identifiers passed in `instrs_list` (or numerical values, if this iterable is
+        not passed). Any ``**kwargs`` will be passed to `OnsetMaker.match_onsets_and_beats`.
+
+        Examples:
+            >>> om = OnsetMaker()
+            >>> bea = np.array([0, 0.5, 1.0, 1.5])
+            >>> ons = [
+            >>>     np.array([0.1, 0.6, 1.25, 1.55]),
+            >>>     np.array([0.05, 0.45, 0.95, 1.45]),
+            >>> ]
+            >>> instrs = ['instr1', 'instr2']
+            >>> print(om.generate_matched_onsets_dictionary(
+            >>>     beats=bea, onsets_list=ons, instrs_list=instrs, use_hard_threshold=True, threshold=0.1)
+            >>> )
+            {
+                'beats': array([0. , 0.5, 1. , 1.5]),
+                'instr1': array([0.1 , 0.6 ,  nan, 1.55]),
+                'instr2': array([0.05, 0.45, 0.95, 1.45])
+            }
+
+        Arguments:
+            beats (np.ndarray): iterable containing crotchet beat positions, typically tracked from the full mix
+            onsets_list (list[np.ndarray]): iterable containing arrays of onset positions
+            instrs_list (list[str]): iterable containing names of instruments
+            **kwargs: arbitrary keyword arguments, passed to `OnsetMaker.match_onsets_and_beats`
+
+        Returns:
+            dict: keys are instrument names, values are matched arrays
+
+        Raises:
+            AttributeError: if neither onsets_list or instrs_list are passed
 
         """
 
         if onsets_list and instrs_list is None:
-            raise ValueError('At least one of onsets_list and instrs_list must be provided')
+            raise AttributeError('At least one of onsets_list and instrs_list must be provided')
         if onsets_list is None:
             onsets_list = [self.ons[ins_] for ins_ in instrs_list]
         if instrs_list is None:
             instrs_list = [i for i in range(len(onsets_list))]
-        matches = [
-            pd.Series(
-                beats,
-                name='beats',
-                dtype=np.float64
-            )
-        ]
-        for ons_, name in zip(onsets_list, instrs_list):
-            matches.append(
-                pd.Series(
-                    self.match_onsets_and_beats(
-                        beats=beats,
-                        onsets=ons_,
-                        **kwargs
-                    ),
-                    name=name,
-                    dtype=np.float64
-                )
-            )
-        return pd.concat(matches, axis=1)
+
+        ma: dict = {'beats': beats}
+        ma.update({
+            name: self.match_onsets_and_beats(beats=beats, onsets=ons_, **kwargs) for ons_, name in
+            zip(onsets_list, instrs_list)
+        })
+        return ma
 
 
 if __name__ == '__main__':
-    annotated = autils.get_tracks_with_manual_annotations()
-    corpus = autils.load_json(r'..\..\data\processed', 'processing_results')
-    # Iterate through each entry in the corpus, with the index as well
+    corpus = autils.load_json(r'..\..\references', 'corpus')
+    res = []
+    # Iterate through each entry in the corpus
     for corpus_item in corpus:
+        # Create the onset detection maker instance using the current item in the corpus
         made = OnsetMaker(item=corpus_item)
+        print(corpus_item['track_name'])
+        # Iterate through each instrument, generate the onset envelope and detect the onsets
         for ins in ['drums', 'piano', 'bass']:
             made.env[ins] = made.onset_strength(ins, use_nonoptimised_defaults=False)
             made.ons[ins] = made.onset_detect(ins, use_nonoptimised_defaults=False)
+            made.generate_click_track(instr=ins, onsets=[made.ons[ins]])
+        # Generate the onset envelope for the full mix and track the beats within it
         made.env['mix'] = made.onset_strength('mix', use_nonoptimised_defaults=False)
-        made.ons['mix'] = made.beat_track_full_mix(passes=3, use_uniform=False)
-        pass
+        made.ons['mix'] = made.beat_track(passes=3, use_uniform=False)
+        made.generate_click_track(instr='mix', onsets=[made.ons['mix']])
+        # Match the detected onsets together with the detected beats and append the result to a list
+        matched = made.generate_matched_onsets_dictionary(
+            beats=made.ons['mix'],
+            onsets_list=[made.ons['piano'], made.ons['bass'], made.ons['drums']],
+            instrs_list=['piano', 'bass', 'drums'],
+            use_hard_threshold=False
+        )
+        res.append(matched)
+    pass

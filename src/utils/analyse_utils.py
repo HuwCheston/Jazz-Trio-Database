@@ -7,6 +7,9 @@ import numpy as np
 import tensorflow as tf
 from basic_pitch import ICASSP_2022_MODEL_PATH
 
+# Define constants used across many files
+SAMPLE_RATE = 44100
+FILE_FMT = 'wav'
 BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
 
 

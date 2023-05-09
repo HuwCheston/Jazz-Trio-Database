@@ -60,7 +60,7 @@ class ItemMakerTest(unittest.TestCase):
         """
 
         im = ItemMaker(item=json.loads(self.test_item), index=10, output_filepath=None)
-        expected = "000010-mctestfacet-testymctestfaceridesagain-2022-testtrack-5"
+        expected = "mctestfacet-testymctestfaceridesagain-2022-testtrack-5"
         self.assertEqual(im._construct_filename(), expected)
 
     def test_filename_construction_custom_length_names(self):
@@ -75,7 +75,7 @@ class ItemMakerTest(unittest.TestCase):
         ] = "This is a long track name which will be shortened to one word when creating the filename"
         item["album_name"] = "A long album name with !*769! numbers"
         im = ItemMaker(item=item, index=5, output_filepath=None)
-        expected = "000005-mctestfacet-alongalbumnamewith769numbers-2022-this-5"
+        expected = "mctestfacet-alongalbumnamewith769numbers-2022-this-5"
         self.assertEqual(
             im._construct_filename(
                 track_name_len=1,
@@ -174,7 +174,7 @@ class ItemMakerTest(unittest.TestCase):
 
         im = self._prepare_itemmaker_to_get_test_file()
         # This will always fail as it makes the timeout duration 10 seconds
-        im.timeout_multiplier = 0.000001
+        im.timeout_multiplier_spleeter = 0.000001
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", ResourceWarning)
             im.get_item()

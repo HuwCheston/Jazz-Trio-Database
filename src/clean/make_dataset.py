@@ -7,9 +7,11 @@ Generates the final dataset of recordings from the items listed in \references\c
 import logging
 import os
 import re
+import secrets
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
+from shutil import rmtree
 from time import time
 
 import audioread
@@ -28,42 +30,49 @@ class ItemMaker:
     and getting the audio from YouTube if not available (with the required start and stop timestamps).
     """
 
-    # The desired length of our item ID, e.g. 000031 = 6
-    id_len = 6
+    # The desired length of our item ID in bits
+    id_len = 16
     # The file codec to use when saving
-    file_fmt = "m4a"
-    sample_rate = 44100
+    sample_rate = autils.SAMPLE_RATE
     # Options to pass to yt_dlp when downloading from YouTube
     ydl_opts = {
-        "format": f"{file_fmt}/bestaudio[ext={file_fmt}]/best",
+        "format": f"{autils.FILE_FMT}/bestaudio[ext={autils.FILE_FMT}]/best",
         "quiet": True,
         "extract_audio": True,
         "overwrites": True,
         "logger": autils.YtDlpFakeLogger,
     }
+    # Source-separation models to use
+    use_spleeter: bool = True
+    use_demucs: bool = True
     # Model to use in Spleeter
     model = "spleeter:5stems-16kHz"
     # The instruments we'll conduct source separation on
     instrs = ["piano", "bass", "drums"]
 
-    def __init__(self, item: dict, index: int, output_filepath: str, **kwargs):
+    def __init__(self, item: dict, output_filepath: str, **kwargs):
         # Directories containing raw and processed (source-separated) audio, respectively
         self.raw_audio_loc = rf"{output_filepath}\raw\audio"
-        self.separate_audio_loc = rf"{output_filepath}\processed\audio"
+        self.spleeter_audio_loc = rf"{output_filepath}\processed\spleeter_audio"
+        self.demucs_audio_loc = rf"{output_filepath}\processed\demucs_audio"
         # The dictionary corresponding to one particular item in our corpus JSON
         self.item = item.copy()
-        self.item["id"] = str(index).zfill(self.id_len)
+        self.item["id"] = self._generate_id()
         # Empty attribute to hold valid YouTube links
         self.links = []
         # The filename for this item, constructed from the parameters of the JSON
         self.fname = self._construct_filename(**kwargs)
         # The complete filepath for this item
-        self.in_file = rf"{self.raw_audio_loc}\{self.fname}.{self.file_fmt}"
+        self.in_file = rf"{self.raw_audio_loc}\{self.fname}.{autils.FILE_FMT}"
         # Paths to all the source-separated audio files that we'll create (or load)
         self.out_files = [
-            rf"{self.separate_audio_loc}\{self.fname}_{i}.{self.file_fmt}"
+            rf"{self.spleeter_audio_loc}\{self.fname}_{i}.{autils.FILE_FMT}"
             for i in self.instrs
         ]
+        self.out_files.extend([
+            rf"{self.demucs_audio_loc}\{self.fname}_{i}.{autils.FILE_FMT}"
+            for i in self.instrs if i != 'piano'
+        ])
         # Logger object and empty list to hold messages (for saving)
         self.logger = kwargs.get("logger", None)
         self.logging_messages = []
@@ -75,13 +84,20 @@ class ItemMaker:
             "end"
         )
         # Amount to multiply file duration by when calculating source separation timeout value
-        self.timeout_multiplier = kwargs.get("timeout_multiplier", 5)
+        self.timeout_multiplier_spleeter = kwargs.get("timeout_multiplier_spleeter", 5)
+        self.timeout_multiplier_demucs = kwargs.get("timeout_multiplier_spleeter", 10)
         # Log start of processing
         self._logger_wrapper(
             f'processing item {self.item["id"]}, '
             f'"{self.item["track_name"]}" from {self.item["recording_year"]} album {self.item["album_name"]}, '
             f'leader {self.item["musicians"][self.item["musicians"]["leader"]]} ...'
         )
+
+    def _generate_id(self):
+        try:
+            return self.item['id']
+        except KeyError:
+            return secrets.token_hex(self.id_len)
 
     def _logger_wrapper(self, msg) -> None:
         """
@@ -125,10 +141,8 @@ class ItemMaker:
             take = "na"
         # Get our album recording year
         year = self.item["recording_year"]
-        # Get our unique item id
-        id_ = self.item["id"]
         # Return our formatted filename
-        return rf"{id_}-{musician}-{album}-{year}-{track}-{take}"
+        return rf"{musician}-{album}-{year}-{track}-{take}"
 
     def _get_valid_links(
         self, bad_pattern: str = '"playabilityStatus":{"status":"ERROR"'
@@ -229,7 +243,7 @@ class ItemMaker:
                 f'Item {self.item["id"]} could not be downloaded, check input links are working'
             )
 
-    def _separate_audio(self, cmd: list, good_pattern: str = "written succesfully") -> None:
+    def _separate_audio_in_spleeter(self, cmd: list, good_pattern: str = "written succesfully") -> None:
         """
         Conducts the separation process by passing the given cmd through to subprocess.Popen and storing the output.
         The argument good_pattern should be a string contained within the successful output of the subprocess. If this
@@ -238,7 +252,7 @@ class ItemMaker:
 
         # TODO: we could check for a pretrained_models folder, as if that isn't present then execution will be longer
         # Get the timeout value: the duration of the item, times the multiplier
-        timeout = int((self.end - self.start) * self.timeout_multiplier)
+        timeout = int((self.end - self.start) * self.timeout_multiplier_spleeter)
         # Open the subprocess. The additional arguments allow us to capture the output
         p = subprocess.Popen(
             cmd,
@@ -269,9 +283,18 @@ class ItemMaker:
 
         if exts is None:
             exts = self.instrs
-        for file in os.listdir(self.separate_audio_loc):
+        for file in os.listdir(self.spleeter_audio_loc):
             if self.fname in file and not any(f"_{i}" for i in exts if i in file):
-                os.remove(os.path.abspath(rf"{self.separate_audio_loc}\{file}"))
+                os.remove(os.path.abspath(rf"{self.spleeter_audio_loc}\{file}"))
+
+        demucs_fpath = rf"{self.demucs_audio_loc}\htdemucs\{self.fname}"
+        for file in os.listdir(demucs_fpath):
+            if file in ['vocals.wav', 'other.wav']:
+                os.remove(fr'{demucs_fpath}\{file}')
+            else:
+                os.rename(fr'{demucs_fpath}\{file}', fr'{demucs_fpath}\{self.fname}_{file}')
+                os.replace(fr'{demucs_fpath}\{self.fname}_{file}', rf'{self.demucs_audio_loc}\{self.fname}_{file}')
+        rmtree(rf"{self.demucs_audio_loc}\htdemucs")
 
     def _get_spleeter_cmd(self) -> list:
         """
@@ -284,13 +307,41 @@ class ItemMaker:
             "-p",
             self.model,  # Defaults to the 5stems-16kHz model
             "-o",
-            f"{os.path.abspath(self.separate_audio_loc)}",  # Specifies the correct output directory
+            f"{os.path.abspath(self.spleeter_audio_loc)}",  # Specifies the correct output directory
             f"{os.path.abspath(self.in_file)}",  # Specifies the input filepath for this item
             "-c",
-            f"{self.file_fmt}",  # Specifies the output codec, default to m4a
+            f"{autils.FILE_FMT}",  # Specifies the output codec, default to m4a
             "-f",
             "{filename}_{instrument}.{codec}",  # This sets the output filename format
         ]
+
+    def _get_demucs_cmd(self) -> list:
+        """
+        Gets the required command for running demucs using subprocess.Popen
+        """
+
+        return [
+            "demucs",
+            rf"{os.path.abspath(self.in_file)}",
+            "-o",
+            rf"{os.path.abspath(self.demucs_audio_loc)}"
+        ]
+
+    def _separate_audio_in_demucs(self, cmd) -> None:
+        # Get the timeout value: the duration of the item, times the multiplier
+        timeout = int((self.end - self.start) * self.timeout_multiplier_demucs)
+        # Open the subprocess. The additional arguments allow us to capture the output
+        p = subprocess.Popen(
+            cmd,
+        )
+        try:
+            # This will block execution until the above process has completed
+            out, err = p.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            p.kill()
+            raise TimeoutError(
+                f"... error when separating: process timed out after {timeout} seconds"
+            )
 
     @staticmethod
     def _get_output_duration(fpath: str) -> float:
@@ -329,7 +380,7 @@ class ItemMaker:
         # If we pass all the checks, then we can skip rebuilding the source-separated tracks
         if all(checks):
             self._logger_wrapper(
-                f"... skipping separation, item found locally in {os.path.abspath(self.separate_audio_loc)}"
+                f"... skipping separation, item found locally in {os.path.abspath(self.spleeter_audio_loc)}"
             )
         # Otherwise, we need to build the source-separated items
         else:
@@ -338,23 +389,26 @@ class ItemMaker:
                 raise FileNotFoundError(
                     f"Input file {self.in_file} not present, can't proceed to separation"
                 )
-            cmd = self._get_spleeter_cmd()
-            self._logger_wrapper(f"... separating audio with model {self.model}")
-            self._separate_audio(cmd)
+            if self.use_spleeter:
+                cmd = self._get_spleeter_cmd()
+                self._logger_wrapper(f"... separating audio with Spleeter model {self.model}")
+                self._separate_audio_in_spleeter(cmd)
+            if self.use_demucs:
+                cmd = self._get_demucs_cmd()
+                self._logger_wrapper(f"... separating audio with Demucs (this may take a while)")
+                self._separate_audio_in_demucs(cmd)
             self._cleanup_post_separation()
 
-    def finalize_output(self) -> None:
+    def finalize_output(self, include_log: bool = False) -> None:
         """
         Finalizes the output by appending the output information to our item dictionary, ready for saving as a JSON
         """
 
-        self.item["output"] = {}
         self.item['fname'] = self.fname
-        self.item["log"] = self.logging_messages
-        for name, fpath in zip(
-            [*sorted(self.instrs), "mix"], [*sorted(self.out_files), self.in_file]
-        ):
-            self.item["output"][name] = os.path.abspath(fpath)
+        if include_log:
+            self.item["log"] = self.logging_messages
+        else:
+            self.item['log'] = []
         self._logger_wrapper("... finished processing item")
 
 
@@ -403,8 +457,8 @@ def main(
     # Dump our finalized output to a new json and save in the output directory
     autils.save_json(
         obj=js,
-        fpath=output_filepath + '\processed',
-        fname='processing_results'
+        fpath=input_filepath,
+        fname='corpus'
     )
     logger.info(
         f"dataset made in {round(time() - start)} secs !"

@@ -25,35 +25,10 @@
     "timestamps": {
       "start": "01:12",
       "end": "02:48"
-    }
-  },
-  {
-    "track_name": "Peri's Scope",
-    "album_name": "Portrait in Jazz",
-    "recording_year": "1959",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Scott LeFaro",
-      "drummer": "Paul Motian",
-      "leader": "pianist"
     },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=K5ksQ5s8qSo"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "00:31",
-      "end": "02:37"
-    }
+    "id": "a2fe3d43cfadbeb2845aad8834b99e76",
+    "fname": "evansb-portraitinjazz-1959-whatisthisthingcalledlove-na",
+    "log": []
   },
   {
     "track_name": "Israel",
@@ -81,35 +56,10 @@
     "timestamps": {
       "start": "01:48",
       "end": "03:04"
-    }
-  },
-  {
-    "track_name": "Beautiful Love",
-    "album_name": "Explorations",
-    "recording_year": "1961",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Scott LeFaro",
-      "drummer": "Paul Motian",
-      "leader": "pianist"
     },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=7cdVTEe5Tyw"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "02:07",
-      "end": "02:46"
-    }
+    "id": "abd2e5cedc4916b4de22ab1cfdfa3983",
+    "fname": "evansb-explorations-1961-israel-na",
+    "log": []
   },
   {
     "track_name": "Sweet and Lovely",
@@ -137,36 +87,10 @@
     "timestamps": {
       "start": "02:53",
       "end": "03:47"
-    }
-  },
-  {
-    "track_name": "Gloria's Step",
-    "track_take": 1,
-    "album_name": "The Complete Village Vanguard Recordings, 1961",
-    "recording_year": "1961",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Scott LeFaro",
-      "drummer": "Paul Motian",
-      "leader": "pianist"
     },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=tOtTTFm-G4M"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "01:52",
-      "end": "02:22"
-    }
+    "id": "510bce5d5b4093332034a73bb6ebcc3c",
+    "fname": "evansb-explorations-1961-sweetandlovely-na",
+    "log": []
   },
   {
     "track_name": "All Of You",
@@ -195,64 +119,10 @@
     "timestamps": {
       "start": "02:02",
       "end": "03:56"
-    }
-  },
-  {
-    "track_name": "My Romance",
-    "track_take": 1,
-    "album_name": "The Complete Village Vanguard Recordings, 1961",
-    "recording_year": "1961",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Scott LeFaro",
-      "drummer": "Paul Motian",
-      "leader": "pianist"
     },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=AucseFVzJAo"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "03:11",
-      "end": "03:57"
-    }
-  },
-  {
-    "track_name": "Solar",
-    "album_name": "The Complete Village Vanguard Recordings, 1961",
-    "recording_year": "1961",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Scott LeFaro",
-      "drummer": "Paul Motian",
-      "leader": "pianist"
-    },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=bgov6R3rs1Y"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "01:00",
-      "end": "02:45"
-    }
+    "id": "049160572ac4027e8057b93e624d9e5e",
+    "fname": "evansb-thecompletevillagevanguardrecordings-1961-allofyou-1",
+    "log": []
   },
   {
     "track_name": "My Romance",
@@ -281,35 +151,10 @@
     "timestamps": {
       "start": "01:49",
       "end": "03:30"
-    }
-  },
-  {
-    "track_name": "Milestones",
-    "album_name": "The Complete Village Vanguard Recordings, 1961",
-    "recording_year": "1961",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Scott LeFaro",
-      "drummer": "Paul Motian",
-      "leader": "pianist"
     },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=rBwqS_IUn4g"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "01:06",
-      "end": "03:04"
-    }
+    "id": "af1617da75aedc7bd9f6276e6bb2eb63",
+    "fname": "evansb-thecompletevillagevanguardrecordings-1961-myromance-2",
+    "log": []
   },
   {
     "track_name": "Gloria's Step",
@@ -338,7 +183,10 @@
     "timestamps": {
       "start": "02:33",
       "end": "03:03"
-    }
+    },
+    "id": "7b25940708064ec48648d58dc28195f3",
+    "fname": "evansb-thecompletevillagevanguardrecordings-1961-gloriasstep-3",
+    "log": []
   },
   {
     "track_name": "All Of You",
@@ -367,7 +215,10 @@
     "timestamps": {
       "start": "02:09",
       "end": "03:25"
-    }
+    },
+    "id": "d4a38e2209a8ce1aa19773632f47fecf",
+    "fname": "evansb-thecompletevillagevanguardrecordings-1961-allofyou-3",
+    "log": []
   },
   {
     "track_name": "Nardis",
@@ -395,7 +246,10 @@
     "timestamps": {
       "start": "05:23",
       "end": "06:20"
-    }
+    },
+    "id": "11728265ed604d8a9368ebfd4c1ef8c3",
+    "fname": "evansb-youregonnahearfromme-1969-nardis-na",
+    "log": []
   },
   {
     "track_name": "Emily",
@@ -423,7 +277,10 @@
     "timestamps": {
       "start": "02:17",
       "end": "02:50"
-    }
+    },
+    "id": "db07e0e3f563ca635acc0077af2c4eed",
+    "fname": "evansb-youregonnahearfromme-1969-emily-na",
+    "log": []
   },
   {
     "track_name": "Our Love Is Here To Stay",
@@ -451,7 +308,10 @@
     "timestamps": {
       "start": "02:27",
       "end": "02:58"
-    }
+    },
+    "id": "9f4b8081972103ad08464e509c71e70a",
+    "fname": "evansb-youregonnahearfromme-1969-ourloveisheretostay-na",
+    "log": []
   },
   {
     "track_name": "Someday My Prince Will Come",
@@ -479,35 +339,10 @@
     "timestamps": {
       "start": "01:07",
       "end": "01:59"
-    }
-  },
-  {
-    "track_name": "Waltz for Debby",
-    "album_name": "The Bill Evans Album",
-    "recording_year": "1971",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Eddie Gomez",
-      "drummer": "Marty Morell",
-      "leader": "pianist"
     },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=0eJ-aS8eUVU"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "05:55",
-      "end": "06:43"
-    }
+    "id": "3621b5e4c1bcd94dfb65402be0665d8d",
+    "fname": "evansb-youregonnahearfromme-1969-somedaymyprincewillcome-na",
+    "log": []
   },
   {
     "track_name": "T.T.T. (Twelve Tone Tune)",
@@ -535,119 +370,10 @@
     "timestamps": {
       "start": "01:50",
       "end": "02:34"
-    }
-  },
-  {
-    "track_name": "Midnight Mood",
-    "album_name": "Since We Met",
-    "recording_year": "1974",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Eddie Gomez",
-      "drummer": "Marty Morell",
-      "leader": "pianist"
     },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=xxu6KVJnICc"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "02:26",
-      "end": "03:20"
-    }
-  },
-  {
-    "track_name": "See-saw",
-    "album_name": "Since We Met",
-    "recording_year": "1974",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Eddie Gomez",
-      "drummer": "Marty Morell",
-      "leader": "pianist"
-    },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=BFLctAkxbKY"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "02:34",
-      "end": "04:10"
-    }
-  },
-  {
-    "track_name": "Time Remembered",
-    "album_name": "Since We Met",
-    "recording_year": "1974",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Eddie Gomez",
-      "drummer": "Marty Morell",
-      "leader": "pianist"
-    },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=KGFQEaGYLXk"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "02:12",
-      "end": "02:50"
-    }
-  },
-  {
-    "track_name": "Turn Out The Stars",
-    "album_name": "Since We Met",
-    "recording_year": "1974",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Eddie Gomez",
-      "drummer": "Marty Morell",
-      "leader": "pianist"
-    },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=CoO0DzVQM6Q"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "02:13",
-      "end": "03:12"
-    }
+    "id": "4f382eda928629e17c2547c52e81e247",
+    "fname": "evansb-thebillevansalbum-1971-ttttwelvetonetune-na",
+    "log": []
   },
   {
     "track_name": "T.T.T.T. (Twelve Tone Tune Two)",
@@ -675,7 +401,10 @@
     "timestamps": {
       "start": "01:00",
       "end": "02:20"
-    }
+    },
+    "id": "ff7d58b52a1182b9fdc42bb7ec8cad1e",
+    "fname": "evansb-thetokyoconcert-1973-tttttwelvetonetunetwo-na",
+    "log": []
   },
   {
     "track_name": "Gloria's Step",
@@ -703,7 +432,10 @@
     "timestamps": {
       "start": "00:50",
       "end": "02:30"
-    }
+    },
+    "id": "7bd64268ca6d3b9013d574d94e71e2f8",
+    "fname": "evansb-thetokyoconcert-1973-gloriasstep-na",
+    "log": []
   },
   {
     "track_name": "Green Dolphin Street",
@@ -731,7 +463,10 @@
     "timestamps": {
       "start": "00:55",
       "end": "02:50"
-    }
+    },
+    "id": "2a7a9588f7c6efbe3e4d93e1e76df093",
+    "fname": "evansb-thetokyoconcert-1973-greendolphinstreet-na",
+    "log": []
   },
   {
     "track_name": "Beautiful Love",
@@ -759,35 +494,10 @@
     "timestamps": {
       "start": "01:57",
       "end": "03:18"
-    }
-  },
-  {
-    "track_name": "34 Skidoo",
-    "album_name": "The Paris Concert: Edition Two",
-    "recording_year": "1979",
-    "musicians": {
-      "pianist": "Bill Evans",
-      "bassist": "Marc Johnson",
-      "drummer": "Joe LeBarbera",
-      "leader": "pianist"
     },
-    "links": {
-      "external": [
-        "https://www.youtube.com/watch?v=_-Miqo4BeiQ"
-      ]
-    },
-    "photos": {
-      "musicians": {
-        "pianist": null,
-        "bassist": null,
-        "drummer": null
-      },
-      "album_artwork": null
-    },
-    "timestamps": {
-      "start": "02:00",
-      "end": "03:37"
-    }
+    "id": "b827438dd95e1d9d4759c86ead168a55",
+    "fname": "evansb-theparisconcerteditionone-1979-beautifullove-na",
+    "log": []
   },
   {
     "track_name": "Bill's Hit Tune",
@@ -816,7 +526,10 @@
     "timestamps": {
       "start": "04:37",
       "end": "06:14"
-    }
+    },
+    "id": "4790ddb0177ede747162f484a6b7736e",
+    "fname": "evansb-turnoutthestarsthe-1980-billshittune-1",
+    "log": []
   },
   {
     "track_name": "Like Someone in Love",
@@ -845,7 +558,10 @@
     "timestamps": {
       "start": "02:20",
       "end": "04:20"
-    }
+    },
+    "id": "826532e42c414f59b061ec956ee39fa8",
+    "fname": "evansb-turnoutthestarsthe-1980-likesomeoneinlove-1",
+    "log": []
   },
   {
     "track_name": "Days of Wine and Roses",
@@ -874,7 +590,10 @@
     "timestamps": {
       "start": "02:12",
       "end": "04:02"
-    }
+    },
+    "id": "1994c9a5c1ba9e481f837d573abf03b5",
+    "fname": "evansb-turnoutthestarsthe-1980-daysofwineandroses-1",
+    "log": []
   },
   {
     "track_name": "Yet Ne'er Broken",
@@ -903,7 +622,10 @@
     "timestamps": {
       "start": "01:30",
       "end": "02:52"
-    }
+    },
+    "id": "030b8a135d6557df5ad63202d88bdc79",
+    "fname": "evansb-turnoutthestarsthe-1980-yetneerbroken-1",
+    "log": []
   },
   {
     "track_name": "But Not for Me",
@@ -932,7 +654,10 @@
     "timestamps": {
       "start": "02:15",
       "end": "04:00"
-    }
+    },
+    "id": "ff08f39d378b0c77830a52161f206969",
+    "fname": "evansb-turnoutthestarsthe-1980-butnotforme-1",
+    "log": []
   },
   {
     "track_name": "Autumn Leaves",
@@ -961,7 +686,10 @@
     "timestamps": {
       "start": "02:55",
       "end": "03:40"
-    }
+    },
+    "id": "b251e4b9f8ced227fe81eddd788a7633",
+    "fname": "evansb-turnoutthestarsthe-1980-autumnleaves-1",
+    "log": []
   },
   {
     "track_name": "Theme from M*A*S*H",
@@ -989,7 +717,10 @@
     "timestamps": {
       "start": "01:45",
       "end": "02:53"
-    }
+    },
+    "id": "1d7e445590f741c27ebf49f140f1d7c4",
+    "fname": "evansb-turnoutthestarsthe-1980-themefrommash-na",
+    "log": []
   },
   {
     "track_name": "Turn Out the Stars",
@@ -1018,7 +749,10 @@
     "timestamps": {
       "start": "02:00",
       "end": "04:00"
-    }
+    },
+    "id": "088f4ba325405628d6ca3d6e18d4e2e4",
+    "fname": "evansb-turnoutthestarsthe-1980-turnoutthestars-1",
+    "log": []
   },
   {
     "track_name": "Midnight Mood",
@@ -1046,7 +780,10 @@
     "timestamps": {
       "start": "02:10",
       "end": "03:00"
-    }
+    },
+    "id": "c85783a1c7b0f45b0c4fc291d4061ef7",
+    "fname": "evansb-turnoutthestarsthe-1980-midnightmood-na",
+    "log": []
   },
   {
     "track_name": "Days of Wine and Roses",
@@ -1075,7 +812,10 @@
     "timestamps": {
       "start": "02:14",
       "end": "03:58"
-    }
+    },
+    "id": "4c9c0cbf425fac528db9b8392c1ccc52",
+    "fname": "evansb-turnoutthestarsthe-1980-daysofwineandroses-2",
+    "log": []
   },
   {
     "track_name": "Up With the Lark",
@@ -1103,7 +843,10 @@
     "timestamps": {
       "start": "02:00",
       "end": "02:40"
-    }
+    },
+    "id": "e2a090ba1059faa2e0d0ed60bea1c263",
+    "fname": "evansb-turnoutthestarsthe-1980-upwiththelark-na",
+    "log": []
   },
   {
     "track_name": "Yet Ne'er Broken",
@@ -1132,7 +875,10 @@
     "timestamps": {
       "start": "02:20",
       "end": "03:00"
-    }
+    },
+    "id": "2aff0b922b0677562e488a3ef12cf105",
+    "fname": "evansb-turnoutthestarsthe-1980-yetneerbroken-2",
+    "log": []
   },
   {
     "track_name": "Bill's Hit Tune",
@@ -1161,7 +907,10 @@
     "timestamps": {
       "start": "03:28",
       "end": "05:40"
-    }
+    },
+    "id": "c87fe5c28a5627acbeb72c8f8233e104",
+    "fname": "evansb-turnoutthestarsthe-1980-billshittune-2",
+    "log": []
   },
   {
     "track_name": "In Your Own Sweet Way",
@@ -1189,6 +938,9 @@
     "timestamps": {
       "start": "01:00",
       "end": "03:20"
-    }
+    },
+    "id": "15d82172b5ebf1817ce59ea63f01ebc1",
+    "fname": "evansb-turnoutthestarsthe-1980-inyourownsweetway-na",
+    "log": []
   }
 ]
