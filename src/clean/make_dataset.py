@@ -11,6 +11,7 @@ import secrets
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
+from math import isclose
 from shutil import rmtree
 from time import time
 
@@ -41,7 +42,13 @@ class ItemMaker:
         "extract_audio": True,
         "overwrites": True,
         "logger": autils.YtDlpFakeLogger,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'wav',
+        }],
     }
+    # Tolerance for matching given timestamps with downloaded file
+    abs_tol = 0.05
     # Source-separation models to use
     use_spleeter: bool = True
     use_demucs: bool = True
@@ -65,14 +72,14 @@ class ItemMaker:
         # The complete filepath for this item
         self.in_file = rf"{self.raw_audio_loc}\{self.fname}.{autils.FILE_FMT}"
         # Paths to all the source-separated audio files that we'll create (or load)
-        self.out_files = [
+        self.out_spleeter = [
             rf"{self.spleeter_audio_loc}\{self.fname}_{i}.{autils.FILE_FMT}"
             for i in self.instrs
         ]
-        self.out_files.extend([
+        self.out_demucs = [
             rf"{self.demucs_audio_loc}\{self.fname}_{i}.{autils.FILE_FMT}"
             for i in self.instrs if i != 'piano'
-        ])
+        ]
         # Logger object and empty list to hold messages (for saving)
         self.logger = kwargs.get("logger", None)
         self.logging_messages = []
@@ -186,12 +193,12 @@ class ItemMaker:
             # Are we forcing the corpus to rebuild?
             not self.force_download,
             # Have we changed the timestamps for this item since the last time we built it?
-            float(self.end - self.start) == float(self._get_output_duration(self.in_file)),
+            isclose(float(self.end - self.start), float(self._get_output_duration(self.in_file)), abs_tol=self.abs_tol),
         ]
         # If we pass all checks, then go ahead and get the item locally (skip downloading it)
         if all(checks):
             self._logger_wrapper(
-                f"... skipping download, item found locally as {os.path.abspath(self.in_file)}"
+                f"... skipping download, item present locally"
             )
         # Otherwise, rebuild the item
         else:
@@ -235,6 +242,12 @@ class ItemMaker:
                 continue
             # If we've downloaded successfully, break out of the loop
             else:
+                # Silently try and rename the file, if we've accidentally appended the file format twice
+                # This is a bug in yt_dlp, I think
+                try:
+                    os.rename(self.in_file + f'.{autils.FILE_FMT}', self.in_file)
+                except FileNotFoundError:
+                    pass
                 self._logger_wrapper(f"... downloaded successfully from {link}")
                 break
         # If, after iterating through all our links, we still haven't been able to save the file, then raise an error
@@ -276,9 +289,9 @@ class ItemMaker:
             else:
                 self._logger_wrapper(f"... item separated successfully")
 
-    def _cleanup_post_separation(self, exts: list = None) -> None:
+    def _cleanup_post_spleeter(self, exts: list = None) -> None:
         """
-        Cleans up after source-separation by removing unnecessary files -- defaults to the vocal and other stems
+        Cleans up after spleeter by removing unnecessary files -- defaults to the vocal and other stems
         """
 
         if exts is None:
@@ -286,6 +299,11 @@ class ItemMaker:
         for file in os.listdir(self.spleeter_audio_loc):
             if self.fname in file and not any(f"_{i}" for i in exts if i in file):
                 os.remove(os.path.abspath(rf"{self.spleeter_audio_loc}\{file}"))
+
+    def _cleanup_post_demucs(self) -> None:
+        """
+        Cleans up after demucs by removing unnecessary files and moving file location
+        """
 
         demucs_fpath = rf"{self.demucs_audio_loc}\htdemucs\{self.fname}"
         for file in os.listdir(demucs_fpath):
@@ -342,6 +360,8 @@ class ItemMaker:
             raise TimeoutError(
                 f"... error when separating: process timed out after {timeout} seconds"
             )
+        else:
+            self._logger_wrapper(f"... item separated successfully")
 
     @staticmethod
     def _get_output_duration(fpath: str) -> float:
@@ -359,28 +379,48 @@ class ItemMaker:
         """
         Tries to find source-separated audio files locally, and builds them if not present/invalid
         """
+        def get_checks(out_files):
+            return [
+                # Are all the source separated items present locally?
+                all(
+                    self._check_item_present_locally(fname) for fname in out_files
+                ),
+                # Do all the source-separated items have approximately the same duration as the original file?
+                all(
+                    [
+                        isclose(
+                            self._get_output_duration(out),
+                            self._get_output_duration(self.in_file),
+                            abs_tol=self.abs_tol
+                        )
+                        for out in out_files
+                     ]
+                ),
+                # Have we changed the timestamps for this item since the last time we built it?
+                all(
+                    isclose((self.end - self.start), (self._get_output_duration(out)), abs_tol=self.abs_tol)
+                    for out in out_files
+                ),
+                # Is the duration of the raw input file *identical* to the duration of our source-separated files?
+                all(
+                    self._get_output_duration(self.in_file) == self._get_output_duration(out) for out in out_files
+                )
+            ]
 
         # Define our list of checks for whether we need to conduct source separation again
         checks = [
-            # Are all the source separated items present locally?
-            all(
-                self._check_item_present_locally(fname) for fname in self.out_files
-            ),
-            # Do all the source-separated items have the same duration as the original file?
-            all(
-                [len(set(self._get_output_duration(fp) for fp in [self.in_file, out])) == 1 for out in self.out_files]
-            ),
-            # Have we changed the timestamps for this item since the last time we built it?
-            all(
-                float(self.end - self.start) == float(self._get_output_duration(out)) for out in self.out_files
-            ),
             # Are we forcing the corpus to rebuild itself?
             not self.force_separation,
         ]
+        # TODO: find some way to skip separating with one model if we meet the criteria
+        if self.use_spleeter:
+            checks.extend(get_checks(self.out_spleeter))
+        if self.use_demucs:
+            checks.extend(get_checks(self.out_demucs))
         # If we pass all the checks, then we can skip rebuilding the source-separated tracks
         if all(checks):
             self._logger_wrapper(
-                f"... skipping separation, item found locally in {os.path.abspath(self.spleeter_audio_loc)}"
+                f"... skipping separation, item present locally"
             )
         # Otherwise, we need to build the source-separated items
         else:
@@ -393,11 +433,12 @@ class ItemMaker:
                 cmd = self._get_spleeter_cmd()
                 self._logger_wrapper(f"... separating audio with Spleeter model {self.model}")
                 self._separate_audio_in_spleeter(cmd)
+                self._cleanup_post_spleeter()
             if self.use_demucs:
                 cmd = self._get_demucs_cmd()
                 self._logger_wrapper(f"... separating audio with Demucs (this may take a while)")
                 self._separate_audio_in_demucs(cmd)
-            self._cleanup_post_separation()
+                self._cleanup_post_demucs()
 
     def finalize_output(self, include_log: bool = False) -> None:
         """
@@ -432,7 +473,7 @@ def main(
     start = time()
     # Initialise the logger
     logger = logging.getLogger(__name__)
-    logger.info("making final clean set from raw clean...")
+    logger.info(f"downloading audio from corpus.json in {os.path.abspath(input_filepath)} ...")
     # Create an empty list for storing the json results
     js = []
     # Open the corpus json file

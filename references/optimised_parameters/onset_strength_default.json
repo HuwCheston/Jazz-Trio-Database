@@ -8,8 +8,8 @@
   "bass": {
     "fmin": 30,
     "fmax": 500,
-    "center": false,
-    "max_size": 167
+    "center": true,
+    "max_size": 11
   },
   "drums": {
     "fmin": 3500,

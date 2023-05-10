@@ -264,6 +264,9 @@ def optimise_parameters(
                         made,    # The maker class for this track in the corpus
                         ins,    # The instrument name we're optimising
                     )
+                    # Remove onsets in silent passages
+                    if ins in made.top_db.keys():
+                        ons = [made.remove_onsets_in_silent_passages(o, instr=ins) for o in ons]
                     # Calculate the F-score for each of our parameters and append to the list
                     li = list(made.compare_onset_detection_accuracy(
                         fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
@@ -303,7 +306,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.info(f"optimising parameters using manual annotations obtained for {len(annotated_tracks)} tracks ...")
 
-    corpus_json = autils.load_json(r'..\..\data\processed', 'processing_results')
+    corpus_json = autils.load_json(r'..\..\references', 'corpus')
 
     # Optimise the made.beat_track_full_mix function
     optimise_parameters(

@@ -31,6 +31,37 @@
     "log": []
   },
   {
+    "track_name": "Peri's Scope",
+    "album_name": "Portrait in Jazz",
+    "recording_year": "1959",
+    "musicians": {
+      "pianist": "Bill Evans",
+      "bassist": "Scott LeFaro",
+      "drummer": "Paul Motian",
+      "leader": "pianist"
+    },
+    "links": {
+      "external": [
+        "https://www.youtube.com/watch?v=K5ksQ5s8qSo"
+      ]
+    },
+    "photos": {
+      "musicians": {
+        "pianist": null,
+        "bassist": null,
+        "drummer": null
+      },
+      "album_artwork": null
+    },
+    "timestamps": {
+      "start": "00:31",
+      "end": "02:37"
+    },
+    "id": "8c7b11db9c579f1b365d61d6d10dd51a",
+    "fname": "evansb-portraitinjazz-1959-perisscope-na",
+    "log": []
+  },
+  {
     "track_name": "Israel",
     "album_name": "Explorations",
     "recording_year": "1961",
@@ -62,6 +93,37 @@
     "log": []
   },
   {
+    "track_name": "Beautiful Love",
+    "album_name": "Explorations",
+    "recording_year": "1961",
+    "musicians": {
+      "pianist": "Bill Evans",
+      "bassist": "Scott LeFaro",
+      "drummer": "Paul Motian",
+      "leader": "pianist"
+    },
+    "links": {
+      "external": [
+        "https://www.youtube.com/watch?v=7cdVTEe5Tyw"
+      ]
+    },
+    "photos": {
+      "musicians": {
+        "pianist": null,
+        "bassist": null,
+        "drummer": null
+      },
+      "album_artwork": null
+    },
+    "timestamps": {
+      "start": "02:07",
+      "end": "02:46"
+    },
+    "id": "88c87c5374008abeee60fab7af695d8c",
+    "fname": "evansb-explorations-1961-beautifullove-na",
+    "log": []
+  },
+  {
     "track_name": "Sweet and Lovely",
     "album_name": "Explorations",
     "recording_year": "1961",
@@ -90,6 +152,38 @@
     },
     "id": "510bce5d5b4093332034a73bb6ebcc3c",
     "fname": "evansb-explorations-1961-sweetandlovely-na",
+    "log": []
+  },
+  {
+    "track_name": "Gloria's Step",
+    "track_take": 1,
+    "album_name": "The Complete Village Vanguard Recordings, 1961",
+    "recording_year": "1961",
+    "musicians": {
+      "pianist": "Bill Evans",
+      "bassist": "Scott LeFaro",
+      "drummer": "Paul Motian",
+      "leader": "pianist"
+    },
+    "links": {
+      "external": [
+        "https://www.youtube.com/watch?v=tOtTTFm-G4M"
+      ]
+    },
+    "photos": {
+      "musicians": {
+        "pianist": null,
+        "bassist": null,
+        "drummer": null
+      },
+      "album_artwork": null
+    },
+    "timestamps": {
+      "start": "01:52",
+      "end": "02:22"
+    },
+    "id": "66357cd81ab66eb25d0adfa9b6327c76",
+    "fname": "evansb-thecompletevillagevanguardrecordings-1961-gloriasstep-1",
     "log": []
   },
   {
@@ -126,6 +220,69 @@
   },
   {
     "track_name": "My Romance",
+    "track_take": 1,
+    "album_name": "The Complete Village Vanguard Recordings, 1961",
+    "recording_year": "1961",
+    "musicians": {
+      "pianist": "Bill Evans",
+      "bassist": "Scott LeFaro",
+      "drummer": "Paul Motian",
+      "leader": "pianist"
+    },
+    "links": {
+      "external": [
+        "https://www.youtube.com/watch?v=AucseFVzJAo"
+      ]
+    },
+    "photos": {
+      "musicians": {
+        "pianist": null,
+        "bassist": null,
+        "drummer": null
+      },
+      "album_artwork": null
+    },
+    "timestamps": {
+      "start": "03:11",
+      "end": "03:57"
+    },
+    "id": "4909b9158a94fa130e8b30bb1147f412",
+    "fname": "evansb-thecompletevillagevanguardrecordings-1961-myromance-1",
+    "log": []
+  },
+  {
+    "track_name": "Solar",
+    "album_name": "The Complete Village Vanguard Recordings, 1961",
+    "recording_year": "1961",
+    "musicians": {
+      "pianist": "Bill Evans",
+      "bassist": "Scott LeFaro",
+      "drummer": "Paul Motian",
+      "leader": "pianist"
+    },
+    "links": {
+      "external": [
+        "https://www.youtube.com/watch?v=bgov6R3rs1Y"
+      ]
+    },
+    "photos": {
+      "musicians": {
+        "pianist": null,
+        "bassist": null,
+        "drummer": null
+      },
+      "album_artwork": null
+    },
+    "timestamps": {
+      "start": "01:00",
+      "end": "02:45"
+    },
+    "id": "fe6e7478aa34a47eb475e24c94fe8a10",
+    "fname": "evansb-thecompletevillagevanguardrecordings-1961-solar-na",
+    "log": []
+  },
+  {
+    "track_name": "My Romance",
     "track_take": 2,
     "album_name": "The Complete Village Vanguard Recordings, 1961",
     "recording_year": "1961",
@@ -154,6 +311,37 @@
     },
     "id": "af1617da75aedc7bd9f6276e6bb2eb63",
     "fname": "evansb-thecompletevillagevanguardrecordings-1961-myromance-2",
+    "log": []
+  },
+  {
+    "track_name": "Milestones",
+    "album_name": "The Complete Village Vanguard Recordings, 1961",
+    "recording_year": "1961",
+    "musicians": {
+      "pianist": "Bill Evans",
+      "bassist": "Scott LeFaro",
+      "drummer": "Paul Motian",
+      "leader": "pianist"
+    },
+    "links": {
+      "external": [
+        "https://www.youtube.com/watch?v=rBwqS_IUn4g"
+      ]
+    },
+    "photos": {
+      "musicians": {
+        "pianist": null,
+        "bassist": null,
+        "drummer": null
+      },
+      "album_artwork": null
+    },
+    "timestamps": {
+      "start": "01:06",
+      "end": "03:04"
+    },
+    "id": "de43842f1bb3a41be266dd6d37cd1c62",
+    "fname": "evansb-thecompletevillagevanguardrecordings-1961-milestones-na",
     "log": []
   },
   {
@@ -345,6 +533,37 @@
     "log": []
   },
   {
+    "track_name": "Waltz for Debby",
+    "album_name": "The Bill Evans Album",
+    "recording_year": "1971",
+    "musicians": {
+      "pianist": "Bill Evans",
+      "bassist": "Eddie Gomez",
+      "drummer": "Marty Morell",
+      "leader": "pianist"
+    },
+    "links": {
+      "external": [
+        "https://www.youtube.com/watch?v=0eJ-aS8eUVU"
+      ]
+    },
+    "photos": {
+      "musicians": {
+        "pianist": null,
+        "bassist": null,
+        "drummer": null
+      },
+      "album_artwork": null
+    },
+    "timestamps": {
+      "start": "05:55",
+      "end": "06:43"
+    },
+    "id": "f1717fe13048af4eef7158541301afd9",
+    "fname": "evansb-thebillevansalbum-1971-waltzfordebby-na",
+    "log": []
+  },
+  {
     "track_name": "T.T.T. (Twelve Tone Tune)",
     "album_name": "The Bill Evans Album",
     "recording_year": "1971",
@@ -497,6 +716,37 @@
     },
     "id": "b827438dd95e1d9d4759c86ead168a55",
     "fname": "evansb-theparisconcerteditionone-1979-beautifullove-na",
+    "log": []
+  },
+  {
+    "track_name": "34 Skidoo",
+    "album_name": "The Paris Concert: Edition Two",
+    "recording_year": "1979",
+    "musicians": {
+      "pianist": "Bill Evans",
+      "bassist": "Marc Johnson",
+      "drummer": "Joe LeBarbera",
+      "leader": "pianist"
+    },
+    "links": {
+      "external": [
+        "https://www.youtube.com/watch?v=_-Miqo4BeiQ"
+      ]
+    },
+    "photos": {
+      "musicians": {
+        "pianist": null,
+        "bassist": null,
+        "drummer": null
+      },
+      "album_artwork": null
+    },
+    "timestamps": {
+      "start": "02:00",
+      "end": "03:37"
+    },
+    "id": "b2df0f7ac21ccc93fca59c80e3e2bd04",
+    "fname": "evansb-theparisconcerteditiontwo-1979-34skidoo-na",
     "log": []
   },
   {
