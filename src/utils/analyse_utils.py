@@ -8,9 +8,17 @@ import tensorflow as tf
 from basic_pitch import ICASSP_2022_MODEL_PATH
 
 # Define constants used across many files
-SAMPLE_RATE = 44100
+# TODO: test higher sample rates
+SAMPLE_RATE = 88200
 FILE_FMT = 'wav'
 BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
+
+# Mapping to turn instrument name into instrument performer, e.g. piano to pianist
+INSTRS_TO_PERF = {
+    'piano': 'pianist',
+    'bass': 'bassist',
+    'drums': 'drummer'
+}
 
 
 class HidePrints:

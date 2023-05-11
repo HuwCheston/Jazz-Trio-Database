@@ -1,7 +1,9 @@
 Modelling interaction in the jazz rhythm section using source-seperated audio recordings
 ==============================
 
-This project introduces a pipeline for modelling interaction and rhythmic adaptation in commercial jazz recordings using a process of source separation, automatic onset detection, and linear phase correction modelling. Whereas previously researchers have been restricted to multi-tracked recordings they have made themselves in experiments, this pipeline is designed to enable the modelling of ensemble interaction in commercial audio recordings.
+This project introduces a pipeline for modelling interaction and rhythmic adaptation in commercial jazz recordings using a process of source separation, automatic onset detection, and linear phase correction modelling. Whereas previously researchers have been restricted to multi-tracked recordings they have made themselves in experiments, this pipeline is designed to facilitate the modelling of ensemble interaction in commercial audio recordings.
+
+## NB. this project is currently under construction and *isn't usable in its current state*.
 
 Project Organization
 ------------

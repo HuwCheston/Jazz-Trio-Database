@@ -3,19 +3,19 @@
     "fmin": 110,
     "fmax": 4100,
     "center": true,
-    "max_size": 1
+    "max_size": 3
   },
   "bass": {
     "fmin": 30,
     "fmax": 500,
     "center": true,
-    "max_size": 11
+    "max_size": 25
   },
   "drums": {
     "fmin": 3500,
     "fmax": 11000,
     "center": true,
-    "max_size": 1
+    "max_size": 3
   },
   "mix": {
     "fmin": 10,

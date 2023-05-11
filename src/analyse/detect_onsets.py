@@ -27,10 +27,16 @@ from src.utils import analyse_utils as autils
 
 
 class OnsetMaker:
+    """Automatically detect crotchet beat positions for each instrument in a single item in the corpus.
+
+    Attributes:
+        TODO: fill these in
+    """
     # These values are hard-coded and used throughout: we probably shouldn't change them
+    # TODO: sort out the correct sample rate and hop length
     sample_rate = autils.SAMPLE_RATE
     hop_length = 512
-    detection_note_value = 1 / 16  # Count onsets a semiquaver away from a detected beat as marking the beat
+    detection_note_value = 1 / 24  # Count onsets a semiquaver away from a detected beat as marking the beat
     silence_threshold = 1 / 3  # Warn when more of a track is silent than this threshold
     # The threshold to use when matching onsets
     window = 0.05
@@ -82,7 +88,7 @@ class OnsetMaker:
         # Empty attribute to hold our matched onset dictionary
         self.summary_dict = {}
         # Empty attribute to hold our evaluation with a reference
-        self.onset_evaluation = None
+        self.onset_evaluation: list = []
         # Load our audio file in when we initialise the item: we won't be changing this much
         if self.item is not None:
             self.audio = self._load_audio(**kwargs)
@@ -148,7 +154,7 @@ class OnsetMaker:
             use_uniform: bool = False,
             use_nonoptimised_defaults: bool = False,
             **kwargs
-    ) -> np.ndarray:
+    ) -> np.array:
         """Tracks the position of crotchet beats in the full (i.e. non separated) mix of a track
 
         Wrapper function around `librosa.beat.plp` that allows for per-instrument defaults and multiple passes. A 'pass'
@@ -182,7 +188,7 @@ class OnsetMaker:
                 tempo_min_: int = 100,
                 tempo_max_: int = 300,
                 prior_: stats.rv_continuous = None,
-        ) -> np.ndarray:
+        ) -> np.array:
             """
             Wrapper function around librosa.beat.plp that takes in arguments from a current pass and converts the
             output to timestamps automatically.
@@ -319,12 +325,12 @@ class OnsetMaker:
     def onset_detect(
             self,
             instr: str,
-            aud: np.ndarray = None,
-            env: np.ndarray = None,
+            aud: np.array = None,
+            env: np.array = None,
             units: str = 'time',
             use_nonoptimised_defaults: bool = False,
             **kwargs
-    ) -> np.ndarray:
+    ) -> np.array:
         """Detects onsets in an audio signal.
 
         Wrapper around `librosa.onset.onset_detect` that enables per-instrument defaults to be used. Arguments passed as
@@ -395,7 +401,7 @@ class OnsetMaker:
             self,
             midi: PrettyMIDI,
             window: float = None,
-    ) -> np.ndarray:
+    ) -> np.array:
         """Cleans the output from `OnsetMaker.polyphonic_onset_detect`.
 
         Cleaning includes removing invalid notes, sorting, and removing onsets that occurred at approximately the same
@@ -441,7 +447,7 @@ class OnsetMaker:
             instr: str,
             use_nonoptimised_defaults: bool = False,
             **kwargs
-    ) -> np.ndarray:
+    ) -> np.array:
         """Detects onsets using an automatic polyphonic transcription algorithm.
 
         Wrapper around `basic_pitch.inference.predict` that enables per-instrument defaults to be used. This function
@@ -475,7 +481,7 @@ class OnsetMaker:
         # Clean the MIDI output and return
         return self._clean_polyphonic_midi_output(midi_data)
 
-    def _bandpass_filter(
+    def bandpass_filter(
             self,
             aud: np.array,
             lowcut: int,
@@ -513,6 +519,7 @@ class OnsetMaker:
             instr: str,
             onsets: list[np.array] = None,
             start_freq: int = 750,
+            tag: str = 'clicks',
             width: int = 100,
             **kwargs
     ) -> None:
@@ -526,8 +533,9 @@ class OnsetMaker:
         Arguments:
             instr (str): the name of the instrument to render audio from
             onsets (list[np.array]): a list of arrays, each containing detected onsets
-            start_freq (int): the starting frequency to render detected onsets to clicks
-            width (int): the width of the bandpass filter applied to detected clicks
+            start_freq (int, optional): the starting frequency to render detected onsets to clicks, defaults to 750 (Hz)
+            tag (str, optional): string placed at the end of the output filename, defaults to 'clicks'
+            width (int, optional): the width of the bandpass filter applied to detected clicks, defaults to 100 (Hz)
             **kwargs: additional keyword arguments passed to `librosa.clicks`
 
         """
@@ -541,9 +549,9 @@ class OnsetMaker:
         for num, times in enumerate(onsets, 1):
             # Render the onsets to clicks, apply the bandpass filter, and append to our list
             clicks.append(
-                self._bandpass_filter(
+                self.bandpass_filter(
                     aud=librosa.clicks(
-                        times=times,
+                        times=times[~np.isnan(times)],    # Remove any NaN values obtained from matching onsets & beats
                         sr=self.sample_rate,
                         hop_length=self.hop_length,
                         length=len(self.audio[instr].mean(axis=1)),
@@ -555,7 +563,7 @@ class OnsetMaker:
                 )
             )
         # Filter the audio signal to only include the frequencies used in detecting onsets
-        audio = self._bandpass_filter(
+        audio = self.bandpass_filter(
             aud=self.audio[instr].mean(axis=1),
             lowcut=self.onset_strength_params[instr]['fmin'],
             highcut=self.onset_strength_params[instr]['fmax'],
@@ -563,7 +571,7 @@ class OnsetMaker:
         # Sum the audio and click signals together
         process = audio + sum(clicks)
         # Create the audio file and save into the click tracks directory
-        with open(rf'{self.reports_dir}\click_tracks\{self.item["fname"]}_{instr}_clicks.{autils.FILE_FMT}', 'wb') as f:
+        with open(rf'{self.reports_dir}\click_tracks\{self.item["fname"]}_{instr}_{tag}.{autils.FILE_FMT}', 'wb') as f:
             sf.write(
                 f,
                 process,
@@ -639,7 +647,7 @@ class OnsetMaker:
             instr: str = None,
             use_hard_threshold: bool = False,
             threshold: float = None
-    ) -> np.ndarray:
+    ) -> np.array:
         """Matches event onsets with crotchet beat locations.
 
         For every beat in the iterable `beats`, find the closest proximate onset in the iterable `onsets`, within a
@@ -699,8 +707,8 @@ class OnsetMaker:
 
     def generate_matched_onsets_dictionary(
             self,
-            beats: np.ndarray,
-            onsets_list: list[np.ndarray] = None,
+            beats: np.array,
+            onsets_list: list[np.array] = None,
             instrs_list: list = None,
             **kwargs
     ) -> Generator:
@@ -730,8 +738,8 @@ class OnsetMaker:
             }
 
         Arguments:
-            beats (np.ndarray): iterable containing crotchet beat positions, typically tracked from the full mix
-            onsets_list (list[np.ndarray]): iterable containing arrays of onset positions
+            beats (np.array): iterable containing crotchet beat positions, typically tracked from the full mix
+            onsets_list (list[np.array]): iterable containing arrays of onset positions
             instrs_list (list[str]): iterable containing names of instruments
             **kwargs: arbitrary keyword arguments, passed to `OnsetMaker.match_onsets_and_beats`
 
@@ -859,7 +867,7 @@ class OnsetMaker:
             >>> )
             >>> ons_ = np.array([0.1, 0.6, 5.5, 12.5, 17.5])
             >>> print(om.remove_onsets_in_silent_passages(onsets=ons_, silent=non_silent))
-
+            array([0.1, 0.6, 12.5])
 
 
         Arguments:
@@ -898,9 +906,17 @@ class OnsetMaker:
 @click.option(
     "-o", "models_filepath", type=click.Path(exists=True), default="..\..\models"
 )
+@click.option(
+    "--click", "generate_click", is_flag=True, default=False, help='Generate a click track for detected onsets/beats'
+)
+@click.option(
+    "--annotated-only", "annotated_only", is_flag=True, default=True, help='Only get items with manual annotations'
+)
 def main(
         references_filepath: click.Path,
-        models_filepath: click.Path
+        models_filepath: click.Path,
+        generate_click: bool,
+        annotated_only: bool
 ) -> list[OnsetMaker]:
     """
 
@@ -911,12 +927,22 @@ def main(
     # Initialise the logger
     logger = logging.getLogger(__name__)
     corpus = autils.load_json(references_filepath, 'corpus')
+    # If we only want to analyse tracks which have corresponding manual annotation files present
+    if annotated_only:
+        annotated = autils.get_tracks_with_manual_annotations()
+        corpus = [item for item in corpus if item['fname'] in annotated]
     res = []
     logger.info(f"detecting onsets in {len(corpus)} tracks ...")
     # Iterate through each entry in the corpus
     for corpus_item in corpus:
         logger.info(f'... now working on item {corpus_item["id"]}, track name {corpus_item["track_name"]}')
         made = OnsetMaker(item=corpus_item)
+        # Generate the onset envelope for the full mix and track the beats within it
+        made.env['mix'] = made.onset_strength('mix', use_nonoptimised_defaults=False)
+        made.ons['mix'] = made.beat_track(passes=3, env=made.env['mix'], use_uniform=False)
+        # Generate the click track for the tracked beats
+        if generate_click:
+            made.generate_click_track(instr='mix', onsets=[made.ons['mix']])
         # Iterate through each instrument
         for ins in ['drums', 'piano', 'bass']:
             # Get the onset envelope for this instrument
@@ -926,24 +952,24 @@ def main(
             # Remove onsets when the audio was silent
             sil = made.get_nonsilent_sections(aud=made.audio[ins], top_db=made.top_db[ins])
             made.ons[ins] = made.remove_onsets_in_silent_passages(onsets=onse, silent=sil)
-            # Generate click track with matched onsets
-            made.generate_click_track(instr=ins, onsets=[made.ons[ins]])
             # If we have manually annotated onsets for this item, try and evaluate the accuracy of detected onsets
             try:
-                made.onset_evaluation = list(made.compare_onset_detection_accuracy(
+                # TODO: this should append a flat list instead, at the moment the output is really nested and gross
+                made.onset_evaluation.append(list(made.compare_onset_detection_accuracy(
                     fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
                     onsets=[made.ons[ins]],
                     onsets_name=['optimised_librosa'],
                     instr=ins,
-                ))
+                )))
             except FileNotFoundError:
-                made.onset_evaluation = None
-        # Generate the onset envelope for the full mix and track the beats within it
-        made.env['mix'] = made.onset_strength('mix', use_nonoptimised_defaults=False)
-        made.ons['mix'] = made.beat_track(passes=3, env=made.env['mix'], use_uniform=False)
-        # Generate the click track for the tracked beats
-        made.generate_click_track(instr='mix', onsets=[made.ons['mix']])
-        # Match the detected onsets together with the detected beats
+                pass
+            # Match the detected onsets with our detected crotchet beats
+            matched = made.match_onsets_and_beats(beats=made.ons['mix'], onsets=made.ons[ins])
+            # Output our click track of detected beats + matched onsets
+            if generate_click:
+                made.generate_click_track(instr=ins, onsets=[made.ons[ins]])
+                made.generate_click_track(instr=ins, onsets=[matched], tag='beats')
+        # Match the detected onsets together with the detected beats to generate our summary dictionary
         made.summary_dict = made.generate_matched_onsets_dictionary(
             beats=made.ons['mix'],
             onsets_list=[made.ons['piano'], made.ons['bass'], made.ons['drums']],

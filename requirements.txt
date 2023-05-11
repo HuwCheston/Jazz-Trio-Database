@@ -15,6 +15,8 @@ spleeter
 yt_dlp
 librosa
 soundfile
+soxr
+statsmodels
 numpy
 audioread
 dill
