@@ -36,7 +36,7 @@ class OnsetMaker:
     # TODO: sort out the correct sample rate and hop length
     sample_rate = autils.SAMPLE_RATE
     hop_length = 512
-    detection_note_value = 1 / 24  # Count onsets a semiquaver away from a detected beat as marking the beat
+    detection_note_value = 1 / 16  # Count onsets a semiquaver away from a detected beat as marking the beat
     silence_threshold = 1 / 3  # Warn when more of a track is silent than this threshold
     # The threshold to use when matching onsets
     window = 0.05
@@ -172,7 +172,7 @@ class OnsetMaker:
 
     def beat_track(
             self,
-            passes: int = 3,
+            passes: int = autils.N_PLP_PASSES,
             env: np.array = None,
             tempo_min: int = 100,
             tempo_max: int = 300,
@@ -932,7 +932,7 @@ class OnsetMaker:
     "-o", "models_filepath", type=click.Path(exists=True), default="..\..\models"
 )
 @click.option(
-    "--click", "generate_click", is_flag=True, default=False, help='Generate a click track for detected onsets/beats'
+    "--click", "generate_click", is_flag=True, default=True, help='Generate a click track for detected onsets/beats'
 )
 @click.option(
     "--annotated-only", "annotated_only", is_flag=True, default=False, help='Only get items with manual annotations'
@@ -964,7 +964,17 @@ def main(
         made = OnsetMaker(item=corpus_item)
         # Generate the onset envelope for the full mix and track the beats within it
         made.env['mix'] = made.onset_strength('mix', use_nonoptimised_defaults=False)
-        made.ons['mix'] = made.beat_track(passes=3, env=made.env['mix'], use_uniform=False)
+        made.ons['mix'] = made.beat_track(env=made.env['mix'], use_uniform=False, use_nonoptimised_defaults=False)
+        try:
+            # TODO: this should append a flat list instead, at the moment the output is really nested and gross
+            made.onset_evaluation.append(list(made.compare_onset_detection_accuracy(
+                fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_mix.txt',
+                onsets=[made.ons['mix']],
+                onsets_name=['optimised_librosa'],
+                instr='mix',
+            )))
+        except FileNotFoundError:
+            pass
         # Generate the click track for the tracked beats
         if generate_click:
             made.generate_click_track(instr='mix', onsets=[made.ons['mix']])

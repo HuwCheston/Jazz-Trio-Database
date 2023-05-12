@@ -9,6 +9,7 @@ from math import isnan
 
 import numpy as np
 import pandas as pd
+import scipy.stats as stats
 import statsmodels.formula.api as smf
 from statsmodels.regression.linear_model import RegressionResultsWrapper
 
@@ -82,12 +83,14 @@ class ModelMaker:
 
     def generate_model(
             self,
-            endog_ins: str
+            endog_ins: str,
+            standardise: bool = False,
     ) -> RegressionResultsWrapper | None:
         """Generates the phase correction model for one instrument.
 
         Arguments:
             endog_ins (str): the name of the 'dependent variable' instrument, whose IOIs we are predicting
+            standardise (bool, optional): use standard ('z') scores when computing regression, defaults to True
 
         Returns:
             RegressionResultsWrapper: the fitted regression model
@@ -95,13 +98,17 @@ class ModelMaker:
         """
         exog = [ex for ex in self.instrs if ex != endog_ins]
         # Create our asynchrony (coupling) terms in the model
-        exog_ins = '+'.join(f'{endog_ins}_{ins}_asynchrony' for ins in exog)
+        exog_ins = '+'.join(f'{endog_ins}_{instr}_asynchrony' for instr in exog)
         # Create the rest of our model
         md = f'{endog_ins}_next_ioi~{endog_ins}_prev_ioi+' + exog_ins
+        if standardise:
+            df = self.df.select_dtypes(include=[np.number]).dropna().apply(stats.zscore)
+        else:
+            df = self.df
         # Create the regression model, fit to the data, and return
         try:
-            return smf.ols(md, data=self.df, missing='drop').fit()
-        except ValueError:
+            return smf.ols(md, data=df, missing='drop').fit()
+        except (ValueError, IndexError):
             return None
 
     @staticmethod
@@ -225,6 +232,7 @@ if __name__ == "__main__":
         mm.summary_df = pd.DataFrame(summary)
         dfs.append(mm.summary_df)
     big = pd.concat(dfs)
+    pass
 
 # import seaborn as sns
 # import matplotlib.pyplot as plt

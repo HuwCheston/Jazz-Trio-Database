@@ -4,14 +4,20 @@ import sys
 
 import dill
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from basic_pitch import ICASSP_2022_MODEL_PATH
+
+# Set options in pandas here so they carry through whenever this file is imported by another
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
 
 # Define constants used across many files
 # TODO: test higher sample rates
 SAMPLE_RATE = 88200
 FILE_FMT = 'wav'
 BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
+N_PLP_PASSES = 3    # This seems to lead to the best results after optimization
 
 # Mapping to turn instrument name into instrument performer, e.g. piano to pianist
 INSTRS_TO_PERF = {
