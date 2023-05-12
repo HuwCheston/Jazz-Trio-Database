@@ -39,10 +39,11 @@ class CorpusTest(unittest.TestCase):
         Tests that all external links in the corpus are unique. Fails when a duplicate link is found.
         """
 
-        seen = set()
+        df = pd.Series(self.links)
+        dupes = df[df.duplicated(keep=False)].to_list()
         self.assertTrue(
-            not any(i in seen or seen.add(i) for i in self.links),
-            msg="Some links in corpus are duplicates",
+            len(dupes) == 0,
+            msg=f"Some links in corpus are duplicates {dupes}",
         )
 
     def test_all_youtube_links_active(
@@ -101,7 +102,10 @@ class CorpusTest(unittest.TestCase):
             except urllib.error.HTTPError:
                 self.fail(f"Could not get timestamp for video {li}")
             # Return the ISO-formatted timestamp as a datetime object
-            return datetime.strptime(response, "PT%MM%SS")
+            try:
+                return datetime.strptime(response, "PT%MM%SS")
+            except ValueError:
+                return datetime.strptime(response, "PT%MM")
 
         # Get our YouTube api key from our environment variables
         api_key = os.environ.get("YOUTUBE_API")

@@ -473,7 +473,7 @@ class ItemMaker:
                     cmds.extend([
                         self._get_spleeter_cmd(
                             rf'{self.raw_audio_loc}\{self.fname}_{ch}.{autils.FILE_FMT}'
-                        ) for ch in ['l', 'r']]
+                        ) for ch in set(self.item['channel_overrides'].values())]
                     )
                 self._logger_wrapper(f"... separating {len(cmds)} audio tracks with Spleeter model {self.model}")
                 for cmd in cmds:
@@ -485,7 +485,7 @@ class ItemMaker:
                 self._separate_audio_in_demucs(cmd)
                 self._cleanup_post_demucs()
                 if self.get_lr_audio and 'channel_overrides' in self.item.keys():
-                    for ch in ['l', 'r']:
+                    for ch in set(self.item['channel_overrides'].values()):
                         fname = rf'{self.raw_audio_loc}\{self.fname}_{ch}.{autils.FILE_FMT}'
                         cmd = self._get_demucs_cmd(in_file=fname)
                         self._separate_audio_in_demucs(cmd)
