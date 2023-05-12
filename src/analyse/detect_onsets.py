@@ -126,7 +126,7 @@ class OnsetMaker:
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore', UserWarning)
                 y, sr = librosa.load(
-                    path=fpath,
+                    path=self._get_channel_override_fpath(name, fpath),
                     sr=self.sample_rate,
                     mono=mono,
                     offset=offset,
@@ -144,6 +144,31 @@ class OnsetMaker:
                     )
             audio[name] = y.T
         return audio
+
+    def _get_channel_override_fpath(
+            self, name: str,
+            fpath: str
+    ) -> str:
+        """Gets the filepath for an item, with any channel overrides specified.
+
+        For instance, if we wish to use only the left channel for the double bass (and have specified "bass": "l" in the
+        "channel_overrides" dictionary for this item in the corpus), this function will return the correct filepath
+        pointing to the source-separated left channel file.
+
+        Arguments:
+            name (str): the name of the instrument
+            fpath (str): the default filepath for the item (i.e. stereo audio)
+
+        Returns:
+            str: the overriden filepath if this is required and present locally, or the default (stereo) filepath if not
+        """
+
+        if 'channel_overrides' in self.item.keys():
+            if name in self.item['channel_overrides'].keys():
+                fp = fpath.replace(name, f'{self.item["channel_overrides"][name]}_{name}')
+                if autils.check_item_present_locally(fp):
+                    return fp
+        return fpath
 
     def beat_track(
             self,
@@ -910,7 +935,7 @@ class OnsetMaker:
     "--click", "generate_click", is_flag=True, default=False, help='Generate a click track for detected onsets/beats'
 )
 @click.option(
-    "--annotated-only", "annotated_only", is_flag=True, default=True, help='Only get items with manual annotations'
+    "--annotated-only", "annotated_only", is_flag=True, default=False, help='Only get items with manual annotations'
 )
 def main(
         references_filepath: click.Path,

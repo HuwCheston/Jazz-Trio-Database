@@ -68,9 +68,11 @@ class ItemMaker:
         # Empty attribute to hold valid YouTube links
         self.links = []
         # The filename for this item, constructed from the parameters of the JSON
-        self.fname = self._construct_filename(**kwargs)
+        self.fname: str = self._construct_filename(**kwargs)
         # The complete filepath for this item
-        self.in_file = rf"{self.raw_audio_loc}\{self.fname}.{autils.FILE_FMT}"
+        self.in_file: str = rf"{self.raw_audio_loc}\{self.fname}.{autils.FILE_FMT}"
+        # Whether to get the left and right channels as separate files (helps with bass separation in some recordings)
+        self.get_lr_audio: bool = kwargs.get('get_lr_audio', True)
         # Paths to all the source-separated audio files that we'll create (or load)
         self.out_spleeter = [
             rf"{self.spleeter_audio_loc}\{self.fname}_{i}.{autils.FILE_FMT}"
@@ -189,7 +191,7 @@ class ItemMaker:
         # Define our list of checks for whether we need to rebuild the item
         checks = [
             # Is the item actually present locally?
-            self._check_item_present_locally(self.in_file),
+            autils.check_item_present_locally(self.in_file),
             # Are we forcing the corpus to rebuild?
             not self.force_download,
             # Have we changed the timestamps for this item since the last time we built it?
@@ -204,15 +206,43 @@ class ItemMaker:
         else:
             # We get the valid links here so we don't waste time checking links if an item is already present locally
             self.links = self._get_valid_links()
+            # Download the item from YouTube
             self._get_item()
+            # Split the item into separate left and right audio files
+            if self.get_lr_audio and 'channel_overrides' in self.item.keys():
+                self._split_left_right_channels()
 
-    @staticmethod
-    def _check_item_present_locally(fname: str) -> bool:
-        """
-        Returns whether a given filepath is present locally or not
+    def _split_left_right_channels(
+            self,
+            timeout: int = 10
+    ):
         """
 
-        return os.path.isfile(os.path.abspath(fname))
+        """
+        for channel, name in zip(['0.0.0', '0.0.1'], ['l', 'r']):
+            cmd = [
+                'ffmpeg',
+                '-y',    # Force overwriting if file is already present
+                '-i',
+                self.in_file,
+                '-map_channel',
+                channel,
+                rf'{self.raw_audio_loc}\{self.fname}_{name}.{autils.FILE_FMT}'
+            ]
+            p = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                universal_newlines=True,
+            )
+            try:
+                # This will block execution until the above process has completed
+                _, __ = p.communicate(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                p.kill()
+                raise TimeoutError(
+                    f"... error when splitting track to l-r channels: process timed out after {timeout} seconds"
+                )
 
     def _get_item(self) -> None:
         """
@@ -251,7 +281,7 @@ class ItemMaker:
                 self._logger_wrapper(f"... downloaded successfully from {link}")
                 break
         # If, after iterating through all our links, we still haven't been able to save the file, then raise an error
-        if not self._check_item_present_locally(self.in_file):
+        if not autils.check_item_present_locally(self.in_file):
             raise DownloadError(
                 f'Item {self.item["id"]} could not be downloaded, check input links are working'
             )
@@ -300,25 +330,30 @@ class ItemMaker:
             if self.fname in file and not any(f"_{i}" for i in exts if i in file):
                 os.remove(os.path.abspath(rf"{self.spleeter_audio_loc}\{file}"))
 
-    def _cleanup_post_demucs(self) -> None:
+    def _cleanup_post_demucs(self, ext: str = '') -> None:
         """
         Cleans up after demucs by removing unnecessary files and moving file location
         """
 
-        demucs_fpath = rf"{self.demucs_audio_loc}\htdemucs\{self.fname}"
+        demucs_fpath = rf"{self.demucs_audio_loc}\htdemucs\{self.fname}{ext}"
         for file in os.listdir(demucs_fpath):
             if file in ['vocals.wav', 'other.wav']:
                 os.remove(fr'{demucs_fpath}\{file}')
             else:
-                os.rename(fr'{demucs_fpath}\{file}', fr'{demucs_fpath}\{self.fname}_{file}')
-                os.replace(fr'{demucs_fpath}\{self.fname}_{file}', rf'{self.demucs_audio_loc}\{self.fname}_{file}')
+                os.rename(fr'{demucs_fpath}\{file}', fr'{demucs_fpath}\{self.fname}{ext}_{file}')
+                os.replace(
+                    fr'{demucs_fpath}\{self.fname}{ext}_{file}',
+                    rf'{self.demucs_audio_loc}\{self.fname}{ext}_{file}'
+                )
         rmtree(rf"{self.demucs_audio_loc}\htdemucs")
 
-    def _get_spleeter_cmd(self) -> list:
+    def _get_spleeter_cmd(self, in_file: str = None) -> list:
         """
         Gets the required command for running spleeter using subprocess.Popen
         """
 
+        if in_file is None:
+            in_file = self.in_file
         return [
             "spleeter",
             "separate",  # Opens Spleeter in separation mode
@@ -326,21 +361,23 @@ class ItemMaker:
             self.model,  # Defaults to the 5stems-16kHz model
             "-o",
             f"{os.path.abspath(self.spleeter_audio_loc)}",  # Specifies the correct output directory
-            f"{os.path.abspath(self.in_file)}",  # Specifies the input filepath for this item
+            f"{os.path.abspath(in_file)}",  # Specifies the input filepath for this item
             "-c",
             f"{autils.FILE_FMT}",  # Specifies the output codec, default to m4a
             "-f",
             "{filename}_{instrument}.{codec}",  # This sets the output filename format
         ]
 
-    def _get_demucs_cmd(self) -> list:
+    def _get_demucs_cmd(self, in_file: str = None) -> list:
         """
         Gets the required command for running demucs using subprocess.Popen
         """
 
+        if in_file is None:
+            in_file = self.in_file
         return [
             "demucs",
-            rf"{os.path.abspath(self.in_file)}",
+            rf"{os.path.abspath(in_file)}",
             "-o",
             rf"{os.path.abspath(self.demucs_audio_loc)}"
         ]
@@ -379,11 +416,12 @@ class ItemMaker:
         """
         Tries to find source-separated audio files locally, and builds them if not present/invalid
         """
+        # TODO: refactor this completely
         def get_checks(out_files):
             return [
                 # Are all the source separated items present locally?
                 all(
-                    self._check_item_present_locally(fname) for fname in out_files
+                    autils.check_item_present_locally(fn) for fn in out_files
                 ),
                 # Do all the source-separated items have approximately the same duration as the original file?
                 all(
@@ -425,20 +463,34 @@ class ItemMaker:
         # Otherwise, we need to build the source-separated items
         else:
             # Raise an error if we no longer have the input file, for whatever reason
-            if not self._check_item_present_locally(self.in_file):
+            if not autils.check_item_present_locally(self.in_file):
                 raise FileNotFoundError(
                     f"Input file {self.in_file} not present, can't proceed to separation"
                 )
             if self.use_spleeter:
-                cmd = self._get_spleeter_cmd()
-                self._logger_wrapper(f"... separating audio with Spleeter model {self.model}")
-                self._separate_audio_in_spleeter(cmd)
-                self._cleanup_post_spleeter()
+                cmds = [self._get_spleeter_cmd()]
+                if self.get_lr_audio and 'channel_overrides' in self.item.keys():
+                    cmds.extend([
+                        self._get_spleeter_cmd(
+                            rf'{self.raw_audio_loc}\{self.fname}_{ch}.{autils.FILE_FMT}'
+                        ) for ch in ['l', 'r']]
+                    )
+                self._logger_wrapper(f"... separating {len(cmds)} audio tracks with Spleeter model {self.model}")
+                for cmd in cmds:
+                    self._separate_audio_in_spleeter(cmd)
+                    self._cleanup_post_spleeter()
             if self.use_demucs:
+                self._logger_wrapper(f"... separating audio track(s) with Demucs (this may take a while)")
                 cmd = self._get_demucs_cmd()
-                self._logger_wrapper(f"... separating audio with Demucs (this may take a while)")
                 self._separate_audio_in_demucs(cmd)
                 self._cleanup_post_demucs()
+                if self.get_lr_audio and 'channel_overrides' in self.item.keys():
+                    for ch in ['l', 'r']:
+                        fname = rf'{self.raw_audio_loc}\{self.fname}_{ch}.{autils.FILE_FMT}'
+                        cmd = self._get_demucs_cmd(in_file=fname)
+                        self._separate_audio_in_demucs(cmd)
+                        self._cleanup_post_demucs(ext=f'_{ch}')
+                # TODO: implement cleanup of unused tracks
 
     def finalize_output(self, include_log: bool = False) -> None:
         """
@@ -488,6 +540,9 @@ def main(
             logger=logger,
             index=index,
             output_filepath=output_filepath,
+            get_lr_audio=True,
+            force_reseparation=False,
+            force_redownload=False
         )
         # Download the item, separate the audio, and finalize the output
         made.get_item()

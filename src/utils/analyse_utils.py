@@ -125,7 +125,6 @@ def try_and_load(
         return backup_func(**backup_kwargs)
 
 
-
 def iqr_filter(
         arr: np.ndarray,
         low: int = 25,
@@ -166,3 +165,11 @@ def get_tracks_with_manual_annotations(
                 res[split[0]] = []
                 res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
     return [k for k, v in res.items() if sorted(v) == sorted(list(all_tracks))]
+
+
+def check_item_present_locally(fname: str) -> bool:
+    """
+    Returns whether a given filepath is present locally or not
+    """
+
+    return os.path.isfile(os.path.abspath(fname))
