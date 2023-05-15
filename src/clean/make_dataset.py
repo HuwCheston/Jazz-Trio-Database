@@ -507,14 +507,22 @@ class ItemMaker:
 
 @click.command()
 @click.option(
-    "-i", "input_filepath", type=click.Path(exists=True), default=r"..\..\references"
+    "-i", "input_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\references"
 )
 @click.option(
-    "-o", "output_filepath", type=click.Path(exists=True), default="..\..\data"
+    "-o", "output_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\data"
+)
+@click.option(
+    "--force-download", "force_download", is_flag=True, default=False, help='Force download of items from YouTube'
+)
+@click.option(
+    "--force-separation", "force_separation", is_flag=True, default=False, help='Force source separation of items'
 )
 def main(
         input_filepath: str,
         output_filepath: str,
+        force_download: bool,
+        force_separation: bool
 ) -> None:
     """
     Runs clean processing scripts to turn raw clean from (../raw) into cleaned clean ready to be analyzed
@@ -541,8 +549,8 @@ def main(
             index=index,
             output_filepath=output_filepath,
             get_lr_audio=True,
-            force_reseparation=False,
-            force_redownload=False
+            force_reseparation=force_separation,
+            force_redownload=force_download
         )
         # Download the item, separate the audio, and finalize the output
         made.get_item()

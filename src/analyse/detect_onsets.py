@@ -45,37 +45,41 @@ class OnsetMaker:
         bass=30,
         drums=60,
     )
-    # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
-    # These defaults were found through a parameter search against a reference set of onsets, annotated manually
-    # TODO: all these paths shouldn't be hardcoded, I think
-    onset_strength_params = autils.load_json(
-        fpath=r'..\..\references\optimised_parameters',
-        fname='onset_strength_default'
-    )
-    onset_detect_params = autils.load_json(
-        fpath=r'..\..\references\optimised_parameters',
-        fname='onset_detect_default'
-    )
-    # These are passed whenever polyphonic_onset_detect is called for this particular instrument's audio
-    polyphonic_onset_detect_params = autils.load_json(
-        fpath=r'..\..\references\optimised_parameters',
-        fname='polyphonic_onset_detect_default'
-    )
-    data_dir = r'..\..\data'
-    reports_dir = r'..\..\reports'
 
     def __init__(
             self,
+            references_filepath: str = rf"{autils.get_project_root()}\references",
+            data_filepath: str = rf"{autils.get_project_root()}\data",
+            reports_filepath: str = rf"{autils.get_project_root()}\reports",
             item: dict = None,
             **kwargs
     ):
         self.item = item
+        # Define file paths
+        self.references_dir = references_filepath
+        self.data_dir = data_filepath
+        self.reports_dir = reports_filepath
+        # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
+        # These defaults were found through a parameter search against a reference set of onsets, annotated manually
+        self.onset_strength_params = autils.load_json(
+            fpath=fr'{self.references_dir}\optimised_parameters',
+            fname='onset_strength_default'
+        )
+        self.onset_detect_params = autils.load_json(
+            fpath=fr'{self.references_dir}\optimised_parameters',
+            fname='onset_detect_default'
+        )
+        # These are passed whenever polyphonic_onset_detect is called for this particular instrument's audio
+        self.polyphonic_onset_detect_params = autils.load_json(
+            fpath=fr'{self.references_dir}\optimised_parameters',
+            fname='polyphonic_onset_detect_default'
+        )
         # Construct the default file paths where our audio is saved
         self.instrs = {
             'mix': rf'{self.data_dir}\raw\audio\{self.item["fname"]}.{autils.FILE_FMT}',
             'piano': rf'{self.data_dir}\processed\spleeter_audio\{self.item["fname"]}_piano.{autils.FILE_FMT}',
             'bass': rf'{self.data_dir}\processed\demucs_audio\{self.item["fname"]}_bass.{autils.FILE_FMT}',
-            'drums': rf'{self.data_dir}\processed\spleeter_audio\{self.item["fname"]}_drums.{autils.FILE_FMT}'
+            'drums': rf'{self.data_dir}\processed\demucs_audio\{self.item["fname"]}_drums.{autils.FILE_FMT}'
         }
         # Dictionary to hold arrays of onset envelopes for each instrument
         self.env = {}
@@ -926,10 +930,20 @@ class OnsetMaker:
 
 @click.command()
 @click.option(
-    "-i", "references_filepath", type=click.Path(exists=True), default=r"..\..\references"
+    "-data", "data_filepath", type=click.Path(exists=True),
+    default=f"{autils.get_project_root()}\data"
 )
 @click.option(
-    "-o", "models_filepath", type=click.Path(exists=True), default="..\..\models"
+    "-reports", "reports_filepath", type=click.Path(exists=True),
+    default=rf"{autils.get_project_root()}\reports"
+)
+@click.option(
+    "-references", "references_filepath", type=click.Path(exists=True),
+    default=rf"{autils.get_project_root()}\references"
+)
+@click.option(
+    "-models", "models_filepath", type=click.Path(exists=True),
+    default=rf"{autils.get_project_root()}\models"
 )
 @click.option(
     "--click", "generate_click", is_flag=True, default=True, help='Generate a click track for detected onsets/beats'
@@ -938,6 +952,8 @@ class OnsetMaker:
     "--annotated-only", "annotated_only", is_flag=True, default=False, help='Only get items with manual annotations'
 )
 def main(
+        data_filepath: click.Path,
+        reports_filepath: click.Path,
         references_filepath: click.Path,
         models_filepath: click.Path,
         generate_click: bool,
@@ -961,14 +977,19 @@ def main(
     # Iterate through each entry in the corpus
     for corpus_item in corpus:
         logger.info(f'... now working on item {corpus_item["id"]}, track name {corpus_item["track_name"]}')
-        made = OnsetMaker(item=corpus_item)
+        made = OnsetMaker(
+            item=corpus_item,
+            data_filepath=data_filepath,
+            references_filepath=references_filepath,
+            reports_filepath=reports_filepath
+        )
         # Generate the onset envelope for the full mix and track the beats within it
         made.env['mix'] = made.onset_strength('mix', use_nonoptimised_defaults=False)
         made.ons['mix'] = made.beat_track(env=made.env['mix'], use_uniform=False, use_nonoptimised_defaults=False)
         try:
             # TODO: this should append a flat list instead, at the moment the output is really nested and gross
             made.onset_evaluation.append(list(made.compare_onset_detection_accuracy(
-                fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_mix.txt',
+                fname=rf'{references_filepath}\manual_annotation\{corpus_item["fname"]}_mix.txt',
                 onsets=[made.ons['mix']],
                 onsets_name=['optimised_librosa'],
                 instr='mix',
@@ -991,7 +1012,7 @@ def main(
             try:
                 # TODO: this should append a flat list instead, at the moment the output is really nested and gross
                 made.onset_evaluation.append(list(made.compare_onset_detection_accuracy(
-                    fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
+                    fname=rf'{references_filepath}\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
                     onsets=[made.ons[ins]],
                     onsets_name=['optimised_librosa'],
                     instr=ins,

@@ -15,9 +15,11 @@ from datetime import datetime
 import pandas as pd
 import requests
 
+import src.utils.analyse_utils as autils
+
 
 class CorpusTest(unittest.TestCase):
-    corpus = json.load(open(r"..\references\corpus.json", "rb"))
+    corpus = autils.load_json(rf'{autils.get_project_root()}\references', 'corpus')
     df = pd.DataFrame(corpus)
     links = [link for track in corpus for link in track["links"]["external"]]
 

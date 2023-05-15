@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from pathlib import Path
 
 import dill
 import numpy as np
@@ -14,6 +15,7 @@ pd.set_option('display.max_columns', None)
 
 # Define constants used across many files
 # TODO: test higher sample rates
+
 SAMPLE_RATE = 88200
 FILE_FMT = 'wav'
 BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
@@ -179,3 +181,11 @@ def check_item_present_locally(fname: str) -> bool:
     """
 
     return os.path.isfile(os.path.abspath(fname))
+
+
+def get_project_root() -> Path:
+    """
+    Returns the root directory of the project
+    """
+
+    return Path(__file__).absolute().parent.parent.parent

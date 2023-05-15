@@ -102,7 +102,10 @@ class ModelMaker:
         # Create the rest of our model
         md = f'{endog_ins}_next_ioi~{endog_ins}_prev_ioi+' + exog_ins
         if standardise:
-            df = self.df.select_dtypes(include=[np.number]).dropna().apply(stats.zscore)
+            try:
+                df = self.df.select_dtypes(include=[np.number]).dropna().apply(stats.zscore)
+            except ValueError:
+                return None
         else:
             df = self.df
         # Create the regression model, fit to the data, and return
@@ -221,13 +224,13 @@ class ModelMaker:
 
 
 if __name__ == "__main__":
-    onsets = autils.unserialise_object(r'..\..\models', 'matched_onsets')
+    onsets = autils.unserialise_object(rf'{autils.get_project_root()}\models', 'matched_onsets')
     dfs = []
     for ons in onsets:
         mm = ModelMaker(om=ons)
         summary = []
         for ins in ['piano', 'bass', 'drums']:
-            mm.models[ins] = mm.generate_model(ins)
+            mm.models[ins] = mm.generate_model(ins, standardise=False)
             summary.append(mm.create_instrument_dict(endog_ins=ins, md=mm.models[ins]))
         mm.summary_df = pd.DataFrame(summary)
         dfs.append(mm.summary_df)

@@ -268,8 +268,9 @@ def optimise_parameters(
                     if ins in made.top_db.keys():
                         ons = [made.remove_onsets_in_silent_passages(o, instr=ins) for o in ons]
                     # Calculate the F-score for each of our parameters and append to the list
+                    fn = rf'{autils.get_project_root()}\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt'
                     li = list(made.compare_onset_detection_accuracy(
-                        fname=rf'..\..\references\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
+                        fname=fn,
                         instr=ins,
                         onsets=ons,
                         onsets_name=v,
@@ -306,7 +307,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.info(f"optimising parameters using manual annotations obtained for {len(annotated_tracks)} tracks ...")
 
-    corpus_json = autils.load_json(r'..\..\references', 'corpus')
+    corpus_json = autils.load_json(rf'{autils.get_project_root()}\references', 'corpus')
 
     # Optimise the made.beat_track_full_mix function
     optimise_parameters(
@@ -338,11 +339,11 @@ if __name__ == "__main__":
     # Serialise the results
     autils.save_json(
         obj=onset_strength_optimised_params,
-        fpath=r'..\..\references\optimised_parameters',
+        fpath=rf'{autils.get_project_root()}\references\optimised_parameters',
         fname='onset_strength_optimised'
     )
     autils.save_json(
         obj=onset_detect_optimised_params,
-        fpath=r'..\..\references\optimised_parameters',
+        fpath=rf'{autils.get_project_root()}\references\optimised_parameters',
         fname='onset_detect_optimised'
     )
