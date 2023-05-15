@@ -1280,7 +1280,9 @@
       "start": "01:00",
       "end": "02:40"
     },
-    "log": []
+    "log": [],
+    "id": "6e7dae23dbb562d62e1206a088d4c53d",
+    "fname": "evansb-montreuxii-1970-34skidoo-na"
   },
   {
     "track_name": "How My Heart Sings",
@@ -1309,7 +1311,9 @@
       "start": "01:20",
       "end": "01:52"
     },
-    "log": []
+    "log": [],
+    "id": "66393348b24b200837a451ad885c7191",
+    "fname": "evansb-montreuxii-1970-howmyheartsings-na"
   },
   {
     "track_name": "Israel",
@@ -1338,7 +1342,9 @@
       "start": "00:27",
       "end": "01:12"
     },
-    "log": []
+    "log": [],
+    "id": "4ae22869ad196bba43679745d9ddf098",
+    "fname": "evansb-montreuxii-1970-israel-na"
   },
   {
     "track_name": "I Hear A Rhapsody",
@@ -1367,7 +1373,9 @@
       "start": "01:30",
       "end": "02:45"
     },
-    "log": []
+    "log": [],
+    "id": "d63d5039a2ffb4aca950d5cea166edfd",
+    "fname": "evansb-montreuxii-1970-iheararhapsody-na"
   },
   {
     "track_name": "Autumn Leaves",
@@ -1399,7 +1407,9 @@
     "channel_overrides": {
       "bass": "r"
     },
-    "log": []
+    "log": [],
+    "id": "309fae662ebd96b0fe6b7f32bb3bed64",
+    "fname": "evansb-liveatartdlugoffstop-1968-autumnleaves-na"
   },
   {
     "track_name": "Someday My Prince Will Come",
@@ -1431,7 +1441,9 @@
     "channel_overrides": {
       "bass": "r"
     },
-    "log": []
+    "log": [],
+    "id": "486e964708774ad16cbacae1cce4d60b",
+    "fname": "evansb-liveatartdlugoffstop-1968-somedaymyprincewillcome-na"
   },
   {
     "track_name": "Here's That Rainy Day",
@@ -1463,7 +1475,9 @@
     "channel_overrides": {
       "bass": "r"
     },
-    "log": []
+    "log": [],
+    "id": "5655be0a265c9d211e809954e214b525",
+    "fname": "evansb-liveatartdlugoffstop-1968-heresthatrainyday-na"
   },
   {
     "track_name": "How Deep Is The Ocean",
@@ -1496,7 +1510,9 @@
       "bass": "l",
       "piano": "r"
     },
-    "log": []
+    "log": [],
+    "id": "7a628fb276b679975e313da1b27cf036",
+    "fname": "evansb-jazzhouse-1969-howdeepistheocean-na"
   },
   {
     "track_name": "How My Heart Sings",
@@ -1529,7 +1545,9 @@
       "bass": "l",
       "piano": "r"
     },
-    "log": []
+    "log": [],
+    "id": "812ad87227a494c974634d869df5ef2c",
+    "fname": "evansb-jazzhouse-1969-howmyheartsings-na"
   },
   {
     "track_name": "California Here I Come",
@@ -1562,7 +1580,9 @@
       "bass": "l",
       "piano": "r"
     },
-    "log": []
+    "log": [],
+    "id": "c66e19a907fa517736525106f6d298ba",
+    "fname": "evansb-jazzhouse-1969-californiahereicome-na"
   },
   {
     "track_name": "Sleepin' Bee",
@@ -1595,7 +1615,9 @@
       "bass": "l",
       "piano": "r"
     },
-    "log": []
+    "log": [],
+    "id": "8ca570f19aac1c6bae71fd2100ebd6ba",
+    "fname": "evansb-jazzhouse-1969-sleepinbee-na"
   },
   {
     "track_name": "Love Is Here To Stay",
@@ -1627,7 +1649,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "3c7142f3819223c8ea2ea6fe13b9cdf2",
+    "fname": "evansb-trio65-1965-loveisheretostay-na"
   },
   {
     "track_name": "Swedish Pastry",
@@ -1659,7 +1683,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "b03f2c29e00765ab04a0d8c1a5e54835",
+    "fname": "evansb-billevanstrioatshellys-1963-swedishpastry-na"
   },
   {
     "track_name": "Blues In 'F'",
@@ -1691,7 +1717,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "f2b4470eb57d67fe49d719e3581c2f7a",
+    "fname": "evansb-billevanstrioatshellys-1963-bluesinf-na"
   },
   {
     "track_name": "Our Love Is Here To Stay",
@@ -1723,7 +1751,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "69040993382a7957a1544f642988020c",
+    "fname": "evansb-billevanstrioatshellys-1963-ourloveisheretostay-na"
   },
   {
     "track_name": "Who Cares?",
@@ -1755,7 +1785,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "d59ef192f4227162921ff2606eb0f03e",
+    "fname": "evansb-timeremembered-1963-whocares-na"
   },
   {
     "track_name": "What Is This Thing Called Love?",
@@ -1787,7 +1819,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "6db0f5dc266c929d6f7610ad89f2428c",
+    "fname": "evansb-timeremembered-1963-whatisthisthingcalledlove-na"
   },
   {
     "track_name": "My Heart Stood Still",
@@ -1819,7 +1853,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "f12004f7e15d257ee3ea8f26bead3ef9",
+    "fname": "evansb-timeremembered-1963-myheartstoodstill-na"
   },
   {
     "track_name": "How About You?",
@@ -1851,7 +1887,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "3d89df11d4f700cf0020e21319e7810f",
+    "fname": "evansb-timeremembered-1963-howaboutyou-na"
   },
   {
     "track_name": "Stella By Starlight",
@@ -1884,7 +1922,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "f68f7408b89eab112cdc059ef95bacad",
+    "fname": "evansb-thecompletebillevanson-1964-stellabystarlight-1"
   },
   {
     "track_name": "Make Someone Happy",
@@ -1917,7 +1957,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "cc6ee25d0bf431c57bdf4d23912bbbeb",
+    "fname": "evansb-thecompletebillevanson-1964-makesomeonehappy-1"
   },
   {
     "track_name": "What Kind Of Fool Am I?",
@@ -1950,7 +1992,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "61215860752151bb12b128b49bc25d48",
+    "fname": "evansb-thecompletebillevanson-1964-whatkindoffoolami-1"
   },
   {
     "track_name": "What Is This Thing Called Love?",
@@ -1983,7 +2027,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "36be5f119479d288415142a8bce97d9a",
+    "fname": "evansb-thecompletebillevanson-1964-whatisthisthingcalledlove-2"
   },
   {
     "track_name": "The Touch Of Your Lips",
@@ -2015,7 +2061,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "291caa570dc3bfe771bc4abf7e0ce0b9",
+    "fname": "evansb-thecompletebillevanson-1964-thetouchofyourlips-na"
   },
   {
     "track_name": "Stella By Starlight",
@@ -2048,7 +2096,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "e41178c5dcc115b478b6dd69c9955a1d",
+    "fname": "evansb-thecompletebillevanson-1964-stellabystarlight-2"
   },
   {
     "track_name": "'Deed I Do",
@@ -2081,7 +2131,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "ead2ae29341479c951a2dd90604131d1",
+    "fname": "evansb-thecompletebillevanson-1964-deedido-1"
   },
   {
     "track_name": "What Kind Of Fool Am I?",
@@ -2114,7 +2166,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "db443dee0e6741b30a3923fbbab8c6ce",
+    "fname": "evansb-thecompletebillevanson-1964-whatkindoffoolami-2"
   },
   {
     "track_name": "Make Someone Happy",
@@ -2147,7 +2201,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "937fb9cfa29dfe33c99969d1565abf5b",
+    "fname": "evansb-thecompletebillevanson-1964-makesomeonehappy-2"
   },
   {
     "track_name": "'Deed I Do'",
@@ -2180,7 +2236,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "3a334fbf16509a7fbacbcfda581e53a8",
+    "fname": "evansb-thecompletebillevanson-1964-deedido-2"
   },
   {
     "track_name": "What Is This Thing Called Love?",
@@ -2213,7 +2271,9 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "7336e3cf12f8cb14d5f7e83ccb65c2a9",
+    "fname": "evansb-thecompletebillevanson-1964-whatisthisthingcalledlove-3"
   },
   {
     "track_name": "California Here I Come",
@@ -2246,6 +2306,8 @@
     "channel_overrides": {
       "bass": "l"
     },
-    "log": []
+    "log": [],
+    "id": "b6f647687fd0fc9f2e11230975b7dcb6",
+    "fname": "evansb-thecompletebillevanson-1964-californiahereicome-3"
   }
 ]
