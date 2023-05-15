@@ -80,8 +80,8 @@ You should start seeing lines like:
 2023-05-15 15:37:38,532 - __main__ - INFO - ... finished processing item
 ```
 
-> **This command will take a while to run.** You may want to leave it on overnight, with a stable internet connection. 
-> 
+**This command will take a while to run.** You may want to leave it on overnight, with a stable internet connection. 
+
 > If the script is interrupted, you should be able to re-run the command without any loss of progress: any items that have already been downloaded and separated will be recognised and skipped, preventing data loss.
 > 
 > Conversely, to force redownload (or re-separation) if something goes wrong (e.g. an item is corrupted), you can either:
