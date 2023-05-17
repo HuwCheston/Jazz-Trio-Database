@@ -49,11 +49,9 @@ class ItemMaker:
     }
     # Tolerance for matching given timestamps with downloaded file
     abs_tol = 0.05
-    # Source-separation models to use
-    use_spleeter: bool = True
-    use_demucs: bool = True
     # Model to use in Spleeter
-    model = "spleeter:5stems-16kHz"
+    spleeter_model = "spleeter:5stems-16kHz"
+    demucs_model = "htdemucs_6s"
     # The instruments we'll conduct source separation on
     instrs = ["piano", "bass", "drums"]
 
@@ -71,6 +69,9 @@ class ItemMaker:
         self.fname: str = self._construct_filename(**kwargs)
         # The complete filepath for this item
         self.in_file: str = rf"{self.raw_audio_loc}\{self.fname}.{autils.FILE_FMT}"
+        # Source-separation models to use
+        self.use_spleeter: bool = kwargs.get('use_spleeter', True)
+        self.use_demucs: bool = kwargs.get('use_demucs', True)
         # Whether to get the left and right channels as separate files (helps with bass separation in some recordings)
         self.get_lr_audio: bool = kwargs.get('get_lr_audio', True)
         # Paths to all the source-separated audio files that we'll create (or load)
@@ -335,9 +336,9 @@ class ItemMaker:
         Cleans up after demucs by removing unnecessary files and moving file location
         """
 
-        demucs_fpath = rf"{self.demucs_audio_loc}\htdemucs\{self.fname}{ext}"
+        demucs_fpath = rf"{self.demucs_audio_loc}\{self.demucs_model}\{self.fname}{ext}"
         for file in os.listdir(demucs_fpath):
-            if file in ['vocals.wav', 'other.wav']:
+            if file in ['vocals.wav', 'other.wav', 'guitar.wav']:
                 os.remove(fr'{demucs_fpath}\{file}')
             else:
                 os.rename(fr'{demucs_fpath}\{file}', fr'{demucs_fpath}\{self.fname}{ext}_{file}')
@@ -345,7 +346,7 @@ class ItemMaker:
                     fr'{demucs_fpath}\{self.fname}{ext}_{file}',
                     rf'{self.demucs_audio_loc}\{self.fname}{ext}_{file}'
                 )
-        rmtree(rf"{self.demucs_audio_loc}\htdemucs")
+        rmtree(rf"{self.demucs_audio_loc}\{self.demucs_model}")
 
     def _get_spleeter_cmd(self, in_file: str = None) -> list:
         """
@@ -358,7 +359,7 @@ class ItemMaker:
             "spleeter",
             "separate",  # Opens Spleeter in separation mode
             "-p",
-            self.model,  # Defaults to the 5stems-16kHz model
+            self.spleeter_model,  # Defaults to the 5stems-16kHz model
             "-o",
             f"{os.path.abspath(self.spleeter_audio_loc)}",  # Specifies the correct output directory
             f"{os.path.abspath(in_file)}",  # Specifies the input filepath for this item
@@ -378,6 +379,8 @@ class ItemMaker:
         return [
             "demucs",
             rf"{os.path.abspath(in_file)}",
+            "-n",
+            self.demucs_model,
             "-o",
             rf"{os.path.abspath(self.demucs_audio_loc)}"
         ]
@@ -475,7 +478,7 @@ class ItemMaker:
                             rf'{self.raw_audio_loc}\{self.fname}_{ch}.{autils.FILE_FMT}'
                         ) for ch in set(self.item['channel_overrides'].values())]
                     )
-                self._logger_wrapper(f"... separating {len(cmds)} audio tracks with Spleeter model {self.model}")
+                self._logger_wrapper(f"... separating {len(cmds)} audio tracks with Spleeter model {self.spleeter_model}")
                 for cmd in cmds:
                     self._separate_audio_in_spleeter(cmd)
                     self._cleanup_post_spleeter()
@@ -518,11 +521,19 @@ class ItemMaker:
 @click.option(
     "--force-separation", "force_separation", is_flag=True, default=False, help='Force source separation of items'
 )
+@click.option(
+    "--no-spleeter", "disable_spleeter", is_flag=True, default=False, help='Disable using spleeter for separation'
+)
+@click.option(
+    "--no-demucs", "disable_demucs", is_flag=True, default=False, help='Disable using demucs for separation'
+)
 def main(
         input_filepath: str,
         output_filepath: str,
         force_download: bool,
-        force_separation: bool
+        force_separation: bool,
+        disable_spleeter: bool,
+        disable_demucs: bool
 ) -> None:
     """
     Runs clean processing scripts to turn raw clean from (../raw) into cleaned clean ready to be analyzed
@@ -550,7 +561,9 @@ def main(
             output_filepath=output_filepath,
             get_lr_audio=True,
             force_reseparation=force_separation,
-            force_redownload=force_download
+            force_redownload=force_download,
+            use_spleeter=not disable_spleeter,
+            use_demucs=not disable_demucs
         )
         # Download the item, separate the audio, and finalize the output
         made.get_item()

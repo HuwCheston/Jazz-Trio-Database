@@ -1681,7 +1681,8 @@
       "end": "01:50"
     },
     "channel_overrides": {
-      "bass": "l"
+      "bass": "l",
+      "piano": "r"
     },
     "log": [],
     "id": "b03f2c29e00765ab04a0d8c1a5e54835",
@@ -1715,7 +1716,8 @@
       "end": "03:47"
     },
     "channel_overrides": {
-      "bass": "l"
+      "bass": "l",
+      "piano": "r"
     },
     "log": [],
     "id": "f2b4470eb57d67fe49d719e3581c2f7a",
@@ -1749,7 +1751,8 @@
       "end": "02:00"
     },
     "channel_overrides": {
-      "bass": "l"
+      "bass": "l",
+      "piano": "r"
     },
     "log": [],
     "id": "69040993382a7957a1544f642988020c",
