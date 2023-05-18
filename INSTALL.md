@@ -69,7 +69,7 @@ The final thing to do is check the following commands all run from a terminal, i
 
 As long as these commands are all recognised and don’t throw errors, everything should be set up ok.
 
-## Build the source separated tracks
+## Build the source separated tracks:
 
 Inside the root directory of the project (i.e. `jazz-corpus-analysis\`, with folders `\data`, `\models`, `\references` etc.) and with your `venv` activated, run:
 
@@ -107,7 +107,7 @@ For each item in references\corpus.json, the script will:
 > - delete the problematic audio files from `data\raw` and `data\processed`
 > - re-run the `make_dataset.py` command above, this time passing in the flags `--force-download` and `--force-separate`
 
-## Run onset detection algorithms
+## Run onset detection algorithms:
 
 In a command prompt inside the root directory (and, again, with your `venv` activated), run:
 
@@ -122,13 +122,13 @@ python src\analyse\detect_onsets.py
 
 This will then detect onsets for each item in the corpus, using the correct source-separated track. The result will be a serialised [Python pickle file](https://docs.python.org/3/library/pickle.html) that can be loaded with the `dill` or `pickle` modules.
 
-### Generating click tracks
+### Generating click tracks:
 
 To generate click tracks for files in the corpus, add the `--click` argument when calling `detect_onsets.py`. This will save `.wav` files inside `\reports\click_tracks` containing the audio for each performer, with clicks overlaid corresponding to the detected onset/beats positions.
 > NB. the files ending with `_clicks` correspond with all the detected **onsets**; the files ending in `_beats` click only on the detected crotchet beat positions.
 
 
-### Detect onsets only in tracks with manual annotations
+### Detect onsets only in tracks with manual annotations:
 
 To detect onsets only in files with compatible manual annotations, add the `--annotated-only` argument in when calling `detect_onsets.py`. 
 

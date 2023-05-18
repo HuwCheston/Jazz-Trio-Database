@@ -1,13 +1,14 @@
 import json
 import os
 import sys
+import warnings
 from pathlib import Path
 
 import dill
 import numpy as np
 import pandas as pd
-# import tensorflow as tf
-# from basic_pitch import ICASSP_2022_MODEL_PATH
+import tensorflow as tf
+from basic_pitch import ICASSP_2022_MODEL_PATH
 
 # Set options in pandas here so they carry through whenever this file is imported by another
 pd.set_option('display.max_rows', None)
@@ -18,7 +19,7 @@ pd.set_option('display.max_columns', None)
 
 SAMPLE_RATE = 88200
 FILE_FMT = 'wav'
-# BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
+BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
 N_PLP_PASSES = 3    # This seems to lead to the best results after optimization
 
 # Mapping to turn instrument name into instrument performer, e.g. piano to pianist
@@ -27,6 +28,12 @@ INSTRS_TO_PERF = {
     'bass': 'bassist',
     'drums': 'drummer'
 }
+
+
+def get_project_root() -> Path:
+    """Returns the root directory of the project"""
+
+    return Path(__file__).absolute().parent.parent.parent
 
 
 class HidePrints:
@@ -155,13 +162,11 @@ def iqr_filter(
 
 
 def get_tracks_with_manual_annotations(
-        annotation_dir: str = r'..\..\references\manual_annotation',
+        annotation_dir: str = fr'{get_project_root()}\references\manual_annotation',
         annotation_ext: str = 'txt',
         all_tracks: tuple = ('bass', 'drums', 'piano', 'mix')
 ) -> list:
-    """
-    Returns the filenames of tracks that contain a full set of manual annotation files
-    """
+    """Returns the filenames of tracks that contain a full set of manual annotation files"""
 
     res = {}
     for file in os.listdir(annotation_dir):
@@ -176,16 +181,16 @@ def get_tracks_with_manual_annotations(
 
 
 def check_item_present_locally(fname: str) -> bool:
-    """
-    Returns whether a given filepath is present locally or not
-    """
+    """Returns whether a given filepath is present locally or not"""
 
     return os.path.isfile(os.path.abspath(fname))
 
 
-def get_project_root() -> Path:
-    """
-    Returns the root directory of the project
-    """
+def calculate_tempo(
+        pass_: np.ndarray
+) -> float:
+    """Extract the average tempo from an array of times corresponding to crotchet beat positions"""
 
-    return Path(__file__).absolute().parent.parent.parent
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', RuntimeWarning)
+        return np.nanmean(np.array([60 / p for p in np.diff(pass_)]))

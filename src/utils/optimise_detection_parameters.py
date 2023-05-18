@@ -40,7 +40,8 @@ onset_detect_optimised_params = {
     'piano': dict(),
     'bass': dict(),
     'drums': dict(),
-    'mix': dict()
+    'mix_plp': dict(),
+    'mix_rnn': dict()
 }
 polyphonic_onset_detect_optimised_params = {
     'bass': dict(
@@ -72,13 +73,19 @@ onset_detect_test_params = dict(
     pre_avg=range(1, 100),
     post_avg=range(1, 100)
 )
-beat_track_test_params = dict(
+beat_track_plp_test_params = dict(
     win_length=range(10, 1000, 10),
     passes=range(1, 10)
 )
+beat_track_rnn_test_params = dict(
+    threshold=[i / 100 for i in range(1, 50, 5)],
+    transition_lambda=range(10, 500, 50),
+    correct=[True, False],
+    passes=range(1, 10),
+)
 polyphonic_onset_detect_test_params = dict(
-    onset_threshold=[i / 100 for i in range(1, 10)],
-    frame_threshold=[i / 100 for i in range(1, 10)],
+    onset_threshold=[i / 100 for i in range(1, 100)],
+    frame_threshold=[i / 100 for i in range(1, 100)],
     minimum_note_length=range(1, 100),
     melodia_trick=[True, False],
     multiple_pitch_bends=[True, False]
@@ -194,7 +201,7 @@ def _optimise_polyphonic_onset_detect(
         )
 
 
-def _optimise_beat_track(
+def _optimise_beat_track_plp(
         param: str,
         vals: list,
         made_: OnsetMaker,
@@ -213,9 +220,30 @@ def _optimise_beat_track(
     for val in vals:
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', RuntimeWarning)
-            yield made_.beat_track(
+            yield made_.beat_track_plp(
                 env=made_.env[instr],
-                **onset_detect_optimised_params[instr],
+                **onset_detect_optimised_params[instr + '_plp'],
+                **{param: val}
+            )
+
+
+def _optimise_beat_track_rnn(
+        param: str,
+        vals: list,
+        made_: OnsetMaker,
+        instr: str,
+):
+    """
+    This function should be passed in as the optimise_func to a call to optimise_parameters to run optimisation over
+    the OnsetDetectionMaker.beat_track_full_mix function
+    """
+
+    for val in vals:
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', RuntimeWarning)
+            yield made_.beat_track_rnn(
+                use_nonoptimised_defaults=True,
+                **onset_detect_optimised_params[instr + '_rnn'],
                 **{param: val}
             )
 
@@ -314,9 +342,18 @@ if __name__ == "__main__":
         annotated=annotated_tracks,
         corpus=corpus_json,
         instrs_to_optimise=raw_audio,
-        params_to_test=beat_track_test_params,
+        params_to_test=beat_track_rnn_test_params,
         params_to_optimise=onset_detect_optimised_params,
-        optimise_func=_optimise_beat_track
+        optimise_func=_optimise_beat_track_rnn
+    )
+    # Optimise the made.beat_track_full_mix function
+    optimise_parameters(
+        annotated=annotated_tracks,
+        corpus=corpus_json,
+        instrs_to_optimise=raw_audio,
+        params_to_test=beat_track_plp_test_params,
+        params_to_optimise=onset_detect_optimised_params,
+        optimise_func=_optimise_beat_track_plp
     )
     # Optimise the made.onset_strength function
     optimise_parameters(

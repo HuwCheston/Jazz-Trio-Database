@@ -7,6 +7,7 @@ Automatically detects note and beat onsets in the source separated tracks for ea
 
 import logging
 import warnings
+from itertools import chain
 from pathlib import Path
 from time import time
 from typing import Generator, Any
@@ -19,6 +20,7 @@ import scipy.signal as signal
 import scipy.stats as stats
 import soundfile as sf
 from dotenv import find_dotenv, load_dotenv
+from madmom.features.downbeats import RNNDownBeatProcessor, DBNDownBeatTrackingProcessor
 from mir_eval.onset import f_measure
 from mir_eval.util import match_events
 from pretty_midi.pretty_midi import PrettyMIDI
@@ -174,7 +176,142 @@ class OnsetMaker:
                     return fp
         return fpath
 
-    def beat_track(
+    @staticmethod
+    def localmin_localmax_interpolate(pulse) -> np.array:
+        """Extracts onset positions by interpolating between local minima and maxima within an envelope"""
+
+        # Get our local minima and maxima
+        mi = np.flatnonzero(librosa.util.localmin(pulse))
+        ma = np.flatnonzero(librosa.util.localmax(pulse))
+        # Subset our minima and maxima so that they are the same length
+        try:
+            mi = mi[1:] if mi[0] < ma[0] else mi
+        # If we don't have any onsets, the above line will throw an error, so catch and return an empty array
+        except IndexError:
+            return np.array([])
+        # Return the interpolated values between minima and maxima
+        else:
+            return np.array([int((i1 - i2) / 2 + i2) for i1, i2 in zip(mi, ma)])
+
+    @staticmethod
+    def localmax(pulse) -> np.array:
+        """Extracts onset positions by taking local maxima from an envelope"""
+
+        return np.flatnonzero(librosa.util.localmax(pulse))
+
+    @staticmethod
+    def localmin(pulse) -> np.array:
+        """Extracts onset positions by taking local minima from an envelope"""
+
+        return np.flatnonzero(librosa.util.localmin(pulse))
+
+    def beat_track_rnn(
+            self,
+            passes: int = autils.N_PLP_PASSES,
+            starting_min: int = 100,
+            starting_max: int = 300,
+            use_nonoptimised_defaults: bool = False,
+            **kwargs
+    ) -> np.array:
+        """Tracks the position of crotchet beats in the full mix of a track using recurrent neural networks.
+
+        Wrapper around `RNNDownBeatProcessor' and 'DBNDownBeatTrackingProcessor` from `madmom.features.downbeat` that
+        allows for per-instrument defaults and multiple passes. A 'pass' refers to taking the detected crotchets from
+        one run of the network, cleaning the results, extracting features from the cleaned array (e.g. minimum and
+        maximum tempi), then creating a new network using these features and repeating the estimation process. This
+        narrows down the range of tempo values that can be detected and increases the accuracy of detected crotchets
+        substantially over a period of several passes.
+
+        Arguments:
+            passes (int, optional): the number of estimation passes to use, defaults to 3.
+            starting_min (int, optional): the minimum possible tempo (in BPM) to use for the first pass, defaults to 100
+            starting_max (int, optional): the maximum possible tempo (in BPM) to use for the first pass, defaults to 300
+            use_nonoptimised_defaults (bool, optional): use default parameters over optimised, defaults to False
+            **kwargs: passed to `madmom.features.downbeat.DBNDownBeatTrackingProcessor`
+
+        Returns:
+            np.array: an array of detected crotchet beat positions from the final pass
+        """
+
+        # If we're using defaults, set kwargs to an empty dictionary
+        kws = self.onset_detect_params['mix_rnn'] if not use_nonoptimised_defaults else dict()
+        # Update our default parameters with any kwargs we've passed in
+        kws.update(**kwargs)
+        self._try_get_kwarg_and_remove('passes', kws, default_=3)
+
+        def tracker(
+                tempo_min_: int = 100,
+                tempo_max_: int = 300,
+                **kws_
+        ) -> np.array:
+            """Wrapper around classes from `madmom.features.downbeat`"""
+
+            # Catch VisibleDeprecationWarnings that appear when creating the processor
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore', np.VisibleDeprecationWarning)
+                # Create the tracking processor
+                proc = DBNDownBeatTrackingProcessor(
+                    beats_per_bar=[4],
+                    min_bpm=tempo_min_,
+                    max_bpm=tempo_max_,
+                    fps=100,
+                    **kws_
+                )
+                # Fit the processor to the audio
+                act = RNNDownBeatProcessor()(self.instrs['mix'])
+                # Return the first column, i.e. the detected beat positions (we're not interested in downbeats)
+                return proc(act)[:, 0]
+
+        # Create the first pass: this is designed to use a very low threshold and wide range of tempo values, enabling
+        # the tempo to fluctuate a great deal; we will then use these results to narrow down the tempo in future passes
+        pass_ = tracker(
+            tempo_min_=starting_min,
+            tempo_max_=starting_max,
+            observation_lambda=2,
+            # We don't pass in our **kwargs here
+            **dict(
+                threshold=0,
+                transition_lambda=75
+            )
+        )
+
+        # Start creating our passes
+        for i in range(1, passes):
+            # Extract the BPM value for each IOI obtained from our most recent pass
+            bpms = np.array([60 / p for p in np.diff(pass_)])
+            # Clean any outliers from our BPMs by removing values +/- 1.5 * IQR
+            clean = autils.iqr_filter(bpms)
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore', RuntimeWarning)
+                try:
+                    # Extract mean, standard deviation, lower and upper quartiles
+                    mean = np.nanmean(clean)
+                    std = np.nanstd(clean)
+                    low = np.nanpercentile(clean, 25)
+                    high = np.nanpercentile(clean, 75)
+                # If we didn't detect any onsets, the above lines will throw an error, so return an empty array
+                except ValueError:
+                    return np.array([0])
+            # If the distance between upper and lower bound is less than the distance between mean +/- std
+            if high - low < (mean + std) - (mean - std):
+                # Use upper and lower bounds as our maximum and minimum allowed tempo
+                tempo_min, tempo_max = low, high
+            else:
+                # Use mean +/- 1 standard deviation as our maximum and minimum allowed tempo
+                tempo_min, tempo_max = (mean - std) - (mean + std)
+            # Create the new pass, using the new maximum and minimum tempo
+            pass_ = tracker(
+                tempo_min_=tempo_min,
+                tempo_max_=tempo_max,
+                observation_lambda=16,
+                # Now we pass in our keyword arguments
+                **kws
+            )
+        # Set the tempo value using the crotchet beat positions from our previous pass
+        self.tempo = autils.calculate_tempo(pass_)
+        return pass_
+
+    def beat_track_plp(
             self,
             passes: int = autils.N_PLP_PASSES,
             env: np.array = None,
@@ -182,9 +319,10 @@ class OnsetMaker:
             tempo_max: int = 300,
             use_uniform: bool = False,
             use_nonoptimised_defaults: bool = False,
+            picker=None,
             **kwargs
     ) -> np.array:
-        """Tracks the position of crotchet beats in the full (i.e. non separated) mix of a track
+        """Tracks the position of crotchet beats in the full mix of a track using predominant local pulse estimation
 
         Wrapper function around `librosa.beat.plp` that allows for per-instrument defaults and multiple passes. A 'pass'
         refers to taking the detected onsets from predominant pulse estimation, using these to create a new prior array,
@@ -198,17 +336,21 @@ class OnsetMaker:
             tempo_max (int, optional): the maximum possible tempo (in BPM) to use for the first pass, defaults to 300
             use_uniform (bool, optional): use a uniform distribution as prior over the default truncated normal
             use_nonoptimised_defaults (bool, optional): use default parameters over optimised, defaults to False
+            picker (callable, optional): the function to use when picking beats from the pulse curve
 
         Returns:
-            np.array: an array of detected crotchet beat positions
+            np.array: an array of detected crotchet beat positions from the final pass
 
         """
 
+        # If we haven't passed in a picker function for extracting beats from our PLP curve, set this to our default
+        if picker is None:
+            picker = self.localmin_localmax_interpolate
         # If we haven't passed in an onset strength envelope, get this now
         if env is None:
             env = self.env['mix']
         # If we're using defaults, set kwargs to an empty dictionary
-        kws = self.onset_detect_params['mix'] if not use_nonoptimised_defaults else dict()
+        kws = self.onset_detect_params['mix_plp'] if not use_nonoptimised_defaults else dict()
         # Update our default parameters with any kwargs we've passed in
         kws.update(**kwargs)
         self._try_get_kwarg_and_remove('passes', kws, default_=3)
@@ -218,29 +360,27 @@ class OnsetMaker:
                 tempo_max_: int = 300,
                 prior_: stats.rv_continuous = None,
         ) -> np.array:
-            """
-            Wrapper function around librosa.beat.plp that takes in arguments from a current pass and converts the
-            output to timestamps automatically.
-            """
+            """Wrapper function around librosa.beat.plp"""
+
             # Obtain our predominant local pulse estimation envelope
             pulse = librosa.beat.plp(
                 y=self.audio['mix'].mean(axis=1),  # Load in the full mix, transposed as necessary
                 sr=self.sample_rate,
                 onset_envelope=env,
                 hop_length=self.hop_length,
-                tempo_min=tempo_min_,
+                tempo_min=tempo_min_, # the following arguments are set according to our most recent pass
                 tempo_max=tempo_max_,
                 prior=prior_,
                 **kws
             )
-            # Extract the local maxima from our envelope, flatten the array, and convert from frames to timestamps
+            # Extract the beats from our envelope, flatten the array, and convert from frames to timestamps
             return librosa.frames_to_time(
-                np.flatnonzero(
-                    librosa.util.localmax(pulse)
-                ), sr=self.sample_rate
+                picker(pulse),    # we use the passed custom function to extract the beats from our envelope
+                sr=self.sample_rate,
+                hop_length=self.hop_length
             )
 
-        # Get our first pass: this always uses a uniform distribution over our starting minimum and maximum tempo
+        # Create the first pass, using a uniform distribution
         pass_ = plp(
             prior_=stats.uniform(tempo_min, tempo_max),
             tempo_min_=tempo_min,
@@ -276,10 +416,8 @@ class OnsetMaker:
                     prior_=prior,
                 )
         # Once we've completed all of our passes, set our tempo attribute to the mean bpm from the most recent pass
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore', RuntimeWarning)
-            self.tempo = np.nanmean(np.array([60 / p for p in np.diff(pass_)]))
-        # TODO: implement some sort of warning here when tempo seems to drift a lot
+        self.tempo = autils.calculate_tempo(pass_)
+        # TODO: implement some sort of warning here when tempo seems to drift a lot?
         return pass_
 
     def onset_strength(
@@ -724,6 +862,7 @@ class OnsetMaker:
         # Define the onset detection threshold: either hard or tempo-adjustable
         if use_hard_threshold and threshold is None:
             threshold = self.window
+        # TODO: can we use non-centered windows? i.e smaller window to 'left' of crotchet than to 'right'
         elif not use_hard_threshold:
             threshold = ((60 / self.tempo) * 4) * self.detection_note_value
         # Define the matching function and return the list of matched onsets below our threshold
@@ -930,20 +1069,17 @@ class OnsetMaker:
 
 @click.command()
 @click.option(
-    "-data", "data_filepath", type=click.Path(exists=True),
-    default=f"{autils.get_project_root()}\data"
+    "-data", "data_filepath", type=click.Path(exists=True), default=f"{autils.get_project_root()}\data"
 )
 @click.option(
-    "-reports", "reports_filepath", type=click.Path(exists=True),
-    default=rf"{autils.get_project_root()}\reports"
+    "-reports", "reports_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\reports"
 )
 @click.option(
     "-references", "references_filepath", type=click.Path(exists=True),
     default=rf"{autils.get_project_root()}\references"
 )
 @click.option(
-    "-models", "models_filepath", type=click.Path(exists=True),
-    default=rf"{autils.get_project_root()}\models"
+    "-models", "models_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\models"
 )
 @click.option(
     "--click", "generate_click", is_flag=True, default=True, help='Generate a click track for detected onsets/beats'
@@ -977,6 +1113,7 @@ def main(
     # Iterate through each entry in the corpus
     for corpus_item in corpus:
         logger.info(f'... now working on item {corpus_item["id"]}, track name {corpus_item["track_name"]}')
+        # Create the OnsetMaker class instance for this item in the corpus
         made = OnsetMaker(
             item=corpus_item,
             data_filepath=data_filepath,
@@ -985,20 +1122,33 @@ def main(
         )
         # Generate the onset envelope for the full mix and track the beats within it
         made.env['mix'] = made.onset_strength('mix', use_nonoptimised_defaults=False)
-        made.ons['mix'] = made.beat_track(env=made.env['mix'], use_uniform=False, use_nonoptimised_defaults=False)
+        # Track the beats in the full mix of the audio file, using multiple passes of the required algorithsm
+        # First, we track the beats using predominant pulse estimation, interpolating between minima/maxima of the pulse
+        made.ons['mix_interpolated'] = made.beat_track_plp(
+            env=made.env['mix'],
+            use_uniform=False,
+            use_nonoptimised_defaults=False,
+            picker=made.localmin_localmax_interpolate
+        )
+        # Second, we track the beats using recurrent neural networks
+        made.ons['mix_madmom'] = made.beat_track_rnn(
+            use_nonoptimised_defaults=False
+        )
+        # Try
         try:
-            # TODO: this should append a flat list instead, at the moment the output is really nested and gross
-            made.onset_evaluation.append(list(made.compare_onset_detection_accuracy(
+            eval_ = made.compare_onset_detection_accuracy(
                 fname=rf'{references_filepath}\manual_annotation\{corpus_item["fname"]}_mix.txt',
-                onsets=[made.ons['mix']],
-                onsets_name=['optimised_librosa'],
+                onsets=[made.ons['mix_interpolated'], made.ons['mix_madmom']],
+                onsets_name=['interpolated', 'madmom'],
                 instr='mix',
-            )))
+            )
         except FileNotFoundError:
             pass
+        else:
+            made.onset_evaluation.append(chain.from_iterable(list(eval_)))
         # Generate the click track for the tracked beats
         if generate_click:
-            made.generate_click_track(instr='mix', onsets=[made.ons['mix']])
+            made.generate_click_track(instr='mix', onsets=[made.ons['mix_madmom']], start_freq=1250)
         # Iterate through each instrument
         for ins in ['drums', 'piano', 'bass']:
             # Get the onset envelope for this instrument
@@ -1020,14 +1170,14 @@ def main(
             except FileNotFoundError:
                 pass
             # Match the detected onsets with our detected crotchet beats
-            matched = made.match_onsets_and_beats(beats=made.ons['mix'], onsets=made.ons[ins])
+            matched = made.match_onsets_and_beats(beats=made.ons['mix_madmom'], onsets=made.ons[ins])
             # Output our click track of detected beats + matched onsets
             if generate_click:
                 made.generate_click_track(instr=ins, onsets=[made.ons[ins]])
                 made.generate_click_track(instr=ins, onsets=[matched], tag='beats')
         # Match the detected onsets together with the detected beats to generate our summary dictionary
         made.summary_dict = made.generate_matched_onsets_dictionary(
-            beats=made.ons['mix'],
+            beats=made.ons['mix_madmom'],
             onsets_list=[made.ons['piano'], made.ons['bass'], made.ons['drums']],
             instrs_list=['piano', 'bass', 'drums'],
             use_hard_threshold=False
