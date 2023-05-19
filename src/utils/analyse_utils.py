@@ -123,21 +123,39 @@ def try_and_load(
 
 
 def iqr_filter(
-        arr: np.ndarray,
+        arr: np.array,
         low: int = 25,
         high: int = 75,
-        mult: float = 1.5
+        mult: float = 1.5,
+        fill_nans: bool = False,
 ) -> np.ndarray:
-    """Simple IQR-based range filter that subsets array b where q1(b) - 1.5 * iqr(b) < b[n] < q3(b) + 1.5 * iqr(b)"""
+    """Simple IQR-based range filter that subsets array b where q1(b) - 1.5 * iqr(b) < b[n] < q3(b) + 1.5 * iqr(b)
+
+    Parameters:
+        arr (np.array): the array of values to clean
+        low (int, optional): the lower quantile to use, defaults to 25
+        high (int, optional): the upper quantile to use, defaults to 75
+        mult (float, optional): the amount to multiply the IQR by, defaults to 1.5
+        fill_nans (bool, optional): replace cleaned values with np.nan, such that the array shape remains the same
+
+    Returns:
+        np.array
+
+    """
     # Get our upper and lower bound from the array
     min_ = np.nanpercentile(arr, low)
     max_ = np.nanpercentile(arr, high)
     # Construct the IQR
     iqr = max_ - min_
     # Filter the array between our two bounds and return the result
-    return np.array(
-        [b for b in arr if (mult * iqr) - min_ < b < (mult * iqr) + max_]
-    )
+    if fill_nans:
+        return np.array(
+            [b if min_ - (mult * iqr) < b < max_ + (mult * iqr) else np.nan for b in arr]
+        )
+    else:
+        return np.array(
+            [b for b in arr if min_ - (mult * iqr) < b < max_ + (mult * iqr)]
+        )
 
 
 def get_tracks_with_manual_annotations(

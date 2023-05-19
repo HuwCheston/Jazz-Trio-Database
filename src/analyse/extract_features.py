@@ -5,6 +5,7 @@
 Generate the phase correction models for each item in the corpus
 """
 
+import warnings
 from math import isnan
 
 import numpy as np
@@ -20,13 +21,16 @@ from src.analyse.detect_onsets import OnsetMaker
 class ModelMaker:
     sample_rate = autils.SAMPLE_RATE
     instrs = ['piano', 'bass', 'drums']
+    interpolation_limit = 2
 
     def __init__(
             self,
-            om: OnsetMaker
+            om: OnsetMaker,
+            **kwargs
     ):
         self.om = om
         self.item = om.item
+        self.interpolate: bool = kwargs.get('interpolate', True)
         self.df = self._format_df(om.summary_dict)
         self.models = {}
         self.summary_df = None
@@ -67,6 +71,8 @@ class ModelMaker:
                 pd.DataFrame
 
             """
+            if self.interpolate:
+                df[endog_ins] = self.interpolate_missing_onsets(df[endog_ins])
             # Compile the inter-onset intervals
             dic = {
                 f'{endog_ins}_prev_ioi': df[endog_ins].diff(),
@@ -81,16 +87,37 @@ class ModelMaker:
         df = pd.DataFrame(summary_dict)
         return pd.concat([df, *[formatter(in_, [i for i in self.instrs if i != in_]) for in_ in self.instrs]], axis=1)
 
+    def interpolate_missing_onsets(
+            self, onset_arr
+    ) -> np.array:
+        """Interpolate to fill missing onsets in an array of onsets."""
+
+        consecutive = lambda data: np.split(data, np.where(np.diff(data) != 1)[0] + 1)
+        cons = consecutive(np.argwhere(np.isnan(onset_arr.to_numpy())).flatten())
+        for con in cons:
+            if len(con) <= self.interpolation_limit:
+                try:
+                    first, last = onset_arr[con[0] - 1], onset_arr[con[-1] + 1]
+                except (IndexError, KeyError):
+                    pass
+                else:
+                    onset_arr[con] = np.linspace(first, last, len(con) + 2)[1:-1]
+        return onset_arr
+
     def generate_model(
             self,
             endog_ins: str,
             standardise: bool = False,
+            iqr_clean: bool = True,
+            difference_ioi: bool = True,
     ) -> RegressionResultsWrapper | None:
         """Generates the phase correction model for one instrument.
 
         Arguments:
             endog_ins (str): the name of the 'dependent variable' instrument, whose IOIs we are predicting
-            standardise (bool, optional): use standard ('z') scores when computing regression, defaults to True
+            standardise (bool, optional): use standard ('z') scores when computing regression, defaults to False
+            iqr_clean (bool, optional): run an IQR filter across all data before modelling, defaults to True
+            difference_ioi (bool, optional): take the first difference of IOI data before modelling, defaults to True
 
         Returns:
             RegressionResultsWrapper: the fitted regression model
@@ -98,28 +125,40 @@ class ModelMaker:
         """
         exog = [ex for ex in self.instrs if ex != endog_ins]
         # Create our asynchrony (coupling) terms in the model
-        exog_ins = '+'.join(f'{endog_ins}_{instr}_asynchrony' for instr in exog)
+        async_cols = [f'{endog_ins}_{instr}_asynchrony' for instr in exog]
         # Create the rest of our model
-        md = f'{endog_ins}_next_ioi~{endog_ins}_prev_ioi+' + exog_ins
+        md = f'{endog_ins}_next_ioi~{endog_ins}_prev_ioi+' + '+'.join(async_cols)
+        df = self.df.copy(deep=True)
+        # If we're standardising, convert our columns to Z-scores
         if standardise:
             try:
-                df = self.df.select_dtypes(include=[np.number]).dropna().apply(stats.zscore)
+                df = (
+                    df.select_dtypes(include=[np.number])
+                      .dropna()
+                      .apply(stats.zscore)
+                )
             except ValueError:
                 return None
-        else:
-            df = self.df
+        # If we're cleaning our columns to remove values +/- 1.5 * IQR below upper/lower bounds
+        if iqr_clean:
+            for col in [*async_cols, f"{endog_ins}_prev_ioi", f'{endog_ins}_next_ioi']:
+                df[col] = autils.iqr_filter(df[col], fill_nans=True)
+        # If we're using the first difference of our inter-onset interval columns
+        if difference_ioi:
+            for col in [f"{endog_ins}_prev_ioi", f'{endog_ins}_next_ioi']:
+                df[col] = df[col].diff()
         # Create the regression model, fit to the data, and return
         try:
             return smf.ols(md, data=df, missing='drop').fit()
         except (ValueError, IndexError):
             return None
 
-    @staticmethod
     def _extract_model_coefs(
+            self,
             md: RegressionResultsWrapper | None,
             endog_ins: str,
             coupling_var: str = 'asynchrony',
-            timekeeper_var: str = 'prev_ioi'
+            ioi_var: str = 'prev_ioi'
     ) -> dict:
         """
 
@@ -129,25 +168,22 @@ class ModelMaker:
                 exog_ins: str
         ) -> float:
             try:
-                return di[f'{endog_ins}_{exog_ins}_{coupling_var}']
+                coef = di[f'{endog_ins}_{exog_ins}_{coupling_var}']
+                if coef < 0:
+                    warnings.warn(
+                        f'track {self.item["track_name"]}, coupling {endog_ins}/{exog_ins} < 0 ({coef})', UserWarning
+                    )
+                return coef
             except KeyError:
                 return np.nan
 
+        cols = ['intercept', 'self_coupling', 'coupling_piano', 'coupling_bass', 'coupling_drums']
         if md is None:
-            return {
-                col: np.nan for col in [
-                    'intercept', 'self_coupling', 'coupling_piano', 'coupling_drums', 'coupling_bass'
-                ]
-            }
+            return {col: np.nan for col in cols}
         else:
             di = md.params.to_dict()
-            return {
-                'intercept': di['Intercept'],
-                'self_coupling': di[f'{endog_ins}_{timekeeper_var}'],
-                'coupling_piano': getter('piano'),
-                'coupling_bass': getter('bass'),
-                'coupling_drums': getter('drums'),
-            }
+            vals = [di['Intercept'], di[f'{endog_ins}_{ioi_var}'], getter('piano'), getter('bass'), getter('drums')]
+            return {c: v for c, v in zip(cols, vals)}
 
     @staticmethod
     def _extract_model_goodness_of_fit(
@@ -165,6 +201,7 @@ class ModelMaker:
             }
         else:
             return {
+                'n_observations': int(md.nobs),
                 'resid_std': np.std(md.resid),
                 'resid_len': len(md.resid),
                 'rsquared': md.rsquared,
@@ -211,7 +248,7 @@ class ModelMaker:
             'ioi_mean': self.df[f'{endog_ins}_prev_ioi'].mean(),
             'ioi_median': self.df[f'{endog_ins}_prev_ioi'].median(),
             'ioi_std': self.df[f'{endog_ins}_prev_ioi'].std(),
-            'ioi_npvi': self.extract_npvi(self.df[f'{endog_ins}_prev_ioi']),
+            # 'ioi_npvi': self.extract_npvi(self.df[f'{endog_ins}_prev_ioi']),
             # Cleaning metadata, e.g. missing beats
             'fraction_silent': self.om.silent_perc[endog_ins],
             'missing_beats': self.df[endog_ins].isna().sum(),
@@ -229,17 +266,16 @@ if __name__ == "__main__":
     onsets = autils.unserialise_object(rf'{autils.get_project_root()}\models', 'matched_onsets')
     dfs = []
     for ons in onsets:
-        mm = ModelMaker(om=ons)
-        summary = []
-        for ins in ['piano', 'bass', 'drums']:
-            mm.models[ins] = mm.generate_model(ins, standardise=False)
-            summary.append(mm.create_instrument_dict(endog_ins=ins, md=mm.models[ins]))
-        mm.summary_df = pd.DataFrame(summary)
-        if mm.item['track_name'] == "Blues In 'F'":
-            pass
-        dfs.append(mm.summary_df)
+        for bo in [True, False]:
+            mm = ModelMaker(om=ons, interpolate=bo)
+            summary = []
+            for ins in autils.INSTRS_TO_PERF.keys():
+                mm.models[ins] = mm.generate_model(ins, standardise=False, difference_ioi=True, iqr_clean=True)
+                summary.append(mm.create_instrument_dict(endog_ins=ins, md=mm.models[ins]))
+            mm.summary_df = pd.DataFrame(summary)
+            mm.summary_df['interpolated'] = bo
+            dfs.append(mm.summary_df)
     big = pd.concat(dfs)
-    pass
 
 # import seaborn as sns
 # import matplotlib.pyplot as plt
