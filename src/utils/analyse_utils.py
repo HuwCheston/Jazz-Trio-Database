@@ -3,6 +3,7 @@ import os
 import sys
 import warnings
 from pathlib import Path
+from typing import Any
 
 import dill
 import numpy as np
@@ -10,14 +11,14 @@ import pandas as pd
 import tensorflow as tf
 from basic_pitch import ICASSP_2022_MODEL_PATH
 
-# Set options in pandas here so they carry through whenever this file is imported by another
+# Set options in pandas and numpy here so they carry through whenever this file is imported by another
+# This disables scientific notation and forces all rows/columns to be printed: helps with debugging!
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
+np.set_printoptions(suppress=True)
 
 # Define constants used across many files
-# TODO: test higher sample rates
-
-SAMPLE_RATE = 88200
+SAMPLE_RATE = 88200    # TODO: test higher sample rates
 FILE_FMT = 'wav'
 BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
 N_PLP_PASSES = 3    # This seems to lead to the best results after optimization
@@ -32,14 +33,11 @@ INSTRS_TO_PERF = {
 
 def get_project_root() -> Path:
     """Returns the root directory of the project"""
-
     return Path(__file__).absolute().parent.parent.parent
 
 
 class HidePrints:
-    """
-    Helper class that prevents a function from printing to stdout when used as a context manager
-    """
+    """Helper class that prevents a function from printing to stdout when used as a context manager"""
 
     def __enter__(
             self
@@ -58,9 +56,7 @@ class HidePrints:
 
 
 class YtDlpFakeLogger:
-    """
-    Fake logging class passed to yt-dlp instances to disable overly-verbose logging and unnecessary warnings
-    """
+    """Fake logging class passed to yt-dlp instances to disable overly-verbose logging and unnecessary warnings"""
 
     def debug(self, msg=None):
         pass
@@ -77,10 +73,7 @@ def serialise_object(
         fpath: str,
         fname: str
 ) -> None:
-    """
-    Simple wrapper around dill.dump that takes in an object, directory, and filename, and creates a serialised object
-    """
-
+    """Wrapper around dill.dump that takes in an object, directory, and filename, and creates a serialised object"""
     with open(rf'{fpath}\{fname}.p', 'wb') as fi:
         dill.dump(obj, fi)
 
@@ -89,23 +82,15 @@ def unserialise_object(
         fpath: str,
         fname: str
 ) -> object:
-    """
-    Simple wrapper around dill.load that unserialises an object and returns
-    """
-
-    return dill.load(
-        open(fr'{fpath}\{fname}.p', 'rb')
-    )
+    """Simple wrapper around dill.load that unserialises an object and returns it"""
+    return dill.load(open(fr'{fpath}\{fname}.p', 'rb'))
 
 
 def load_json(
         fpath: str = 'r..\..\data\processed',
         fname: str = 'processing_results.json'
 ) -> dict:
-    """
-    Simple wrapper around json.load
-    """
-
+    """Simple wrapper around json.load"""
     with open(rf'{fpath}\{fname}.json', "r+") as in_file:
         return json.load(in_file)
 
@@ -115,10 +100,7 @@ def save_json(
         fpath: str,
         fname: str
 ) -> None:
-    """
-    Simple wrapper around json.dump
-    """
-
+    """Simple wrapper around json.dump"""
     with open(rf'{fpath}\{fname}.json', "w") as out_file:
         json.dump(obj, out_file)
 
@@ -146,10 +128,7 @@ def iqr_filter(
         high: int = 75,
         mult: float = 1.5
 ) -> np.ndarray:
-    """
-    Simple IQR-based range filter that subsets array b where q1(b) - 1.5 * iqr(b) < b[n] < q3(b) + 1.5 * iqr(b)
-    """
-
+    """Simple IQR-based range filter that subsets array b where q1(b) - 1.5 * iqr(b) < b[n] < q3(b) + 1.5 * iqr(b)"""
     # Get our upper and lower bound from the array
     min_ = np.nanpercentile(arr, low)
     max_ = np.nanpercentile(arr, high)
@@ -167,7 +146,6 @@ def get_tracks_with_manual_annotations(
         all_tracks: tuple = ('bass', 'drums', 'piano', 'mix')
 ) -> list:
     """Returns the filenames of tracks that contain a full set of manual annotation files"""
-
     res = {}
     for file in os.listdir(annotation_dir):
         if file.endswith(annotation_ext):
@@ -182,7 +160,6 @@ def get_tracks_with_manual_annotations(
 
 def check_item_present_locally(fname: str) -> bool:
     """Returns whether a given filepath is present locally or not"""
-
     return os.path.isfile(os.path.abspath(fname))
 
 
@@ -190,7 +167,33 @@ def calculate_tempo(
         pass_: np.ndarray
 ) -> float:
     """Extract the average tempo from an array of times corresponding to crotchet beat positions"""
-
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)
         return np.nanmean(np.array([60 / p for p in np.diff(pass_)]))
+
+
+def try_get_kwarg_and_remove(
+        kwarg: str,
+        kwargs: dict,
+        default_: bool = False
+) -> Any:
+    """Try and get an argument from a kwargs dictionary, remove after getting, and return the value (or a default).
+
+    Arguments:
+        kwarg (str): the argument to attempt to get from the kwargs dictionary
+        kwargs (dict): the dictionary of keyword arguments
+        default_ (bool, optional): the value to return if kwarg is not found in kwargs, defaults to None
+
+    Returns:
+        Any: the value returned from kwargs, or a default
+
+    """
+    # Try and get the keyword argument from our dictionary of keyword arguments, with a default
+    got = kwargs.get(kwarg, default_)
+    # Attempt to delete the keyword argument from our dictionary of keyword arguments
+    try:
+        del kwargs[kwarg]
+    except KeyError:
+        pass
+    # Return the keyword argument
+    return got

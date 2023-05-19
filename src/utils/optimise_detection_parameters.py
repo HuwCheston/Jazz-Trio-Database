@@ -120,6 +120,7 @@ def set_new_optimised_values(
     new['param'], new['instr'], new['val'] = zip(*best)
     # Iterate through each instrument and update the parameters dictionary with the optimised values
     for idx, grp in new.groupby('instr'):
+        # TODO: this is breaking -- need to set idx == mix_plp
         dic[idx].update(**pd.Series(grp['val'].apply(literal_eval).values, index=grp['param']).to_dict())
 
 
@@ -384,3 +385,12 @@ if __name__ == "__main__":
         fpath=rf'{autils.get_project_root()}\references\optimised_parameters',
         fname='onset_detect_optimised'
     )
+
+# Traceback (most recent call last):
+#   File "C:\Python Projects\jazz-corpus-analysis\src\utils\optimise_detection_parameters.py", line 341, in <module>
+#     optimise_parameters(
+#   File "C:\Python Projects\jazz-corpus-analysis\src\utils\optimise_detection_parameters.py", line 311, in optimise_parameters
+#     set_new_optimised_values(
+#   File "C:\Python Projects\jazz-corpus-analysis\src\utils\optimise_detection_parameters.py", line 123, in set_new_optimised_values
+#     dic[idx].update(**pd.Series(grp['val'].apply(literal_eval).values, index=grp['param']).to_dict())
+# KeyError: 'mix'

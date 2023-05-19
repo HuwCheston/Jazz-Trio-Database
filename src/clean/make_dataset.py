@@ -535,10 +535,7 @@ def main(
         disable_spleeter: bool,
         disable_demucs: bool
 ) -> None:
-    """
-    Runs clean processing scripts to turn raw clean from (../raw) into cleaned clean ready to be analyzed
-    (saved in ../processed)
-    """
+    """Runs processing scripts to turn corpus from (./references) into audio, ready to be analyzed"""
 
     # Start the timer
     start = time()

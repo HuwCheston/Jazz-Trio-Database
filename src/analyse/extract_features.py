@@ -205,6 +205,8 @@ class ModelMaker:
             'tempo': self.om.tempo,
             'instrument': endog_ins,
             'performer': self.item['musicians'][autils.INSTRS_TO_PERF[endog_ins]],
+            # Raw beats
+            'raw_beats': self.df[endog_ins],
             # Performance summary statistics
             'ioi_mean': self.df[f'{endog_ins}_prev_ioi'].mean(),
             'ioi_median': self.df[f'{endog_ins}_prev_ioi'].median(),
@@ -233,6 +235,8 @@ if __name__ == "__main__":
             mm.models[ins] = mm.generate_model(ins, standardise=False)
             summary.append(mm.create_instrument_dict(endog_ins=ins, md=mm.models[ins]))
         mm.summary_df = pd.DataFrame(summary)
+        if mm.item['track_name'] == "Blues In 'F'":
+            pass
         dfs.append(mm.summary_df)
     big = pd.concat(dfs)
     pass

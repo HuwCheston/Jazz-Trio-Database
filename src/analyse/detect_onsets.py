@@ -1,16 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Automatically detects note and beat onsets in the source separated tracks for each item in the corpus
-"""
+"""Automatically detects note and beat onsets in the source separated tracks for each item in the corpus"""
 
 import logging
 import warnings
 from itertools import chain
 from pathlib import Path
 from time import time
-from typing import Generator, Any
+from typing import Generator
 
 import basic_pitch.inference as bp
 import click
@@ -38,6 +36,12 @@ class OnsetMaker:
     # TODO: sort out the correct sample rate and hop length
     sample_rate = autils.SAMPLE_RATE
     hop_length = 512
+    # TODO: at some point we need to justify/refine these.
+    # TODO: for drummers, we may want our left threshold to scale with tempo, as BUR decreases as tempo increases
+    detection_note_values = dict(
+        left=1/32,
+        right=1/16
+    )
     detection_note_value = 1 / 16  # Count onsets a semiquaver away from a detected beat as marking the beat
     silence_threshold = 1 / 3  # Warn when more of a track is silent than this threshold
     # The threshold to use when matching onsets
@@ -116,8 +120,8 @@ class OnsetMaker:
 
         Raises:
             UserWarning: when a greater portion of a track than given in OnsetMaker.silence_threshold is silent
-        """
 
+        """
         # These arguments are passed in whenever this class is constructed, i.e. to __init__
         duration = kwargs.get('duration', None)
         offset = kwargs.get('offset', 0)
@@ -167,8 +171,8 @@ class OnsetMaker:
 
         Returns:
             str: the overriden filepath if this is required and present locally, or the default (stereo) filepath if not
-        """
 
+        """
         if 'channel_overrides' in self.item.keys():
             if name in self.item['channel_overrides'].keys():
                 fp = fpath.replace(name, f'{self.item["channel_overrides"][name]}_{name}')
@@ -179,7 +183,6 @@ class OnsetMaker:
     @staticmethod
     def localmin_localmax_interpolate(pulse) -> np.array:
         """Extracts onset positions by interpolating between local minima and maxima within an envelope"""
-
         # Get our local minima and maxima
         mi = np.flatnonzero(librosa.util.localmin(pulse))
         ma = np.flatnonzero(librosa.util.localmax(pulse))
@@ -196,13 +199,11 @@ class OnsetMaker:
     @staticmethod
     def localmax(pulse) -> np.array:
         """Extracts onset positions by taking local maxima from an envelope"""
-
         return np.flatnonzero(librosa.util.localmax(pulse))
 
     @staticmethod
     def localmin(pulse) -> np.array:
         """Extracts onset positions by taking local minima from an envelope"""
-
         return np.flatnonzero(librosa.util.localmin(pulse))
 
     def beat_track_rnn(
@@ -237,7 +238,7 @@ class OnsetMaker:
         kws = self.onset_detect_params['mix_rnn'] if not use_nonoptimised_defaults else dict()
         # Update our default parameters with any kwargs we've passed in
         kws.update(**kwargs)
-        self._try_get_kwarg_and_remove('passes', kws, default_=3)
+        autils.try_get_kwarg_and_remove('passes', kws, default_=3)
 
         def tracker(
                 tempo_min_: int = 100,
@@ -298,7 +299,7 @@ class OnsetMaker:
                 tempo_min, tempo_max = low, high
             else:
                 # Use mean +/- 1 standard deviation as our maximum and minimum allowed tempo
-                tempo_min, tempo_max = (mean - std) - (mean + std)
+                tempo_min, tempo_max = (mean - std), (mean + std)
             # Create the new pass, using the new maximum and minimum tempo
             pass_ = tracker(
                 tempo_min_=tempo_min,
@@ -353,7 +354,7 @@ class OnsetMaker:
         kws = self.onset_detect_params['mix_plp'] if not use_nonoptimised_defaults else dict()
         # Update our default parameters with any kwargs we've passed in
         kws.update(**kwargs)
-        self._try_get_kwarg_and_remove('passes', kws, default_=3)
+        autils.try_get_kwarg_and_remove('passes', kws, default_=3)
 
         def plp(
                 tempo_min_: int = 100,
@@ -361,15 +362,15 @@ class OnsetMaker:
                 prior_: stats.rv_continuous = None,
         ) -> np.array:
             """Wrapper function around librosa.beat.plp"""
-
             # Obtain our predominant local pulse estimation envelope
             pulse = librosa.beat.plp(
                 y=self.audio['mix'].mean(axis=1),  # Load in the full mix, transposed as necessary
                 sr=self.sample_rate,
                 onset_envelope=env,
                 hop_length=self.hop_length,
-                tempo_min=tempo_min_, # the following arguments are set according to our most recent pass
+                # the following arguments are set according to our most recent pass
                 tempo_max=tempo_max_,
+                tempo_min=tempo_min_,
                 prior=prior_,
                 **kws
             )
@@ -442,7 +443,6 @@ class OnsetMaker:
             np.array: the onset strength envelope as an array
 
         """
-
         # If we haven't passed any audio in, then construct this using the instrument name that we've passed
         if aud is None:
             aud = self.audio[instr].mean(axis=1)
@@ -460,34 +460,6 @@ class OnsetMaker:
                 hop_length=self.hop_length,
                 **kws
             )
-
-    @staticmethod
-    def _try_get_kwarg_and_remove(
-            kwarg: str,
-            kwargs: dict,
-            default_: bool = False
-    ) -> Any:
-        """Try and get an argument from a kwargs dictionary, remove after getting, and return the value (or a default).
-
-        Arguments:
-            kwarg (str): the argument to attempt to get from the kwargs dictionary
-            kwargs (dict): the dictionary of keyword arguments
-            default_ (bool, optional): the value to return if kwarg is not found in kwargs, defaults to None
-
-        Returns:
-            Any: the value returned from kwargs, or a default
-
-        """
-
-        # Try and get the keyword argument from our dictionary of keyword arguments, with a default
-        got = kwargs.get(kwarg, default_)
-        # Attempt to delete the keyword argument from our dictionary of keyword arguments
-        try:
-            del kwargs[kwarg]
-        except KeyError:
-            pass
-        # Return the keyword argument
-        return got
 
     def onset_detect(
             self,
@@ -517,7 +489,6 @@ class OnsetMaker:
             np.array: the position of detected onsets
 
         """
-
         # If we haven't passed any input audio, get this now
         if aud is None:
             aud = self.audio[instr].mean(axis=1)
@@ -528,7 +499,7 @@ class OnsetMaker:
         # Update the default parameters for the input instrument with any kwargs we've passed in
         self.onset_detect_params[instr].update(**kwargs)
         # The RMS argument can't be passed to .onset_detect(). We need to try and get it, then remove it from our dict
-        rms = self._try_get_kwarg_and_remove(
+        rms = autils.try_get_kwarg_and_remove(
             kwarg='rms',
             kwargs=self.onset_detect_params[instr],
             default_=False
@@ -582,14 +553,12 @@ class OnsetMaker:
             np.array: the cleaned onset array
 
         """
-
         # Use the default window unless we've passed one in
         if window is None:
             window = self.window
 
         def cleaner(ons1: float, ons2: float) -> float:
             """Compares two onsets and sets the later onset equal to the first if the distance is below a threshold"""
-
             if ons2 - ons1 < window:
                 # Little hack: we set the two onsets equal to each other here, then remove non-unique elements later
                 ons2 = ons1
@@ -630,7 +599,6 @@ class OnsetMaker:
             np.array: the detected onsets, after cleaning via `OnsetMaker._clean_polyphonic_midi_output`
 
         """
-
         # Update the default parameters for the input instrument with any kwargs we've passed in
         self.polyphonic_onset_detect_params[instr].update(**kwargs)
         # If we're using defaults, set kwargs to an empty dictionary
@@ -667,7 +635,6 @@ class OnsetMaker:
             np.array: the filtered audio array
 
         """
-
         # Create the filter with the given values
         # Weird bug in PyCharm with signal.butter return here, so we disable checking for this statement
         # noinspection PyTupleAssignmentBalance
@@ -706,7 +673,6 @@ class OnsetMaker:
             **kwargs: additional keyword arguments passed to `librosa.clicks`
 
         """
-
         # Create a default list of onsets if we haven't passed one in ourselves
         if onsets is None:
             onsets = [self.ons[instr]]
@@ -739,15 +705,12 @@ class OnsetMaker:
         process = audio + sum(clicks)
         # Create the audio file and save into the click tracks directory
         with open(rf'{self.reports_dir}\click_tracks\{self.item["fname"]}_{instr}_{tag}.{autils.FILE_FMT}', 'wb') as f:
-            sf.write(
-                f,
-                process,
-                self.sample_rate
-            )
+            sf.write(f, process, self. sample_rate)
 
     def compare_onset_detection_accuracy(
             self,
-            fname: str,
+            ref: np.array = None,
+            fname: str = None,
             instr: str = None,
             onsets: list[np.array] = None,
             onsets_name: list[str] = None,
@@ -759,9 +722,14 @@ class OnsetMaker:
         For every onset detected by an algorithm, attempt to match these to the nearest onset in a reference set
         (usually obtained from manual annotation). Then, construct a summary dictionary, containing summary statistics
         relating to the precision, recall, and accuracy of the detection. For more information on the evaluation
-        procedure, see `mir_eval.onset.f_measure`, which this function acts as a wrapper for.
+        procedure, see `mir_eval.onset.f_measure`.
+
+        At least one of ref or fname must be passed: ref must be an array of onset times, in seconds; fname must be a
+        path to a text file containing onset times, with one onset per line. If both ref and fname are passed (don't do
+        this), ref will take priority.
 
         Arguments:
+            ref (np.array): an array of reference onsets (in seconds) to use for evaluation
             fname (str): the file path to a reference set of onsets, one onset per line
             instr (str): the name of an instrument or track
             onsets (list[np.array]): a list of arrays, each array should be the results from one algorithm
@@ -771,10 +739,13 @@ class OnsetMaker:
 
         Yields:
             dict: each dictionary contains summary statistics for one evaluation
-        """
 
-        # Generate the array of reference onsets from our passed file
-        ref = np.genfromtxt(fname)[:, 0]
+        """
+        if ref is None and fname is None:
+            raise AttributeError('At least one of ref, fname must be provided')
+        # If we haven't passed in reference onsets but we have passed in a file path, generate the array from the file
+        elif ref is None and fname is not None:
+            ref = np.genfromtxt(fname)[:, 0]
         # If we haven't provided any names for our different onset lists, create these now
         if onsets_name is None:
             onsets_name = [None for _ in range(len(onsets))]
@@ -788,14 +759,10 @@ class OnsetMaker:
                 warnings.simplefilter('ignore', RuntimeWarning)
                 warnings.simplefilter('ignore', UserWarning)
                 # Calculate the mean asynchrony between the reference and estimate onsets
-                mean_async = np.nanmean([estimate[e] - ref[r] for r, e in match_events(ref, estimate, window)])
+                matched = match_events(ref, estimate, window)
+                mean_async = np.nanmean([estimate[e] - ref[r] for r, e in matched])
                 # Generate the F, precision, and recall values from mir_eval and yield as a dictionary
-                f, p, r = f_measure(
-                    ref,
-                    estimate,
-                    window=window
-                )
-
+                f, p, r = f_measure(ref, estimate, window=window)
             yield {
                 'name': name,
                 'instr': instr,
@@ -804,6 +771,7 @@ class OnsetMaker:
                 'recall': r,
                 'mean_asynchrony': mean_async,
                 'track': self.item['track_name'],
+                'fraction_matched': len(matched) / len(ref),
                 **kwargs
             }
 
@@ -813,7 +781,7 @@ class OnsetMaker:
             onsets: np.array = None,
             instr: str = None,
             use_hard_threshold: bool = False,
-            threshold: float = None
+            detection_note_values: dict = None
     ) -> np.array:
         """Matches event onsets with crotchet beat locations.
 
@@ -843,7 +811,7 @@ class OnsetMaker:
             onsets (np.ndarray): iterable containing onset positions, typically tracked from a source separated file
             instr (str): the name of an instrument, to be used if onsets is not provided
             use_hard_threshold (bool): whether to use a hard or tempo-dependent (default) threshold for matching onsets
-            threshold (float): the hard threshold to use, if not provided then defaults to self.window
+            detection_note_values (dict): dictionary of note values to use either side of crotchet beat, e.g. 1/32, 1/8
 
         Returns:
             np.array: the matched onset array, with shape == len(beats)
@@ -852,6 +820,30 @@ class OnsetMaker:
             AttributeError: if neither onsets or instr are provided
 
         """
+        def matcher() -> Generator:
+            """Matching function. Matches the closest onset to each beat, within a window, returns a generator"""
+            for beat in beats:
+                # Subtract our onset array from our beat
+                sub = onsets - beat
+                re = []
+                # Get the 'left onsets'; those played *before* the beat, and thre
+                left = sub[sub < 0][np.abs(sub[sub < 0]) < l_threshold]
+                # If we have left onsets, threshold them and get the one closest to the beat
+                if len(left) > 0:
+                    re.append(left.max())
+                # Get the 'right onsets'; those played *after* the beat, and threshold them
+                right = sub[sub >= 0][np.abs(sub[sub >= 0]) < r_threshold]
+                # If we have right onsets, append the one closest to the beat to our list
+                if len(right) > 0:
+                    re.append(right.min())
+                # Get the closest match from our left and right array
+                try:
+                    arr = np.array(re)
+                    closest = arr[np.abs(arr).argmin()]
+                    yield onsets[np.equal(sub, closest)][0]
+                # If our array is empty (no left or right match), we'll get an error, so catch and return nan
+                except ValueError:
+                    yield np.nan
 
         # If we haven't passed an onsets list but we have passed an instrument as a string, try and get the onset list
         if onsets is None and instr is not None:
@@ -860,18 +852,16 @@ class OnsetMaker:
         if onsets is None and instr is None:
             raise AttributeError('At least one of onsets, instr must be provided')
         # Define the onset detection threshold: either hard or tempo-adjustable
-        if use_hard_threshold and threshold is None:
-            threshold = self.window
-        # TODO: can we use non-centered windows? i.e smaller window to 'left' of crotchet than to 'right'
-        elif not use_hard_threshold:
-            threshold = ((60 / self.tempo) * 4) * self.detection_note_value
-        # Define the matching function and return the list of matched onsets below our threshold
-        sub_ = lambda b: np.abs(b - onsets)
-        try:
-            return np.array([onsets[sub_(be).argmin()] if sub_(be).min() <= threshold else np.nan for be in beats])
-        # If we didn't detect any onsets, catch the error that will result and output a list filled with nans
-        except ValueError:
-            return np.array([np.nan for _ in range(len(beats))])
+        if use_hard_threshold:
+            l_threshold = self.window
+            r_threshold = self.window
+        else:
+            if detection_note_values is None:
+                detection_note_values = self.detection_note_values
+            l_threshold = ((60 / self.tempo) * 4) * detection_note_values['left']
+            r_threshold = ((60 / self.tempo) * 4) * detection_note_values['right']
+        # Return the list of matched onsets below our threshold
+        return np.fromiter(matcher(), count=len(beats), dtype=np.float64)
 
     def generate_matched_onsets_dictionary(
             self,
@@ -918,14 +908,14 @@ class OnsetMaker:
             AttributeError: if neither onsets_list or instrs_list are passed
 
         """
-
+        # Get our required arguments
         if onsets_list and instrs_list is None:
             raise AttributeError('At least one of onsets_list and instrs_list must be provided')
         if onsets_list is None:
             onsets_list = [self.ons[ins_] for ins_ in instrs_list]
         if instrs_list is None:
             instrs_list = [i for i in range(len(onsets_list))]
-
+        # Create the dictionary of crotchet beats and matched onsets, then return
         ma: dict = {'beats': beats}
         ma.update({
             name: self.match_onsets_and_beats(beats=beats, onsets=ons_, **kwargs) for ons_, name in
@@ -954,14 +944,16 @@ class OnsetMaker:
             np.array: rows corresponding to sections of non-silent audio
 
         """
-
+        # Get the sections of the track that are not silent
         non_silent = librosa.effects.split(
             librosa.util.normalize(aud).T,
             hop_length=self.hop_length,
             **kwargs
         )
+        # Convert the non silent sections (in frames) to time stamps
         to_ts = lambda s: s / self.sample_rate
         li = np.array([(to_ts(se[0]), to_ts(se[1])) for se in non_silent if to_ts(se[1]) - to_ts(se[0]) > thresh])
+        # Combine slices of non-silent audio if the distance between the right and left edges is below the threshold
         try:
             roll = np.roll(li, 1)[1:, :]
         except IndexError:
@@ -995,17 +987,20 @@ class OnsetMaker:
             AttributeError: if neither aud or silent are passed
 
         """
-
+        # Catch any issues with arguments not being passed in
         if silent is None and aud is None:
             raise AttributeError('At least one of silent and aud must be passed!')
+        # If we haven't generated our silent sections from our audio yet, do this now (and pass in any kwargs)
         if silent is None:
             silent = self.get_nonsilent_sections(aud=aud, **kwargs)
 
+        # Get the overall duration of the track
         duration = librosa.get_duration(
             y=aud.T,
             sr=self.sample_rate,
             hop_length=self.hop_length
         )
+        # Try to return the fraction of the track which is silent
         try:
             return 1 - (np.sum(silent[:, 1] - silent[:, 0]) / duration)
         # If sil is an empty list, that means the whole track is silent. So catch the resulting error and return 1
@@ -1051,20 +1046,123 @@ class OnsetMaker:
             AttributeError: if neither silent or instr are passed
 
         """
-
+        # Catch errors if we haven't passed in the required arguments
         if silent is None and instr is None:
             raise AttributeError('At least one of silent or instr must be passed!')
+        # If we haven't passed in our silent sections but have passed in our instrument name, get the silent sections
         if silent is None:
             silent = self.get_nonsilent_sections(
                 self.audio[instr],
                 top_db=self.top_db[instr],
                 **kwargs
             )
-
+        # Remove onsets from our onset list if they occurred during a silent section of the track and return the array
         clean = []
         for slice_ in silent:
             clean.extend([ons for ons in onsets if slice_[0] < ons < slice_[1]])
         return np.array(clean)
+
+    def process_separated_audio(
+            self,
+            generate_click: bool,
+            remove_silence: bool,
+    ) -> None:
+        """Process the separated audio for all of our individual instruments (piano, bass, drums)
+
+        This is the central function for running processing on each source-separated audio file. It will generate an
+        onset envelope, detect onsets within it, remove onsets from when the track was silent, compare the detections
+        to a reference file (if this exists), generate a click track (if this is required), and match the detected
+        onsets to the nearest crotchet beat. This function must be called AFTER `OnsetMaker.process_mixed_audio`, to
+        ensure that the crotchet beat positions have been detected correctly in the raw audio mix.
+
+        Parameters:
+            generate_click (bool): whether to generate an audio click track
+            remove_silence (bool): whether to remove onsets from portions of a track deemed to be silent by librosa
+
+        """
+        # Iterate through each instrument name
+        for ins in autils.INSTRS_TO_PERF.keys():
+            # Get the onset envelope for this instrument
+            self.env[ins] = self.onset_strength(ins, use_nonoptimised_defaults=False)
+            # Get the onsets
+            self.ons[ins] = self.onset_detect(ins, env=self.env[ins], use_nonoptimised_defaults=False)
+            # If we're removing onsets when the audio is silent, do that now
+            if remove_silence:
+                sil = self.get_nonsilent_sections(aud=self.audio[ins], top_db=self.top_db[ins])
+                self.ons[ins] = self.remove_onsets_in_silent_passages(onsets=self.ons[ins], silent=sil)
+            # If we have manually annotated onsets for this item, try and evaluate the accuracy of detected onsets
+            try:
+                eval_ = chain.from_iterable(list(self.compare_onset_detection_accuracy(
+                    fname=rf'{self.references_dir}\manual_annotation\{self.item["fname"]}_{ins}.txt',
+                    onsets=[self.ons[ins]],
+                    onsets_name=['optimised_librosa'],
+                    instr=ins,
+                )))
+            except FileNotFoundError:
+                pass
+            else:
+                self.onset_evaluation.append(eval_)
+            # Match the detected onsets with our detected crotchet beats from the mad-mom output
+            matched = self.match_onsets_and_beats(beats=self.ons['mix_madmom'], onsets=self.ons[ins])
+            # Output our click track of detected beats + matched onsets
+            if generate_click:
+                self.generate_click_track(instr=ins, onsets=[self.ons[ins]], start_freq=1250)
+                self.generate_click_track(instr=ins, onsets=[matched], tag='beats', start_freq=750)
+        # Match the detected onsets together with the detected beats to generate our summary dictionary
+        self.summary_dict = self.generate_matched_onsets_dictionary(
+            beats=self.ons['mix_madmom'],
+            onsets_list=[self.ons['piano'], self.ons['bass'], self.ons['drums']],
+            instrs_list=['piano', 'bass', 'drums'],
+            use_hard_threshold=False
+        )
+        # Delete the raw audio as it will take up a lot of space when serialised
+        del self.audio
+
+    def process_mixed_audio(
+            self,
+            generate_click: bool,
+    ) -> None:
+        """Process the raw audio mix, i.e. with all tracks together.
+
+        This is the central function for running processing on the mixed audio. It will generate an onset envelope,
+        detect crotchets within it using both predominant local pulse estimation and recurrent neural networks,
+        compare the detections to a reference file (if this exists), and generate a click track (if this is
+        required). This function should be called before `OnsetMaker.process_separated_audio`, to ensure that the
+        crotchet beat positions are present before matching these to onsets detected in the source-separated tracks.
+
+        Parameters:
+            generate_click (bool): whether to generate an audio click track
+
+        """
+        # Generate the onset envelope for the full mix and track the beats within it
+        self.env['mix'] = self.onset_strength('mix', use_nonoptimised_defaults=False)
+        # Track the beats in the full mix of the audio file, using multiple passes of the required algorithm
+        # First, we track the beats using predominant pulse estimation, interpolating between minima/maxima of the pulse
+        self.ons['mix_interpolated'] = self.beat_track_plp(
+            env=self.env['mix'],
+            use_uniform=False,
+            use_nonoptimised_defaults=False,
+            picker=self.localmin_localmax_interpolate
+        )
+        # Second, we track the beats using recurrent neural networks
+        self.ons['mix_madmom'] = self.beat_track_rnn(
+            use_nonoptimised_defaults=False
+        )
+        # Try and get manual annotations for our crotchet beats, if we have them
+        try:
+            eval_ = chain.from_iterable(list(self.compare_onset_detection_accuracy(
+                fname=rf'{self.references_dir}\manual_annotation\{self.item["fname"]}_mix.txt',
+                onsets=[self.ons['mix_interpolated'], self.ons['mix_madmom']],
+                onsets_name=['interpolated', 'madmom'],
+                instr='mix',
+            )))
+        except FileNotFoundError:
+            pass
+        else:
+            self.onset_evaluation.append(eval_)
+        # Generate the click track for the tracked beats
+        if generate_click:
+            self.generate_click_track(instr='mix', onsets=[self.ons['mix_madmom']], start_freq=1250)
 
 
 @click.command()
@@ -1085,6 +1183,10 @@ class OnsetMaker:
     "--click", "generate_click", is_flag=True, default=True, help='Generate a click track for detected onsets/beats'
 )
 @click.option(
+    "--remove-silence", "remove_silence", is_flag=True, default=True,
+    help='Remove onsets in sections of source-separated tracks that are deemed to be silent'
+)
+@click.option(
     "--annotated-only", "annotated_only", is_flag=True, default=False, help='Only get items with manual annotations'
 )
 def main(
@@ -1093,11 +1195,10 @@ def main(
         references_filepath: click.Path,
         models_filepath: click.Path,
         generate_click: bool,
+        remove_silence: bool,
         annotated_only: bool
 ) -> list[OnsetMaker]:
-    """
-
-    """
+    """Runs scripts to detect onsets in audio from (../raw and ../processed) and generate data for modelling"""
 
     # Start the counter
     start = time()
@@ -1120,79 +1221,15 @@ def main(
             references_filepath=references_filepath,
             reports_filepath=reports_filepath
         )
-        # Generate the onset envelope for the full mix and track the beats within it
-        made.env['mix'] = made.onset_strength('mix', use_nonoptimised_defaults=False)
-        # Track the beats in the full mix of the audio file, using multiple passes of the required algorithsm
-        # First, we track the beats using predominant pulse estimation, interpolating between minima/maxima of the pulse
-        made.ons['mix_interpolated'] = made.beat_track_plp(
-            env=made.env['mix'],
-            use_uniform=False,
-            use_nonoptimised_defaults=False,
-            picker=made.localmin_localmax_interpolate
-        )
-        # Second, we track the beats using recurrent neural networks
-        made.ons['mix_madmom'] = made.beat_track_rnn(
-            use_nonoptimised_defaults=False
-        )
-        # Try
-        try:
-            eval_ = made.compare_onset_detection_accuracy(
-                fname=rf'{references_filepath}\manual_annotation\{corpus_item["fname"]}_mix.txt',
-                onsets=[made.ons['mix_interpolated'], made.ons['mix_madmom']],
-                onsets_name=['interpolated', 'madmom'],
-                instr='mix',
-            )
-        except FileNotFoundError:
-            pass
-        else:
-            made.onset_evaluation.append(chain.from_iterable(list(eval_)))
-        # Generate the click track for the tracked beats
-        if generate_click:
-            made.generate_click_track(instr='mix', onsets=[made.ons['mix_madmom']], start_freq=1250)
-        # Iterate through each instrument
-        for ins in ['drums', 'piano', 'bass']:
-            # Get the onset envelope for this instrument
-            made.env[ins] = made.onset_strength(ins, use_nonoptimised_defaults=False)
-            # Get the onsets
-            onse = made.onset_detect(ins, env=made.env[ins], use_nonoptimised_defaults=False)
-            # Remove onsets when the audio was silent
-            sil = made.get_nonsilent_sections(aud=made.audio[ins], top_db=made.top_db[ins])
-            made.ons[ins] = made.remove_onsets_in_silent_passages(onsets=onse, silent=sil)
-            # If we have manually annotated onsets for this item, try and evaluate the accuracy of detected onsets
-            try:
-                # TODO: this should append a flat list instead, at the moment the output is really nested and gross
-                made.onset_evaluation.append(list(made.compare_onset_detection_accuracy(
-                    fname=rf'{references_filepath}\manual_annotation\{corpus_item["fname"]}_{ins}.txt',
-                    onsets=[made.ons[ins]],
-                    onsets_name=['optimised_librosa'],
-                    instr=ins,
-                )))
-            except FileNotFoundError:
-                pass
-            # Match the detected onsets with our detected crotchet beats
-            matched = made.match_onsets_and_beats(beats=made.ons['mix_madmom'], onsets=made.ons[ins])
-            # Output our click track of detected beats + matched onsets
-            if generate_click:
-                made.generate_click_track(instr=ins, onsets=[made.ons[ins]])
-                made.generate_click_track(instr=ins, onsets=[matched], tag='beats')
-        # Match the detected onsets together with the detected beats to generate our summary dictionary
-        made.summary_dict = made.generate_matched_onsets_dictionary(
-            beats=made.ons['mix_madmom'],
-            onsets_list=[made.ons['piano'], made.ons['bass'], made.ons['drums']],
-            instrs_list=['piano', 'bass', 'drums'],
-            use_hard_threshold=False
-        )
-        # Delete the raw audio as it will take up a lot of space when serialised
-        del made.audio
+        # Run our processing on the mixed audio and then the separated audio
+        made.process_mixed_audio(generate_click, )
+        made.process_separated_audio(generate_click, remove_silence)
         # Append the OnsetMaker class to our list
         res.append(made)
     # Serialise all the OnsetMaker instances
     logger.info(f'serialising class instances ...')
-    autils.serialise_object(
-        res,
-        fpath=models_filepath,
-        fname='matched_onsets'
-    )
+    # TODO: do we want to serialise as we go? would prevent having to re-run models frequently...
+    autils.serialise_object(res, fpath=models_filepath, fname='matched_onsets')
     # Log the completion time and return the class instances
     logger.info(f'onsets detected for all items in corpus in {round(time() - start)} secs !')
     return res
