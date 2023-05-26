@@ -14,7 +14,7 @@
   "drums": {
     "fmin": 3500,
     "fmax": 11000,
-    "center": true,
+    "center": false,
     "max_size": 1
   },
   "mix": {

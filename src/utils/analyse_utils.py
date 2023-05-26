@@ -19,7 +19,7 @@ np.set_printoptions(suppress=True)
 
 # Define constants used across many files
 SAMPLE_RATE = 44100    # TODO: test higher sample rates
-HOP_LENGTH = 256
+HOP_LENGTH = 128
 FILE_FMT = 'wav'
 BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
 N_PLP_PASSES = 3    # This seems to lead to the best results after optimization

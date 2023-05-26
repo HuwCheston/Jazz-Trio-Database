@@ -11,6 +11,7 @@ import warnings
 from ast import literal_eval
 
 import pandas as pd
+from tqdm import tqdm
 
 from src.analyse.detect_onsets import OnsetMaker
 from src.utils import analyse_utils as autils
@@ -95,6 +96,19 @@ source_sep = ['bass', 'drums', 'piano']
 raw_audio = ['mix']
 
 
+class TqdmLoggingHandler(logging.Handler):
+    def __init__(self, level=logging.NOTSET):
+        super().__init__(level)
+
+    def emit(self, record):
+        try:
+            msg = self.format(record)
+            tqdm.write(msg)
+            self.flush()
+        except Exception:
+            self.handleError(record)
+
+
 def set_new_optimised_values(
         res: list,
         dic: dict,
@@ -136,7 +150,7 @@ def _optimise_onset_strength(
     """
 
     # Iterate through all of the values we're testing for this parameter
-    for val in vals:
+    for val in tqdm(vals, desc=f'{instr.title()}: '):
         made_.env[instr] = made_.onset_strength(
             instr,
             use_nonoptimised_defaults=True,
@@ -162,14 +176,14 @@ def _optimise_onset_detect(
     the OnsetDetectionMaker.onset_detect function
     """
 
+    # Create the onset strength envelope before entering the loop to save on processing time
+    made_.env[instr] = made_.onset_strength(
+        instr,
+        use_nonoptimised_defaults=True,
+        **onset_strength_optimised_params[instr],
+    )
     # Iterate through all of the values we're testing for this parameter
-    for val in vals:
-        # Create the onset strength envelope
-        made_.env[instr] = made_.onset_strength(
-            instr,
-            use_nonoptimised_defaults=True,
-            **onset_strength_optimised_params[instr],
-        )
+    for val in tqdm(vals, desc=f'{instr.title()}: '):
         # Detect the onsets, with our current parameter as a kwarg
         yield made_.onset_detect(
             instr,
@@ -192,7 +206,7 @@ def _optimise_polyphonic_onset_detect(
     """
 
     # Iterate through all of the values we're testing for this parameter
-    for val in vals:
+    for val in tqdm(vals, desc=f'{instr.title()}: '):
         # Detect the onsets, with our current parameter as a kwarg
         yield made_.polyphonic_onset_detect(
             instr=instr,
@@ -218,7 +232,7 @@ def _optimise_beat_track_plp(
         use_nonoptimised_defaults=True,
         **onset_strength_optimised_params[instr]
     )
-    for val in vals:
+    for val in tqdm(vals, desc=f'{instr.title()}: '):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', RuntimeWarning)
             yield made_.beat_track_plp(
@@ -239,7 +253,7 @@ def _optimise_beat_track_rnn(
     the OnsetDetectionMaker.beat_track_full_mix function
     """
 
-    for val in vals:
+    for val in tqdm(vals, desc=f'{instr.title()}: '):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', RuntimeWarning)
             yield made_.beat_track_rnn(
@@ -320,12 +334,6 @@ def optimise_parameters(
             res=[item for sublist in res for item in sublist],
             dic=params_to_optimise
         )
-    # Set the dictionary values to our optimised results
-    if not append_in_progress:
-        set_new_optimised_values(
-            res=[item for sublist in res for item in sublist],
-            dic=params_to_optimise
-        )
 
 
 if __name__ == "__main__":
@@ -334,28 +342,30 @@ if __name__ == "__main__":
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
     logger = logging.getLogger(__name__)
+    logger.addHandler(TqdmLoggingHandler())
     logger.info(f"optimising parameters using manual annotations obtained for {len(annotated_tracks)} tracks ...")
 
     corpus_json = autils.load_json(rf'{autils.get_project_root()}\references', 'corpus')
 
+    # TODO: check if this is still breaking!
     # Optimise the made.beat_track_full_mix function
-    optimise_parameters(
-        annotated=annotated_tracks,
-        corpus=corpus_json,
-        instrs_to_optimise=raw_audio,
-        params_to_test=beat_track_rnn_test_params,
-        params_to_optimise=onset_detect_optimised_params,
-        optimise_func=_optimise_beat_track_rnn
-    )
-    # Optimise the made.beat_track_full_mix function
-    optimise_parameters(
-        annotated=annotated_tracks,
-        corpus=corpus_json,
-        instrs_to_optimise=raw_audio,
-        params_to_test=beat_track_plp_test_params,
-        params_to_optimise=onset_detect_optimised_params,
-        optimise_func=_optimise_beat_track_plp
-    )
+    # optimise_parameters(
+    #     annotated=annotated_tracks,
+    #     corpus=corpus_json,
+    #     instrs_to_optimise=raw_audio,
+    #     params_to_test=beat_track_rnn_test_params,
+    #     params_to_optimise=onset_detect_optimised_params,
+    #     optimise_func=_optimise_beat_track_rnn
+    # )
+    # # Optimise the made.beat_track_full_mix function
+    # optimise_parameters(
+    #     annotated=annotated_tracks,
+    #     corpus=corpus_json,
+    #     instrs_to_optimise=raw_audio,
+    #     params_to_test=beat_track_plp_test_params,
+    #     params_to_optimise=onset_detect_optimised_params,
+    #     optimise_func=_optimise_beat_track_plp
+    # )
     # Optimise the made.onset_strength function
     optimise_parameters(
         annotated=annotated_tracks,
@@ -364,6 +374,12 @@ if __name__ == "__main__":
         params_to_test=onset_strength_test_params,
         params_to_optimise=onset_strength_optimised_params,
         optimise_func=_optimise_onset_strength
+    )
+    # Serialise the results
+    autils.save_json(
+        obj=onset_strength_optimised_params,
+        fpath=rf'{autils.get_project_root()}\references\optimised_parameters',
+        fname='onset_strength_optimised'
     )
     # Optimise the made.onset_detect function
     optimise_parameters(
@@ -374,23 +390,8 @@ if __name__ == "__main__":
         params_to_optimise=onset_detect_optimised_params,
         optimise_func=_optimise_onset_detect
     )
-    # Serialise the results
-    autils.save_json(
-        obj=onset_strength_optimised_params,
-        fpath=rf'{autils.get_project_root()}\references\optimised_parameters',
-        fname='onset_strength_optimised'
-    )
     autils.save_json(
         obj=onset_detect_optimised_params,
         fpath=rf'{autils.get_project_root()}\references\optimised_parameters',
         fname='onset_detect_optimised'
     )
-
-# Traceback (most recent call last):
-#   File "C:\Python Projects\jazz-corpus-analysis\src\utils\optimise_detection_parameters.py", line 341, in <module>
-#     optimise_parameters(
-#   File "C:\Python Projects\jazz-corpus-analysis\src\utils\optimise_detection_parameters.py", line 311, in optimise_parameters
-#     set_new_optimised_values(
-#   File "C:\Python Projects\jazz-corpus-analysis\src\utils\optimise_detection_parameters.py", line 123, in set_new_optimised_values
-#     dic[idx].update(**pd.Series(grp['val'].apply(literal_eval).values, index=grp['param']).to_dict())
-# KeyError: 'mix'

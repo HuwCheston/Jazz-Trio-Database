@@ -391,4 +391,5 @@ if __name__ == "__main__":
         # mm.df.to_csv(rf'{autils.get_project_root()}\reports\onset_csv\{ons.item["fname"]}_onsets.csv')
         mm.summary_df = pd.DataFrame(summary)
         dfs.append(mm.summary_df)
+    # TODO: need to be able to serialise the models
     big = pd.concat(dfs)

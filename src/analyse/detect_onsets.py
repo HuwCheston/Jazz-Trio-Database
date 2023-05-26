@@ -68,11 +68,11 @@ class OnsetMaker:
         # These defaults were found through a parameter search against a reference set of onsets, annotated manually
         self.onset_strength_params = autils.load_json(
             fpath=fr'{self.references_dir}\optimised_parameters',
-            fname='onset_strength_default_44100'
+            fname='onset_strength_optimised'
         )
         self.onset_detect_params = autils.load_json(
             fpath=fr'{self.references_dir}\optimised_parameters',
-            fname='onset_detect_default_44100'
+            fname='onset_detect_optimised'
         )
         # These are passed whenever polyphonic_onset_detect is called for this particular instrument's audio
         self.polyphonic_onset_detect_params = autils.load_json(
@@ -322,7 +322,9 @@ class OnsetMaker:
             picker=None,
             **kwargs
     ) -> np.array:
-        """Tracks the position of crotchet beats in the full mix of a track using predominant local pulse estimation
+        """This is now deprecated but included for completeness.
+
+        Tracks the position of crotchet beats in the full mix of a track using predominant local pulse estimation
 
         Wrapper function around `librosa.beat.plp` that allows for per-instrument defaults and multiple passes. A 'pass'
         refers to taking the detected onsets from predominant pulse estimation, using these to create a new prior array,
@@ -1188,7 +1190,7 @@ class OnsetMaker:
     help='Remove onsets in sections of source-separated tracks that are deemed to be silent'
 )
 @click.option(
-    "--annotated-only", "annotated_only", is_flag=True, default=True, help='Only get items with manual annotations'
+    "--annotated-only", "annotated_only", is_flag=True, default=False, help='Only get items with manual annotations'
 )
 def main(
         data_filepath: click.Path,
@@ -1213,6 +1215,8 @@ def main(
     res = []
     logger.info(f"detecting onsets in {len(corpus)} tracks ...")
     # Iterate through each entry in the corpus
+    # TODO: add TQDM here
+    # TODO: parallelise with joblib
     for corpus_item in corpus:
         logger.info(f'... now working on item {corpus_item["id"]}, track name {corpus_item["track_name"]}')
         # Create the OnsetMaker class instance for this item in the corpus

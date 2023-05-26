@@ -547,6 +547,7 @@ def main(
     # Open the corpus json file
     corpus = autils.load_json(input_filepath, 'corpus')
     # Iterate through each entry in the corpus, with the index as well
+    # TODO: add TQDM here
     for index, item in enumerate(corpus, 1):
         # Initialise the ItemMaker instance for this item
         made = ItemMaker(

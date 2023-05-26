@@ -86,6 +86,9 @@ target/
 *.swp
 *.swo
 
+# R files
+*.R
+
 # Mypy cache
 .mypy_cache/
 
@@ -97,6 +100,9 @@ target/
 
 # exclude docs from source control, until I've written them
 /docs/
+
+# exclude deprecated folder from source control
+/_deprecated/
 
 # Output files
 *.png
