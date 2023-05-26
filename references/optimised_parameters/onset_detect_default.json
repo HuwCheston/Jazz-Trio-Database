@@ -10,12 +10,12 @@
   },
   "bass": {
     "backtrack": false,
-    "wait": 14,
-    "delta": 0.07,
-    "pre_max": 18,
-    "post_max": 24,
-    "pre_avg": 15,
-    "post_avg": 30
+    "wait": 5,
+    "delta": 0.06,
+    "pre_max": 6,
+    "post_max": 10,
+    "pre_avg": 18,
+    "post_avg": 16
   },
   "drums": {
     "backtrack": false,
@@ -26,8 +26,14 @@
     "pre_avg": 77,
     "post_avg": 37
   },
-  "mix": {
+  "mix_plp": {
     "win_length": 930,
+    "passes": 3
+  },
+  "mix_rnn": {
+    "transition_lambda": 150,
+    "threshold": 0.05,
+    "correct": true,
     "passes": 3
   }
 }
