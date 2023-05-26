@@ -107,3 +107,7 @@ target/
 *.mp3
 *.p
 *.reapeaks
+*.csv
+
+/venv_old/
+/pretrained_models/
