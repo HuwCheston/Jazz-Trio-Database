@@ -5,7 +5,6 @@
 
 import logging
 import warnings
-from itertools import chain
 from pathlib import Path
 from time import time
 from typing import Generator
@@ -35,7 +34,7 @@ class OnsetMaker:
     # These values are hard-coded and used throughout: we probably shouldn't change them
     # TODO: sort out the correct sample rate and hop length
     sample_rate = autils.SAMPLE_RATE
-    hop_length = 512
+    hop_length = autils.HOP_LENGTH
     # TODO: at some point we need to justify/refine these.
     # TODO: for drummers, we may want our left threshold to scale with tempo, as BUR decreases as tempo increases
     detection_note_values = dict(
@@ -69,11 +68,11 @@ class OnsetMaker:
         # These defaults were found through a parameter search against a reference set of onsets, annotated manually
         self.onset_strength_params = autils.load_json(
             fpath=fr'{self.references_dir}\optimised_parameters',
-            fname='onset_strength_default'
+            fname='onset_strength_default_44100'
         )
         self.onset_detect_params = autils.load_json(
             fpath=fr'{self.references_dir}\optimised_parameters',
-            fname='onset_detect_default'
+            fname='onset_detect_default_44100'
         )
         # These are passed whenever polyphonic_onset_detect is called for this particular instrument's audio
         self.polyphonic_onset_detect_params = autils.load_json(
@@ -407,6 +406,7 @@ class OnsetMaker:
                     prior = stats.uniform(min_, max_)
                 # Use a truncated normal distribution over cleaned minimum, maximum, mean, and std. dev (default)
                 else:
+                    # TODO: Is this throwing runtime warnings??
                     mean_ = np.nanmean(clean)
                     std_ = np.nanstd(clean)
                     prior = stats.truncnorm((min_ - mean_) / std_, (max_ - mean_) / std_, loc=mean_, scale=std_)
@@ -760,6 +760,7 @@ class OnsetMaker:
                 warnings.simplefilter('ignore', UserWarning)
                 # Calculate the mean asynchrony between the reference and estimate onsets
                 matched = match_events(ref, estimate, window)
+                # TODO: Is this throwing runtime warnings??
                 mean_async = np.nanmean([estimate[e] - ref[r] for r, e in matched])
                 # Generate the F, precision, and recall values from mir_eval and yield as a dictionary
                 f, p, r = f_measure(ref, estimate, window=window)
@@ -1092,12 +1093,12 @@ class OnsetMaker:
                 self.ons[ins] = self.remove_onsets_in_silent_passages(onsets=self.ons[ins], silent=sil)
             # If we have manually annotated onsets for this item, try and evaluate the accuracy of detected onsets
             try:
-                eval_ = chain.from_iterable(list(self.compare_onset_detection_accuracy(
+                eval_ = list(self.compare_onset_detection_accuracy(
                     fname=rf'{self.references_dir}\manual_annotation\{self.item["fname"]}_{ins}.txt',
                     onsets=[self.ons[ins]],
                     onsets_name=['optimised_librosa'],
                     instr=ins,
-                )))
+                ))
             except FileNotFoundError:
                 pass
             else:
@@ -1150,12 +1151,12 @@ class OnsetMaker:
         )
         # Try and get manual annotations for our crotchet beats, if we have them
         try:
-            eval_ = chain.from_iterable(list(self.compare_onset_detection_accuracy(
+            eval_ = list(self.compare_onset_detection_accuracy(
                 fname=rf'{self.references_dir}\manual_annotation\{self.item["fname"]}_mix.txt',
                 onsets=[self.ons['mix_interpolated'], self.ons['mix_madmom']],
                 onsets_name=['interpolated', 'madmom'],
                 instr='mix',
-            )))
+            ))
         except FileNotFoundError:
             pass
         else:
@@ -1187,7 +1188,7 @@ class OnsetMaker:
     help='Remove onsets in sections of source-separated tracks that are deemed to be silent'
 )
 @click.option(
-    "--annotated-only", "annotated_only", is_flag=True, default=False, help='Only get items with manual annotations'
+    "--annotated-only", "annotated_only", is_flag=True, default=True, help='Only get items with manual annotations'
 )
 def main(
         data_filepath: click.Path,

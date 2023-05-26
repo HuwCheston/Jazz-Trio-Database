@@ -26,8 +26,14 @@
     "pre_avg": 1,
     "post_avg": 13
   },
-  "mix": {
-    "win_length": 950,
+  "mix_plp": {
+    "win_length": 930,
+    "passes": 3
+  },
+  "mix_rnn": {
+    "transition_lambda": 150,
+    "threshold": 0.05,
+    "correct": true,
     "passes": 3
   }
 }
