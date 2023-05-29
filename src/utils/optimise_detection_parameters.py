@@ -96,19 +96,6 @@ source_sep = ['bass', 'drums', 'piano']
 raw_audio = ['mix']
 
 
-class TqdmLoggingHandler(logging.Handler):
-    def __init__(self, level=logging.NOTSET):
-        super().__init__(level)
-
-    def emit(self, record):
-        try:
-            msg = self.format(record)
-            tqdm.write(msg)
-            self.flush()
-        except Exception:
-            self.handleError(record)
-
-
 def set_new_optimised_values(
         res: list,
         dic: dict,
@@ -342,30 +329,31 @@ if __name__ == "__main__":
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
     logger = logging.getLogger(__name__)
-    logger.addHandler(TqdmLoggingHandler())
+    logger.addHandler(autils.TqdmLoggingHandler())
     logger.info(f"optimising parameters using manual annotations obtained for {len(annotated_tracks)} tracks ...")
 
     corpus_json = autils.load_json(rf'{autils.get_project_root()}\references', 'corpus')
 
     # TODO: check if this is still breaking!
+    # TODO: parallel the below with job lib
     # Optimise the made.beat_track_full_mix function
-    # optimise_parameters(
-    #     annotated=annotated_tracks,
-    #     corpus=corpus_json,
-    #     instrs_to_optimise=raw_audio,
-    #     params_to_test=beat_track_rnn_test_params,
-    #     params_to_optimise=onset_detect_optimised_params,
-    #     optimise_func=_optimise_beat_track_rnn
-    # )
-    # # Optimise the made.beat_track_full_mix function
-    # optimise_parameters(
-    #     annotated=annotated_tracks,
-    #     corpus=corpus_json,
-    #     instrs_to_optimise=raw_audio,
-    #     params_to_test=beat_track_plp_test_params,
-    #     params_to_optimise=onset_detect_optimised_params,
-    #     optimise_func=_optimise_beat_track_plp
-    # )
+    optimise_parameters(
+        annotated=annotated_tracks,
+        corpus=corpus_json,
+        instrs_to_optimise=raw_audio,
+        params_to_test=beat_track_rnn_test_params,
+        params_to_optimise=onset_detect_optimised_params,
+        optimise_func=_optimise_beat_track_rnn
+    )
+    # Optimise the made.beat_track_full_mix function
+    optimise_parameters(
+        annotated=annotated_tracks,
+        corpus=corpus_json,
+        instrs_to_optimise=raw_audio,
+        params_to_test=beat_track_plp_test_params,
+        params_to_optimise=onset_detect_optimised_params,
+        optimise_func=_optimise_beat_track_plp
+    )
     # Optimise the made.onset_strength function
     optimise_parameters(
         annotated=annotated_tracks,

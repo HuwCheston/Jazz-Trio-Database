@@ -5,6 +5,7 @@
 Extracts the required features for each item in the corpus, using the automatically detected onsets.
 """
 
+import logging
 import warnings
 from math import isnan
 
@@ -13,6 +14,7 @@ import pandas as pd
 import scipy.stats as stats
 import statsmodels.formula.api as smf
 from statsmodels.regression.linear_model import RegressionResultsWrapper
+from tqdm import tqdm
 
 import src.utils.analyse_utils as autils
 from src.analyse.detect_onsets import OnsetMaker
@@ -308,16 +310,18 @@ class ModelMaker:
         if md is None:
             return {col: np.nan for col in cols}
         else:
-            return {
-                'n_observations': int(md.nobs),
-                'resid_std': np.std(md.resid),
-                'resid_len': len(md.resid),
-                'rsquared': md.rsquared,
-                'rsquared_adj': md.rsquared_adj,
-                'aic': md.aic,
-                'bic': md.bic,
-                'log-likelihood': md.llf,
-            }
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore', RuntimeWarning)
+                return {
+                    'n_observations': int(md.nobs),
+                    'resid_std': np.std(md.resid),
+                    'resid_len': len(md.resid),
+                    'rsquared': md.rsquared,
+                    'rsquared_adj': md.rsquared_adj,
+                    'aic': md.aic,
+                    'bic': md.bic,
+                    'log-likelihood': md.llf,
+                }
 
     @staticmethod
     def extract_npvi(
@@ -380,16 +384,19 @@ class ModelMaker:
 
 
 if __name__ == "__main__":
+    log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    logging.basicConfig(level=logging.INFO, format=log_fmt)
+    logger = logging.getLogger(__name__)
+    logger.addHandler(autils.TqdmLoggingHandler())
+
     onsets = autils.unserialise_object(rf'{autils.get_project_root()}\models', 'matched_onsets')
-    dfs = []
-    for ons in onsets:
+    features = []
+    for ons in tqdm(onsets):
         mm = ModelMaker(om=ons, interpolate=True, interpolation_limit=1)
         summary = []
         for ins in autils.INSTRS_TO_PERF.keys():
             mm.models[ins] = mm.generate_model(ins, standardise=False, difference_ioi=True, iqr_clean=False)
             summary.append(mm.create_instrument_dict(endog_ins=ins, md=mm.models[ins]))
-        # mm.df.to_csv(rf'{autils.get_project_root()}\reports\onset_csv\{ons.item["fname"]}_onsets.csv')
         mm.summary_df = pd.DataFrame(summary)
-        dfs.append(mm.summary_df)
-    # TODO: need to be able to serialise the models
-    big = pd.concat(dfs)
+        features.append(mm)
+    autils.serialise_object(features, rf'{autils.get_project_root()}\models', 'extracted_features')
