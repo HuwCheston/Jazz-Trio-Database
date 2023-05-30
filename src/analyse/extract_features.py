@@ -366,20 +366,24 @@ class ModelMaker:
                 Distributions with the Weimar Jazz Database. Music Perception, 38(4), 372–385.
 
         """
+        # Get attributes, using instrument name if required
         if onset_array is None and beat_positions is None and endog_ins is None:
             raise AttributeError('Either endog_ins, or onset_array and beat_positions, must be provided.')
         if onset_array is None and endog_ins is not None:
             onset_array = self.om.summary_dict[endog_ins]
         if beat_positions is None and endog_ins is not None:
             beat_positions = self.om.summary_dict[endog_ins]
-
+        # Use log2 burs if specified
         if use_log_burs:
             from math import log2 as func
         else:
             func = lambda a: a
-
+        # Iterate through consecutive pairs of onsets
         for i1, i2 in zip(beat_positions, beat_positions[1:]):
+            # Get the onsets between
             match = onset_array[np.where(np.logical_and(onset_array >= i1, onset_array <= i2))]
+            # If we have a group of three consecutive eighth notes that start on a beat
+            # TODO: investigate using the FlexQ algorithm instead for matching onsets to metrical positions
             if len(match) == 3:
                 yield func((match[1] - match[0]) / (match[2] - match[1]))
 
