@@ -5,6 +5,7 @@
 
 import logging
 import warnings
+from joblib import Parallel, delayed
 from pathlib import Path
 from time import time
 from typing import Generator
@@ -743,11 +744,17 @@ class OnsetMaker:
             dict: each dictionary contains summary statistics for one evaluation
 
         """
+        def reader(fpath) -> Generator:
+            """Simple file reader that gets the onset position from the output of Sonic Visualiser"""
+            with open(fpath, 'r') as file:
+                for line in file.readlines():
+                    yield line.split('\t')[0]
+
         if ref is None and fname is None:
             raise AttributeError('At least one of ref, fname must be provided')
         # If we haven't passed in reference onsets but we have passed in a file path, generate the array from the file
         elif ref is None and fname is not None:
-            ref = np.genfromtxt(fname)[:, 0]
+            ref = np.genfromtxt(reader(fname))
         # If we haven't provided any names for our different onset lists, create these now
         if onsets_name is None:
             onsets_name = [None for _ in range(len(onsets))]
@@ -1168,19 +1175,54 @@ class OnsetMaker:
             self.generate_click_track(instr='mix', onsets=[self.ons['mix_madmom']], start_freq=1250)
 
 
+def process_item(
+        corpus_item: dict,
+        data_filepath: str,
+        generate_click: bool,
+        references_filepath: str,
+        remove_silence: bool,
+        reports_filepath: str
+):
+    """Process one item from the corpus, used in parallel contexts (i.e. called with joblib.Parallel)"""
+    # We need to initialise the logger here again, otherwise it won't work with joblib
+    fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.INFO, format=fmt)
+    logger.info(f'... now working on item {corpus_item["id"]}, track name {corpus_item["track_name"]}')
+    # Create the OnsetMaker class instance for this item in the corpus
+    made = OnsetMaker(
+        item=corpus_item,
+        data_filepath=data_filepath,
+        references_filepath=references_filepath,
+        reports_filepath=reports_filepath
+    )
+    # Run our processing on the mixed audio and then the separated audio
+    made.process_mixed_audio(generate_click, )
+    made.process_separated_audio(generate_click, remove_silence)
+    # Return the processed OnsetMaker instance
+    return made
+
+
 @click.command()
 @click.option(
-    "-data", "data_filepath", type=click.Path(exists=True), default=f"{autils.get_project_root()}\data"
+    "-data", "data_filepath", type=click.Path(exists=True), default=f"{autils.get_project_root()}\data",
+    help=r'Path to .\data directory'
 )
 @click.option(
-    "-reports", "reports_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\reports"
+    "-reports", "reports_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\reports",
+    help=r'Path to .\reports directory'
 )
 @click.option(
     "-references", "references_filepath", type=click.Path(exists=True),
-    default=rf"{autils.get_project_root()}\references"
+    default=rf"{autils.get_project_root()}\references", help=r'Path to .\references directory'
 )
 @click.option(
-    "-models", "models_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\models"
+    "-models", "models_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\models",
+    help=r'Path to .\models directory'
+)
+@click.option(
+    "-n_jobs", "n_jobs", type=click.IntRange(-1, clamp=True), default=-1,
+    help='Number of CPU cores to use in parallel processing, defaults to maximum available'
 )
 @click.option(
     "--click", "generate_click", is_flag=True, default=True, help='Generate a click track for detected onsets/beats'
@@ -1190,16 +1232,21 @@ class OnsetMaker:
     help='Remove onsets in sections of source-separated tracks that are deemed to be silent'
 )
 @click.option(
-    "--annotated-only", "annotated_only", is_flag=True, default=False, help='Only get items with manual annotations'
+    "--annotated-only", "annotated_only", is_flag=True, default=False, help='Only use items with manual annotations'
+)
+@click.option(
+    "--one-track-only", "one_track_only", is_flag=True, default=False, help='Only process the first item, for debugging'
 )
 def main(
         data_filepath: click.Path,
         reports_filepath: click.Path,
         references_filepath: click.Path,
         models_filepath: click.Path,
+        n_jobs: int,
         generate_click: bool,
         remove_silence: bool,
-        annotated_only: bool
+        annotated_only: bool,
+        one_track_only: bool
 ) -> list[OnsetMaker]:
     """Runs scripts to detect onsets in audio from (../raw and ../processed) and generate data for modelling"""
 
@@ -1212,29 +1259,22 @@ def main(
     if annotated_only:
         annotated = autils.get_tracks_with_manual_annotations()
         corpus = [item for item in corpus if item['fname'] in annotated]
-    res = []
-    logger.info(f"detecting onsets in {len(corpus)} tracks ...")
-    # Iterate through each entry in the corpus
-    # TODO: add TQDM here
-    # TODO: parallelise with joblib
-    for corpus_item in corpus:
-        logger.info(f'... now working on item {corpus_item["id"]}, track name {corpus_item["track_name"]}')
-        # Create the OnsetMaker class instance for this item in the corpus
-        made = OnsetMaker(
-            item=corpus_item,
-            data_filepath=data_filepath,
-            references_filepath=references_filepath,
-            reports_filepath=reports_filepath
-        )
-        # Run our processing on the mixed audio and then the separated audio
-        made.process_mixed_audio(generate_click, )
-        made.process_separated_audio(generate_click, remove_silence)
-        # Append the OnsetMaker class to our list
-        res.append(made)
-    # Serialise all the OnsetMaker instances
+    # If we only want to process one track, useful for debugging
+    if one_track_only:
+        corpus = [corpus[0]]
+    logger.info(f"detecting onsets in {len(corpus)} tracks using {n_jobs} CPUs ...")
+    # Process each item in the corpus, using multiprocessing in job-lib
+    res = Parallel(n_jobs=n_jobs)(delayed(process_item)(
+        corpus_item,
+        data_filepath,
+        generate_click,
+        references_filepath,
+        remove_silence,
+        reports_filepath
+    ) for corpus_item in corpus)
+    # Serialise all the OnsetMaker instances using Pickle (Dill causes errors with job-lib)
     logger.info(f'serialising class instances ...')
-    # TODO: do we want to serialise as we go? would prevent having to re-run models frequently...
-    autils.serialise_object(res, fpath=models_filepath, fname='matched_onsets')
+    autils.serialise_object(res, fpath=models_filepath, fname='matched_onsets', use_pickle=True)
     # Log the completion time and return the class instances
     logger.info(f'onsets detected for all items in corpus in {round(time() - start)} secs !')
     return res

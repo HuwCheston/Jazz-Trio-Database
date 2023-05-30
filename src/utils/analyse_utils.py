@@ -1,5 +1,7 @@
 import json
+import logging
 import os
+import pickle
 import sys
 import warnings
 from pathlib import Path
@@ -10,6 +12,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from basic_pitch import ICASSP_2022_MODEL_PATH
+from tqdm import tqdm
 
 # Set options in pandas and numpy here so they carry through whenever this file is imported by another
 # This disables scientific notation and forces all rows/columns to be printed: helps with debugging!
@@ -72,19 +75,29 @@ class YtDlpFakeLogger:
 def serialise_object(
         obj: object,
         fpath: str,
-        fname: str
+        fname: str,
+        use_pickle: bool = False
 ) -> None:
     """Wrapper around dill.dump that takes in an object, directory, and filename, and creates a serialised object"""
+    if use_pickle:
+        dumper = pickle.dump
+    else:
+        dumper = dill.dump
     with open(rf'{fpath}\{fname}.p', 'wb') as fi:
-        dill.dump(obj, fi)
+        dumper(obj, fi)
 
 
 def unserialise_object(
         fpath: str,
-        fname: str
+        fname: str,
+        use_pickle: bool = False
 ) -> object:
     """Simple wrapper around dill.load that unserialises an object and returns it"""
-    return dill.load(open(fr'{fpath}\{fname}.p', 'rb'))
+    if use_pickle:
+        loader = pickle.load
+    else:
+        loader = dill.load
+    return loader(open(fr'{fpath}\{fname}.p', 'rb'))
 
 
 def load_json(
@@ -216,3 +229,16 @@ def try_get_kwarg_and_remove(
         pass
     # Return the keyword argument
     return got
+
+
+class TqdmLoggingHandler(logging.Handler):
+    def __init__(self, level=logging.NOTSET):
+        super().__init__(level)
+
+    def emit(self, record):
+        try:
+            msg = self.format(record)
+            tqdm.write(msg)
+            self.flush()
+        except Exception:
+            self.handleError(record)
