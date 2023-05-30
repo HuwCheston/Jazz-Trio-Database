@@ -333,6 +333,70 @@ class ModelMaker:
             [abs((k - k1) / ((k + k1) / 2)) if not any([isnan(k), isnan(k1)]) else np.nan for (k, k1) in zip(a, a[1:])]
         ) * 100 / (sum(1 for _ in a) - 1)
 
+    def extract_burs(
+            self,
+            endog_ins: str = None,
+            onset_array: np.array = None,
+            beat_positions: np.array = None,
+            use_log_burs: bool = False
+    ) -> np.array:
+        """Extracts beat-upbeat ratio (BUR) values from an array of onsets.
+
+        The beat-upbeat ratio is introduced in [1] as a concept for analyzing the individual amount of 'swing' in two
+        consecutive eighth note beat durations. It is calculated simply by dividing the duration of the first, 'long'
+        eighth note beat by the second, 'short' beat. A BUR value of 2 indicates 'perfect' swing, i.e. a triplet quarter
+        note followed by a triplet eighth note, while a BUR of 1 indicates 'even' eighth note durations.
+
+        Arguments:
+            endog_ins (str, optional): the name of the instrument to calculate BURs for. Must be provided if onset_array
+                and beat_positions are not provided.
+            onset_array (np.array, optional): the array of raw onsets. Must be provided if endog_ins is not given.
+            beat_positions (np.array, optional): the array of crotchet beat positions. Must be provided if endog_ins is
+                not given
+            use_log_burs (bool, optional): whether or not to use the log^2 of inter-onset intervals to calculate BURs,
+                as employed in [2]. Defaults to False.
+
+        Returns:
+            np.array: the calculated BUR values
+
+        References:
+            [1]: Benadon, F. (2006). Slicing the Beat: Jazz Eighth-Notes as Expressive Microrhythm. Ethnomusicology,
+                50/1 (pp. 73-98).
+            [2]: Corcoran, C., & Frieler, K. (2021). Playing It Straight: Analyzing Jazz Soloists’ Swing Eighth-Note
+                Distributions with the Weimar Jazz Database. Music Perception, 38(4), 372–385.
+
+        """
+        if onset_array is None and beat_positions is None and endog_ins is None:
+            raise AttributeError('Either endog_ins, or onset_array and beat_positions, must be provided.')
+        if onset_array is None and endog_ins is not None:
+            onset_array = self.om.summary_dict[endog_ins]
+        if beat_positions is None and endog_ins is not None:
+            beat_positions = self.om.summary_dict[endog_ins]
+
+        if use_log_burs:
+            from math import log2 as func
+        else:
+            func = lambda a: a
+
+        for i1, i2 in zip(beat_positions, beat_positions[1:]):
+            match = onset_array[np.where(np.logical_and(onset_array >= i1, onset_array <= i2))]
+            if len(match) == 3:
+                yield func((match[1] - match[0]) / (match[2] - match[1]))
+
+    def extract_bur_summary(
+            self,
+            endog_ins: str,
+    ) -> dict:
+        """Helper function to extract summary statistics from an array of BUR values"""
+        burs = np.fromiter(self.extract_burs(endog_ins), dtype=float)
+        return {
+            'bur_mean': np.nanmean(burs),
+            'bur_median': np.nanmedian(burs),
+            'bur_std': np.nanstd(burs),
+            'bur_count': len(burs),
+            'burs': burs
+        }
+
     def create_instrument_dict(
             self,
             endog_ins: str,
@@ -379,7 +443,9 @@ class ModelMaker:
             # Model coefficients
             **self._extract_model_coefs(endog_ins=endog_ins, md=md),
             # Bayes model coefficients
-            **self._extract_bayes_coefs(endog_ins=endog_ins, bayes_md=bayes_md)
+            **self._extract_bayes_coefs(endog_ins=endog_ins, bayes_md=bayes_md),
+            # Beat-upbeat ratio stats
+            **self.extract_bur_summary(endog_ins=endog_ins)
         }
 
 
@@ -390,6 +456,7 @@ if __name__ == "__main__":
     logger.addHandler(autils.TqdmLoggingHandler())
 
     onsets = autils.unserialise_object(rf'{autils.get_project_root()}\models', 'matched_onsets')
+    dfs = []
     features = []
     for ons in tqdm(onsets):
         mm = ModelMaker(om=ons, interpolate=True, interpolation_limit=1)
@@ -398,5 +465,7 @@ if __name__ == "__main__":
             mm.models[ins] = mm.generate_model(ins, standardise=False, difference_ioi=True, iqr_clean=False)
             summary.append(mm.create_instrument_dict(endog_ins=ins, md=mm.models[ins]))
         mm.summary_df = pd.DataFrame(summary)
+        dfs.append(mm.summary_df)
         features.append(mm)
+    big = pd.concat(dfs).reset_index(drop=True)
     autils.serialise_object(features, rf'{autils.get_project_root()}\models', 'extracted_features')
