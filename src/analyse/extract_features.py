@@ -387,6 +387,38 @@ class ModelMaker:
             if len(match) == 3:
                 yield func((match[1] - match[0]) / (match[2] - match[1]))
 
+    def extract_event_density(
+            self,
+            endog_ins: str = None,
+            onset_arr: np.array = None
+    ) -> np.array:
+        """ED = notes per second"""
+        # Get required attributes
+        if endog_ins is None and onset_arr is None:
+            raise AttributeError('At least one of endog_ins or onset_arr must be provided.')
+        if onset_arr is None and endog_ins is not None:
+            onset_arr = self.om.ons[endog_ins]
+        # Extract average event density
+        return (
+            pd.DataFrame({'ts': pd.to_datetime(onset_arr, unit='s'), 'onset': onset_arr})
+              .set_index('ts')
+              .resample('1s')
+              .count()
+              .to_numpy()
+        )
+
+    def extract_metrical_event_density(self):
+        """MED = average notes per (4/4) bar"""
+        # TODO: finish this
+        beats = self.om.summary_dict[ins]
+        onsets = self.om.ons[ins]
+        matches = []
+        for i1, i2 in zip(beats, beats[1:]):
+            matches.append(onsets[np.where(np.logical_and(onsets >= i1, onsets <= i2))])
+        matches.append([])
+        print(len(matches), len(beats))
+        res = pd.DataFrame({'beats': beats, 'onsets': matches})
+
     def extract_bur_summary(
             self,
             endog_ins: str,
@@ -442,6 +474,8 @@ class ModelMaker:
             'missing_beats_fraction': self.df[endog_ins].isna().sum() / self.df.shape[0],
             'total_beats': self.df.shape[0],
             'model_compiled': md is not None,
+            # Event density functions
+            'event_density': self.extract_event_density(endog_ins=endog_ins).mean(),
             # Model goodness-of-fit
             **self._extract_model_goodness_of_fit(md=md),
             # Model coefficients

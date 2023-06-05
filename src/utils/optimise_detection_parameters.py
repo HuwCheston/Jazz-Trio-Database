@@ -337,23 +337,23 @@ if __name__ == "__main__":
     # TODO: check if this is still breaking!
     # TODO: parallel the below with job lib
     # Optimise the made.beat_track_full_mix function
-    optimise_parameters(
-        annotated=annotated_tracks,
-        corpus=corpus_json,
-        instrs_to_optimise=raw_audio,
-        params_to_test=beat_track_rnn_test_params,
-        params_to_optimise=onset_detect_optimised_params,
-        optimise_func=_optimise_beat_track_rnn
-    )
+    # optimise_parameters(
+    #     annotated=annotated_tracks,
+    #     corpus=corpus_json,
+    #     instrs_to_optimise=raw_audio,
+    #     params_to_test=beat_track_rnn_test_params,
+    #     params_to_optimise=onset_detect_optimised_params,
+    #     optimise_func=_optimise_beat_track_rnn
+    # )
     # Optimise the made.beat_track_full_mix function
-    optimise_parameters(
-        annotated=annotated_tracks,
-        corpus=corpus_json,
-        instrs_to_optimise=raw_audio,
-        params_to_test=beat_track_plp_test_params,
-        params_to_optimise=onset_detect_optimised_params,
-        optimise_func=_optimise_beat_track_plp
-    )
+    # optimise_parameters(
+    #     annotated=annotated_tracks,
+    #     corpus=corpus_json,
+    #     instrs_to_optimise=raw_audio,
+    #     params_to_test=beat_track_plp_test_params,
+    #     params_to_optimise=onset_detect_optimised_params,
+    #     optimise_func=_optimise_beat_track_plp
+    # )
     # Optimise the made.onset_strength function
     optimise_parameters(
         annotated=annotated_tracks,

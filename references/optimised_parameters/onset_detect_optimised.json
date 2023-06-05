@@ -2,20 +2,20 @@
   "piano": {
     "backtrack": false,
     "wait": 19,
-    "delta": 0.08,
-    "pre_max": 8,
+    "delta": 0.07,
+    "pre_max": 14,
     "post_max": 17,
-    "pre_avg": 35,
-    "post_avg": 30
+    "pre_avg": 37,
+    "post_avg": 32
   },
   "bass": {
     "backtrack": false,
-    "wait": 43,
-    "delta": 0.07,
-    "pre_max": 71,
-    "post_max": 36,
-    "pre_avg": 70,
-    "post_avg": 1
+    "wait": 21,
+    "delta": 0.06,
+    "pre_max": 64,
+    "post_max": 32,
+    "pre_avg": 67,
+    "post_avg": 56
   },
   "drums": {
     "backtrack": false,
@@ -23,8 +23,8 @@
     "delta": 0.06,
     "pre_max": 21,
     "post_max": 25,
-    "pre_avg": 7,
-    "post_avg": 61
+    "pre_avg": 18,
+    "post_avg": 52
   },
   "mix_plp": {
     "win_length": 930,

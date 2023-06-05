@@ -12,6 +12,7 @@ import urllib.error
 import urllib.request
 from datetime import datetime
 
+import dotenv
 import pandas as pd
 import requests
 
@@ -135,4 +136,5 @@ class CorpusTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    dotenv.load_dotenv(rf"{autils.get_project_root()}\.env")
     unittest.main()
