@@ -21,6 +21,7 @@ import src.utils.analyse_utils as autils
 
 class CorpusTest(unittest.TestCase):
     corpus = autils.load_json(rf'{autils.get_project_root()}\references', 'corpus')
+    dotenv.load_dotenv(rf"{autils.get_project_root()}\.env")
     df = pd.DataFrame(corpus)
     links = [link for track in corpus for link in track["links"]["external"]]
 
@@ -111,10 +112,8 @@ class CorpusTest(unittest.TestCase):
                 return datetime.strptime(response, "PT%MM")
 
         # Get our YouTube api key from our environment variables
-        api_key = os.environ.get("YOUTUBE_API")
-        self.assertIsNotNone(
-            api_key, msg="YouTube API key not provided as environment variable"
-        )
+        api_key = os.getenv('YOUTUBE_API')
+        self.assertIsNotNone(api_key, msg="YouTube API key not provided as environment variable")
         for track in self.corpus:
             # Get the links from the corpus
             yt_links = [
@@ -136,5 +135,4 @@ class CorpusTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    dotenv.load_dotenv(rf"{autils.get_project_root()}\.env")
     unittest.main()
