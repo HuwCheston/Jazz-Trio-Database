@@ -1,0 +1,456 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "green", "id": "Ahmad Jamal", "label": "Ahmad Jamal", "shape": "dot", "title": "Ahmad Jamal"}, {"color": "red", "id": "Wolfolk, E.", "label": "Wolfolk, E.", "shape": "dot", "title": "Wolfolk, E."}, {"color": "red", "id": "Cammack, J.", "label": "Cammack, J.", "shape": "dot", "title": "Cammack, J."}, {"color": "red", "id": "Crosby, I.", "label": "Crosby, I.", "shape": "dot", "title": "Crosby, I."}, {"color": "red", "id": "Nasser, J.", "label": "Nasser, J.", "shape": "dot", "title": "Nasser, J."}, {"color": "red", "id": "Heard, J.", "label": "Heard, J.", "shape": "dot", "title": "Heard, J."}, {"color": "red", "id": "Evans, R.", "label": "Evans, R.", "shape": "dot", "title": "Evans, R."}, {"color": "red", "id": "Veal, R.", "label": "Veal, R.", "shape": "dot", "title": "Veal, R."}, {"color": "red", "id": "Chambers, J.", "label": "Chambers, J.", "shape": "dot", "title": "Chambers, J."}, {"color": "red", "id": "Adeyola, S.", "label": "Adeyola, S.", "shape": "dot", "title": "Adeyola, S."}, {"color": "red", "id": "Coolman, T.", "label": "Coolman, T.", "shape": "dot", "title": "Coolman, T."}, {"color": "green", "id": "Bill Evans", "label": "Bill Evans", "shape": "dot", "title": "Bill Evans"}, {"color": "red", "id": "Gomez, E.", "label": "Gomez, E.", "shape": "dot", "title": "Gomez, E."}, {"color": "red", "id": "Israels, C.", "label": "Israels, C.", "shape": "dot", "title": "Israels, C."}, {"color": "red", "id": "Kotick, T.", "label": "Kotick, T.", "shape": "dot", "title": "Kotick, T."}, {"color": "red", "id": "LaFaro, S.", "label": "LaFaro, S.", "shape": "dot", "title": "LaFaro, S."}, {"color": "red", "id": "Johnson, M.", "label": "Johnson, M.", "shape": "dot", "title": "Johnson, M."}, {"color": "red", "id": "Moore, M.", "label": "Moore, M.", "shape": "dot", "title": "Moore, M."}, {"color": "red", "id": "Budwig, M.", "label": "Budwig, M.", "shape": "dot", "title": "Budwig, M."}, {"color": "red", "id": "Peacock, G.", "label": "Peacock, G.", "shape": "dot", "title": "Peacock, G."}, {"color": "red", "id": "Chambers, P.", "label": "Chambers, P.", "shape": "dot", "title": "Chambers, P."}, {"color": "red", "id": "Furtado, E.", "label": "Furtado, E.", "shape": "dot", "title": "Furtado, E."}, {"color": "red", "id": "Jones, S.", "label": "Jones, S.", "shape": "dot", "title": "Jones, S."}, {"color": "red", "id": "Pedersen, N.", "label": "Pedersen, N.", "shape": "dot", "title": "Pedersen, N."}, {"color": "red", "id": "Danielsson, P.", "label": "Danielsson, P.", "shape": "dot", "title": "Danielsson, P."}, {"color": "green", "id": "Bud Powell", "label": "Bud Powell", "shape": "dot", "title": "Bud Powell"}, {"color": "red", "id": "Heath, P.", "label": "Heath, P.", "shape": "dot", "title": "Heath, P."}, {"color": "red", "id": "Russell, C.", "label": "Russell, C.", "shape": "dot", "title": "Russell, C."}, {"color": "red", "id": "Duvivier, G.", "label": "Duvivier, G.", "shape": "dot", "title": "Duvivier, G."}, {"color": "red", "id": "Mingus, C.", "label": "Mingus, C.", "shape": "dot", "title": "Mingus, C."}, {"color": "red", "id": "Brown, R.", "label": "Brown, R.", "shape": "dot", "title": "Brown, R."}, {"color": "red", "id": "Pettiford, O.", "label": "Pettiford, O.", "shape": "dot", "title": "Pettiford, O."}, {"color": "red", "id": "Michelot, P.", "label": "Michelot, P.", "shape": "dot", "title": "Michelot, P."}, {"color": "red", "id": "Trotman, L.", "label": "Trotman, L.", "shape": "dot", "title": "Trotman, L."}, {"color": "red", "id": "Skeete, F.", "label": "Skeete, F.", "shape": "dot", "title": "Skeete, F."}, {"color": "red", "id": "Potter, T.", "label": "Potter, T.", "shape": "dot", "title": "Potter, T."}, {"color": "red", "id": "Peter, E.", "label": "Peter, E.", "shape": "dot", "title": "Peter, E."}, {"color": "red", "id": "Rovre, G.", "label": "Rovre, G.", "shape": "dot", "title": "Rovre, G."}, {"color": "red", "id": "Hultcrantz, T.", "label": "Hultcrantz, T.", "shape": "dot", "title": "Hultcrantz, T."}, {"color": "green", "id": "Junior Mance", "label": "Junior Mance", "shape": "dot", "title": "Junior Mance"}, {"color": "red", "id": "Cleyndert, A.", "label": "Cleyndert, A.", "shape": "dot", "title": "Cleyndert, A."}, {"color": "red", "id": "Betts, K.", "label": "Betts, K.", "shape": "dot", "title": "Betts, K."}, {"color": "red", "id": "May, E.", "label": "May, E.", "shape": "dot", "title": "May, E."}, {"color": "red", "id": "Tucker, B.", "label": "Tucker, B.", "shape": "dot", "title": "Tucker, B."}, {"color": "red", "id": "Cunningham, B.", "label": "Cunningham, B.", "shape": "dot", "title": "Cunningham, B."}, {"color": "red", "id": "Davis, R.", "label": "Davis, R.", "shape": "dot", "title": "Davis, R."}, {"color": "red", "id": "Taylor, G.", "label": "Taylor, G.", "shape": "dot", "title": "Taylor, G."}, {"color": "red", "id": "Washington, P.", "label": "Washington, P.", "shape": "dot", "title": "Washington, P."}, {"color": "red", "id": "Little, W.", "label": "Little, W.", "shape": "dot", "title": "Little, W."}, {"color": "red", "id": "Bell, A.", "label": "Bell, A.", "shape": "dot", "title": "Bell, A."}, {"color": "red", "id": "Rivera, M.", "label": "Rivera, M.", "shape": "dot", "title": "Rivera, M."}, {"color": "red", "id": "Tanaka, H.", "label": "Tanaka, H.", "shape": "dot", "title": "Tanaka, H."}, {"color": "red", "id": "Woode, J.", "label": "Woode, J.", "shape": "dot", "title": "Woode, J."}, {"color": "red", "id": "Thompson, D.", "label": "Thompson, D.", "shape": "dot", "title": "Thompson, D."}, {"color": "red", "id": "Cranshaw, B.", "label": "Cranshaw, B.", "shape": "dot", "title": "Cranshaw, B."}, {"color": "red", "id": "Carter, R.", "label": "Carter, R.", "shape": "dot", "title": "Carter, R."}, {"color": "red", "id": "Gales, L.", "label": "Gales, L.", "shape": "dot", "title": "Gales, L."}, {"color": "green", "id": "Keith Jarrett", "label": "Keith Jarrett", "shape": "dot", "title": "Keith Jarrett"}, {"color": "red", "id": "Haden, C.", "label": "Haden, C.", "shape": "dot", "title": "Haden, C."}, {"color": "green", "id": "Kenny Barron", "label": "Kenny Barron", "shape": "dot", "title": "Kenny Barron"}, {"color": "red", "id": "Reid, R.", "label": "Reid, R.", "shape": "dot", "title": "Reid, R."}, {"color": "red", "id": "Drummond, R.", "label": "Drummond, R.", "shape": "dot", "title": "Drummond, R."}, {"color": "red", "id": ", ", "label": ", ", "shape": "dot", "title": ", "}, {"color": "red", "id": "Williams, B.", "label": "Williams, B.", "shape": "dot", "title": "Williams, B."}, {"color": "red", "id": "Williams, D.", "label": "Williams, D.", "shape": "dot", "title": "Williams, D."}, {"color": "red", "id": "Mraz, G.", "label": "Mraz, G.", "shape": "dot", "title": "Mraz, G."}, {"color": "green", "id": "McCoy Tyner", "label": "McCoy Tyner", "shape": "dot", "title": "McCoy Tyner"}, {"color": "red", "id": "Garrison, J.", "label": "Garrison, J.", "shape": "dot", "title": "Garrison, J."}, {"color": "red", "id": "Sharpe, A.", "label": "Sharpe, A.", "shape": "dot", "title": "Sharpe, A."}, {"color": "red", "id": "Clarke, S.", "label": "Clarke, S.", "shape": "dot", "title": "Clarke, S."}, {"color": "red", "id": "Davis, A.", "label": "Davis, A.", "shape": "dot", "title": "Davis, A."}, {"color": "red", "id": "Davis, S.", "label": "Davis, S.", "shape": "dot", "title": "Davis, S."}, {"color": "red", "id": "Miller, M.", "label": "Miller, M.", "shape": "dot", "title": "Miller, M."}, {"color": "red", "id": "Fambrough, C.", "label": "Fambrough, C.", "shape": "dot", "title": "Fambrough, C."}, {"color": "red", "id": "Lewis, H.", "label": "Lewis, H.", "shape": "dot", "title": "Lewis, H."}, {"color": "red", "id": "Grimes, H.", "label": "Grimes, H.", "shape": "dot", "title": "Grimes, H."}, {"color": "green", "id": "Oscar Peterson", "label": "Oscar Peterson", "shape": "dot", "title": "Oscar Peterson"}, {"color": "green", "id": "Teddy Wilson", "label": "Teddy Wilson", "shape": "dot", "title": "Teddy Wilson"}, {"color": "red", "id": "Shaw, A.", "label": "Shaw, A.", "shape": "dot", "title": "Shaw, A."}, {"color": "red", "id": "Hinton, M.", "label": "Hinton, M.", "shape": "dot", "title": "Hinton, M."}, {"color": "red", "id": "Lundgaard, J.", "label": "Lundgaard, J.", "shape": "dot", "title": "Lundgaard, J."}, {"color": "red", "id": "Rasmussen, H.", "label": "Rasmussen, H.", "shape": "dot", "title": "Rasmussen, H."}, {"color": "red", "id": "Holley, M.", "label": "Holley, M.", "shape": "dot", "title": "Holley, M."}, {"color": "red", "id": "Ramey, G.", "label": "Ramey, G.", "shape": "dot", "title": "Ramey, G."}, {"color": "red", "id": "Patruno, L.", "label": "Patruno, L.", "shape": "dot", "title": "Patruno, L."}, {"color": "red", "id": "kerberg, Y.", "label": "kerberg, Y.", "shape": "dot", "title": "kerberg, Y."}, {"color": "red", "id": "Hall, A.", "label": "Hall, A.", "shape": "dot", "title": "Hall, A."}, {"color": "red", "id": "Baldock, K.", "label": "Baldock, K.", "shape": "dot", "title": "Baldock, K."}, {"color": "red", "id": "McKibbon, A.", "label": "McKibbon, A.", "shape": "dot", "title": "McKibbon, A."}, {"color": "red", "id": "Lucas, A.", "label": "Lucas, A.", "shape": "dot", "title": "Lucas, A."}, {"color": "red", "id": "Page, W.", "label": "Page, W.", "shape": "dot", "title": "Page, W."}, {"color": "red", "id": "Chapman, P.", "label": "Chapman, P.", "shape": "dot", "title": "Chapman, P."}, {"color": "red", "id": "Simmons, J.", "label": "Simmons, J.", "shape": "dot", "title": "Simmons, J."}, {"color": "red", "id": "Roberts, A.", "label": "Roberts, A.", "shape": "dot", "title": "Roberts, A."}, {"color": "red", "id": "King, A.", "label": "King, A.", "shape": "dot", "title": "King, A."}, {"color": "green", "id": "Tommy Flanagan", "label": "Tommy Flanagan", "shape": "dot", "title": "Tommy Flanagan"}, {"color": "red", "id": "Mitchell, R.", "label": "Mitchell, R.", "shape": "dot", "title": "Mitchell, R."}, {"color": "red", "id": "Benjamin, J.", "label": "Benjamin, J.", "shape": "dot", "title": "Benjamin, J."}, {"color": "blue", "id": "Dixson, A.", "label": "Dixson, A.", "shape": "dot", "title": "Dixson, A."}, {"color": "blue", "id": "Riley, H.", "label": "Riley, H.", "shape": "dot", "title": "Riley, H."}, {"color": "blue", "id": "Fournier, V.", "label": "Fournier, V.", "shape": "dot", "title": "Fournier, V."}, {"color": "blue", "id": "Gant, F.", "label": "Gant, F.", "shape": "dot", "title": "Gant, F."}, {"color": "blue", "id": "Washington, K.", "label": "Washington, K.", "shape": "dot", "title": "Washington, K."}, {"color": "blue", "id": "Lampkin, C.", "label": "Lampkin, C.", "shape": "dot", "title": "Lampkin, C."}, {"color": "blue", "id": "Muhammad, I.", "label": "Muhammad, I.", "shape": "dot", "title": "Muhammad, I."}, {"color": "blue", "id": "Israel, Y.", "label": "Israel, Y.", "shape": "dot", "title": "Israel, Y."}, {"color": "blue", "id": "Grice, B.", "label": "Grice, B.", "shape": "dot", "title": "Grice, B."}, {"color": "blue", "id": "Bowler, D.", "label": "Bowler, D.", "shape": "dot", "title": "Bowler, D."}, {"color": "blue", "id": "Grant, F.", "label": "Grant, F.", "shape": "dot", "title": "Grant, F."}, {"color": "blue", "id": "Crossley, P.", "label": "Crossley, P.", "shape": "dot", "title": "Crossley, P."}, {"color": "blue", "id": "Lane, G.", "label": "Lane, G.", "shape": "dot", "title": "Lane, G."}, {"color": "blue", "id": "Jones, P.", "label": "Jones, P.", "shape": "dot", "title": "Jones, P."}, {"color": "blue", "id": "Bunker, L.", "label": "Bunker, L.", "shape": "dot", "title": "Bunker, L."}, {"color": "blue", "id": "Morell, M.", "label": "Morell, M.", "shape": "dot", "title": "Morell, M."}, {"color": "blue", "id": "Hunt, J.", "label": "Hunt, J.", "shape": "dot", "title": "Hunt, J."}, {"color": "blue", "id": "DeJohnette, J.", "label": "DeJohnette, J.", "shape": "dot", "title": "DeJohnette, J."}, {"color": "blue", "id": "Wise, A.", "label": "Wise, A.", "shape": "dot", "title": "Wise, A."}, {"color": "blue", "id": "Motian, P.", "label": "Motian, P.", "shape": "dot", "title": "Motian, P."}, {"color": "blue", "id": "Zigmund, E.", "label": "Zigmund, E.", "shape": "dot", "title": "Zigmund, E."}, {"color": "blue", "id": "LaBarbera, J.", "label": "LaBarbera, J.", "shape": "dot", "title": "LaBarbera, J."}, {"color": "blue", "id": "Manne, S.", "label": "Manne, S.", "shape": "dot", "title": "Manne, S."}, {"color": "blue", "id": "Tate, G.", "label": "Tate, G.", "shape": "dot", "title": "Tate, G."}, {"color": "blue", "id": "Dentz, J.", "label": "Dentz, J.", "shape": "dot", "title": "Dentz, J."}, {"color": "blue", "id": "Beldini, A.", "label": "Beldini, A.", "shape": "dot", "title": "Beldini, A."}, {"color": "blue", "id": "Oxley, T.", "label": "Oxley, T.", "shape": "dot", "title": "Oxley, T."}, {"color": "blue", "id": "Dawson, A.", "label": "Dawson, A.", "shape": "dot", "title": "Dawson, A."}, {"color": "blue", "id": "Carlsson, R.", "label": "Carlsson, R.", "shape": "dot", "title": "Carlsson, R."}, {"color": "blue", "id": "Roach, M.", "label": "Roach, M.", "shape": "dot", "title": "Roach, M."}, {"color": "blue", "id": "Clarke, K.", "label": "Clarke, K.", "shape": "dot", "title": "Clarke, K."}, {"color": "blue", "id": "Taylor, A.", "label": "Taylor, A.", "shape": "dot", "title": "Taylor, A."}, {"color": "blue", "id": "Johnson, O.", "label": "Johnson, O.", "shape": "dot", "title": "Johnson, O."}, {"color": "blue", "id": "Haynes, R.", "label": "Haynes, R.", "shape": "dot", "title": "Haynes, R."}, {"color": "blue", "id": "Blakey, A.", "label": "Blakey, A.", "shape": "dot", "title": "Blakey, A."}, {"color": "blue", "id": "Payne, S.", "label": "Payne, S.", "shape": "dot", "title": "Payne, S."}, {"color": "blue", "id": "Humair, D.", "label": "Humair, D.", "shape": "dot", "title": "Humair, D."}, {"color": "blue", "id": "Fields, K.", "label": "Fields, K.", "shape": "dot", "title": "Fields, K."}, {"color": "blue", "id": "Rich, B.", "label": "Rich, B.", "shape": "dot", "title": "Rich, B."}, {"color": "blue", "id": "Spngberg, S.", "label": "Spngberg, S.", "shape": "dot", "title": "Spngberg, S."}, {"color": "blue", "id": "Schipffe, W.", "label": "Schipffe, W.", "shape": "dot", "title": "Schipffe, W."}, {"color": "blue", "id": "Brown, S.", "label": "Brown, S.", "shape": "dot", "title": "Brown, S."}, {"color": "blue", "id": "Williams, J.", "label": "Williams, J.", "shape": "dot", "title": "Williams, J."}, {"color": "blue", "id": "Thomas, B.", "label": "Thomas, B.", "shape": "dot", "title": "Thomas, B."}, {"color": "blue", "id": "Lovelace, J.", "label": "Lovelace, J.", "shape": "dot", "title": "Lovelace, J."}, {"color": "blue", "id": "Waits, F.", "label": "Waits, F.", "shape": "dot", "title": "Waits, F."}, {"color": "blue", "id": "Riley, B.", "label": "Riley, B.", "shape": "dot", "title": "Riley, B."}, {"color": "blue", "id": "Roker, M.", "label": "Roker, M.", "shape": "dot", "title": "Roker, M."}, {"color": "blue", "id": "Collins, R.", "label": "Collins, R.", "shape": "dot", "title": "Collins, R."}, {"color": "blue", "id": "Jackson, O.", "label": "Jackson, O.", "shape": "dot", "title": "Jackson, O."}, {"color": "blue", "id": "LaRocca, S.", "label": "LaRocca, S.", "shape": "dot", "title": "LaRocca, S."}, {"color": "blue", "id": "Carr, B.", "label": "Carr, B.", "shape": "dot", "title": "Carr, B."}, {"color": "blue", "id": "Thompson, B.", "label": "Thompson, B.", "shape": "dot", "title": "Thompson, B."}, {"color": "blue", "id": "Durham, B.", "label": "Durham, B.", "shape": "dot", "title": "Durham, B."}, {"color": "blue", "id": "Alleyne, A.", "label": "Alleyne, A.", "shape": "dot", "title": "Alleyne, A."}, {"color": "blue", "id": "Humphries, L.", "label": "Humphries, L.", "shape": "dot", "title": "Humphries, L."}, {"color": "blue", "id": "Cobham, B.", "label": "Cobham, B.", "shape": "dot", "title": "Cobham, B."}, {"color": "blue", "id": "Blade, B.", "label": "Blade, B.", "shape": "dot", "title": "Blade, B."}, {"color": "blue", "id": "Heath, A.", "label": "Heath, A.", "shape": "dot", "title": "Heath, A."}, {"color": "blue", "id": "Mela, F.", "label": "Mela, F.", "shape": "dot", "title": "Mela, F."}, {"color": "blue", "id": "Lewis, V.", "label": "Lewis, V.", "shape": "dot", "title": "Lewis, V."}, {"color": "blue", "id": "Blake, J.", "label": "Blake, J.", "shape": "dot", "title": "Blake, J."}, {"color": "blue", "id": "Jones, E.", "label": "Jones, E.", "shape": "dot", "title": "Jones, E."}, {"color": "blue", "id": "Scott, A.", "label": "Scott, A.", "shape": "dot", "title": "Scott, A."}, {"color": "blue", "id": "Hayes, L.", "label": "Hayes, L.", "shape": "dot", "title": "Hayes, L."}, {"color": "blue", "id": "Foster, A.", "label": "Foster, A.", "shape": "dot", "title": "Foster, A."}, {"color": "blue", "id": "Williams, T.", "label": "Williams, T.", "shape": "dot", "title": "Williams, T."}, {"color": "blue", "id": "Watts, J.", "label": "Watts, J.", "shape": "dot", "title": "Watts, J."}, {"color": "blue", "id": "Thigpen, E.", "label": "Thigpen, E.", "shape": "dot", "title": "Thigpen, E."}, {"color": "blue", "id": "Bellson, L.", "label": "Bellson, L.", "shape": "dot", "title": "Bellson, L."}, {"color": "blue", "id": "Price, R.", "label": "Price, R.", "shape": "dot", "title": "Price, R."}, {"color": "blue", "id": "Hanna, J.", "label": "Hanna, J.", "shape": "dot", "title": "Hanna, J."}, {"color": "blue", "id": "Dahlander, N.", "label": "Dahlander, N.", "shape": "dot", "title": "Dahlander, N."}, {"color": "blue", "id": "Jones, J.", "label": "Jones, J.", "shape": "dot", "title": "Jones, J."}, {"color": "blue", "id": "Rostvold, B.", "label": "Rostvold, B.", "shape": "dot", "title": "Rostvold, B."}, {"color": "blue", "id": "Sola, C.", "label": "Sola, C.", "shape": "dot", "title": "Sola, C."}, {"color": "blue", "id": "Norn, J.", "label": "Norn, J.", "shape": "dot", "title": "Norn, J."}, {"color": "blue", "id": "Best, D.", "label": "Best, D.", "shape": "dot", "title": "Best, D."}, {"color": "blue", "id": "Richardson, J.", "label": "Richardson, J.", "shape": "dot", "title": "Richardson, J."}, {"color": "blue", "id": "Powell, S.", "label": "Powell, S.", "shape": "dot", "title": "Powell, S."}, {"color": "blue", "id": "Evans, S.", "label": "Evans, S.", "shape": "dot", "title": "Evans, S."}, {"color": "blue", "id": "Burns, R.", "label": "Burns, R.", "shape": "dot", "title": "Burns, R."}, {"color": "blue", "id": "Perkins, W.", "label": "Perkins, W.", "shape": "dot", "title": "Perkins, W."}, {"color": "blue", "id": "Drew, M.", "label": "Drew, M.", "shape": "dot", "title": "Drew, M."}, {"color": "blue", "id": "Jones, C.", "label": "Jones, C.", "shape": "dot", "title": "Jones, C."}, {"color": "blue", "id": "Wilkinson, M.", "label": "Wilkinson, M.", "shape": "dot", "title": "Wilkinson, M."}, {"color": "blue", "id": "Nash, L.", "label": "Nash, L.", "shape": "dot", "title": "Nash, L."}, {"color": "blue", "id": "Bailey, D.", "label": "Bailey, D.", "shape": "dot", "title": "Bailey, D."}, {"color": "blue", "id": "Kay, C.", "label": "Kay, C.", "shape": "dot", "title": "Kay, C."}, {"color": "blue", "id": "Smith, J.", "label": "Smith, J.", "shape": "dot", "title": "Smith, J."}]);
+                  edges = new vis.DataSet([{"from": "Ahmad Jamal", "to": "Wolfolk, E."}, {"from": "Ahmad Jamal", "to": "Cammack, J."}, {"from": "Ahmad Jamal", "to": "Crosby, I."}, {"from": "Ahmad Jamal", "to": "Nasser, J."}, {"from": "Ahmad Jamal", "to": "Heard, J."}, {"from": "Ahmad Jamal", "to": "Evans, R."}, {"from": "Ahmad Jamal", "to": "Veal, R."}, {"from": "Ahmad Jamal", "to": "Chambers, J."}, {"from": "Ahmad Jamal", "to": "Adeyola, S."}, {"from": "Ahmad Jamal", "to": "Coolman, T."}, {"from": "Bill Evans", "to": "Gomez, E."}, {"from": "Bill Evans", "to": "Israels, C."}, {"from": "Bill Evans", "to": "Kotick, T."}, {"from": "Bill Evans", "to": "LaFaro, S."}, {"from": "Bill Evans", "to": "Johnson, M."}, {"from": "Bill Evans", "to": "Moore, M."}, {"from": "Bill Evans", "to": "Budwig, M."}, {"from": "Bill Evans", "to": "Peacock, G."}, {"from": "Bill Evans", "to": "Chambers, P."}, {"from": "Bill Evans", "to": "Furtado, E."}, {"from": "Bill Evans", "to": "Jones, S."}, {"from": "Bill Evans", "to": "Pedersen, N."}, {"from": "Bill Evans", "to": "Danielsson, P."}, {"from": "Bud Powell", "to": "Heath, P."}, {"from": "Bud Powell", "to": "Russell, C."}, {"from": "Bud Powell", "to": "Duvivier, G."}, {"from": "Bud Powell", "to": "Mingus, C."}, {"from": "Bud Powell", "to": "Brown, R."}, {"from": "Bud Powell", "to": "Pettiford, O."}, {"from": "Bud Powell", "to": "Michelot, P."}, {"from": "Bud Powell", "to": "Trotman, L."}, {"from": "Bud Powell", "to": "Skeete, F."}, {"from": "Bud Powell", "to": "Potter, T."}, {"from": "Bud Powell", "to": "Pedersen, N."}, {"from": "Bud Powell", "to": "Peter, E."}, {"from": "Bud Powell", "to": "Chambers, P."}, {"from": "Bud Powell", "to": "Jones, S."}, {"from": "Bud Powell", "to": "Rovre, G."}, {"from": "Bud Powell", "to": "Hultcrantz, T."}, {"from": "Junior Mance", "to": "Cleyndert, A."}, {"from": "Junior Mance", "to": "Betts, K."}, {"from": "Junior Mance", "to": "May, E."}, {"from": "Junior Mance", "to": "Tucker, B."}, {"from": "Junior Mance", "to": "Cunningham, B."}, {"from": "Junior Mance", "to": "Davis, R."}, {"from": "Junior Mance", "to": "Taylor, G."}, {"from": "Junior Mance", "to": "Washington, P."}, {"from": "Junior Mance", "to": "Little, W."}, {"from": "Junior Mance", "to": "Bell, A."}, {"from": "Junior Mance", "to": "Rivera, M."}, {"from": "Junior Mance", "to": "Tanaka, H."}, {"from": "Junior Mance", "to": "Woode, J."}, {"from": "Junior Mance", "to": "Thompson, D."}, {"from": "Junior Mance", "to": "Cranshaw, B."}, {"from": "Junior Mance", "to": "Carter, R."}, {"from": "Junior Mance", "to": "Brown, R."}, {"from": "Junior Mance", "to": "Gales, L."}, {"from": "Keith Jarrett", "to": "Peacock, G."}, {"from": "Keith Jarrett", "to": "Haden, C."}, {"from": "Kenny Barron", "to": "Carter, R."}, {"from": "Kenny Barron", "to": "Reid, R."}, {"from": "Kenny Barron", "to": "Drummond, R."}, {"from": "Kenny Barron", "to": ", "}, {"from": "Kenny Barron", "to": "Williams, B."}, {"from": "Kenny Barron", "to": "Haden, C."}, {"from": "Kenny Barron", "to": "Williams, D."}, {"from": "Kenny Barron", "to": "Mraz, G."}, {"from": "McCoy Tyner", "to": "Garrison, J."}, {"from": "McCoy Tyner", "to": "Carter, R."}, {"from": "McCoy Tyner", "to": "Sharpe, A."}, {"from": "McCoy Tyner", "to": "Cranshaw, B."}, {"from": "McCoy Tyner", "to": "Clarke, S."}, {"from": "McCoy Tyner", "to": "Davis, A."}, {"from": "McCoy Tyner", "to": "Davis, S."}, {"from": "McCoy Tyner", "to": "Gomez, E."}, {"from": "McCoy Tyner", "to": "Mraz, G."}, {"from": "McCoy Tyner", "to": "Miller, M."}, {"from": "McCoy Tyner", "to": "Fambrough, C."}, {"from": "McCoy Tyner", "to": "Lewis, H."}, {"from": "McCoy Tyner", "to": "Grimes, H."}, {"from": "Oscar Peterson", "to": "Jones, S."}, {"from": "Oscar Peterson", "to": "Heard, J."}, {"from": "Oscar Peterson", "to": "Mraz, G."}, {"from": "Oscar Peterson", "to": "Brown, R."}, {"from": "Oscar Peterson", "to": "Pedersen, N."}, {"from": "Teddy Wilson", "to": "Shaw, A."}, {"from": "Teddy Wilson", "to": "Hinton, M."}, {"from": "Teddy Wilson", "to": "Lundgaard, J."}, {"from": "Teddy Wilson", "to": "Rasmussen, H."}, {"from": "Teddy Wilson", "to": "Pedersen, N."}, {"from": "Teddy Wilson", "to": "Holley, M."}, {"from": "Teddy Wilson", "to": "Ramey, G."}, {"from": "Teddy Wilson", "to": "Patruno, L."}, {"from": "Teddy Wilson", "to": "kerberg, Y."}, {"from": "Teddy Wilson", "to": "Bell, A."}, {"from": "Teddy Wilson", "to": "Hall, A."}, {"from": "Teddy Wilson", "to": "Baldock, K."}, {"from": "Teddy Wilson", "to": "McKibbon, A."}, {"from": "Teddy Wilson", "to": "Lucas, A."}, {"from": "Teddy Wilson", "to": "Page, W."}, {"from": "Teddy Wilson", "to": "Chapman, P."}, {"from": "Teddy Wilson", "to": "Simmons, J."}, {"from": "Oscar Peterson", "to": "Roberts, A."}, {"from": "Oscar Peterson", "to": "King, A."}, {"from": "Tommy Flanagan", "to": "Washington, P."}, {"from": "Tommy Flanagan", "to": "Betts, K."}, {"from": "Tommy Flanagan", "to": "Mraz, G."}, {"from": "Tommy Flanagan", "to": "Carter, R."}, {"from": "Tommy Flanagan", "to": "Tucker, B."}, {"from": "Tommy Flanagan", "to": "Mitchell, R."}, {"from": "Tommy Flanagan", "to": "Little, W."}, {"from": "Tommy Flanagan", "to": "Benjamin, J."}, {"from": "Tommy Flanagan", "to": "Lundgaard, J."}, {"from": "Tommy Flanagan", "to": "Potter, T."}, {"from": "Ahmad Jamal", "to": "Dixson, A."}, {"from": "Ahmad Jamal", "to": "Riley, H."}, {"from": "Ahmad Jamal", "to": "Fournier, V."}, {"from": "Ahmad Jamal", "to": "Gant, F."}, {"from": "Ahmad Jamal", "to": "Washington, K."}, {"from": "Ahmad Jamal", "to": "Lampkin, C."}, {"from": "Ahmad Jamal", "to": "Muhammad, I."}, {"from": "Ahmad Jamal", "to": "Israel, Y."}, {"from": "Ahmad Jamal", "to": "Grice, B."}, {"from": "Ahmad Jamal", "to": "Bowler, D."}, {"from": "Ahmad Jamal", "to": "Grant, F."}, {"from": "Ahmad Jamal", "to": "Crossley, P."}, {"from": "Ahmad Jamal", "to": "Lane, G."}, {"from": "Bill Evans", "to": "Jones, P."}, {"from": "Bill Evans", "to": "Bunker, L."}, {"from": "Bill Evans", "to": "Morell, M."}, {"from": "Bill Evans", "to": "Hunt, J."}, {"from": "Bill Evans", "to": "DeJohnette, J."}, {"from": "Bill Evans", "to": "Wise, A."}, {"from": "Bill Evans", "to": "Motian, P."}, {"from": "Bill Evans", "to": "Zigmund, E."}, {"from": "Bill Evans", "to": "LaBarbera, J."}, {"from": "Bill Evans", "to": "Manne, S."}, {"from": "Bill Evans", "to": "Tate, G."}, {"from": "Bill Evans", "to": "Dentz, J."}, {"from": "Bill Evans", "to": "Beldini, A."}, {"from": "Bill Evans", "to": "Oxley, T."}, {"from": "Bill Evans", "to": "Dawson, A."}, {"from": "Bill Evans", "to": "Carlsson, R."}, {"from": "Bud Powell", "to": "Roach, M."}, {"from": "Bud Powell", "to": "Clarke, K."}, {"from": "Bud Powell", "to": "Taylor, A."}, {"from": "Bud Powell", "to": "Johnson, O."}, {"from": "Bud Powell", "to": "Haynes, R."}, {"from": "Bud Powell", "to": "Blakey, A."}, {"from": "Bud Powell", "to": "Payne, S."}, {"from": "Bud Powell", "to": "Humair, D."}, {"from": "Bud Powell", "to": "Jones, P."}, {"from": "Bud Powell", "to": "Fields, K."}, {"from": "Bud Powell", "to": "Rich, B."}, {"from": "Bud Powell", "to": "Spngberg, S."}, {"from": "Bud Powell", "to": "Schipffe, W."}, {"from": "Junior Mance", "to": "Brown, S."}, {"from": "Junior Mance", "to": "Williams, J."}, {"from": "Junior Mance", "to": "Thomas, B."}, {"from": "Junior Mance", "to": "Lovelace, J."}, {"from": "Junior Mance", "to": "Waits, F."}, {"from": "Junior Mance", "to": "Riley, B."}, {"from": "Junior Mance", "to": "Dawson, A."}, {"from": "Junior Mance", "to": "Roker, M."}, {"from": "Junior Mance", "to": "Collins, R."}, {"from": "Junior Mance", "to": "Jackson, O."}, {"from": "Junior Mance", "to": "LaRocca, S."}, {"from": "Junior Mance", "to": "Carr, B."}, {"from": "Junior Mance", "to": "Thompson, B."}, {"from": "Junior Mance", "to": "Durham, B."}, {"from": "Junior Mance", "to": "Alleyne, A."}, {"from": "Junior Mance", "to": "Humphries, L."}, {"from": "Keith Jarrett", "to": "DeJohnette, J."}, {"from": "Keith Jarrett", "to": "Motian, P."}, {"from": "Kenny Barron", "to": "Cobham, B."}, {"from": "Kenny Barron", "to": "Waits, F."}, {"from": "Kenny Barron", "to": "Riley, B."}, {"from": "Kenny Barron", "to": "Blade, B."}, {"from": "Kenny Barron", "to": "Haynes, R."}, {"from": "Kenny Barron", "to": "Heath, A."}, {"from": "Kenny Barron", "to": "Mela, F."}, {"from": "Kenny Barron", "to": "Lewis, V."}, {"from": "Kenny Barron", "to": "Blake, J."}, {"from": "McCoy Tyner", "to": "Jones, E."}, {"from": "McCoy Tyner", "to": "Heath, A."}, {"from": "McCoy Tyner", "to": "Scott, A."}, {"from": "McCoy Tyner", "to": "Hayes, L."}, {"from": "McCoy Tyner", "to": "Roker, M."}, {"from": "McCoy Tyner", "to": "Foster, A."}, {"from": "McCoy Tyner", "to": "Williams, T."}, {"from": "McCoy Tyner", "to": "Humphries, L."}, {"from": "McCoy Tyner", "to": "DeJohnette, J."}, {"from": "McCoy Tyner", "to": "Watts, J."}, {"from": "McCoy Tyner", "to": "Waits, F."}, {"from": "McCoy Tyner", "to": "Haynes, R."}, {"from": "Oscar Peterson", "to": "Thigpen, E."}, {"from": "Oscar Peterson", "to": "Hayes, L."}, {"from": "Oscar Peterson", "to": "Bellson, L."}, {"from": "Oscar Peterson", "to": "Price, R."}, {"from": "Oscar Peterson", "to": "Hanna, J."}, {"from": "Oscar Peterson", "to": "Durham, B."}, {"from": "Teddy Wilson", "to": "Dahlander, N."}, {"from": "Teddy Wilson", "to": "Jackson, O."}, {"from": "Teddy Wilson", "to": "Thigpen, E."}, {"from": "Teddy Wilson", "to": "Schipffe, W."}, {"from": "Teddy Wilson", "to": "Jones, J."}, {"from": "Teddy Wilson", "to": "Rostvold, B."}, {"from": "Teddy Wilson", "to": "Sola, C."}, {"from": "Teddy Wilson", "to": "Norn, J."}, {"from": "Teddy Wilson", "to": "Heard, J."}, {"from": "Teddy Wilson", "to": "Best, D."}, {"from": "Teddy Wilson", "to": "Richardson, J."}, {"from": "Teddy Wilson", "to": "Powell, S."}, {"from": "Teddy Wilson", "to": "Fields, K."}, {"from": "Teddy Wilson", "to": "Evans, S."}, {"from": "Teddy Wilson", "to": "Burns, R."}, {"from": "Teddy Wilson", "to": "Rich, B."}, {"from": "Ahmad Jamal", "to": "Perkins, W."}, {"from": "Oscar Peterson", "to": "Drew, M."}, {"from": "Oscar Peterson", "to": "Jones, C."}, {"from": "Oscar Peterson", "to": "Wilkinson, M."}, {"from": "Tommy Flanagan", "to": "Nash, L."}, {"from": "Tommy Flanagan", "to": "Durham, B."}, {"from": "Tommy Flanagan", "to": "Washington, K."}, {"from": "Tommy Flanagan", "to": "Haynes, R."}, {"from": "Tommy Flanagan", "to": "Bailey, D."}, {"from": "Tommy Flanagan", "to": "Jones, E."}, {"from": "Tommy Flanagan", "to": "Foster, A."}, {"from": "Tommy Flanagan", "to": "Kay, C."}, {"from": "Tommy Flanagan", "to": "Smith, J."}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
