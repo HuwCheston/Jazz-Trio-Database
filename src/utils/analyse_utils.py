@@ -7,6 +7,7 @@ import warnings
 from pathlib import Path
 from typing import Any
 
+import audioread
 import dill
 import numpy as np
 import pandas as pd
@@ -116,7 +117,7 @@ def save_json(
 ) -> None:
     """Simple wrapper around json.dump"""
     with open(rf'{fpath}\{fname}.json', "w") as out_file:
-        json.dump(obj, out_file)
+        json.dump(obj, out_file, indent=4, default=str, )
 
 
 def try_and_load(
@@ -242,3 +243,23 @@ class TqdmLoggingHandler(logging.Handler):
             self.flush()
         except Exception:
             self.handleError(record)
+
+
+def disable_settingwithcopy_warning(func):
+    """Simple decorator that disables the annoying SettingWithCopy warning in Pandas"""
+    def wrapper(*args, **kwargs):
+        pd.options.mode.chained_assignment = None
+        res = func(*args, **kwargs)
+        pd.options.mode.chained_assignment = None
+        return res
+    return wrapper
+
+
+def get_audio_duration(fpath: str) -> float:
+    """Opens a given audio file and returns its duration"""
+
+    try:
+        with audioread.audio_open(fpath) as f:
+            return float(f.duration)
+    except FileNotFoundError:
+        return 0.0
