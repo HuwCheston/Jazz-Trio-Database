@@ -136,26 +136,13 @@ class OptimizeOnsetDetect(Optimizer):
         ('pre_avg', int, 0, 100, 5),
         ('post_avg', int, 1, 100, 5),
     ]
-    frequency_bands = {
-        'piano': dict(
-            fmin=110,  # Minimum frequency to use
-            fmax=4100,  # Maximum frequency to use
-        ),
-        'bass': dict(
-            fmin=30,
-            fmax=500,
-        ),
-        'drums': dict(
-            fmin=3500,
-            fmax=11000,
-        ),
-    }
 
     def __init__(self, json_name: str, items: dict, instr: str, **kwargs):
         super().__init__(json_name, items, instr, self.args, **kwargs)
         self.center: bool = kwargs.get('center', True)
         self.backtrack: bool = kwargs.get('backtrack', False)
         self.csv_name: str = f'onset_detect_{self.instr}'
+        self.logger = self.enable_logger()
         try:
             self.cached_results = autils.load_csv(self.results_fpath, self.csv_name)
         except FileNotFoundError:
@@ -163,8 +150,7 @@ class OptimizeOnsetDetect(Optimizer):
 
     def log_iteration(self, cached_ids: list, f_scores: list) -> None:
         """Log the results from a single iteration"""
-        logger = self.enable_logger()
-        logger.info(
+        self.logger.info(
             f'... '
             f'instrument {self.instr}, '
             f'center: {self.center}, '
@@ -185,7 +171,7 @@ class OptimizeOnsetDetect(Optimizer):
             instr=self.instr,
             center=self.center,
             max_size=max_size,    # This is the only argument we use from our optimizer for this function
-            **self.frequency_bands[self.instr]    # These arguments are our frequency bands
+            **autils.FREQUENCY_BANDS[self.instr]    # These arguments are our frequency bands
         )
         # Detect onsets using all the remaining keyword arguments
         made.ons[self.instr] = made.onset_detect(
@@ -226,6 +212,7 @@ class OptimizeBeatTrack(Optimizer):
         super().__init__(json_name, items, self.instr, self.args, **kwargs)
         self.correct: bool = kwargs.get('correct', True)
         self.csv_name: str = f'beat_track_{self.instr}'
+        self.logger = self.enable_logger()
         try:
             self.cached_results = autils.load_csv(self.results_fpath, self.csv_name)
         except FileNotFoundError:
@@ -254,8 +241,7 @@ class OptimizeBeatTrack(Optimizer):
     def log_iteration(self, cached_ids: list, f_scores: list) -> None:
         """Log the results from a single iteration"""
         # We have to do this annoying logging thing to work with JobLib correctly...
-        logger = self.enable_logger()
-        logger.info(
+        self.logger.info(
             f'... '
             f'instrument {self.instr}, '
             f'correct: {self.correct}, '
@@ -357,7 +343,7 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
     help='Number of CPU cores to use in parallel processing, defaults to maximum available'
 )
 @click.option(
-    "-json_filename", "json_filename", type=str, default='corpus_chronology',
+    "-json_name", "json_name", type=str, default='corpus_chronology',
     help='The filename of the corpus to use when optimizing, defaults to the chronology corpus'
 )
 def main(

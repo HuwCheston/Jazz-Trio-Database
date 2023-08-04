@@ -1,0 +1,57 @@
+[
+    {
+        "instrument": "piano",
+        "center": true,
+        "backtrack": false,
+        "f_score": 0.8306162700465161,
+        "iterations": 314,
+        "time": "01-08-23_17-51-00",
+        "max_size": 3.0,
+        "wait": 19.0,
+        "delta": 0.03460200782297998,
+        "pre_max": 15.0,
+        "post_max": 23.0,
+        "pre_avg": 42.0,
+        "post_avg": 5.0
+    },
+    {
+        "instrument": "bass",
+        "center": true,
+        "backtrack": false,
+        "f_score": 0.8407620657627535,
+        "iterations": 492,
+        "time": "02-08-23_00-21-24",
+        "max_size": 23.0,
+        "wait": 13.0,
+        "delta": 0.01223299699090324,
+        "pre_max": 31.0,
+        "post_max": 68.0,
+        "pre_avg": 94.0,
+        "post_avg": 2.0
+    },
+    {
+        "instrument": "drums",
+        "center": true,
+        "backtrack": false,
+        "f_score": 0.9141236655882532,
+        "iterations": 356,
+        "time": "02-08-23_04-58-40",
+        "max_size": 1.0,
+        "wait": 23.0,
+        "delta": 0.07816446405487036,
+        "pre_max": 19.0,
+        "post_max": 25.0,
+        "pre_avg": 19.0,
+        "post_avg": 1.0
+    },
+    {
+        "instrument": "mix",
+        "f_score": 0.9800905631748745,
+        "iterations": 112,
+        "time": "03-08-23_03-23-27",
+        "correct": true,
+        "threshold": 0.12324033042835941,
+        "transition_lambda": 35.615217103043754,
+        "passes": 2.0
+    }
+]
