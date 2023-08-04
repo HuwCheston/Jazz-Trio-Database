@@ -95,9 +95,6 @@ target/
 # exclude spleeter models from source control
 /src/clean/pretrained_models/
 
-# exclude manual annotation from source control
-/references/manual_annotation
-
 # exclude docs from source control, until I've written them
 /docs/
 
