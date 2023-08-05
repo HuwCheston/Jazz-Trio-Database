@@ -34,7 +34,7 @@ class ModelMaker:
         self.interpolate: bool = kwargs.get('interpolate', True)
         self.num_interpolated: dict = {k: 0 for k in self.instrs}
         self.interpolation_limit: int = kwargs.get('interpolation_limit', 1)
-        self.df: pd.D = self._format_df(om.summary_dict)
+        self.df: pd.DataFrame = self._format_df(om.summary_dict)
         self.models = {}
         self.bayes_models = {}
         self.summary_df = None

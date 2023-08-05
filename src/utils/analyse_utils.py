@@ -1,10 +1,17 @@
+import csv
 import json
+import inspect
 import logging
 import os
 import pickle
 import sys
+import time
 import warnings
+from ast import literal_eval
+from functools import wraps
 from pathlib import Path
+from string import punctuation
+from tempfile import NamedTemporaryFile
 from typing import Any
 
 import audioread
@@ -34,6 +41,26 @@ INSTRS_TO_PERF = {
     'bass': 'bassist',
     'drums': 'drummer'
 }
+
+FREQUENCY_BANDS = {
+    'piano': dict(
+        fmin=110,  # Minimum frequency to use
+        fmax=4100,  # Maximum frequency to use
+    ),
+    'bass': dict(
+        fmin=30,
+        fmax=500,
+    ),
+    'drums': dict(
+        fmin=3500,
+        fmax=11000,
+    ),
+    'mix': dict(
+        fmin=20,
+        fmax=20000,
+    ),
+}
+
 
 
 def get_project_root() -> Path:
@@ -73,11 +100,30 @@ class YtDlpFakeLogger:
         pass
 
 
+def retry(exception, tries=4, delay=3, backoff=2):
+    """Retry calling the decorated function using an exponential backoff."""
+    def deco_retry(f):
+        @wraps(f)
+        def f_retry(*args, **kwargs):
+            mtries, mdelay = tries, delay
+            while mtries > 1:
+                try:
+                    return f(*args, **kwargs)
+                except exception:
+                    time.sleep(mdelay)
+                    mtries -= 1
+                    mdelay *= backoff
+            return f(*args, **kwargs)
+        return f_retry
+    return deco_retry
+
+
 def serialise_object(
         obj: object,
         fpath: str,
         fname: str,
-        use_pickle: bool = False
+        use_pickle: bool = False,
+        func = None
 ) -> None:
     """Wrapper around dill.dump that takes in an object, directory, and filename, and creates a serialised object"""
     if use_pickle:
@@ -101,11 +147,12 @@ def unserialise_object(
     return loader(open(fr'{fpath}\{fname}.p', 'rb'))
 
 
+@retry(json.JSONDecodeError)
 def load_json(
         fpath: str = 'r..\..\data\processed',
         fname: str = 'processing_results.json'
 ) -> dict:
-    """Simple wrapper around json.load"""
+    """Simple wrapper around json.load that catches errors when working on the same file in multiple threads"""
     with open(rf'{fpath}\{fname}.json', "r+") as in_file:
         return json.load(in_file)
 
@@ -115,9 +162,75 @@ def save_json(
         fpath: str,
         fname: str
 ) -> None:
-    """Simple wrapper around json.dump"""
-    with open(rf'{fpath}\{fname}.json', "w") as out_file:
+    """Simple wrapper around json.dump with protections to assist in multithreaded access"""
+    temp_file = NamedTemporaryFile(mode='w', dir=fpath, delete=False, suffix='.json')
+    with temp_file as out_file:
         json.dump(obj, out_file, indent=4, default=str, )
+
+    @retry(PermissionError)
+    def replacer():
+        os.replace(temp_file.name, rf'{fpath}\{fname}.json')
+
+    replacer()
+
+
+@retry(json.JSONDecodeError)
+def load_csv(
+        fpath: str = 'r..\..\data\processed',
+        fname: str = 'processing_results'
+) -> dict:
+    """Simple wrapper around json.load that catches errors when working on the same file in multiple threads"""
+    def eval_(i):
+        try:
+            return literal_eval(i)
+        except (ValueError, SyntaxError) as _:
+            return str(i)
+
+
+    with open(rf'{fpath}\{fname}.csv', "r+") as in_file:
+        return [{k: eval_(v) for k, v in row.items()} for row in csv.DictReader(in_file, skipinitialspace=True)]
+
+
+def save_csv(
+        obj: list | dict,
+        fpath: str,
+        fname: str
+) -> None:
+    """Simple wrapper around csv.DictWriter with protections to assist in multithreaded access"""
+    # If we have an existing file with the same name, load it in and extend it with our new data
+    try:
+        existing_file = load_csv(fpath, fname)
+    except FileNotFoundError:
+        pass
+    else:
+        if isinstance(obj, dict):
+            obj = [obj]
+        obj = existing_file + obj
+
+    # Create a new temporary file, in append mode
+    temp_file = NamedTemporaryFile(mode='a', newline='', dir=fpath, delete=False, suffix='.csv')
+    # Get our CSV header from the keys of the first dictionary, if we've passed in a list of dictionaries
+    if isinstance(obj, list):
+        keys = obj[0].keys()
+    # Otherwise, if we've just passed in a dictionary, get the keys from it directly
+    else:
+        keys = obj.keys()
+    # Open the temporary file and create a new dictionary writer with our given columns
+    with temp_file as out_file:
+        dict_writer = csv.DictWriter(out_file, keys)
+        dict_writer.writeheader()
+        # Write all the rows, if we've passed in a list
+        if isinstance(obj, list):
+            dict_writer.writerows(obj)
+        # Alternatively, write a single row, if we've passed in a dictionary
+        else:
+            dict_writer.writerow(obj)
+
+    @retry(PermissionError)
+    def replacer():
+        os.replace(temp_file.name, rf'{fpath}\{fname}.csv')
+
+    replacer()
 
 
 def try_and_load(
@@ -176,19 +289,25 @@ def iqr_filter(
 def get_tracks_with_manual_annotations(
         annotation_dir: str = fr'{get_project_root()}\references\manual_annotation',
         annotation_ext: str = 'txt',
-        all_tracks: tuple = ('bass', 'drums', 'piano', 'mix')
+        corpus_json: list[dict] = None
 ) -> list:
-    """Returns the filenames of tracks that contain a full set of manual annotation files"""
+    """Returns the IDs of tracks that should be annotated"""
+    # return [t.strip('\n') for t in open(rf'{annotation_dir}\tracks_to_annotate.{annotation_ext}', 'r').readlines()]
     res = {}
+    track_ids = '\t'.join([track['mbz_id'] for track in corpus_json])
     for file in os.listdir(annotation_dir):
         if file.endswith(annotation_ext):
             split = file.split('_')
+            track_id = split[0].split('-')[-1]
+            if track_id not in track_ids:
+                continue
             try:
                 res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
             except KeyError:
                 res[split[0]] = []
                 res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
-    return [k for k, v in res.items() if sorted(v) == sorted(list(all_tracks))]
+    annotated_with_all_instrs = [k for k, v in res.items() if sorted(v) == sorted([*INSTRS_TO_PERF.keys(), 'mix'])]
+    return [t['mbz_id'] for t in corpus_json if t['fname'] in annotated_with_all_instrs]
 
 
 def check_item_present_locally(fname: str) -> bool:
@@ -263,3 +382,12 @@ def get_audio_duration(fpath: str) -> float:
             return float(f.duration)
     except FileNotFoundError:
         return 0.0
+
+def remove_punctuation(s: str) -> str:
+    """Removes punctuation from a string"""
+    return s.translate(str.maketrans('', '', punctuation)).replace('’', '')
+
+
+def return_function_kwargs(func) -> list:
+    """Returns a list of keyword arguments accepted by a given function"""
+    return [p for p in inspect.signature(func).parameters]

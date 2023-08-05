@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 from math import isclose
 from pathlib import Path
 from shutil import rmtree
-from string import punctuation
 from time import time
 
 import click
@@ -34,7 +33,7 @@ class CorpusMakerFromExcel:
     def __init__(
             self,
             fname: str,
-            bandleader: str,
+            bandleader: str = None,
             dump_json: bool = True,
             **kwargs
     ):
@@ -42,8 +41,11 @@ class CorpusMakerFromExcel:
         self.bandleader_role = kwargs.get('bandleader_role', 'pianist')
         fpath = fr'{autils.get_project_root()}\references\{fname}.{self.excel_ext}'
         self.tracks = []
-        for trio in pd.read_excel(pd.ExcelFile(fpath), None, header=1).values():
-            self.tracks.extend(self.format_track_dict(self.format_trio_dataframe(trio)))
+        for sheet_name, trio in pd.read_excel(pd.ExcelFile(fpath), None, header=1).items():
+            if sheet_name.lower() not in ['notes', 'template', 'manual annotation']:
+                if bandleader is None:
+                    self.bandleader = sheet_name
+                self.tracks.extend(self.format_track_dict(self.format_trio_dataframe(trio)))
         if dump_json:
             autils.save_json(self.tracks, fr'{autils.get_project_root()}\references',
                              f'corpus_{self.bandleader.lower().replace(" ", "_")}')
@@ -62,7 +64,9 @@ class CorpusMakerFromExcel:
             'bass': 'bassist',
             'drums': 'drummer',
             'release_title': 'album_name',
-            'recording_title': 'track_name'
+            'recording_title': 'track_name',
+            'Unnamed: 19': 'notes',
+            'Unnamed: 13': 'link'
         }
         # We keep these columns, in the following order
         to_keep = [
@@ -81,11 +85,12 @@ class CorpusMakerFromExcel:
         # Remove tracks that did not pass selection criteria
         sheet = trio_df[(trio_df['is_acceptable(Y/N)'] == 'Y') & (~trio_df['youtube_link'].isna())]
         # Strip punctuation from album and track name
-        sheet['release_title'] = sheet['release_title'].apply(self.remove_punctuation)
-        sheet['recording_title'] = sheet['recording_title'].apply(self.remove_punctuation)
+        sheet['release_title'] = sheet['release_title'].apply(autils.remove_punctuation)
+        sheet['recording_title'] = sheet['recording_title'].apply(autils.remove_punctuation)
         # Preserve the unique Musicbrainz ID for a track
         sheet['mbz_id'] = sheet['recording_id_for_lbz'].str[self.lbz_url_cutoff:]
         # Replace NA values in notes column with empty strings
+        sheet = sheet.rename(columns={'Unnamed: 19': 'notes'})
         sheet['notes'] = sheet['notes'].fillna('')
         # Get the year the track was recorded in
         sheet['recording_year'] = pd.to_datetime(sheet['recording_date_estimate']).dt.year.astype(str)
@@ -104,13 +109,9 @@ class CorpusMakerFromExcel:
         return {i.split(': ')[0]: i.split(': ')[1] for i in s.split(', ')}
 
     @staticmethod
-    def remove_punctuation(s: str) -> str:
-        """Removes punctuation from a string"""
-        return s.translate(str.maketrans('', '', punctuation)).replace('’', '')
-
-    @staticmethod
     def format_timestamp(ts: str, as_string: bool = True):
         """Formats a timestamp string correctly. Returns as either a datetime or string, depending on `as_string`"""
+        ts = str(ts)
         fmt = '%M:%S' if len(ts) < 6 else '%H:%M:%S'
         if as_string:
             return datetime.strptime(ts, fmt).strftime(fmt)
@@ -260,8 +261,11 @@ class ItemMaker:
 
         def musician_name_formatter(st: str) -> str:
             """Formats the name of a musician into the format: lastnamefirstinitial, e.g. Bill Evans -> evansb"""
-            s = st.lower().split(" ")
-            return s[1] + s[0][0]
+            s = autils.remove_punctuation(st).lower().split(" ")
+            try:
+                return s[1] + s[0][0]
+            except IndexError:
+                return 'musicianm'
 
         # Get the names of our musicians in the correct format
         pianist = musician_name_formatter(self.item["musicians"]["pianist"])
@@ -369,7 +373,7 @@ class ItemMaker:
             else:
                 # Silently try and rename the file, if we've accidentally appended the file format twice
                 try:
-                    os.rename(self.in_file + f'.{autils.FILE_FMT}', self.in_file)
+                    os.replace(self.in_file + f'.{autils.FILE_FMT}', self.in_file)
                 except FileNotFoundError:
                     pass
                 self._logger_wrapper(f"... downloaded successfully from {link_url}")
@@ -580,7 +584,7 @@ class _DemucsMaker(ItemMaker):
         for old_name in files_to_keep:
             li = os.path.normpath(old_name).split(os.path.sep)
             new_name = rf'{self.demucs_audio_loc}\{li[-2]}_{li[-1]}'
-            os.rename(old_name, new_name)
+            os.replace(old_name, new_name)
         # Remove the demucs folders and all the unwanted files remaining inside them
         for folder in demucs_folders:
             rmtree(folder)
@@ -589,6 +593,8 @@ class _DemucsMaker(ItemMaker):
 @click.command()
 @click.option("-i", "input_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\references")
 @click.option("-o", "output_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\data")
+@click.option("--bill-evans", "bill_evans", is_flag=True, default=False, help='Process Bill Evans corpus')
+@click.option("--chronology", "chronology", is_flag=True, default=True, help='Process chronology corpus')
 @click.option("--force-download", "force_download", is_flag=True, default=False, help='Force download from YouTube')
 @click.option("--force-separation", "force_separation", is_flag=True, default=False, help='Force source separation')
 @click.option("--no-spleeter", "disable_spleeter", is_flag=True, default=False, help='Disable spleeter for separation')
@@ -596,51 +602,61 @@ class _DemucsMaker(ItemMaker):
 def main(
         input_filepath: str,
         output_filepath: str,
+        bill_evans: bool,
+        chronology: bool,
         force_download: bool,
         force_separation: bool,
         disable_spleeter: bool,
         disable_demucs: bool
 ) -> None:
     """Runs processing scripts to turn corpus from (./references) into audio, ready to be analyzed"""
-
-    # Start the timer
-    start = time()
     # Set the logger
     logger = logging.getLogger(__name__)
-    # Open the corpus Excel file using our custom class
-    corpus = CorpusMakerFromExcel(
-        fname='corpus_bill_evans',
-        bandleader='Bill Evans',
-        bandleader_role='pianist',
-        dump_json=False
-    ).tracks
-    js = []
-    # Iterate through each item in the corpus and make it
-    for corpus_item in corpus:
-        im = ItemMaker(
-            item=corpus_item,
-            logger=logger,
-            track_name_len=5,
-            output_filepath=output_filepath,
-            get_lr_audio=True,
-            force_reseparation=force_separation,
-            force_redownload=force_download,
-            use_spleeter=not disable_spleeter,
-            use_demucs=not disable_demucs
+
+    def process(fname: str = 'corpus_bill_evans', bandleader: str = 'Bill Evans'):
+        # Start the timer
+        start = time()
+        # Open the corpus Excel file using our custom class
+        corpus = CorpusMakerFromExcel(
+            fname=fname,
+            bandleader=bandleader,
+            bandleader_role='pianist',
+            dump_json=False
+        ).tracks
+        # recs = ["cebd562d-6606-40b5-8d58-01c96609470c", "55736745-695f-4703-a51b-637db2db7324", "78892a40-bee3-490c-90e8-226203310b97", "c82aab89-ca2b-4211-842f-9c69583d03ca", "787dba5c-2486-48e4-9439-95b04628599b", "87cd9343-6d9e-4651-aabc-aa191fd7c6b0", "9983c9b5-42f8-430f-803c-1afa05bfd4bd", "b4be29dc-0604-4d35-9eec-a1134ddf4d18", "d8efd19a-95cb-47b7-a113-846ac138be11", "f892ef46-a5e6-4624-a694-36444677cfa2"]
+        # corpus = [i for i in corpus if i['mbz_id'] in recs]
+        js = []
+        # Iterate through each item in the corpus and make it
+        for corpus_item in corpus:
+            im = ItemMaker(
+                item=corpus_item,
+                logger=logger,
+                track_name_len=5,
+                output_filepath=output_filepath,
+                get_lr_audio=True,
+                force_reseparation=force_separation,
+                force_redownload=force_download,
+                use_spleeter=not disable_spleeter,
+                use_demucs=not disable_demucs
+            )
+            im.get_item()
+            im.separate_audio()
+            im.finalize_output()
+            # Append the item results, log etc. to save
+            js.append(im.item)
+        # Dump our finalized output to a new json and save in the output directory
+        autils.save_json(
+            obj=js,
+            fpath=input_filepath,
+            fname=fname
         )
-        im.get_item()
-        im.separate_audio()
-        im.finalize_output()
-        # Append the item results, log etc. to save
-        js.append(im.item)
-    # Dump our finalized output to a new json and save in the output directory
-    autils.save_json(
-        obj=js,
-        fpath=input_filepath,
-        fname='corpus_bill_evans'
-    )
-    # Log the total completion time
-    logger.info(f"dataset made in {round(time() - start)} secs !")
+        # Log the total completion time
+        logger.info(f"dataset {fname} made in {round(time() - start)} secs !")
+
+    if bill_evans:
+        process(fname='corpus_bill_evans', bandleader='Bill Evans')
+    if chronology:
+        process(fname='corpus_chronology', bandleader=None)
 
 
 if __name__ == "__main__":

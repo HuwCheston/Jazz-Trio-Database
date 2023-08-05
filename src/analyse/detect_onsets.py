@@ -4,40 +4,32 @@
 """Automatically detects note and beat onsets in the source separated tracks for each item in the corpus"""
 
 import logging
+import os
 import warnings
-from joblib import Parallel, delayed
 from pathlib import Path
 from time import time
 from typing import Generator
 
-import basic_pitch.inference as bp
 import click
 import librosa
 import numpy as np
 import scipy.signal as signal
-import scipy.stats as stats
 import soundfile as sf
 from dotenv import find_dotenv, load_dotenv
+from joblib import Parallel, delayed
 from madmom.features.downbeats import RNNDownBeatProcessor, DBNDownBeatTrackingProcessor
 from mir_eval.onset import f_measure
 from mir_eval.util import match_events
-from pretty_midi.pretty_midi import PrettyMIDI
 
 from src.utils import analyse_utils as autils
 
 
 class OnsetMaker:
-    """Automatically detect crotchet beat positions for each instrument in a single item in the corpus.
-
-    Attributes:
-        TODO: fill these in
-    """
+    """Automatically detect onset and beat positions for each instrument in a single item in the corpus."""
     # These values are hard-coded and used throughout: we probably shouldn't change them
-    # TODO: sort out the correct sample rate and hop length
     sample_rate = autils.SAMPLE_RATE
     hop_length = autils.HOP_LENGTH
-    # TODO: at some point we need to justify/refine these.
-    # TODO: for drummers, we may want our left threshold to scale with tempo, as BUR decreases as tempo increases
+    # TODO: at some point we need to justify/refine these e.g. for drummers, we may want l threshold to scale with tempo
     detection_note_values = dict(
         left=1/32,
         right=1/16
@@ -54,6 +46,7 @@ class OnsetMaker:
 
     def __init__(
             self,
+            corpus_json_name: str = 'corpus_bill_evans',
             references_filepath: str = rf"{autils.get_project_root()}\references",
             data_filepath: str = rf"{autils.get_project_root()}\data",
             reports_filepath: str = rf"{autils.get_project_root()}\reports",
@@ -61,25 +54,14 @@ class OnsetMaker:
             **kwargs
     ):
         self.item = item
+        self.corpus_json_name = corpus_json_name
         # Define file paths
         self.references_dir = references_filepath
         self.data_dir = data_filepath
         self.reports_dir = reports_filepath
         # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
         # These defaults were found through a parameter search against a reference set of onsets, annotated manually
-        self.onset_strength_params = autils.load_json(
-            fpath=fr'{self.references_dir}\optimised_parameters',
-            fname='onset_strength_optimised'
-        )
-        self.onset_detect_params = autils.load_json(
-            fpath=fr'{self.references_dir}\optimised_parameters',
-            fname='onset_detect_optimised'
-        )
-        # These are passed whenever polyphonic_onset_detect is called for this particular instrument's audio
-        self.polyphonic_onset_detect_params = autils.load_json(
-            fpath=fr'{self.references_dir}\optimised_parameters',
-            fname='polyphonic_onset_detect_default'
-        )
+        self.onset_strength_params, self.onset_detect_params = self.return_converged_paramaters()
         # Construct the default file paths where our audio is saved
         self.instrs = {
             'mix': rf'{self.data_dir}\raw\audio\{self.item["fname"]}.{autils.FILE_FMT}',
@@ -102,6 +84,32 @@ class OnsetMaker:
         # Load our audio file in when we initialise the item: we won't be changing this much
         if self.item is not None:
             self.audio = self._load_audio(**kwargs)
+
+    def return_converged_paramaters(self) -> tuple[dict, dict]:
+        def fmt(val):
+            if isinstance(val, bool):
+                return val
+            elif int(val) == val:
+                return int(val)
+            else:
+                return float(val)
+
+        onset_detect_args = [
+            *autils.return_function_kwargs(librosa.util.peak_pick),
+            *autils.return_function_kwargs(DBNDownBeatTrackingProcessor.__init__),
+            *autils.return_function_kwargs(self.beat_track_rnn),
+            *autils.return_function_kwargs(librosa.onset.onset_detect)
+        ]
+        onset_strength_args = autils.return_function_kwargs(librosa.onset.onset_strength)
+        od_fmt, os_fmt = {}, {}
+        js = autils.load_json(
+            fpath=fr'{self.references_dir}\parameter_optimisation\{self.corpus_json_name}', fname='converged_parameters'
+        )
+        for item in js:
+            od_fmt[item['instrument']] = {k: fmt(v) for k, v in item.items() if k in onset_detect_args}
+            os_fmt[item['instrument']] = {k: fmt(v) for k, v in item.items() if k in onset_strength_args}
+            os_fmt[item['instrument']].update(autils.FREQUENCY_BANDS[item['instrument']])
+        return os_fmt, od_fmt
 
     def _load_audio(
             self,
@@ -175,7 +183,7 @@ class OnsetMaker:
         """
         if 'channel_overrides' in self.item.keys():
             if name in self.item['channel_overrides'].keys():
-                fp = fpath.replace(name, f'{self.item["channel_overrides"][name]}_{name}')
+                fp = fpath.replace(f'_{name}', f'-{self.item["channel_overrides"][name]}chan_{name}')
                 if autils.check_item_present_locally(fp):
                     return fp
         return fpath
@@ -210,8 +218,11 @@ class OnsetMaker:
             self,
             passes: int = autils.N_PLP_PASSES,
             starting_min: int = 100,
+            # TODO: do we need to set this higher to account for extremely fast tracks, e.g. Peterson Tristeza?!
             starting_max: int = 300,
             use_nonoptimised_defaults: bool = False,
+            audio_start: int = 0,
+            audio_cutoff: int = None,
             **kwargs
     ) -> np.array:
         """Tracks the position of crotchet beats in the full mix of a track using recurrent neural networks.
@@ -228,6 +239,8 @@ class OnsetMaker:
             starting_min (int, optional): the minimum possible tempo (in BPM) to use for the first pass, defaults to 100
             starting_max (int, optional): the maximum possible tempo (in BPM) to use for the first pass, defaults to 300
             use_nonoptimised_defaults (bool, optional): use default parameters over optimised, defaults to False
+            audio_start (int, optional): start reading audio from this point (in total seconds)
+            audio_cutoff (int, optional): stop reading audio after this point (in total seconds)
             **kwargs: passed to `madmom.features.downbeat.DBNDownBeatTrackingProcessor`
 
         Returns:
@@ -235,10 +248,19 @@ class OnsetMaker:
         """
 
         # If we're using defaults, set kwargs to an empty dictionary
-        kws = self.onset_detect_params['mix_rnn'] if not use_nonoptimised_defaults else dict()
+        kws = self.onset_detect_params['mix'] if not use_nonoptimised_defaults else dict()
         # Update our default parameters with any kwargs we've passed in
         kws.update(**kwargs)
         autils.try_get_kwarg_and_remove('passes', kws, default_=3)
+        # Load in the audio file using soundfile, with the given audio cutoff point (defaults to no cutoff)
+        if audio_cutoff is not None:
+            audio_cutoff *= self.sample_rate
+        samples, _ = sf.read(
+            self.instrs['mix'],
+            start=audio_start * self.sample_rate,
+            stop=audio_cutoff,
+            dtype='float64'
+        )
 
         def tracker(
                 tempo_min_: int = 100,
@@ -259,7 +281,7 @@ class OnsetMaker:
                     **kws_
                 )
                 # Fit the processor to the audio
-                act = RNNDownBeatProcessor()(self.instrs['mix'])
+                act = RNNDownBeatProcessor()(samples)
                 # Return the first column, i.e. the detected beat positions (we're not interested in downbeats)
                 return proc(act)[:, 0]
 
@@ -310,118 +332,6 @@ class OnsetMaker:
             )
         # Set the tempo value using the crotchet beat positions from our previous pass
         self.tempo = autils.calculate_tempo(pass_)
-        return pass_
-
-    def beat_track_plp(
-            self,
-            passes: int = autils.N_PLP_PASSES,
-            env: np.array = None,
-            tempo_min: int = 100,
-            tempo_max: int = 300,
-            use_uniform: bool = False,
-            use_nonoptimised_defaults: bool = False,
-            picker=None,
-            **kwargs
-    ) -> np.array:
-        """This is now deprecated but included for completeness.
-
-        Tracks the position of crotchet beats in the full mix of a track using predominant local pulse estimation
-
-        Wrapper function around `librosa.beat.plp` that allows for per-instrument defaults and multiple passes. A 'pass'
-        refers to taking the detected onsets from predominant pulse estimation, using these to create a new prior array,
-        then passing the results back into `librosa.beat.plp` and repeating the estimation process. This narrows down
-        the accuracy of the detected crotchets substantially over a period of several passes.
-
-        Arguments:
-            passes (int, optional): the number of estimation passes to use, defaults to 3.
-            env (np.array, optional): the onset strength envelope to use; will be obtained if not provided.
-            tempo_min (int, optional): the minimum possible tempo (in BPM) to use for the first pass, defaults to 100
-            tempo_max (int, optional): the maximum possible tempo (in BPM) to use for the first pass, defaults to 300
-            use_uniform (bool, optional): use a uniform distribution as prior over the default truncated normal
-            use_nonoptimised_defaults (bool, optional): use default parameters over optimised, defaults to False
-            picker (callable, optional): the function to use when picking beats from the pulse curve
-
-        Returns:
-            np.array: an array of detected crotchet beat positions from the final pass
-
-        """
-
-        # If we haven't passed in a picker function for extracting beats from our PLP curve, set this to our default
-        if picker is None:
-            picker = self.localmin_localmax_interpolate
-        # If we haven't passed in an onset strength envelope, get this now
-        if env is None:
-            env = self.env['mix']
-        # If we're using defaults, set kwargs to an empty dictionary
-        kws = self.onset_detect_params['mix_plp'] if not use_nonoptimised_defaults else dict()
-        # Update our default parameters with any kwargs we've passed in
-        kws.update(**kwargs)
-        autils.try_get_kwarg_and_remove('passes', kws, default_=3)
-
-        def plp(
-                tempo_min_: int = 100,
-                tempo_max_: int = 300,
-                prior_: stats.rv_continuous = None,
-        ) -> np.array:
-            """Wrapper function around librosa.beat.plp"""
-            # Obtain our predominant local pulse estimation envelope
-            pulse = librosa.beat.plp(
-                y=self.audio['mix'].mean(axis=1),  # Load in the full mix, transposed as necessary
-                sr=self.sample_rate,
-                onset_envelope=env,
-                hop_length=self.hop_length,
-                # the following arguments are set according to our most recent pass
-                tempo_max=tempo_max_,
-                tempo_min=tempo_min_,
-                prior=prior_,
-                **kws
-            )
-            # Extract the beats from our envelope, flatten the array, and convert from frames to timestamps
-            return librosa.frames_to_time(
-                picker(pulse),    # we use the passed custom function to extract the beats from our envelope
-                sr=self.sample_rate,
-                hop_length=self.hop_length
-            )
-
-        # Create the first pass, using a uniform distribution
-        pass_ = plp(
-            prior_=stats.uniform(tempo_min, tempo_max),
-            tempo_min_=tempo_min,
-            tempo_max_=tempo_max
-        )
-        # Start creating our passes
-        for i in range(1, passes):
-            # Extract the BPM value for each IOI obtained from our most recent pass
-            bpms = np.array([60 / p for p in np.diff(pass_)])
-            # Clean any outliers from our BPMs by removing values +/- 1.5 * IQR
-            clean = autils.iqr_filter(bpms)
-            # Now we extract our features from our cleaned BPM array
-            # If we didn't detect any beats, we'll raise a ValueError here, so catch and return an empty list
-            with warnings.catch_warnings():
-                warnings.simplefilter('ignore', RuntimeWarning)
-                try:
-                    min_ = np.nanmin(clean)
-                except ValueError:
-                    return np.array([0])
-                max_ = np.nanmax(clean)
-                # Use a uniform distribution over cleaned minimum and maximum
-                if use_uniform:
-                    prior = stats.uniform(min_, max_)
-                # Use a truncated normal distribution over cleaned minimum, maximum, mean, and std. dev (default)
-                else:
-                    # TODO: Is this throwing runtime warnings??
-                    mean_ = np.nanmean(clean)
-                    std_ = np.nanstd(clean)
-                    prior = stats.truncnorm((min_ - mean_) / std_, (max_ - mean_) / std_, loc=mean_, scale=std_)
-                # Construct the next pass using our extracted features and prior distribution, and repeat
-                pass_ = plp(
-                    tempo_min_=min_,
-                    tempo_max_=max_,
-                    prior_=prior,
-                )
-        # Once we've completed all of our passes, set our tempo attribute to the mean bpm from the most recent pass
-        self.tempo = autils.calculate_tempo(pass_)
-        # TODO: implement some sort of warning here when tempo seems to drift a lot?
         return pass_
 
     def onset_strength(
@@ -476,7 +386,7 @@ class OnsetMaker:
         """Detects onsets in an audio signal.
 
         Wrapper around `librosa.onset.onset_detect` that enables per-instrument defaults to be used. Arguments passed as
-        kwargs should be accepted by `librosa.onset.onset_detect`, with the exception of rms: set this to True to use a
+        kwargs should be accepted by `librosa.onset.onset_detect`, except for rms: set this to True to use a
         a custom energy function when backtracking detected onsets to local minima. Other keyword arguments overwrite
         current per-instrument defaults.
 
@@ -538,87 +448,6 @@ class OnsetMaker:
                 **kws
             )
 
-    def _clean_polyphonic_midi_output(
-            self,
-            midi: PrettyMIDI,
-            window: float = None,
-    ) -> np.array:
-        """Cleans the output from `OnsetMaker.polyphonic_onset_detect`.
-
-        Cleaning includes removing invalid notes, sorting, and removing onsets that occurred at approximately the same
-        time point (i.e. two notes in one chord).
-
-        Arguments:
-            midi (PrettyMIDI): the PrettyMidi object returned from `basic_pitch.inference.predict`
-            window (float, optional): the window to use when removing adjacent onsets
-
-        Returns:
-            np.array: the cleaned onset array
-
-        """
-        # Use the default window unless we've passed one in
-        if window is None:
-            window = self.window
-
-        def cleaner(ons1: float, ons2: float) -> float:
-            """Compares two onsets and sets the later onset equal to the first if the distance is below a threshold"""
-            if ons2 - ons1 < window:
-                # Little hack: we set the two onsets equal to each other here, then remove non-unique elements later
-                ons2 = ons1
-            return ons2
-
-        # Define our NumPy function from our Python function
-        cleaner_np = np.frompyfunc(cleaner, 2, 1)
-        # Remove invalid MIDI notes from our PrettyMidi output, get the onsets, and then sort
-        midi.remove_invalid_notes()
-        ons = np.sort(midi.get_onsets())
-        # Run the cleaner on our onsets and extract only the unique values (removes duplicates we created on purpose)
-        return np.unique(
-            cleaner_np.accumulate(
-                ons,
-                dtype=object,
-                out=ons
-            ).astype(float)
-        )
-
-    def polyphonic_onset_detect(
-            self,
-            instr: str,
-            use_nonoptimised_defaults: bool = False,
-            **kwargs
-    ) -> np.array:
-        """Detects onsets using an automatic polyphonic transcription algorithm.
-
-        Wrapper around `basic_pitch.inference.predict` that enables per-instrument defaults to be used. This function
-        returns a pretty_midi.PrettyMIDI object, which is cleaned in order to remove onsets that occurred at
-        approximately the same time (i.e. multiple notes eppearing in one chord).
-
-        Arguments:
-            instr (str): the name of the instrument to detect onsets in
-            use_nonoptimised_defaults (bool, optional): whether or not to use default parameters, defaults to False
-            **kwargs: additional keyword arguments passed to `basic_pitch.inference.predict`
-
-        Returns:
-            np.array: the detected onsets, after cleaning via `OnsetMaker._clean_polyphonic_midi_output`
-
-        """
-        # Update the default parameters for the input instrument with any kwargs we've passed in
-        self.polyphonic_onset_detect_params[instr].update(**kwargs)
-        # If we're using defaults, set kwargs to an empty dictionary
-        kws = self.polyphonic_onset_detect_params[instr] if not use_nonoptimised_defaults else dict()
-        # We need to hide printing in basic_pitch and catch any Librosa warnings to keep stdout looking nice
-        with autils.HidePrints() as _, warnings.catch_warnings() as __:
-            warnings.simplefilter('ignore', UserWarning)
-            # Run the polyphonic automatic transcription model over the given audio.
-            model_output, midi_data, note_events = bp.predict(
-                # basic_pitch doesn't accept objects that have already been loaded in Librosa, so pass in the filename
-                self.item['output'][instr],
-                autils.BASIC_PITCH_MODEL,
-                **kws
-            )
-        # Clean the MIDI output and return
-        return self._clean_polyphonic_midi_output(midi_data)
-
     def bandpass_filter(
             self,
             aud: np.array,
@@ -657,6 +486,7 @@ class OnsetMaker:
             onsets: list[np.array] = None,
             start_freq: int = 750,
             tag: str = 'clicks',
+            folder: str = 'click_tracks',
             width: int = 100,
             **kwargs
     ) -> None:
@@ -707,7 +537,7 @@ class OnsetMaker:
         # Sum the audio and click signals together
         process = audio + sum(clicks)
         # Create the audio file and save into the click tracks directory
-        with open(rf'{self.reports_dir}\click_tracks\{self.item["fname"]}_{instr}_{tag}.{autils.FILE_FMT}', 'wb') as f:
+        with open(rf'{self.reports_dir}\{folder}\{self.item["fname"]}_{instr}_{tag}.{autils.FILE_FMT}', 'wb') as f:
             sf.write(f, process, self. sample_rate)
 
     def compare_onset_detection_accuracy(
@@ -717,6 +547,7 @@ class OnsetMaker:
             instr: str = None,
             onsets: list[np.array] = None,
             onsets_name: list[str] = None,
+            audio_cutoff: int = None,
             window: float = None,
             **kwargs
     ) -> dict:
@@ -738,6 +569,7 @@ class OnsetMaker:
             onsets (list[np.array]): a list of arrays, each array should be the results from one algorithm
             onsets_name (list[str]): a list of names that should match with the algorithm results in onsets
             window (float): the size of the window used for matching each onset to a reference
+            audio_cutoff (int, optional): stop reading audio after this point (in total seconds)
             **kwargs: additional key-value pairs passed to the returned summary dictionary
 
         Yields:
@@ -764,6 +596,10 @@ class OnsetMaker:
         # Iterate through all the onset detection algorithms passed in
         for (name, estimate) in zip(onsets_name, onsets):
             with warnings.catch_warnings():
+                # If we've passed a cutoff value, remove all reference and estimated onsets above this
+                if audio_cutoff is not None:
+                    ref = np.array([i for i in ref if i < audio_cutoff])
+                    estimate = np.array([i for i in estimate if i < audio_cutoff])
                 # If we have no onsets, both mir_eval and numpy will throw warnings, so catch them here
                 warnings.simplefilter('ignore', RuntimeWarning)
                 warnings.simplefilter('ignore', UserWarning)
@@ -1116,8 +952,7 @@ class OnsetMaker:
             matched = self.match_onsets_and_beats(beats=self.ons['mix_madmom'], onsets=self.ons[ins])
             # Output our click track of detected beats + matched onsets
             if generate_click:
-                self.generate_click_track(instr=ins, onsets=[self.ons[ins]], start_freq=1250)
-                self.generate_click_track(instr=ins, onsets=[matched], tag='beats', start_freq=750)
+                self.generate_click_track(instr=ins, onsets=[self.ons[ins], matched], tag='beats', start_freq=750)
         # Match the detected onsets together with the detected beats to generate our summary dictionary
         self.summary_dict = self.generate_matched_onsets_dictionary(
             beats=self.ons['mix_madmom'],
@@ -1144,26 +979,14 @@ class OnsetMaker:
             generate_click (bool): whether to generate an audio click track
 
         """
-        # Generate the onset envelope for the full mix and track the beats within it
-        self.env['mix'] = self.onset_strength('mix', use_nonoptimised_defaults=False)
-        # Track the beats in the full mix of the audio file, using multiple passes of the required algorithm
-        # First, we track the beats using predominant pulse estimation, interpolating between minima/maxima of the pulse
-        self.ons['mix_interpolated'] = self.beat_track_plp(
-            env=self.env['mix'],
-            use_uniform=False,
-            use_nonoptimised_defaults=False,
-            picker=self.localmin_localmax_interpolate
-        )
-        # Second, we track the beats using recurrent neural networks
-        self.ons['mix_madmom'] = self.beat_track_rnn(
-            use_nonoptimised_defaults=False
-        )
+        # Track the beats using recurrent neural networks
+        self.ons['mix_madmom'] = self.beat_track_rnn(use_nonoptimised_defaults=False)
         # Try and get manual annotations for our crotchet beats, if we have them
         try:
             eval_ = list(self.compare_onset_detection_accuracy(
                 fname=rf'{self.references_dir}\manual_annotation\{self.item["fname"]}_mix.txt',
-                onsets=[self.ons['mix_interpolated'], self.ons['mix_madmom']],
-                onsets_name=['interpolated', 'madmom'],
+                onsets=[self.ons['mix_madmom']],
+                onsets_name=['madmom'],
                 instr='mix',
             ))
         except FileNotFoundError:
@@ -1172,10 +995,11 @@ class OnsetMaker:
             self.onset_evaluation.append(eval_)
         # Generate the click track for the tracked beats
         if generate_click:
-            self.generate_click_track(instr='mix', onsets=[self.ons['mix_madmom']], start_freq=1250)
+            self.generate_click_track(tag='beats', instr='mix', onsets=[self.ons['mix_madmom']], start_freq=1250)
 
 
 def process_item(
+        corpus_json_name: str,
         corpus_item: dict,
         data_filepath: str,
         generate_click: bool,
@@ -1188,9 +1012,10 @@ def process_item(
     fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO, format=fmt)
-    logger.info(f'... now working on item {corpus_item["id"]}, track name {corpus_item["track_name"]}')
+    logger.info(f'... now working on item {corpus_item["mbz_id"]}, track name {corpus_item["track_name"]}')
     # Create the OnsetMaker class instance for this item in the corpus
     made = OnsetMaker(
+        corpus_json_name=corpus_json_name,
         item=corpus_item,
         data_filepath=data_filepath,
         references_filepath=references_filepath,
@@ -1199,11 +1024,22 @@ def process_item(
     # Run our processing on the mixed audio and then the separated audio
     made.process_mixed_audio(generate_click, )
     made.process_separated_audio(generate_click, remove_silence)
+    # Save the processed OnsetMaker instance
+    # autils.serialise_object(
+    #     made,
+    #     fpath=rf'{autils.get_project_root()}\models\{corpus_json_name}',
+    #     fname=made.item['fname'],
+    #     use_pickle=True
+    # )
     # Return the processed OnsetMaker instance
     return made
 
 
 @click.command()
+@click.option(
+    "-json_filename", "json_filename", type=str, default="corpus_bill_evans",
+    help='Name of the corpus to use'
+)
 @click.option(
     "-data", "data_filepath", type=click.Path(exists=True), default=f"{autils.get_project_root()}\data",
     help=r'Path to .\data directory'
@@ -1238,6 +1074,7 @@ def process_item(
     "--one-track-only", "one_track_only", is_flag=True, default=False, help='Only process the first item, for debugging'
 )
 def main(
+        json_filename: str,
         data_filepath: click.Path,
         reports_filepath: click.Path,
         references_filepath: click.Path,
@@ -1254,27 +1091,36 @@ def main(
     start = time()
     # Initialise the logger
     logger = logging.getLogger(__name__)
-    corpus = autils.load_json(references_filepath, 'corpus')
+    corpus = autils.load_json(references_filepath, json_filename)
     # If we only want to analyse tracks which have corresponding manual annotation files present
+    # TODO: this will probably be broken now
     if annotated_only:
         annotated = autils.get_tracks_with_manual_annotations()
-        corpus = [item for item in corpus if item['fname'] in annotated]
+        corpus = [item for item in corpus if item['mbz_id'] in annotated]
     # If we only want to process one track, useful for debugging
     if one_track_only:
         corpus = [corpus[0]]
-    logger.info(f"detecting onsets in {len(corpus)} tracks using {n_jobs} CPUs ...")
     # Process each item in the corpus, using multiprocessing in job-lib
-    res = Parallel(n_jobs=n_jobs)(delayed(process_item)(
+    fpath = rf'{models_filepath}\{json_filename}'
+    res: list[OnsetMaker] = [
+        autils.unserialise_object(fpath=fpath, fname=f.replace('.p', ''), use_pickle=True)
+        for f in os.listdir(fpath) if f.endswith('.p')
+    ]
+    cached_ids = [om.item['fname'] for om in res]
+    to_process = [item for item in corpus if item['fname'] not in cached_ids]
+    logger.info(f"detecting onsets in {len(to_process)} tracks using {n_jobs} CPUs ...")
+    res.extend([Parallel(n_jobs=n_jobs, backend='loky')(delayed(process_item)(
+        json_filename,
         corpus_item,
         data_filepath,
         generate_click,
         references_filepath,
         remove_silence,
         reports_filepath
-    ) for corpus_item in corpus)
+    ) for corpus_item in to_process)])
     # Serialise all the OnsetMaker instances using Pickle (Dill causes errors with job-lib)
     logger.info(f'serialising class instances ...')
-    autils.serialise_object(res, fpath=models_filepath, fname='matched_onsets', use_pickle=True)
+    autils.serialise_object(res, fpath=models_filepath, fname=f'matched_onsets_{json_filename}', use_pickle=True)
     # Log the completion time and return the class instances
     logger.info(f'onsets detected for all items in corpus in {round(time() - start)} secs !')
     return res
