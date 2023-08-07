@@ -4,7 +4,6 @@
 """Automatically detects note and beat onsets in the source separated tracks for each item in the corpus"""
 
 import logging
-import os
 import warnings
 from pathlib import Path
 from time import time
@@ -314,6 +313,7 @@ class OnsetMaker:
                     high = np.nanpercentile(clean, 75)
                 # If we didn't detect any onsets, the above lines will throw an error, so return an empty array
                 except ValueError:
+                    # TODO: we should probably log this somehow
                     return np.array([0])
             # If the distance between upper and lower bound is less than the distance between mean +/- std
             if high - low < (mean + std) - (mean - std):
@@ -1024,13 +1024,6 @@ def process_item(
     # Run our processing on the mixed audio and then the separated audio
     made.process_mixed_audio(generate_click, )
     made.process_separated_audio(generate_click, remove_silence)
-    # Save the processed OnsetMaker instance
-    # autils.serialise_object(
-    #     made,
-    #     fpath=rf'{autils.get_project_root()}\models\{corpus_json_name}',
-    #     fname=made.item['fname'],
-    #     use_pickle=True
-    # )
     # Return the processed OnsetMaker instance
     return made
 
@@ -1093,7 +1086,6 @@ def main(
     logger = logging.getLogger(__name__)
     corpus = autils.load_json(references_filepath, json_filename)
     # If we only want to analyse tracks which have corresponding manual annotation files present
-    # TODO: this will probably be broken now
     if annotated_only:
         annotated = autils.get_tracks_with_manual_annotations()
         corpus = [item for item in corpus if item['mbz_id'] in annotated]
@@ -1101,15 +1093,9 @@ def main(
     if one_track_only:
         corpus = [corpus[0]]
     # Process each item in the corpus, using multiprocessing in job-lib
-    fpath = rf'{models_filepath}\{json_filename}'
-    res: list[OnsetMaker] = [
-        autils.unserialise_object(fpath=fpath, fname=f.replace('.p', ''), use_pickle=True)
-        for f in os.listdir(fpath) if f.endswith('.p')
-    ]
-    cached_ids = [om.item['fname'] for om in res]
-    to_process = [item for item in corpus if item['fname'] not in cached_ids]
-    logger.info(f"detecting onsets in {len(to_process)} tracks using {n_jobs} CPUs ...")
-    res.extend([Parallel(n_jobs=n_jobs, backend='loky')(delayed(process_item)(
+    logger.info(f"detecting onsets in {len(corpus)} tracks using {n_jobs} CPUs ...")
+    # TODO: implement some form of caching here
+    res = [Parallel(n_jobs=n_jobs, backend='loky')(delayed(process_item)(
         json_filename,
         corpus_item,
         data_filepath,
@@ -1117,7 +1103,7 @@ def main(
         references_filepath,
         remove_silence,
         reports_filepath
-    ) for corpus_item in to_process)])
+    ) for corpus_item in corpus)]
     # Serialise all the OnsetMaker instances using Pickle (Dill causes errors with job-lib)
     logger.info(f'serialising class instances ...')
     autils.serialise_object(res, fpath=models_filepath, fname=f'matched_onsets_{json_filename}', use_pickle=True)

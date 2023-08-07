@@ -22,6 +22,9 @@ import tensorflow as tf
 from basic_pitch import ICASSP_2022_MODEL_PATH
 from tqdm import tqdm
 
+# TODO: sort out imports here for pickling/unpickling custom classes e.g. OnsetMaker
+
+
 # Set options in pandas and numpy here so they carry through whenever this file is imported by another
 # This disables scientific notation and forces all rows/columns to be printed: helps with debugging!
 pd.set_option('display.max_rows', None)
@@ -29,7 +32,7 @@ pd.set_option('display.max_columns', None)
 np.set_printoptions(suppress=True)
 
 # Define constants used across many files
-SAMPLE_RATE = 44100    # TODO: test higher sample rates
+SAMPLE_RATE = 44100
 HOP_LENGTH = 128
 FILE_FMT = 'wav'
 BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
@@ -273,6 +276,9 @@ def iqr_filter(
     # Get our upper and lower bound from the array
     min_ = np.nanpercentile(arr, low)
     max_ = np.nanpercentile(arr, high)
+    # If the upper and lower bounds are equal, IQR will be 0.0, and our cleaned array will be empty. So don't clean.
+    if min_ - max_ == 0:
+        return arr
     # Construct the IQR
     iqr = max_ - min_
     # Filter the array between our two bounds and return the result
