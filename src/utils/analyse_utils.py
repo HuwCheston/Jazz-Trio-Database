@@ -136,8 +136,8 @@ class CorpusMakerFromExcel:
             'end_timestamp',
             'mbz_id',
             'notes',
-            'time_signature',
-            'first_downbeat'
+            # 'time_signature',    # Uncomment these lines when we add these columns back in
+            # 'first_downbeat'
         ]
         # Remove tracks that did not pass selection criteria
         sheet = trio_df[(trio_df['is_acceptable(Y/N)'] == 'Y') & (~trio_df['youtube_link'].isna())]

@@ -223,7 +223,9 @@ class OptimizeBeatTrack(Optimizer):
         # Create the onset detection maker class for this track
         made = OnsetMaker(item=item)
         # Track the beats using recurrent neural networks
-        made.ons['mix'] = made.beat_track_rnn(audio_cutoff=self.audio_cutoff, **kwargs)
+        # We're not interested in getting the downbeat positions here separately
+        timestamps, _ = made.beat_track_rnn(audio_cutoff=self.audio_cutoff, **kwargs)
+        made.ons['mix'] = timestamps
         f = self.get_f_score(onsetmaker=made)
         # Return the results from this iteration, formatted as a dictionary
         return dict(
@@ -324,7 +326,7 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
 
 @click.command()
 @click.option(
-    "-optimize_stems", "optimize_stems", is_flag=True, default=True,
+    "-optimize_stems", "optimize_stems", is_flag=True, default=False,
     help='Optimize onset detection in given stems (e.g. piano, bass, drums)'
 )
 @click.option(
@@ -343,7 +345,7 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
     help='Number of CPU cores to use in parallel processing, defaults to maximum available'
 )
 @click.option(
-    "-json_name", "json_name", type=str, default='corpus_chronology',
+    "-corpus", "corpus_fname", type=str, default='corpus_bill_evans',
     help='The filename of the corpus to use when optimizing, defaults to the chronology corpus'
 )
 def main(
@@ -352,23 +354,23 @@ def main(
         maxeval: int,
         maxtime: int,
         n_jobs: int,
-        json_name: str = 'corpus_chronology'
+        corpus_fname: str = 'corpus_chronology'
 ):
     # Configure the logger here
     logger = logging.getLogger(__name__)
     # Load in the results for tracks which have already been optimized
-    corpus_json = autils.load_json(rf'{autils.get_project_root()}\references', json_name)
-    with_annotations = autils.get_tracks_with_manual_annotations(corpus_json=corpus_json)
+    corpus = autils.CorpusMakerFromExcel(fname=corpus_fname).tracks
+    with_annotations = autils.get_tracks_with_manual_annotations(corpus_json=corpus)
     # We have annotations from these tracks, but we don't want to include them in this round of optimization
     exclude_ids = []
-    if json_name == 'corpus_bill_evans':
+    if corpus_fname == 'corpus_bill_evans':
         exclude_ids = [
             '787dba5c-2486-48e4-9439-95b04628599b',    # Emily, used on chronology corpus
             '360d7a67-b8ff-4002-8c5a-e5d87b74c214',    # TTT, created but not used
             '616886f2-9997-4902-8bdf-4a1eff4f3720',    # TTT, created but not used
             'f9fa0f9b-b3d7-4f59-a376-54fc83d42e80',    # Emily, used in chronology corpus
         ]
-    elif json_name == 'corpus_chronology':
+    elif corpus_fname == 'corpus_chronology':
         exclude_ids = [
             '9cee7e1-f0a4-4ee0-be3b-ad1129933c7a',
             '57707551-2a88-4a64-ae65-552f1b9ce4bc',
@@ -377,17 +379,17 @@ def main(
         ]
     # Remove any tracks we don't want to use in the optimization process at this point
     to_optimise = [
-        track for track in corpus_json if track['mbz_id'] in with_annotations and track['mbz_id'] not in exclude_ids
+        track for track in corpus if track['mbz_id'] in with_annotations and track['mbz_id'] not in exclude_ids
     ]
     # Optimize stems
     if optimize_stems:
         logger.info(f'optimizing onset detection for {", ".join(i for i in autils.INSTRS_TO_PERF.keys())} ...')
-        optimize_onset_detection(json_name=json_name, n_jobs=n_jobs, maxtime=maxtime, maxeval=maxeval, tracks=to_optimise)
+        optimize_onset_detection(json_name=corpus_fname, n_jobs=n_jobs, maxtime=maxtime, maxeval=maxeval, tracks=to_optimise)
         logger.info(f"... finished optimizing onset detection !")
     # Optimize beat tracking
     if optimize_mix:
         logger.info(f'optimizing beat detection for raw audio ...')
-        optimize_beat_tracking(json_name=json_name, tracks=to_optimise)
+        optimize_beat_tracking(json_name=corpus_fname, tracks=to_optimise)
 
 
 if __name__ == '__main__':
