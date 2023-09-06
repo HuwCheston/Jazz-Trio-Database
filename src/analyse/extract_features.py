@@ -7,7 +7,6 @@ Extracts the required features for each item in the corpus, using the automatica
 
 import logging
 import warnings
-from math import isnan
 
 import numpy as np
 import pandas as pd
@@ -35,8 +34,8 @@ class ModelMaker:
         self.num_interpolated: dict = {k: 0 for k in self.instrs}
         self.interpolation_limit: int = kwargs.get('interpolation_limit', 1)
         self.df: pd.DataFrame = self._format_df(om.summary_dict)
+        self.recording_tempo_slope = self.extract_tempo_slope()
         self.models = {}
-        self.bayes_models = {}
         self.summary_df = None
 
     def _format_df(
@@ -79,8 +78,11 @@ class ModelMaker:
                 df[endog_ins] = self.interpolate_missing_onsets(df[endog_ins], instr=endog_ins)
             # Compile the inter-onset intervals
             dic = {
+                f'{endog_ins}_onset': df[endog_ins],
                 f'{endog_ins}_prev_ioi': df[endog_ins].diff(),
                 f'{endog_ins}_next_ioi': df[endog_ins].diff().shift(-1),
+                f'{endog_ins}_prev_bpm': 60 / df[endog_ins].diff(),
+                f'{endog_ins}_next_bpm': 60 / df[endog_ins].diff().shift(-1),
             }
             # Update the dictionary with our asynchrony values
             dic.update({f'{endog_ins}_{exog}_asynchrony': df[exog] - df[endog_ins] for exog in exog_instrs})
@@ -88,8 +90,13 @@ class ModelMaker:
             return pd.DataFrame(dic)
 
         # Convert our summary dictionary to a dataframe
-        df = pd.DataFrame(summary_dict)
-        return pd.concat([df, *[formatter(in_, [i for i in self.instrs if i != in_]) for in_ in self.instrs]], axis=1)
+        df = pd.DataFrame(summary_dict).rename(columns={'beats': 'mix_onset'})
+        conc = pd.concat([df, *[formatter(in_, [i for i in self.instrs if i != in_]) for in_ in self.instrs]], axis=1)
+        conc['mix_bpm'] = 60 / conc['mix_onset'].diff()
+        # Calculate average statistics, across all instruments (i.e. average IOI, average onset time)
+        for col in ['onset', 'prev_ioi', 'next_ioi', 'prev_bpm', 'next_bpm']:
+            conc[f'avg_{col}'] = conc[[f'{i}_{col}' for i in self.instrs]].mean(axis=1)
+        return conc
 
     def interpolate_missing_onsets(
             self,
@@ -206,73 +213,6 @@ class ModelMaker:
         except (ValueError, IndexError):
             return None
 
-    def generate_bayes_model(
-            self,
-            endog_ins: str
-    ):
-        """Generates the Bayesian phase correction model for one instrument.
-
-        Arguments:
-            endog_ins (str): the name of the 'dependent variable' instrument
-
-        Returns:
-            az.InferenceData: the ArviZ InferenceData instance
-
-        """
-        # Import bambi here so we don't waste time doing this if we're not generating Bayesian models
-        import bambi as bmb
-        exog = [ex for ex in self.instrs if ex != endog_ins]
-        # Create our asynchrony (coupling) terms in the model
-        async_cols = [f'{endog_ins}_{instr}_asynchrony' for instr in exog]
-        # Create the rest of our model
-        form = f'{endog_ins}_next_ioi~{endog_ins}_prev_ioi+' + '+'.join(async_cols)
-        df = self.df.copy(deep=True)
-        # Create the dictionary of priors
-        priors = {
-            'Intercept': bmb.Prior("Normal", mu=0.003, sigma=0.003),
-            f'{endog_ins}_prev_ioi': bmb.Prior("Normal", mu=-0.55, sigma=0.06),
-            **{col: bmb.Prior("Uniform", lower=0, upper=1) for col in async_cols}
-        }
-        # Create the model, fit, and return the InferenceData object
-        md = bmb.Model(form, df, dropna=True, priors=priors)
-        res = md.fit(cores=1)
-        return res
-
-    def _extract_bayes_coefs(
-            self,
-            endog_ins: str,
-            bayes_md=None,
-            coupling_var: str = 'asynchrony',
-            ioi_var: str = 'prev_ioi'
-    ) -> dict:
-        """Extracts coefficients from a Bayesian model returned by Bambi"""
-        def getter(exog_ins) -> float:
-            """Gets a particular coupling coefficient between endog_ins and exog_ins from the model"""
-            try:
-                coef = md_summary.loc[f'{endog_ins}_{exog_ins}_{coupling_var}']
-                if coef < 0:
-                    warnings.warn(
-                        f'track {self.item["track_name"]}, coupling {endog_ins}/{exog_ins} < 0 ({coef})', UserWarning
-                    )
-                return coef
-            except KeyError:
-                return np.nan
-
-        cols = ['intercept_bay', 'self_coupling_bay', 'coupling_piano_bay', 'coupling_bass_bay', 'coupling_drums_bay']
-        if bayes_md is None:
-            return {col: np.nan for col in cols}
-        else:
-            import arviz as az
-            md_summary = az.summary(bayes_md)['mean']
-            try:
-                vals = [
-                    md_summary.loc['Intercept'], md_summary.loc[f'{endog_ins}_{ioi_var}'],
-                    getter('piano'), getter('bass'), getter('drums')
-                ]
-                return {c: v for c, v in zip(cols, vals)}
-            except KeyError:
-                return {col: np.nan for col in cols}
-
     def _extract_model_coefs(
             self,
             md: RegressionResultsWrapper | None,
@@ -323,16 +263,6 @@ class ModelMaker:
                     'log-likelihood': md.llf,
                 }
 
-    @staticmethod
-    def extract_npvi(
-            a: np.array
-    ) -> float:
-        """Extracts normalised pairwise variability index from an array of inter-onset intervals"""
-        # TODO: fix this to account for nan
-        return sum(
-            [abs((k - k1) / ((k + k1) / 2)) if not any([isnan(k), isnan(k1)]) else np.nan for (k, k1) in zip(a, a[1:])]
-        ) * 100 / (sum(1 for _ in a) - 1)
-
     def extract_burs(
             self,
             endog_ins: str = None,
@@ -370,7 +300,7 @@ class ModelMaker:
         if onset_array is None and beat_positions is None and endog_ins is None:
             raise AttributeError('Either endog_ins, or onset_array and beat_positions, must be provided.')
         if onset_array is None and endog_ins is not None:
-            onset_array = self.om.summary_dict[endog_ins]
+            onset_array = self.om.ons[endog_ins]
         if beat_positions is None and endog_ins is not None:
             beat_positions = self.om.summary_dict[endog_ins]
         # Use log2 burs if specified
@@ -433,18 +363,30 @@ class ModelMaker:
             'burs': burs
         }
 
+    def extract_tempo_slope(self, onset_col: str = 'avg_onset', bpm_col: str = 'avg_prev_bpm', attr = None) -> float:
+        # Create the regression model
+        md = smf.ols(f'{bpm_col}~{onset_col}', data=self.df, missing='drop').fit()
+        # Define the parameters to extract from the model depending on input: defaults to regression coefficients
+        table = md.params
+        # Extract standard error
+        if attr == 'stderr':
+            table = md.bse
+        # Extract p-values
+        elif attr == 'pval':
+            table = md.pvalues
+        # Return the correct value (i.e. not the intercept)
+        return table.iloc[1]
+
     def create_instrument_dict(
             self,
             endog_ins: str,
             md: RegressionResultsWrapper,
-            bayes_md=None
     ) -> dict:
         """Creates summary dictionary for a single instrument, containing all extracted features.
 
         Arguments:
             endog_ins (str): the name of the instrument to create the dictionary for
             md (RegressionResultsWrapper): the statsmodels regression instance
-            bayes_md (optional): the Bayes model returned from Bambi, will be skipped if not present
 
         Returns:
             dict: summary dictionary containing extracted features as key-value pairs
@@ -452,13 +394,11 @@ class ModelMaker:
         """
         return {
             # Item metadata
-            'track': self.item['track_name'],
-            'album': self.item['album_name'],
-            'bandleader': self.item['musicians'][self.item['musicians']['leader']],
-            'year': self.item['recording_year'],
+            **self.item,
             'tempo': self.om.tempo,
             'instrument': endog_ins,
             'performer': self.item['musicians'][autils.INSTRS_TO_PERF[endog_ins]],
+            'recording_tempo_slope': self.recording_tempo_slope,
             # Raw beats
             'raw_beats': self.df[endog_ins],
             'interpolated_beats': self.num_interpolated[endog_ins],
@@ -468,7 +408,6 @@ class ModelMaker:
             'ioi_mean': self.df[f'{endog_ins}_prev_ioi'].mean(),
             'ioi_median': self.df[f'{endog_ins}_prev_ioi'].median(),
             'ioi_std': self.df[f'{endog_ins}_prev_ioi'].std(),
-            # 'ioi_npvi': self.extract_npvi(self.df[f'{endog_ins}_prev_ioi']),
             # Cleaning metadata, e.g. missing beats
             'fraction_silent': self.om.silent_perc[endog_ins],
             'missing_beats_fraction': self.df[endog_ins].isna().sum() / self.df.shape[0],
@@ -476,12 +415,16 @@ class ModelMaker:
             'model_compiled': md is not None,
             # Event density functions
             'event_density': self.extract_event_density(endog_ins=endog_ins).mean(),
+            # Tempo slopes
+            'instrument_tempo_slope': self.extract_tempo_slope(f'{endog_ins}_onset', ),
+            'instrument_tempo_drift': self.extract_tempo_slope(f'{endog_ins}_onset', attr='stderr'),
+            # Pairwise asynchrony
+            # Grainger causality model
+            # Kuramoto coupling model?
             # Model goodness-of-fit
             **self._extract_model_goodness_of_fit(md=md),
             # Model coefficients
             **self._extract_model_coefs(endog_ins=endog_ins, md=md),
-            # Bayes model coefficients
-            **self._extract_bayes_coefs(endog_ins=endog_ins, bayes_md=bayes_md),
             # Beat-upbeat ratio stats
             **self.extract_bur_summary(endog_ins=endog_ins)
         }
@@ -493,10 +436,11 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     logger.addHandler(autils.TqdmLoggingHandler())
 
-    onsets = autils.unserialise_object(rf'{autils.get_project_root()}\models', 'matched_onsets')
+    onsets = autils.unserialise_object(rf'{autils.get_project_root()}\models', 'matched_onsets_corpus_chronology')
     dfs = []
     features = []
     for ons in tqdm(onsets):
+        # TODO: catch some warnings here?
         mm = ModelMaker(om=ons, interpolate=True, interpolation_limit=1)
         summary = []
         for ins in autils.INSTRS_TO_PERF.keys():
@@ -506,4 +450,4 @@ if __name__ == "__main__":
         dfs.append(mm.summary_df)
         features.append(mm)
     big = pd.concat(dfs).reset_index(drop=True)
-    autils.serialise_object(features, rf'{autils.get_project_root()}\models', 'extracted_features')
+    autils.serialise_object(features, rf'{autils.get_project_root()}\models', 'extracted_features_corpus_bill_evans')

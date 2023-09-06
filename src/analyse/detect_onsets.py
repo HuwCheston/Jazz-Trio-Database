@@ -42,22 +42,20 @@ class OnsetMaker:
         bass=30,
         drums=60,
     )
+    # Define file paths
+    references_dir: str = rf"{autils.get_project_root()}\references"
+    data_dir: str = rf"{autils.get_project_root()}\data"
+    reports_dir: str = rf"{autils.get_project_root()}\reports"
 
     def __init__(
             self,
-            corpus_json_name: str = 'corpus_bill_evans',
-            references_filepath: str = rf"{autils.get_project_root()}\references",
-            data_filepath: str = rf"{autils.get_project_root()}\data",
-            reports_filepath: str = rf"{autils.get_project_root()}\reports",
+            corpus_name: str = 'corpus_bill_evans',
             item: dict = None,
             **kwargs
     ):
+        # Set inputs as class parameters
         self.item = item
-        self.corpus_json_name = corpus_json_name
-        # Define file paths
-        self.references_dir = references_filepath
-        self.data_dir = data_filepath
-        self.reports_dir = reports_filepath
+        self.corpus_name = corpus_name
         # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
         # These defaults were found through a parameter search against a reference set of onsets, annotated manually
         self.onset_strength_params, self.onset_detect_params = self.return_converged_paramaters()
@@ -102,7 +100,7 @@ class OnsetMaker:
         onset_strength_args = autils.return_function_kwargs(librosa.onset.onset_strength)
         od_fmt, os_fmt = {}, {}
         js = autils.load_json(
-            fpath=fr'{self.references_dir}\parameter_optimisation\{self.corpus_json_name}', fname='converged_parameters'
+            fpath=fr'{self.references_dir}\parameter_optimisation\{self.corpus_name}', fname='converged_parameters'
         )
         for item in js:
             od_fmt[item['instrument']] = {k: fmt(v) for k, v in item.items() if k in onset_detect_args}
@@ -265,7 +263,7 @@ class OnsetMaker:
                 tempo_min_: int = 100,
                 tempo_max_: int = 300,
                 **kws_
-        ) -> np.array:
+        ) -> tuple[np.array, np.array]:
             """Wrapper around classes from `madmom.features.downbeat`"""
 
             # Catch VisibleDeprecationWarnings that appear when creating the processor
@@ -281,26 +279,23 @@ class OnsetMaker:
                 )
                 # Fit the processor to the audio
                 act = RNNDownBeatProcessor()(samples)
-                # Return the first column, i.e. the detected beat positions (we're not interested in downbeats)
-                return proc(act)[:, 0]
+                # Return both the detected beat timestamps and the estimated position in a bar
+                return proc(act)[:, 0], proc(act)[:, 1]
 
         # Create the first pass: this is designed to use a very low threshold and wide range of tempo values, enabling
         # the tempo to fluctuate a great deal; we will then use these results to narrow down the tempo in future passes
-        pass_ = tracker(
+        timestamps, metre_positions = tracker(
             tempo_min_=starting_min,
             tempo_max_=starting_max,
             observation_lambda=2,
             # We don't pass in our **kwargs here
-            **dict(
-                threshold=0,
-                transition_lambda=75
-            )
+            **dict(threshold=0, transition_lambda=75)
         )
 
         # Start creating our passes
         for i in range(1, passes):
             # Extract the BPM value for each IOI obtained from our most recent pass
-            bpms = np.array([60 / p for p in np.diff(pass_)])
+            bpms = np.array([60 / p for p in np.diff(timestamps)])
             # Clean any outliers from our BPMs by removing values +/- 1.5 * IQR
             clean = autils.iqr_filter(bpms)
             with warnings.catch_warnings():
@@ -323,7 +318,7 @@ class OnsetMaker:
                 # Use mean +/- 1 standard deviation as our maximum and minimum allowed tempo
                 tempo_min, tempo_max = (mean - std), (mean + std)
             # Create the new pass, using the new maximum and minimum tempo
-            pass_ = tracker(
+            timestamps, metre_positions = tracker(
                 tempo_min_=tempo_min,
                 tempo_max_=tempo_max,
                 observation_lambda=16,
@@ -331,8 +326,8 @@ class OnsetMaker:
                 **kws
             )
         # Set the tempo value using the crotchet beat positions from our previous pass
-        self.tempo = autils.calculate_tempo(pass_)
-        return pass_
+        self.tempo = autils.calculate_tempo(timestamps)
+        return timestamps, metre_positions
 
     def onset_strength(
             self,
@@ -712,6 +707,7 @@ class OnsetMaker:
     def generate_matched_onsets_dictionary(
             self,
             beats: np.array,
+            beat_positions: np.array,
             onsets_list: list[np.array] = None,
             instrs_list: list = None,
             **kwargs
@@ -762,7 +758,7 @@ class OnsetMaker:
         if instrs_list is None:
             instrs_list = [i for i in range(len(onsets_list))]
         # Create the dictionary of crotchet beats and matched onsets, then return
-        ma: dict = {'beats': beats}
+        ma: dict = {'beats': beats, 'beat_positions': beat_positions}
         ma.update({
             name: self.match_onsets_and_beats(beats=beats, onsets=ons_, **kwargs) for ons_, name in
             zip(onsets_list, instrs_list)
@@ -796,7 +792,7 @@ class OnsetMaker:
             hop_length=self.hop_length,
             **kwargs
         )
-        # Convert the non silent sections (in frames) to time stamps
+        # Convert the non-silent sections (in frames) to time stamps
         to_ts = lambda s: s / self.sample_rate
         li = np.array([(to_ts(se[0]), to_ts(se[1])) for se in non_silent if to_ts(se[1]) - to_ts(se[0]) > thresh])
         # Combine slices of non-silent audio if the distance between the right and left edges is below the threshold
@@ -911,7 +907,7 @@ class OnsetMaker:
     def process_separated_audio(
             self,
             generate_click: bool,
-            remove_silence: bool,
+            remove_silence: bool = True,
     ) -> None:
         """Process the separated audio for all of our individual instruments (piano, bass, drums)
 
@@ -956,6 +952,7 @@ class OnsetMaker:
         # Match the detected onsets together with the detected beats to generate our summary dictionary
         self.summary_dict = self.generate_matched_onsets_dictionary(
             beats=self.ons['mix_madmom'],
+            beat_positions=self.ons['mix_beatpositions'],
             onsets_list=[self.ons['piano'], self.ons['bass'], self.ons['drums']],
             instrs_list=['piano', 'bass', 'drums'],
             use_hard_threshold=False
@@ -980,7 +977,10 @@ class OnsetMaker:
 
         """
         # Track the beats using recurrent neural networks
-        self.ons['mix_madmom'] = self.beat_track_rnn(use_nonoptimised_defaults=False)
+        timestamps, metre_positions = self.beat_track_rnn(use_nonoptimised_defaults=False)
+        self.ons['mix_madmom'] = timestamps
+        self.ons['mix_beatpositions'] = metre_positions
+        self.ons['mix_downbeats'] = autils.extract_downbeats(timestamps, metre_positions)
         # Try and get manual annotations for our crotchet beats, if we have them
         try:
             eval_ = list(self.compare_onset_detection_accuracy(
@@ -993,19 +993,17 @@ class OnsetMaker:
             pass
         else:
             self.onset_evaluation.append(eval_)
-        # Generate the click track for the tracked beats
+        # Generate the click track for the tracked beats, including the downbeats
         if generate_click:
-            self.generate_click_track(tag='beats', instr='mix', onsets=[self.ons['mix_madmom']], start_freq=1250)
+            self.generate_click_track(
+                tag='beats', instr='mix', onsets=[self.ons['mix_madmom'], self.ons['mix_downbeats']], start_freq=1250
+            )
 
 
 def process_item(
         corpus_json_name: str,
         corpus_item: dict,
-        data_filepath: str,
         generate_click: bool,
-        references_filepath: str,
-        remove_silence: bool,
-        reports_filepath: str
 ):
     """Process one item from the corpus, used in parallel contexts (i.e. called with joblib.Parallel)"""
     # We need to initialise the logger here again, otherwise it won't work with joblib
@@ -1015,66 +1013,26 @@ def process_item(
     logger.info(f'... now working on item {corpus_item["mbz_id"]}, track name {corpus_item["track_name"]}')
     # Create the OnsetMaker class instance for this item in the corpus
     made = OnsetMaker(
-        corpus_json_name=corpus_json_name,
+        corpus_name=corpus_json_name,
         item=corpus_item,
-        data_filepath=data_filepath,
-        references_filepath=references_filepath,
-        reports_filepath=reports_filepath
     )
     # Run our processing on the mixed audio and then the separated audio
-    made.process_mixed_audio(generate_click, )
-    made.process_separated_audio(generate_click, remove_silence)
+    made.process_mixed_audio(generate_click)
+    made.process_separated_audio(generate_click)
     # Return the processed OnsetMaker instance
     return made
 
 
 @click.command()
-@click.option(
-    "-json_filename", "json_filename", type=str, default="corpus_bill_evans",
-    help='Name of the corpus to use'
-)
-@click.option(
-    "-data", "data_filepath", type=click.Path(exists=True), default=f"{autils.get_project_root()}\data",
-    help=r'Path to .\data directory'
-)
-@click.option(
-    "-reports", "reports_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\reports",
-    help=r'Path to .\reports directory'
-)
-@click.option(
-    "-references", "references_filepath", type=click.Path(exists=True),
-    default=rf"{autils.get_project_root()}\references", help=r'Path to .\references directory'
-)
-@click.option(
-    "-models", "models_filepath", type=click.Path(exists=True), default=rf"{autils.get_project_root()}\models",
-    help=r'Path to .\models directory'
-)
-@click.option(
-    "-n_jobs", "n_jobs", type=click.IntRange(-1, clamp=True), default=-1,
-    help='Number of CPU cores to use in parallel processing, defaults to maximum available'
-)
-@click.option(
-    "--click", "generate_click", is_flag=True, default=True, help='Generate a click track for detected onsets/beats'
-)
-@click.option(
-    "--remove-silence", "remove_silence", is_flag=True, default=True,
-    help='Remove onsets in sections of source-separated tracks that are deemed to be silent'
-)
-@click.option(
-    "--annotated-only", "annotated_only", is_flag=True, default=False, help='Only use items with manual annotations'
-)
-@click.option(
-    "--one-track-only", "one_track_only", is_flag=True, default=False, help='Only process the first item, for debugging'
-)
+@click.option("-corpus", "corpus_filename", type=str, default="corpus_bill_evans", help='Name of the corpus to use')
+@click.option("-n_jobs", "n_jobs", type=click.IntRange(-1, clamp=True), default=-1, help='Number of CPU cores to use')
+@click.option("--click", "generate_click", is_flag=True, default=True, help='Generate click tracks')
+@click.option("--annotated-only", "annotated_only", is_flag=True, default=False, help='Only use items with annotations')
+@click.option("--one-track-only", "one_track_only", is_flag=True, default=False, help='Only process one item')
 def main(
-        json_filename: str,
-        data_filepath: click.Path,
-        reports_filepath: click.Path,
-        references_filepath: click.Path,
-        models_filepath: click.Path,
+        corpus_filename: str,
         n_jobs: int,
         generate_click: bool,
-        remove_silence: bool,
         annotated_only: bool,
         one_track_only: bool
 ) -> list[OnsetMaker]:
@@ -1084,7 +1042,7 @@ def main(
     start = time()
     # Initialise the logger
     logger = logging.getLogger(__name__)
-    corpus = autils.load_json(references_filepath, json_filename)
+    corpus = autils.CorpusMakerFromExcel(fname=corpus_filename).tracks
     # If we only want to analyse tracks which have corresponding manual annotation files present
     if annotated_only:
         annotated = autils.get_tracks_with_manual_annotations()
@@ -1096,17 +1054,17 @@ def main(
     logger.info(f"detecting onsets in {len(corpus)} tracks using {n_jobs} CPUs ...")
     # TODO: implement some form of caching here
     res = [Parallel(n_jobs=n_jobs, backend='loky')(delayed(process_item)(
-        json_filename,
-        corpus_item,
-        data_filepath,
-        generate_click,
-        references_filepath,
-        remove_silence,
-        reports_filepath
+        corpus_filename, corpus_item, generate_click,
     ) for corpus_item in corpus)]
     # Serialise all the OnsetMaker instances using Pickle (Dill causes errors with job-lib)
     logger.info(f'serialising class instances ...')
-    autils.serialise_object(res, fpath=models_filepath, fname=f'matched_onsets_{json_filename}', use_pickle=True)
+    # TODO: this is somehow serialising as a nested list of lists, should be flat
+    autils.serialise_object(
+        res,
+        fpath=rf"{autils.get_project_root()}\models",
+        fname=f'matched_onsets_{corpus_filename}',
+        use_pickle=True
+    )
     # Log the completion time and return the class instances
     logger.info(f'onsets detected for all items in corpus in {round(time() - start)} secs !')
     return res

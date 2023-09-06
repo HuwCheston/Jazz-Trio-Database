@@ -4,10 +4,12 @@ import inspect
 import logging
 import os
 import pickle
+import re
 import sys
 import time
 import warnings
 from ast import literal_eval
+from datetime import datetime, timedelta
 from functools import wraps
 from pathlib import Path
 from string import punctuation
@@ -65,10 +67,197 @@ FREQUENCY_BANDS = {
 }
 
 
-
 def get_project_root() -> Path:
     """Returns the root directory of the project"""
     return Path(__file__).absolute().parent.parent.parent
+
+
+def disable_settingwithcopy_warning(func):
+    """Simple decorator that disables the annoying SettingWithCopy warning in Pandas"""
+    def wrapper(*args, **kwargs):
+        pd.options.mode.chained_assignment = None
+        res = func(*args, **kwargs)
+        pd.options.mode.chained_assignment = None
+        return res
+    return wrapper
+
+
+class CorpusMakerFromExcel:
+    """Converts a multi-sheet Excel spreadsheet into the required format for processing"""
+    excel_ext = 'xlsx'
+    lbz_url_cutoff = 49
+    json_indent = 4
+    bandleader_role = 'pianist'
+    bandleader_instr = 'piano'
+
+    def __init__(
+            self,
+            fname: str,
+            **kwargs
+    ):
+        fpath = fr'{get_project_root()}\references\{fname}.{self.excel_ext}'
+        self.tracks = []
+        for sheet_name, trio in pd.read_excel(pd.ExcelFile(fpath), None, header=1).items():
+            if sheet_name.lower() not in ['notes', 'template', 'manual annotation']:
+                self.bandleader = trio[self.bandleader_instr].dropna().mode().iloc[0]
+                self.tracks.extend(self.format_track_dict(self.format_trio_dataframe(trio)))
+
+    def __repr__(self):
+        return repr(self.tracks)
+
+    @disable_settingwithcopy_warning
+    def format_trio_dataframe(
+            self,
+            trio_df: pd.DataFrame
+    ) -> list[dict]:
+        """Formats the dataframe for an individual trio and returns a list of dictionaries"""
+
+        # We remove these columns from the dataframe
+        to_drop = ['recording_id_for_lbz', 'recording_date_estimate', 'is_acceptable(Y/N)', 'link']
+        # We rename these columns
+        to_rename = {
+            'bass': 'bassist',
+            'drums': 'drummer',
+            'release_title': 'album_name',
+            'recording_title': 'track_name',
+            'Unnamed: 19': 'notes',
+            'Unnamed: 13': 'link'
+        }
+        # We keep these columns, in the following order
+        to_keep = [
+            'track_name',
+            'album_name',
+            'recording_year',
+            'bassist',
+            'drummer',
+            'youtube_link',
+            'channel_overrides',
+            'start_timestamp',
+            'end_timestamp',
+            'mbz_id',
+            'notes',
+            'time_signature',
+            'first_downbeat'
+        ]
+        # Remove tracks that did not pass selection criteria
+        sheet = trio_df[(trio_df['is_acceptable(Y/N)'] == 'Y') & (~trio_df['youtube_link'].isna())]
+        # Strip punctuation from album and track name
+        sheet['release_title'] = sheet['release_title'].apply(remove_punctuation)
+        sheet['recording_title'] = sheet['recording_title'].apply(remove_punctuation)
+        # Preserve the unique Musicbrainz ID for a track
+        sheet['mbz_id'] = sheet['recording_id_for_lbz'].str[self.lbz_url_cutoff:]
+        # Replace NA values in notes column with empty strings
+        sheet = sheet.rename(columns={'Unnamed: 19': 'notes'})
+        sheet['notes'] = sheet['notes'].fillna('')
+        # Get the year the track was recorded in
+        sheet['recording_year'] = pd.to_datetime(sheet['recording_date_estimate']).dt.year.astype(str)
+        # Return the formatted dataframe, as a list of dictionaries
+        return (
+            sheet.rename(columns=to_rename)
+            .drop(columns=to_drop)
+            [to_keep]
+            .reset_index(drop=True)
+            .to_dict(orient='records')
+        )
+
+    @staticmethod
+    def str_to_dict(s: str) -> dict:
+        """Converts a string representation of a dictionary to a dictionary"""
+        return {i.split(': ')[0]: i.split(': ')[1] for i in s.split(', ')}
+
+    @staticmethod
+    def format_timestamp(ts: str, as_string: bool = True):
+        """Formats a timestamp string correctly. Returns as either a datetime or string, depending on `as_string`"""
+        ts = str(ts)
+        fmt = '%M:%S' if len(ts) < 6 else '%H:%M:%S'
+        if as_string:
+            return datetime.strptime(ts, fmt).strftime(fmt)
+        else:
+            return datetime.strptime(ts, fmt)
+
+    def get_excerpt_duration(self, start, stop) -> str:
+        """Returns the total duration of an excerpt, in the format %M:%S"""
+        dur = (
+                self.format_timestamp(stop, as_string=False) - self.format_timestamp(start, as_string=False)
+        ).total_seconds()
+        return str(timedelta(seconds=dur))[2:]
+
+    @staticmethod
+    def construct_filename(item, id_chars: int = 8, desired_words: int = 5) -> str:
+        """Constructs the filename for an item in the corpus"""
+
+        def name_formatter(st: str = "track_name") -> str:
+            """Formats the name of a track or album by truncating to a given number of words, etc."""
+            # Get the item name itself, e.g. album name, track name
+            name = item[st].split(" ")
+            # Get the number of words we require
+            name_length = len(name) if len(name) < desired_words else desired_words
+            return re.sub("[\W_]+", "", "".join(char.lower() for char in name[:name_length]))
+
+        def musician_name_formatter(st: str) -> str:
+            """Formats the name of a musician into the format: lastnamefirstinitial, e.g. Bill Evans -> evansb"""
+            s = remove_punctuation(st).lower().split(" ")
+            try:
+                return s[1] + s[0][0]
+            except IndexError:
+                return 'musicianm'
+
+        # Get the names of our musicians in the correct format
+        pianist = musician_name_formatter(item["musicians"]["pianist"])
+        bassist = musician_name_formatter(item["musicians"]["bassist"])
+        drummer = musician_name_formatter(item["musicians"]["drummer"])
+        # Get the required number of words of the track title, nicely formatted
+        track = name_formatter("track_name")
+        # Return our track name formatted nicely
+        return rf"{pianist}-{track}-{bassist}{drummer}-{item['recording_year']}-{item['mbz_id'][:id_chars]}"
+
+    def format_track_dict(
+            self,
+            track_dict: dict
+    ):
+        """Formats each dictionary, corresponding to a single track"""
+
+        to_drop = ['youtube_link', 'start_timestamp', 'end_timestamp', 'bassist', 'drummer',]
+        # Iterate over every track in our list of dictionaries
+        for track in track_dict:
+            # Format the YouTube links correctly
+            track['links'] = {'external': [l for l in [track['youtube_link']]]}
+            # Get the total duration of the excerpt
+            track['excerpt_duration'] = self.get_excerpt_duration(track['start_timestamp'], track['end_timestamp'])
+            # Format our timestamps correctly
+            track['timestamps'] = {
+                'start': self.format_timestamp(track['start_timestamp']),
+                'end': self.format_timestamp(track['end_timestamp'])
+            }
+            # Add an empty list for our log
+            track['log'] = []
+            # Format our musician names correctly
+            track['musicians'] = {
+                'pianist': self.bandleader,
+                'bassist': track['bassist'],
+                'drummer': track['drummer'],
+                'leader': self.bandleader_role
+            }
+            # Format our musician photos correctly
+            track['photos'] = {
+                "musicians": {
+                    "pianist": None,
+                    "bassist": None,
+                    "drummer": None
+                },
+                "album_artwork": None
+            }
+            # Construct the filename for this track
+            track['fname'] = self.construct_filename(track)
+            # Format channel overrides as dictionary, or set key to empty dictionary if not present
+            try:
+                track['channel_overrides'] = self.str_to_dict(track['channel_overrides'])
+            except AttributeError:
+                track['channel_overrides'] = {}
+            # Remove key-value pairs we no longer need
+            for remove in to_drop:
+                del track[remove]
+            yield track
 
 
 class HidePrints:
@@ -370,16 +559,6 @@ class TqdmLoggingHandler(logging.Handler):
             self.handleError(record)
 
 
-def disable_settingwithcopy_warning(func):
-    """Simple decorator that disables the annoying SettingWithCopy warning in Pandas"""
-    def wrapper(*args, **kwargs):
-        pd.options.mode.chained_assignment = None
-        res = func(*args, **kwargs)
-        pd.options.mode.chained_assignment = None
-        return res
-    return wrapper
-
-
 def get_audio_duration(fpath: str) -> float:
     """Opens a given audio file and returns its duration"""
 
@@ -397,3 +576,18 @@ def remove_punctuation(s: str) -> str:
 def return_function_kwargs(func) -> list:
     """Returns a list of keyword arguments accepted by a given function"""
     return [p for p in inspect.signature(func).parameters]
+
+def extract_downbeats(
+        beat_timestamps: np.array, beat_positions: np.array
+) -> tuple[np.array, np.array]:
+    """Takes in arrays of beat onsets and bar positions and returns the downbeats"""
+    # Combine timestamps and bar positions into one array
+    comb = np.array([beat_timestamps, beat_positions]).T
+    # Create the boolean mask
+    mask = (comb[:, 1] == 1)
+    # Subset on the mask to get downbeats only and return
+    return comb[mask, 0]
+
+
+if __name__ == '__main__':
+    pass
