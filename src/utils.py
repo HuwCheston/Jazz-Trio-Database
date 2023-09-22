@@ -1,75 +1,60 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Utility classes, functions, and variables used across the entire pipeline"""
+
 import csv
-import json
 import inspect
+import json
 import logging
 import os
 import pickle
 import re
-import sys
 import time
-import warnings
 from ast import literal_eval
 from datetime import datetime, timedelta
 from functools import wraps
 from pathlib import Path
 from string import punctuation
 from tempfile import NamedTemporaryFile
-from typing import Any
+from typing import Generator, Any
 
 import audioread
 import dill
 import numpy as np
 import pandas as pd
-import tensorflow as tf
-from basic_pitch import ICASSP_2022_MODEL_PATH
 from tqdm import tqdm
 
-# TODO: sort out imports here for pickling/unpickling custom classes e.g. OnsetMaker
-
-
-# Set options in pandas and numpy here so they carry through whenever this file is imported by another
+# Set options in pandas and numpy here, so they carry through whenever this file is imported by another
 # This disables scientific notation and forces all rows/columns to be printed: helps with debugging!
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 np.set_printoptions(suppress=True)
 
-# Define constants used across many files
+# Define variables used across many files
 SAMPLE_RATE = 44100
 HOP_LENGTH = 128
-FILE_FMT = 'wav'
-BASIC_PITCH_MODEL = tf.saved_model.load(str(ICASSP_2022_MODEL_PATH))
-N_PLP_PASSES = 3    # This seems to lead to the best results after optimization
-
-# Mapping to turn instrument name into instrument performer, e.g. piano to pianist
-INSTRS_TO_PERF = {
+AUDIO_FILE_FMT = 'wav'
+INSTRUMENTS_TO_PERFORMER_ROLES = {
     'piano': 'pianist',
     'bass': 'bassist',
     'drums': 'drummer'
 }
 
-FREQUENCY_BANDS = {
-    'piano': dict(
-        fmin=110,  # Minimum frequency to use
-        fmax=4100,  # Maximum frequency to use
-    ),
-    'bass': dict(
-        fmin=30,
-        fmax=500,
-    ),
-    'drums': dict(
-        fmin=3500,
-        fmax=11000,
-    ),
-    'mix': dict(
-        fmin=20,
-        fmax=20000,
-    ),
-}
+
+def check_item_present_locally(fname: str) -> bool:
+    """Returns whether a given filepath is present locally or not"""
+    return os.path.isfile(os.path.abspath(fname))
 
 
-def get_project_root() -> Path:
-    """Returns the root directory of the project"""
-    return Path(__file__).absolute().parent.parent.parent
+def get_audio_duration(fpath: str) -> float:
+    """Opens a given audio file and returns its duration"""
+
+    try:
+        with audioread.audio_open(fpath) as f:
+            return float(f.duration)
+    except FileNotFoundError:
+        return 0.0
 
 
 def disable_settingwithcopy_warning(func):
@@ -82,40 +67,67 @@ def disable_settingwithcopy_warning(func):
     return wrapper
 
 
-class CorpusMakerFromExcel:
+def remove_punctuation(s: str) -> str:
+    """Removes punctuation from a string"""
+    return s.translate(str.maketrans('', '', punctuation)).replace('’', '')
+
+
+class CorpusMaker:
     """Converts a multi-sheet Excel spreadsheet into the required format for processing"""
-    excel_ext = 'xlsx'
     lbz_url_cutoff = 49
     json_indent = 4
-    bandleader_role = 'pianist'
     bandleader_instr = 'piano'
 
     def __init__(
             self,
-            fname: str,
-            **kwargs
+            data: list[dict]
     ):
-        fpath = fr'{get_project_root()}\references\{fname}.{self.excel_ext}'
-        self.tracks = []
-        for sheet_name, trio in pd.read_excel(pd.ExcelFile(fpath), None, header=1).items():
-            if sheet_name.lower() not in ['notes', 'template', 'manual annotation']:
-                self.bandleader = trio[self.bandleader_instr].dropna().mode().iloc[0]
-                self.tracks.extend(self.format_track_dict(self.format_trio_dataframe(trio)))
+        self.tracks = list(self.format_track_dict(data))
+
+    @classmethod
+    def from_excel(
+            cls,
+            fname: str,
+            ext: str = 'xlsx'
+    ):
+        """Construct corpus from an Excel spreadsheet, potentially containing multiple sheets"""
+        realdata = []
+        # These are the names of sheets that we don't want to process
+        sheets_to_skip = ['notes', 'template', 'manual annotation']
+        # Open the Excel file
+        xl = pd.read_excel(pd.ExcelFile(fr'{get_project_root()}\references\{fname}.{ext}'), None, header=1).items()
+        # Iterate through all sheets in the spreadsheet
+        for sheet_name, trio in xl:
+            if sheet_name.lower() not in sheets_to_skip:
+                realdata.extend(cls.format_trio_spreadsheet(cls, trio))
+        return cls(realdata)
+
+    @classmethod
+    def from_json(
+            cls,
+            fname: str,
+            ext: str = 'json'
+    ):
+        """Construct corpus from a JSON"""
+        # TODO: fill this in
+        pass
 
     def __repr__(self):
-        return repr(self.tracks)
+        """Sets the string representation of this class to a DataFrame of all processed tracks"""
+        return repr(pd.DataFrame(self.tracks))
 
     @disable_settingwithcopy_warning
-    def format_trio_dataframe(
+    def format_trio_spreadsheet(
             self,
             trio_df: pd.DataFrame
     ) -> list[dict]:
-        """Formats the dataframe for an individual trio and returns a list of dictionaries"""
+        """Formats the spreadsheet for an individual trio and returns a list of dictionaries"""
 
         # We remove these columns from the dataframe
         to_drop = ['recording_id_for_lbz', 'recording_date_estimate', 'is_acceptable(Y/N)', 'link']
         # We rename these columns
         to_rename = {
+            'piano': 'pianist',
             'bass': 'bassist',
             'drums': 'drummer',
             'release_title': 'album_name',
@@ -128,6 +140,7 @@ class CorpusMakerFromExcel:
             'track_name',
             'album_name',
             'recording_year',
+            'pianist',
             'bassist',
             'drummer',
             'youtube_link',
@@ -136,8 +149,8 @@ class CorpusMakerFromExcel:
             'end_timestamp',
             'mbz_id',
             'notes',
-            # 'time_signature',    # Uncomment these lines when we add these columns back in
-            # 'first_downbeat'
+            'time_signature',
+            'first_downbeat'
         ]
         # Remove tracks that did not pass selection criteria
         sheet = trio_df[(trio_df['is_acceptable(Y/N)'] == 'Y') & (~trio_df['youtube_link'].isna())]
@@ -211,10 +224,20 @@ class CorpusMakerFromExcel:
         # Return our track name formatted nicely
         return rf"{pianist}-{track}-{bassist}{drummer}-{item['recording_year']}-{item['mbz_id'][:id_chars]}"
 
+    def format_first_downbeat(
+            self,
+            start_ts: float,
+            first_downbeat: float
+    ) -> float:
+        """Gets the position of the first downbeat in seconds, from the start of an excerpt"""
+        start = self.format_timestamp(start_ts, as_string=False)
+        start_td = timedelta(hours=start.hour, minutes=start.minute, seconds=start.second)
+        return (timedelta(seconds=first_downbeat) - start_td).total_seconds()
+
     def format_track_dict(
             self,
             track_dict: dict
-    ):
+    ) -> Generator:
         """Formats each dictionary, corresponding to a single track"""
 
         to_drop = ['youtube_link', 'start_timestamp', 'end_timestamp', 'bassist', 'drummer',]
@@ -229,14 +252,18 @@ class CorpusMakerFromExcel:
                 'start': self.format_timestamp(track['start_timestamp']),
                 'end': self.format_timestamp(track['end_timestamp'])
             }
+            # Format our first downbeat using our start timestamp
+            track['first_downbeat'] = self.format_first_downbeat(track['start_timestamp'], track['first_downbeat'])
+            # Replace time signature with integer value
+            track['time_signature'] = int(track['time_signature'])
             # Add an empty list for our log
             track['log'] = []
             # Format our musician names correctly
             track['musicians'] = {
-                'pianist': self.bandleader,
+                'pianist': track['pianist'],
                 'bassist': track['bassist'],
                 'drummer': track['drummer'],
-                'leader': self.bandleader_role
+                'leader': INSTRUMENTS_TO_PERFORMER_ROLES[self.bandleader_instr]
             }
             # Format our musician photos correctly
             track['photos'] = {
@@ -249,7 +276,7 @@ class CorpusMakerFromExcel:
             }
             # Construct the filename for this track
             track['fname'] = self.construct_filename(track)
-            # Format channel overrides as dictionary, or set key to empty dictionary if not present
+            # Format channel overrides as dictionary, or set key to empty dictionary if overrides are not present
             try:
                 track['channel_overrides'] = self.str_to_dict(track['channel_overrides'])
             except AttributeError:
@@ -260,36 +287,9 @@ class CorpusMakerFromExcel:
             yield track
 
 
-class HidePrints:
-    """Helper class that prevents a function from printing to stdout when used as a context manager"""
-
-    def __enter__(
-            self
-    ) -> None:
-        self._original_stdout = sys.stdout
-        sys.stdout = open(os.devnull, 'w')
-
-    def __exit__(
-            self,
-            exc_type,
-            exc_val,
-            exc_tb
-    ) -> None:
-        sys.stdout.close()
-        sys.stdout = self._original_stdout
-
-
-class YtDlpFakeLogger:
-    """Fake logging class passed to yt-dlp instances to disable overly-verbose logging and unnecessary warnings"""
-
-    def debug(self, msg=None):
-        pass
-
-    def warning(self, msg=None):
-        pass
-
-    def error(self, msg=None):
-        pass
+def get_project_root() -> Path:
+    """Returns the root directory of the project"""
+    return Path(__file__).absolute().parent.parent
 
 
 def retry(exception, tries=4, delay=3, backoff=2):
@@ -315,9 +315,8 @@ def serialise_object(
         fpath: str,
         fname: str,
         use_pickle: bool = False,
-        func = None
 ) -> None:
-    """Wrapper around dill.dump that takes in an object, directory, and filename, and creates a serialised object"""
+    """Wrapper around `dill.dump` that takes in an object, directory, and filename, and creates a serialised object"""
     if use_pickle:
         dumper = pickle.dump
     else:
@@ -331,7 +330,7 @@ def unserialise_object(
         fname: str,
         use_pickle: bool = False
 ) -> object:
-    """Simple wrapper around dill.load that unserialises an object and returns it"""
+    """Simple wrapper around `dill.load` that unserialises an object and returns it"""
     if use_pickle:
         loader = pickle.load
     else:
@@ -344,7 +343,7 @@ def load_json(
         fpath: str = 'r..\..\data\processed',
         fname: str = 'processing_results.json'
 ) -> dict:
-    """Simple wrapper around json.load that catches errors when working on the same file in multiple threads"""
+    """Simple wrapper around `json.load` that catches errors when working on the same file in multiple threads"""
     with open(rf'{fpath}\{fname}.json', "r+") as in_file:
         return json.load(in_file)
 
@@ -354,7 +353,7 @@ def save_json(
         fpath: str,
         fname: str
 ) -> None:
-    """Simple wrapper around json.dump with protections to assist in multithreaded access"""
+    """Simple wrapper around `json.dump` with protections to assist in multithreaded access"""
     temp_file = NamedTemporaryFile(mode='w', dir=fpath, delete=False, suffix='.json')
     with temp_file as out_file:
         json.dump(obj, out_file, indent=4, default=str, )
@@ -371,7 +370,7 @@ def load_csv(
         fpath: str = 'r..\..\data\processed',
         fname: str = 'processing_results'
 ) -> dict:
-    """Simple wrapper around json.load that catches errors when working on the same file in multiple threads"""
+    """Simple wrapper around `json.load` that catches errors when working on the same file in multiple threads"""
     def eval_(i):
         try:
             return literal_eval(i)
@@ -425,100 +424,6 @@ def save_csv(
     replacer()
 
 
-def try_and_load(
-        attempt_func,
-        attempt_kwargs,
-        backup_func,
-        backup_kwargs
-):
-    """
-    Attempts to load an object using attempt_func (with arguments passed as attempt_kwargs dictionary). If this fails
-    due to a FileNotFoundError, then attempts to load using backup_func (with arguments passed as backup_kwargs)
-    """
-
-    try:
-        return attempt_func(**attempt_kwargs)
-    except FileNotFoundError:
-        return backup_func(**backup_kwargs)
-
-
-def iqr_filter(
-        arr: np.array,
-        low: int = 25,
-        high: int = 75,
-        mult: float = 1.5,
-        fill_nans: bool = False,
-) -> np.ndarray:
-    """Simple IQR-based range filter that subsets array b where q1(b) - 1.5 * iqr(b) < b[n] < q3(b) + 1.5 * iqr(b)
-
-    Parameters:
-        arr (np.array): the array of values to clean
-        low (int, optional): the lower quantile to use, defaults to 25
-        high (int, optional): the upper quantile to use, defaults to 75
-        mult (float, optional): the amount to multiply the IQR by, defaults to 1.5
-        fill_nans (bool, optional): replace cleaned values with np.nan, such that the array shape remains the same
-
-    Returns:
-        np.array
-
-    """
-    # Get our upper and lower bound from the array
-    min_ = np.nanpercentile(arr, low)
-    max_ = np.nanpercentile(arr, high)
-    # If the upper and lower bounds are equal, IQR will be 0.0, and our cleaned array will be empty. So don't clean.
-    if min_ - max_ == 0:
-        return arr
-    # Construct the IQR
-    iqr = max_ - min_
-    # Filter the array between our two bounds and return the result
-    if fill_nans:
-        return np.array(
-            [b if min_ - (mult * iqr) < b < max_ + (mult * iqr) else np.nan for b in arr]
-        )
-    else:
-        return np.array(
-            [b for b in arr if min_ - (mult * iqr) < b < max_ + (mult * iqr)]
-        )
-
-
-def get_tracks_with_manual_annotations(
-        annotation_dir: str = fr'{get_project_root()}\references\manual_annotation',
-        annotation_ext: str = 'txt',
-        corpus_json: list[dict] = None
-) -> list:
-    """Returns the IDs of tracks that should be annotated"""
-    # return [t.strip('\n') for t in open(rf'{annotation_dir}\tracks_to_annotate.{annotation_ext}', 'r').readlines()]
-    res = {}
-    track_ids = '\t'.join([track['mbz_id'] for track in corpus_json])
-    for file in os.listdir(annotation_dir):
-        if file.endswith(annotation_ext):
-            split = file.split('_')
-            track_id = split[0].split('-')[-1]
-            if track_id not in track_ids:
-                continue
-            try:
-                res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
-            except KeyError:
-                res[split[0]] = []
-                res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
-    annotated_with_all_instrs = [k for k, v in res.items() if sorted(v) == sorted([*INSTRS_TO_PERF.keys(), 'mix'])]
-    return [t['mbz_id'] for t in corpus_json if t['fname'] in annotated_with_all_instrs]
-
-
-def check_item_present_locally(fname: str) -> bool:
-    """Returns whether a given filepath is present locally or not"""
-    return os.path.isfile(os.path.abspath(fname))
-
-
-def calculate_tempo(
-        pass_: np.ndarray
-) -> float:
-    """Extract the average tempo from an array of times corresponding to crotchet beat positions"""
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore', RuntimeWarning)
-        return np.nanmean(np.array([60 / p for p in np.diff(pass_)]))
-
-
 def try_get_kwarg_and_remove(
         kwarg: str,
         kwargs: dict,
@@ -559,34 +464,48 @@ class TqdmLoggingHandler(logging.Handler):
             self.handleError(record)
 
 
-def get_audio_duration(fpath: str) -> float:
-    """Opens a given audio file and returns its duration"""
-
-    try:
-        with audioread.audio_open(fpath) as f:
-            return float(f.duration)
-    except FileNotFoundError:
-        return 0.0
-
-def remove_punctuation(s: str) -> str:
-    """Removes punctuation from a string"""
-    return s.translate(str.maketrans('', '', punctuation)).replace('’', '')
-
-
 def return_function_kwargs(func) -> list:
     """Returns a list of keyword arguments accepted by a given function"""
     return [p for p in inspect.signature(func).parameters]
 
-def extract_downbeats(
-        beat_timestamps: np.array, beat_positions: np.array
-) -> tuple[np.array, np.array]:
-    """Takes in arrays of beat onsets and bar positions and returns the downbeats"""
-    # Combine timestamps and bar positions into one array
-    comb = np.array([beat_timestamps, beat_positions]).T
-    # Create the boolean mask
-    mask = (comb[:, 1] == 1)
-    # Subset on the mask to get downbeats only and return
-    return comb[mask, 0]
+
+def iqr_filter(
+        arr: np.array,
+        low: int = 25,
+        high: int = 75,
+        mult: float = 1.5,
+        fill_nans: bool = False,
+) -> np.ndarray:
+    """Simple IQR-based range filter that subsets array b where q1(b) - 1.5 * iqr(b) < b[n] < q3(b) + 1.5 * iqr(b)
+
+    Parameters:
+        arr (np.array): the array of values to clean
+        low (int, optional): the lower quantile to use, defaults to 25
+        high (int, optional): the upper quantile to use, defaults to 75
+        mult (float, optional): the amount to multiply the IQR by, defaults to 1.5
+        fill_nans (bool, optional): replace cleaned values with `np.nan`, such that the array shape remains the same
+
+    Returns:
+        np.array
+
+    """
+    # Get our upper and lower bound from the array
+    min_ = np.nanpercentile(arr, low)
+    max_ = np.nanpercentile(arr, high)
+    # If the upper and lower bounds are equal, IQR will be 0.0, and our cleaned array will be empty. So don't clean.
+    if min_ - max_ == 0:
+        return arr
+    # Construct the IQR
+    iqr = max_ - min_
+    # Filter the array between our two bounds and return the result
+    if fill_nans:
+        return np.array(
+            [b if min_ - (mult * iqr) < b < max_ + (mult * iqr) else np.nan for b in arr]
+        )
+    else:
+        return np.array(
+            [b for b in arr if min_ - (mult * iqr) < b < max_ + (mult * iqr)]
+        )
 
 
 if __name__ == '__main__':

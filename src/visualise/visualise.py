@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-import src.utils.analyse_utils as autils
-import src.utils.visualise_utils as vutils
+from src import utils
+import src.visualise.visualise_utils as vutils
 
 
 class ScatterPlotByBeat(vutils.BasePlot):
@@ -16,21 +16,21 @@ class ScatterPlotByBeat(vutils.BasePlot):
         self.df = pd.DataFrame(self.format_df())
         self.cmap = sns.color_palette(
             kwargs.get('cmap', 'husl'),
-            n_colors=len(autils.INSTRS_TO_PERF.keys()),
+            n_colors=len(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()),
             as_cmap=False
         )
         self.fig, self.ax = plt.subplots(
             nrows=1,
-            ncols=len(autils.INSTRS_TO_PERF.keys()),
+            ncols=len(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()),
             sharex=True,
             sharey=True,
             figsize=(vutils.WIDTH, 7)
         )
 
     def format_df(self):
-        for instr in autils.INSTRS_TO_PERF.keys():
+        for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
             instr_ons = self.item.ons[instr]
-            z = zip(self.item.ons['mix_madmom'], self.item.ons['mix_madmom'][1:], self.item.ons['mix_beatpositions'])
+            z = zip(self.item.ons['mix'], self.item.ons['mix'][1:], self.item.ons['metre_manual'])
             for beat1, beat2, beat1pos in z:
                 vals = instr_ons[np.logical_and(beat1 <= instr_ons, instr_ons < beat2)]
                 for i in vals:
@@ -49,7 +49,7 @@ class ScatterPlotByBeat(vutils.BasePlot):
     def _format_ax(self):
         minor_ticks = [i + f for i in range(1, 5) for f in (1 / 3, 2 / 3)]
         for ax in self.ax.flatten():
-            ax.set(xlim=(0.8, 5.2), xticks=[1, 2, 3, 4], xlabel='', ylabel='')
+            ax.set(xlim=(0.8, 5.2), xticks=list(range(1, self.item['time_signature'] + 1)), xlabel='', ylabel='')
             ax.set_xticks(minor_ticks, labels=[], minor=True)
             ax.grid(which='major', ls='-', lw=1)
             ax.grid(which='minor', ls='--', lw=0.3)

@@ -1,9 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Utility classes, functions, and variables used specifically in the visualisation process"""
+
 import functools
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-import src.utils.analyse_utils as autils
+from src import utils
 
 # Ignore annoying matplotlib INFO warnings created even though I'm doing nothing wrong
 plt.set_loglevel('WARNING')
@@ -56,7 +61,7 @@ class BasePlot:
     """
     Base plotting class from which others inherit
     """
-    output_dir = fr'{autils.get_project_root()}\reports\figures'
+    output_dir = fr'{utils.get_project_root()}\reports\figures'
     df = None
     fig, ax = None, None
     g = None

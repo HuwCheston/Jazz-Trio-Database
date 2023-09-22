@@ -12,8 +12,9 @@ from math import isclose
 
 from yt_dlp.utils import DownloadError
 
-from src.clean.make_dataset import ItemMaker
-import src.utils.analyse_utils as autils
+import src.clean.clean_utils
+import src.global_utils
+from src.clean.clean_utils import ItemMaker
 
 
 class ItemMakerTest(unittest.TestCase):
@@ -121,7 +122,7 @@ class ItemMakerTest(unittest.TestCase):
         item = json.loads(self.test_item)
         item["timestamps"]["end"] = "asdf"
         im = ItemMaker(item=item, index=1, output_filepath=None)
-        self.assertEqual(im._return_timestamp(timestamp="end"), None)
+        self.assertEqual(im._return_audio_timestamp(timestamp="end"), None)
 
     def test_checking_for_local_file(self):
         """
@@ -129,7 +130,7 @@ class ItemMakerTest(unittest.TestCase):
         """
 
         # Check that this file is present (should always work)
-        self.assertTrue(autils.check_item_present_locally(fname="test_itemmaker.py"))
+        self.assertTrue(src.utils.global_utils.check_item_present_locally(fname="test_itemmaker.py"))
 
     def test_downloading_from_youtube(self):
         """
@@ -141,7 +142,7 @@ class ItemMakerTest(unittest.TestCase):
             warnings.simplefilter("ignore", ResourceWarning)
             im.get_item()
         # Should return True after a successful download
-        self.assertTrue(autils.check_item_present_locally(im.in_file))
+        self.assertTrue(src.utils.global_utils.check_item_present_locally(im.in_file))
         os.remove(im.in_file)
 
     def test_error_raised_when_downloading_from_invalid_videos(self):
@@ -152,7 +153,7 @@ class ItemMakerTest(unittest.TestCase):
         im = ItemMaker(item=json.loads(self.test_item), index=1, output_filepath=None)
         # This is just a random gibberish link that should always fail
         im.links = ["https://www.youtube.com/watch?v=EyucFefwghc"]
-        self.assertRaises(DownloadError, im._get_item)
+        self.assertRaises(DownloadError, im._download_audio_excerpt_from_youtube)
 
     def test_output_duration_checking(self):
         """
@@ -165,7 +166,7 @@ class ItemMakerTest(unittest.TestCase):
             warnings.simplefilter("ignore", ResourceWarning)
             im.get_item()
         # Should be approximately 10 seconds in duration
-        self.assertTrue(isclose(im._get_output_duration(im.in_file), 10, abs_tol=0.01))
+        self.assertTrue(isclose(im._get_audio_duration(im.in_file), 10, abs_tol=0.01))
         os.remove(im.in_file)
 
     def test_source_separation_timeout(self):

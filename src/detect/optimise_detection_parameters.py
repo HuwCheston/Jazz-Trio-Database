@@ -17,8 +17,8 @@ import numpy as np
 from dotenv import find_dotenv, load_dotenv
 from joblib import Parallel, delayed
 
-from src.analyse.detect_onsets import OnsetMaker
-from src.utils import analyse_utils as autils
+from src import utils
+from src.detect.detect_utils import OnsetMaker, FREQUENCY_BANDS, get_tracks_with_manual_annotations
 
 
 class Optimizer:
@@ -31,7 +31,7 @@ class Optimizer:
 
     def __init__(self, json_name: str, items: list[dict], instr: str, args: list[tuple], **kwargs):
         # Define the directory to store results from optimization in
-        self.results_fpath = rf'{autils.get_project_root()}\references\parameter_optimisation\{json_name}'
+        self.results_fpath = rf'{utils.get_project_root()}\references\parameter_optimisation\{json_name}'
         # The dictionary from the corpus JSON containing item metadata
         self.items = items
         # The name of the track we're optimizing
@@ -73,7 +73,7 @@ class Optimizer:
             for item in [item_ for item_ in self.items if item_['mbz_id'] not in cached_ids]
         )
         # Save the results from the previous iteration
-        autils.save_csv(res, self.results_fpath, self.csv_name)
+        utils.save_csv(res, self.results_fpath, self.csv_name)
         # Extract F-scores from our cached and newly-generated results
         f_scores = cached_fs + [item['f_score'] for item in res]
         # Check that we've processed each of the items we need exactly once and that we've processed all the items
@@ -99,7 +99,7 @@ class Optimizer:
 
     def get_f_score(self, onsetmaker) -> float:
         """Returns F-score between detected onsets and manual annotation file"""
-        fn = rf'{autils.get_project_root()}\references\manual_annotation\{onsetmaker.item["fname"]}_{self.instr}.txt'
+        fn = rf'{utils.get_project_root()}\references\manual_annotation\{onsetmaker.item["fname"]}_{self.instr}.txt'
         # TODO: this is gross, fix
         return list(onsetmaker.compare_onset_detection_accuracy(
             fname=fn, instr=self.instr, onsets=[onsetmaker.ons[self.instr]], audio_cutoff=self.audio_cutoff
@@ -144,7 +144,7 @@ class OptimizeOnsetDetect(Optimizer):
         self.csv_name: str = f'onset_detect_{self.instr}'
         self.logger = self.enable_logger()
         try:
-            self.cached_results = autils.load_csv(self.results_fpath, self.csv_name)
+            self.cached_results = utils.load_csv(self.results_fpath, self.csv_name)
         except FileNotFoundError:
             pass
 
@@ -166,12 +166,12 @@ class OptimizeOnsetDetect(Optimizer):
         # Create the onset detection maker class for this track
         made = OnsetMaker(item=item)
         # Create the onset envelope
-        max_size = autils.try_get_kwarg_and_remove('max_size', kwargs)
+        max_size = utils.try_get_kwarg_and_remove('max_size', kwargs)
         made.env[self.instr] = made.onset_strength(
             instr=self.instr,
             center=self.center,
             max_size=max_size,    # This is the only argument we use from our optimizer for this function
-            **autils.FREQUENCY_BANDS[self.instr]    # These arguments are our frequency bands
+            **FREQUENCY_BANDS[self.instr]    # These arguments are our frequency bands
         )
         # Detect onsets using all the remaining keyword arguments
         made.ons[self.instr] = made.onset_detect(
@@ -214,7 +214,7 @@ class OptimizeBeatTrack(Optimizer):
         self.csv_name: str = f'beat_track_{self.instr}'
         self.logger = self.enable_logger()
         try:
-            self.cached_results = autils.load_csv(self.results_fpath, self.csv_name)
+            self.cached_results = utils.load_csv(self.results_fpath, self.csv_name)
         except FileNotFoundError:
             pass
 
@@ -275,14 +275,14 @@ def optimize_onset_detection(json_name: str, tracks: list[dict], **kwargs) -> No
             time=datetime.now().strftime("%d-%m-%y_%H-%M-%S"),
             **optimized_args
         )
-        autils.save_csv(d, o.results_fpath, 'converged_parameters', )
+        utils.save_csv(d, o.results_fpath, 'converged_parameters', )
 
     # Log the number of tracks we're optimizing
     logger = logging.getLogger(__name__)
     logger.info(f"optimising parameters across {len(tracks)} track/instrument combinations ...")
     # Get our combinations of instruments, center, and backtrack parameters
     all_args = list(product(*[
-        autils.INSTRS_TO_PERF.keys(),   # instruments
+        utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),   # instruments
         # [False, True],    # center
         # [False, True],    # backtrack
     ]))
@@ -310,7 +310,7 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
             time=datetime.now().strftime("%d-%m-%y_%H-%M-%S"),
             **optimized_args
         )
-        autils.save_csv(d, o.results_fpath, 'converged_parameters_beat_track', )
+        utils.save_csv(d, o.results_fpath, 'converged_parameters_beat_track', )
 
     # Log the number of tracks we're optimizing
     logger = logging.getLogger(__name__)
@@ -359,8 +359,8 @@ def main(
     # Configure the logger here
     logger = logging.getLogger(__name__)
     # Load in the results for tracks which have already been optimized
-    corpus = autils.CorpusMakerFromExcel(fname=corpus_fname).tracks
-    with_annotations = autils.get_tracks_with_manual_annotations(corpus_json=corpus)
+    corpus = utils.CorpusMaker.from_excel(fname=corpus_fname).tracks
+    with_annotations = get_tracks_with_manual_annotations(corpus_json=corpus)
     # We have annotations from these tracks, but we don't want to include them in this round of optimization
     exclude_ids = []
     if corpus_fname == 'corpus_bill_evans':
@@ -383,7 +383,8 @@ def main(
     ]
     # Optimize stems
     if optimize_stems:
-        logger.info(f'optimizing onset detection for {", ".join(i for i in autils.INSTRS_TO_PERF.keys())} ...')
+        stems = ", ".join(i for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys())
+        logger.info(f'optimizing onset detection for {stems} ...')
         optimize_onset_detection(json_name=corpus_fname, n_jobs=n_jobs, maxtime=maxtime, maxeval=maxeval, tracks=to_optimise)
         logger.info(f"... finished optimizing onset detection !")
     # Optimize beat tracking

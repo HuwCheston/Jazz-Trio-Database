@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Extracts the required features for each item in the corpus, using the automatically detected onsets.
-"""
+"""Extracts the required features for each item in the corpus, using the automatically detected onsets."""
 
 import logging
 import warnings
@@ -15,13 +13,13 @@ import statsmodels.formula.api as smf
 from statsmodels.regression.linear_model import RegressionResultsWrapper
 from tqdm import tqdm
 
-import src.utils.analyse_utils as autils
-from src.analyse.detect_onsets import OnsetMaker
+from src import utils
+from src.detect.detect_utils import OnsetMaker
 
 
 class ModelMaker:
-    sample_rate = autils.SAMPLE_RATE
-    instrs = list(autils.INSTRS_TO_PERF.keys())
+    sample_rate = utils.SAMPLE_RATE
+    instrs = list(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys())
 
     def __init__(
             self,
@@ -106,7 +104,7 @@ class ModelMaker:
     ) -> np.array:
         """Interpolate between observed values to fill missing values in an array of onsets.
 
-        If an onset is missing (set to np.nan), we can try to fill it in by looking for onsets that have been found
+        If an onset is missing (set to `np.nan`), we can try to fill it in by looking for onsets that have been found
         on either side (i.e. before and after). We can interpolate up to a particular depth, given by
         interpolation_limit, to fill in a given number of consecutive missing values.
 
@@ -202,7 +200,7 @@ class ModelMaker:
         # If we're cleaning our columns to remove values +/- 1.5 * IQR below upper/lower bounds
         if iqr_clean:
             for col in [*async_cols, f"{endog_ins}_prev_ioi", f'{endog_ins}_next_ioi']:
-                df[col] = autils.iqr_filter(df[col], fill_nans=True)
+                df[col] = utils.iqr_filter(df[col], fill_nans=True)
         # If we're using the first difference of our inter-onset interval columns
         if difference_ioi:
             for col in [f"{endog_ins}_prev_ioi", f'{endog_ins}_next_ioi']:
@@ -283,7 +281,7 @@ class ModelMaker:
             onset_array (np.array, optional): the array of raw onsets. Must be provided if endog_ins is not given.
             beat_positions (np.array, optional): the array of crotchet beat positions. Must be provided if endog_ins is
                 not given
-            use_log_burs (bool, optional): whether or not to use the log^2 of inter-onset intervals to calculate BURs,
+            use_log_burs (bool, optional): whether to use the log^2 of inter-onset intervals to calculate BURs,
                 as employed in [2]. Defaults to False.
 
         Returns:
@@ -397,7 +395,7 @@ class ModelMaker:
             **self.item,
             'tempo': self.om.tempo,
             'instrument': endog_ins,
-            'performer': self.item['musicians'][autils.INSTRS_TO_PERF[endog_ins]],
+            'performer': self.item['musicians'][utils.INSTRUMENTS_TO_PERFORMER_ROLES[endog_ins]],
             'recording_tempo_slope': self.recording_tempo_slope,
             # Raw beats
             'raw_beats': self.df[endog_ins],
@@ -434,20 +432,20 @@ if __name__ == "__main__":
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logging.basicConfig(level=logging.INFO, format=log_fmt)
     logger = logging.getLogger(__name__)
-    logger.addHandler(autils.TqdmLoggingHandler())
+    logger.addHandler(utils.TqdmLoggingHandler())
 
-    onsets = autils.unserialise_object(rf'{autils.get_project_root()}\models', 'matched_onsets_corpus_chronology')
+    onsets = utils.unserialise_object(rf'{utils.get_project_root()}\models', 'matched_onsets_corpus_chronology')
     dfs = []
     features = []
     for ons in tqdm(onsets):
         # TODO: catch some warnings here?
         mm = ModelMaker(om=ons, interpolate=True, interpolation_limit=1)
         summary = []
-        for ins in autils.INSTRS_TO_PERF.keys():
+        for ins in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
             mm.models[ins] = mm.generate_model(ins, standardise=False, difference_ioi=True, iqr_clean=False)
             summary.append(mm.create_instrument_dict(endog_ins=ins, md=mm.models[ins]))
         mm.summary_df = pd.DataFrame(summary)
         dfs.append(mm.summary_df)
         features.append(mm)
     big = pd.concat(dfs).reset_index(drop=True)
-    autils.serialise_object(features, rf'{autils.get_project_root()}\models', 'extracted_features_corpus_bill_evans')
+    utils.serialise_object(features, rf'{utils.get_project_root()}\models', 'extracted_features_corpus_bill_evans')
