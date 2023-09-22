@@ -42,9 +42,6 @@ FREQUENCY_BANDS = {
 
 class OnsetMaker:
     """Automatically detect onset and beat positions for each instrument in a single item in the corpus."""
-    # These values are hard-coded and used throughout: we probably shouldn't change them
-    sample_rate = utils.SAMPLE_RATE
-    hop_length = utils.HOP_LENGTH
     # I think these are justifiable: Corcoran and Frieler (2021) claim that, in jazz, a 32nd note will be perceived
     # as a grace note (part of) the next beat, rather than as part of the preceding beat.
     detection_note_values = dict(
@@ -163,7 +160,7 @@ class OnsetMaker:
                 warnings.simplefilter('ignore', UserWarning)
                 y, sr = librosa.load(
                     path=self._get_channel_override_fpath(name, fpath),
-                    sr=self.sample_rate,
+                    sr=utils.SAMPLE_RATE,
                     mono=mono,
                     offset=offset,
                     duration=duration,
@@ -208,7 +205,6 @@ class OnsetMaker:
 
     def beat_track_rnn(
             self,
-            passes: int = N_PLP_PASSES,
             starting_min: int = 100,
             # TODO: do we need to set this higher to account for extremely fast tracks, e.g. Peterson Tristeza?!
             starting_max: int = 300,
@@ -227,7 +223,6 @@ class OnsetMaker:
         substantially over a period of several passes.
 
         Arguments:
-            passes (int, optional): the number of estimation passes to use, defaults to 3.
             starting_min (int, optional): the minimum possible tempo (in BPM) to use for the first pass, defaults to 100
             starting_max (int, optional): the maximum possible tempo (in BPM) to use for the first pass, defaults to 300
             use_nonoptimised_defaults (bool, optional): use default parameters over optimised, defaults to False
@@ -243,13 +238,13 @@ class OnsetMaker:
         kws = self.onset_detect_params['mix'] if not use_nonoptimised_defaults else dict()
         # Update our default parameters with any kwargs we've passed in
         kws.update(**kwargs)
-        utils.try_get_kwarg_and_remove('passes', kws, default_=3)
+        passes = utils.try_get_kwarg_and_remove('passes', kws)
         # Load in the audio file using soundfile, with the given audio cutoff point (defaults to no cutoff)
         if audio_cutoff is not None:
-            audio_cutoff *= self.sample_rate
+            audio_cutoff *= utils.SAMPLE_RATE
         samples, _ = sf.read(
             self.instrs['mix'],
-            start=audio_start * self.sample_rate,
+            start=audio_start * utils.SAMPLE_RATE,
             stop=audio_cutoff,
             dtype='float64'
         )
@@ -360,8 +355,8 @@ class OnsetMaker:
             # Return the onset strength envelope using our default (i.e. hard-coded) sample rate and hop length
             return librosa.onset.onset_strength(
                 y=aud,
-                sr=self.sample_rate,
-                hop_length=self.hop_length,
+                sr=utils.SAMPLE_RATE,
+                hop_length=utils.HOP_LENGTH,
                 **kws
             )
 
@@ -421,8 +416,8 @@ class OnsetMaker:
                 energy = env
             return librosa.onset.onset_detect(
                 y=aud,
-                sr=self.sample_rate,
-                hop_length=self.hop_length,
+                sr=utils.SAMPLE_RATE,
+                hop_length=utils.HOP_LENGTH,
                 units=units,
                 energy=energy,
                 onset_envelope=env,
@@ -432,104 +427,38 @@ class OnsetMaker:
         else:
             return librosa.onset.onset_detect(
                 y=aud,
-                sr=self.sample_rate,
-                hop_length=self.hop_length,
+                sr=utils.SAMPLE_RATE,
+                hop_length=utils.HOP_LENGTH,
                 units=units,
                 onset_envelope=env,
                 **kws
             )
 
-    def bandpass_filter(
-            self,
-            aud: np.array,
-            lowcut: int,
-            highcut: int,
-            order: int = 2
-    ) -> np.array:
-        """Applies a bandpass filter with given low and high cut frequencies to an audio signal.
-
-        Arguments:
-            aud (np.array): the audio array to filter
-            lowcut (int): the lower frequency to filter
-            highcut (int): the higher frequency to filter
-            order (int, optional): the filter order, defaults to 2 as this avoids weird issues with audio not rendering
-
-        Returns:
-            np.array: the filtered audio array
-
-        """
-        # Create the filter with the given values
-        # Weird bug in PyCharm with signal.butter return here, so we disable checking for this statement
-        # noinspection PyTupleAssignmentBalance
-        b, a = signal.butter(
-            order,
-            [lowcut, highcut],
-            fs=self.sample_rate,
-            btype='band',
-            output='ba'
-        )
-        # Apply the filter to the audio signal
-        return signal.lfilter(b, a, aud)
-
     def generate_click_track(
             self,
             instr: str,
-            onsets: list[np.array] = None,
-            start_freq: int = 750,
-            tag: str = 'clicks',
-            folder: str = 'click_tracks',
-            width: int = 100,
-            **kwargs
+            *args
     ) -> None:
         """Renders detected onsets to a click sound and outputs, combined with the original audio.
 
-        Takes in a list of reference onset arrays, converts these to audible clicks, applies a bandpass filter (to make
-        telling different onsets apart easier), filters the original audio to the frequencies considered when detecting
-        onsets, then combines filtered original audio + click to a new audio track. This new click track can be helpful
-        when comparing the results of different onset detection algorithms, or the overall accuracy of detected onsets.
-
         Arguments:
             instr (str): the name of the instrument to render audio from
-            onsets (list[np.array]): a list of arrays, each containing detected onsets
-            start_freq (int, optional): the starting frequency to render detected onsets to clicks, defaults to 750 (Hz)
-            tag (str, optional): string placed at the end of the output filename, defaults to 'clicks'
-            width (int, optional): the width of the bandpass filter applied to detected clicks, defaults to 100 (Hz)
-            **kwargs: additional keyword arguments passed to `librosa.clicks`
+            *args (np.array): arrays of detected onsets to render to audio
+
+        Returns:
+            None
 
         """
-        # Create a default list of onsets if we haven't passed one in ourselves
-        if onsets is None:
-            onsets = [self.ons[instr]]
-        # Create an empty list to store our click track audio arrays
-        clicks = []
-        # Iterate through all of our passed onsets, with a counter (used to increase click output frequency)
-        for num, times in enumerate(onsets, 1):
-            # Render the onsets to clicks, apply the bandpass filter, and append to our list
-            clicks.append(
-                self.bandpass_filter(
-                    aud=librosa.clicks(
-                        times=times[~np.isnan(times)],    # Remove any NaN values obtained from matching onsets & beats
-                        sr=self.sample_rate,
-                        hop_length=self.hop_length,
-                        length=len(self.audio[instr].mean(axis=1)),
-                        click_freq=(start_freq * num),
-                        **kwargs
-                    ),
-                    lowcut=(start_freq * num) - width,
-                    highcut=(start_freq * num) + width
-                )
-            )
-        # Filter the audio signal to only include the frequencies used in detecting onsets
-        audio = self.bandpass_filter(
-            aud=self.audio[instr].mean(axis=1),
-            lowcut=self.onset_strength_params[instr]['fmin'],
-            highcut=self.onset_strength_params[instr]['fmax'],
-        )
-        # Sum the audio and click signals together
-        process = audio + sum(clicks)
+        # Get our required low and high frequency bands, our onset list, and our filename
+        lc, hc = FREQUENCY_BANDS[instr]['fmin'], FREQUENCY_BANDS[instr]['fmax']
+        onsets_list = [self.ons[instr], *args]
+        fname = rf'{self.reports_dir}\click_tracks\{self.item["fname"]}_{instr}_beats.{utils.AUDIO_FILE_FMT}'
+        # Create the click track maker class and then generate the click track using the above variables
+        click_track_cls = _ClickTrackMaker(audio=self.audio[instr], lowcut=lc, highcut=hc)
+        click_track_audio = click_track_cls.generate_audio(onsets_list)
         # Create the audio file and save into the click tracks directory
-        with open(rf'{self.reports_dir}\{folder}\{self.item["fname"]}_{instr}_{tag}.{utils.AUDIO_FILE_FMT}', 'wb') as f:
-            sf.write(f, process, self. sample_rate)
+        with open(fname, 'wb') as f:
+            sf.write(f, click_track_audio, utils.SAMPLE_RATE)
 
     def compare_onset_detection_accuracy(
             self,
@@ -760,8 +689,8 @@ class OnsetMaker:
         })
         return ma
 
+    @staticmethod
     def get_nonsilent_sections(
-            self,
             aud: np.array,
             thresh: float = 1,
             **kwargs
@@ -784,11 +713,11 @@ class OnsetMaker:
         # Get the sections of the track that are not silent
         non_silent = librosa.effects.split(
             librosa.util.normalize(aud).T,
-            hop_length=self.hop_length,
+            hop_length=utils.HOP_LENGTH,
             **kwargs
         )
         # Convert the non-silent sections (in frames) to time stamps
-        to_ts = lambda s: s / self.sample_rate
+        to_ts = lambda s: s / utils.SAMPLE_RATE
         li = np.array([(to_ts(se[0]), to_ts(se[1])) for se in non_silent if to_ts(se[1]) - to_ts(se[0]) > thresh])
         # Combine slices of non-silent audio if the distance between the right and left edges is below the threshold
         try:
@@ -834,8 +763,8 @@ class OnsetMaker:
         # Get the overall duration of the track
         duration = librosa.get_duration(
             y=aud.T,
-            sr=self.sample_rate,
-            hop_length=self.hop_length
+            sr=utils.SAMPLE_RATE,
+            hop_length=utils.HOP_LENGTH
         )
         # Try to return the fraction of the track which is silent
         try:
@@ -943,7 +872,7 @@ class OnsetMaker:
             matched = self.match_onsets_and_beats(beats=self.ons['mix'], onsets=self.ons[ins])
             # Output our click track of detected beats + matched onsets
             if generate_click:
-                self.generate_click_track(instr=ins, onsets=[self.ons[ins], matched], tag='beats', start_freq=750)
+                self.generate_click_track(ins, matched)
 
     def process_mixed_audio(
             self,
@@ -988,9 +917,8 @@ class OnsetMaker:
             self.onset_evaluation.append(eval_)
         # Generate the click track for the tracked beats, including the manually-annotated downbeats
         if generate_click:
-            self.generate_click_track(
-                tag='beats', instr='mix', onsets=[self.ons['mix'], self.ons['downbeats_manual']], start_freq=1250
-            )
+            self.generate_click_track('mix', self.ons['downbeats_manual'])
+
 
     def finalize_output(
             self
@@ -1046,6 +974,86 @@ class OnsetMaker:
         mask = (comb[:, 1] == 1)
         # Subset on the mask to get downbeats only and return
         return comb[mask, 0]
+
+
+class _ClickTrackMaker:
+    width = 100
+    start_freq = 750
+    volume_threshold = 1/3
+
+    def __init__(self, audio: np.array, lowcut: float, highcut: float):
+        self.audio = audio.mean(axis=1)
+        self.lowcut = lowcut
+        self.highcut = highcut
+
+    def generate_audio(
+            self,
+            onsets_list: list[np.array],
+    ) -> np.array:
+        """Renders detected onsets to a click sound and combines with the original audio.
+
+        Takes in a list of reference onset arrays, converts these to audible clicks, applies a bandpass filter (to make
+        telling different onsets apart easier), filters the original audio to the frequencies considered when detecting
+        onsets, then combines filtered original audio + click to a new audio track.
+
+        Arguments:
+            onsets_list (list[np.array]): a list containing arrays of detected onsets
+
+        Returns:
+            np.array: the click audio track that can be rendered to a file using soundfile, Librosa, etc.
+
+        """
+
+        # Iterate through all of our passed onsets, with a counter to increase click output frequency
+        clicks = [self.clicks_from_onsets(self.start_freq * n, onsets) for n, onsets in enumerate(onsets_list, 1)]
+        # Filter the audio signal to only include the frequencies used in detecting onsets
+        audio = self.bandpass_filter(aud=self.audio, lowcut=self.lowcut, highcut=self.highcut)
+        # Sum the click signals together and lower the volume by the given threshold
+        clicks = sum(clicks) * self.volume_threshold
+        # Sum the combined click signal with the audio and return
+        return audio + clicks
+
+    def clicks_from_onsets(self, freq, onsets, **kwargs) -> np.array:
+        """Renders detected onsets to a click sound with a given frequency"""
+        return self.bandpass_filter(
+            aud=librosa.clicks(
+                times=onsets[~np.isnan(onsets)],  # Remove any NaN values obtained from matching onsets & beats
+                sr=utils.SAMPLE_RATE,
+                hop_length=utils.HOP_LENGTH,
+                length=len(self.audio),
+                click_freq=freq,
+                click_duration=0.2,
+                **kwargs
+            ),
+            lowcut=freq - self.width,
+            highcut=freq + self.width
+        )
+
+    @staticmethod
+    def bandpass_filter(
+            aud: np.array,
+            lowcut: int,
+            highcut: int,
+            order: int = 2
+    ) -> np.array:
+        """Applies a bandpass filter with given low and high cut frequencies to an audio signal.
+
+        Arguments:
+            aud (np.array): the audio array to filter
+            lowcut (int): the lower frequency to filter
+            highcut (int): the higher frequency to filter
+            order (int, optional): the filter order, defaults to 2 as this avoids weird issues with audio not rendering
+
+        Returns:
+            np.array: the filtered audio array
+
+        """
+        # Create the filter with the given values
+        # Weird bug in PyCharm with signal.butter return here, so we disable checking for this statement
+        # noinspection PyTupleAssignmentBalance
+        b, a = signal.butter(N=order, Wn=[lowcut, highcut], fs=utils.SAMPLE_RATE, btype='band', output='ba')
+        # Apply the filter to the audio signal
+        return signal.lfilter(b, a, aud)
 
 
 def get_tracks_with_manual_annotations(

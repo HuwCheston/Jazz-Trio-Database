@@ -15,11 +15,11 @@ from src.clean.clean_utils import ItemMaker
 
 
 @click.command()
-@click.option("--corpus", "corpus_filename", type=str, default="corpus_bill_evans",help='Name of the corpus to use')
-@click.option("--force-download", "force_download", is_flag=True, default=False, help='Force download from YouTube')
-@click.option("--force-separation", "force_separation", is_flag=True, default=False, help='Force source separation')
-@click.option("--no-spleeter", "disable_spleeter", is_flag=True, default=False, help='Disable spleeter for separation')
-@click.option("--no-demucs", "disable_demucs", is_flag=True, default=False, help='Disable demucs for separation')
+@click.option("-corpus", "corpus_filename", type=str, default="corpus_bill_evans",help='Name of the corpus to use')
+@click.option("-force-download", "force_download", is_flag=True, default=False, help='Force download from YouTube')
+@click.option("-force-separation", "force_separation", is_flag=True, default=False, help='Force source separation')
+@click.option("-no-spleeter", "disable_spleeter", is_flag=True, default=False, help='Disable spleeter for separation')
+@click.option("-no-demucs", "disable_demucs", is_flag=True, default=False, help='Disable demucs for separation')
 def main(
         corpus_filename: str,
         force_download: bool,
@@ -30,30 +30,26 @@ def main(
     """Runs processing scripts to turn corpus from (./references) into audio, ready to be analyzed"""
     # Set the logger
     logger = logging.getLogger(__name__)
-
-    def process(fname: str = 'corpus_bill_evans'):
-        # Start the timer
-        start = time()
-        # Open the corpus Excel file using our custom class
-        corpus = utils.CorpusMaker.from_excel(fname)
-        # Iterate through each item in the corpus and make it
-        for corpus_item in corpus.tracks:
-            im = ItemMaker(
-                item=corpus_item,
-                logger=logger,
-                get_lr_audio=True,
-                force_reseparation=force_separation,
-                force_redownload=force_download,
-                use_spleeter=not disable_spleeter,
-                use_demucs=not disable_demucs
-            )
-            im.get_item()
-            im.separate_audio()
-            im.finalize_output()
-        # Log the total completion time
-        logger.info(f"dataset {fname} made in {round(time() - start)} secs !")
-
-    process(fname=corpus_filename)
+    # Start the timer
+    start = time()
+    # Open the corpus Excel file using our custom class
+    corpus = utils.CorpusMaker.from_excel(corpus_filename)
+    # Iterate through each item in the corpus and make it
+    for corpus_item in corpus.tracks:
+        im = ItemMaker(
+            item=corpus_item,
+            logger=logger,
+            get_lr_audio=True,
+            force_reseparation=force_separation,
+            force_redownload=force_download,
+            use_spleeter=not disable_spleeter,
+            use_demucs=not disable_demucs
+        )
+        im.get_item()
+        im.separate_audio()
+        im.finalize_output()
+    # Log the total completion time
+    logger.info(f"dataset {corpus_filename} made in {round(time() - start)} secs !")
 
 if __name__ == "__main__":
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
