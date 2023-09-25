@@ -17,7 +17,7 @@ yt_dlp>=2023.7.6
 librosa~=0.8.1
 soundfile~=0.12.1
 soxr
-statsmodels~=0.14.0
+statsmodels~=0.13.1
 numpy~=1.22.1
 audioread~=3.0.0
 dill~=0.3.6
