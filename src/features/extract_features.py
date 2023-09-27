@@ -22,8 +22,8 @@ def process_item(onset_maker: OnsetMaker) -> FeatureExtractor:
     mm = FeatureExtractor(om=onset_maker, interpolate=True, interpolation_limit=1)
     summary = []
     for ins in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-        mm.models[ins] = mm.generate_model(ins, standardise=False, difference_ioi=True, iqr_clean=False)
-        summary.append(mm.create_instrument_dict(endog_ins=ins, md=mm.models[ins]))
+        # mm.models[ins] = mm.generate_model(ins, standardise=False, difference_ioi=True, iqr_clean=False)
+        summary.append(mm.create_instrument_dict(endog_ins=ins, ))
     mm.summary_df = pd.DataFrame(summary)
     return mm
 
@@ -50,6 +50,7 @@ def main(
     logger.info(f"extracting features from {len(onsets)} tracks using {n_jobs} CPUs ...")
     # Extract features from all of our serialised onset maker classes, in parallel
     features = Parallel(n_jobs=n_jobs, backend='loky')(delayed(process_item)(onset_maker) for onset_maker in onsets)
+    # features = [process_item(onset_maker) for onset_maker in onsets]
     # Serialise all of our FeatureExtractor classes
     # TODO: implement caching of incoming FeatureExtractor classes here
     utils.serialise_object(features, rf'{utils.get_project_root()}\models', f'extracted_features_{corpus_filename}')
