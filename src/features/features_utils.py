@@ -5,6 +5,7 @@
 import json
 import warnings
 from functools import reduce
+from typing import Generator
 
 import numpy as np
 import pandas as pd
@@ -181,7 +182,7 @@ class BaseExtractor:
         """Overrides default string representation to print a dictionary of summary stats"""
         return json.dumps(self.summary_dict)
 
-    def update_summary_dict(self, array_names, arrays) -> None:
+    def update_summary_dict(self, array_names, arrays, *args, **kwargs) -> None:
         """Update our summary dictionary with values from this feature. Can be overridden!"""
         for name, df in zip(array_names, arrays):
             self.summary_dict.update({f'{name}_{func_k}': func_v(df) for func_k, func_v in self.summary_funcs.items()})
@@ -242,15 +243,20 @@ class BaseExtractor:
 
 class IOISummaryStatsExtractor(BaseExtractor):
     """Extracts various baseline summary statistics from an array of IOIs"""
-    # TODO: think about IOI entropy? Rolling IOI complexity (entropy every 4 bars)
-    # TODO: compression algorithms for measuring IOI complexity?
-    def __init__(self, my_onsets: pd.Series, iqr_filter: bool = False):
+    def __init__(self, my_onsets: pd.Series, **kwargs):
         super().__init__()
         iois = my_onsets.diff()
-        if iqr_filter:
+        # Divide 60 / IOI if we want to use BPM values instead
+        if kwargs.get('use_bpms', False):
+            iois = 60 / iois
+        # Filter our IOIs using an IQR filter, if required
+        if kwargs.get('iqr_filter', False):
             iois = utils.iqr_filter(iois, fill_nans=True)
+        # Add in some extra functions to our summary functions dictionary
         self.summary_funcs['binary_entropy'] = self.binary_entropy
         self.summary_funcs['npvi'] = self.npvi
+        self.summary_funcs['lempel_ziv_complexity'] = self.lempel_ziv_complexity
+        # Update the summary dictionary by obtaining results for every function in `self.summary_funcs`
         self.update_summary_dict(['ioi'], [iois])
 
     @staticmethod
@@ -258,11 +264,13 @@ class IOISummaryStatsExtractor(BaseExtractor):
         """Extract the Shannon entropy from an iterable"""
         # We convert our IOIs into milliseconds here to prevent floating point numbers
         ms_arr = (iois * 1000).dropna().astype(int).to_numpy()
+        # Get the counts and probabilities of our individual IOIs
         _, counts = np.unique(ms_arr, return_counts=True)
         probabilities = counts / len(ms_arr)
+        # Calculate the entropy and return
         return -np.sum(probabilities * np.log2(probabilities))
         # Alternative method using SciPy, should yield identical results
-        # return stats.entropy((iois * 1000).dropna().astype(int).value_counts().squeeze(), base=2)
+        # return stats.entropy((ioi * 1000).dropna().astype(int).value_counts().squeeze(), base=2)
 
     @staticmethod
     def npvi(iois) -> float:
@@ -270,19 +278,68 @@ class IOISummaryStatsExtractor(BaseExtractor):
         dat = iois.dropna().to_numpy()
         return sum([abs((k - k1) / ((k + k1) / 2)) for (k, k1) in zip(dat, dat[1:])]) * 100 / (sum(1 for _ in dat) - 1)
 
+    @staticmethod
+    def binarize_sequence(sequence: np.array) -> np.array:
+        """Converts sequence to binary: values below mean set to 0, above mean to 1"""
+        return np.vectorize(lambda x: int(x > np.nanmean(sequence)))(sequence)
 
-class BPMSummaryStatsExtractor(BaseExtractor):
-    """Extracts various baseline summary statistics from an array of BPMs (60 / IOI)"""
-    def __init__(self, my_onsets: pd.Series, iqr_filter: bool = False):
-        super().__init__()
-        bpms = 60 / my_onsets.diff()
-        if iqr_filter:
-            bpms = utils.iqr_filter(bpms, fill_nans=True)
-        self.update_summary_dict(['bpm'], [bpms])
+    def lempel_ziv_complexity(self, iois: np.array) -> int:
+        """Extract complexity from a binary sequence using Lempel-Ziv compression algorithm"""
+        binary_sequence = self.binarize_sequence(iois)
+        u, v, w = 0, 1, 1
+        v_max = 1
+        complexity = 1
+        while True:
+            if binary_sequence[u + v - 1] == binary_sequence[w + v - 1]:
+                v += 1
+                if w + v >= len(binary_sequence):
+                    complexity += 1
+                    break
+            else:
+                if v > v_max:
+                    v_max = v
+                u += 1
+                if u == w:
+                    complexity += 1
+                    w += v_max
+                    if w > len(binary_sequence):
+                        break
+                    else:
+                        u = 0
+                        v = 1
+                        v_max = 1
+                else:
+                    v = 1
+        return complexity
+
+
+class IOISummaryStatsExtractorRolling(IOISummaryStatsExtractor):
+    """Extracts the statistics in `IOISummaryStatsExtractor` on a rolling basis, window defaults to 4 bars length"""
+    def __init__(self, my_onsets: pd.Series, downbeats, period: int = 4, **kwargs):
+        super().__init__(my_onsets=my_onsets, **kwargs)
+        self.summary_dict = {f'iois_rolling_{func_k}': [] for func_k in self.summary_funcs.keys()}
+        self.summary_dict['iois_rolling_bars'] = []
+        self.period = period
+        self.extract_rolling_statistics(my_onsets, downbeats, **kwargs)
+
+    def extract_rolling_statistics(self, my_onsets: pd.Series, downbeats: np.array, **kwargs) -> None:
+        """Extract rolling summary statistics and append to summary statistics dictionary"""
+        for bar_num, (i1, i2) in enumerate(zip(downbeats, downbeats[self.period:]), 1):
+            iois_between = pd.Series(self.get_between(my_onsets.values, i1, i2)).diff()
+            # Divide 60 / IOI if we want to use BPM values instead
+            if kwargs.get('use_bpms', False):
+                iois_between = 60 / iois_between
+            # Filter our IOIs using an IQR filter, if required
+            if kwargs.get('iqr_filter', False):
+                iois_between = utils.iqr_filter(iois_between, fill_nans=True)
+            for func_k, func_v in self.summary_funcs.items():
+                self.summary_dict[f'iois_rolling_{func_k}'].append(func_v(iois_between))
+                self.summary_dict['iois_rolling_bars'].append(f'{bar_num}-{bar_num + self.period}')
 
 
 class EventDensityExtractor(BaseExtractor):
     """Extract various features related to event density, on both a per-bar and per-second basis"""
+    # TODO: add in support for custom periods (i.e. 5 seconds, 4 bars)
     def __init__(self, my_onsets: pd.Series, quarter_note_downbeats: np.array):
         super().__init__()
         self.per_second = self.extract_ed_per_second(my_onsets)
@@ -312,7 +369,6 @@ class EventDensityExtractor(BaseExtractor):
 
 class BeatUpbeatRatioExtractor(BaseExtractor):
     """Extract various features related to beat-upbeat ratios (BURs)"""
-
     def __init__(self, my_onsets, quarter_note_beats):
         super().__init__()
         # Extract our burs here, so we can access them as instance properties
@@ -395,7 +451,7 @@ class TempoSlopeExtractor(BaseExtractor):
         # Fit the model and return
         return sm.OLS(y, x, missing='drop').fit()
 
-    def update_summary_dict(self, array_names, arrays):
+    def update_summary_dict(self, array_names, arrays, *args, **kwargs) -> None:
         """Update the summary dictionary with tempo slope and drift coefficients"""
         self.summary_dict.update({
             f'tempo_slope': self.model.params[1],
@@ -584,7 +640,7 @@ class PhaseCorrectionExtractor(BaseExtractor):
         arr.name = name
         return arr
 
-    def shifter(self, arr: np.array):
+    def shifter(self, arr: np.array) -> Generator:
         """Shift an input array by the required number of beats and return a generator"""
         for i in range(self.order):
             pi = arr.shift(i)
@@ -650,7 +706,7 @@ class PhaseCorrectionExtractor(BaseExtractor):
                 results.update({f'coupling_{instr}_lag{lagterm}': getter(instr, lagterm)})
         return results
 
-    def update_summary_dict(self, array_names, arrays):
+    def update_summary_dict(self, array_names, arrays, *args, **kwargs) -> None:
         """Update summary dictionary with parameters taken from model"""
         if self.model is None:
             warnings.warn(f'model failed to compile !', UserWarning)
@@ -729,6 +785,98 @@ class GrangerExtractor(BaseExtractor):
             results[f'{col}_gci'] = gci
             results[f'{col}_p'] = p
         return results
+
+
+class PartialLaggedCorrelationExtractor(BaseExtractor):
+    """Extracts various features related to partial correlation between inter-onset intervals and onset asynchrony.
+
+    This class calculates the partial correlation between (differenced) inter-onset intervals by musician `X` and
+    lagged asynchronies between `X` and musician `Y`, controlling for prior (differenced) inter-onset intervals by `X`,
+    i.e. accounting for the possibility of autocorrelated beat durations by `X`; see [1].
+
+    Args:
+        my_onsets (pd.Series): onsets of instrument to model
+        their_onsets (pd.DataFrame | pd.Series): onsets of remaining instrument(s)
+        order (int, optional): number of lag terms to calculate, defaults to 1
+        iqr_filter (bool, optional): apply an iqr filter to inter-onset intervals, defaults to False
+        difference_iois (bool, optional): whether to detrend inter-onset intervals via differencing, defaults to True
+
+    References:
+        [1]: Cheston, H. (2022). ‘Turning the beat around’: Time, temporality, and participation in the jazz solo break.
+            Proceedings of the Conference on Interdisciplinary Musicology 2022: Participation, Edinburgh, UK.
+
+    """
+    iqr_filter = False
+    difference_iois = True
+
+    def __init__(self, my_onsets: pd.Series, their_onsets: pd.DataFrame | pd.Series, order: int = 1, **kwargs):
+        from collections import ChainMap
+        super().__init__()
+        self.order = order
+        self.pcorrs = dict(ChainMap(*self.extract_partial_correlations(my_onsets, their_onsets, **kwargs)))
+
+    @staticmethod
+    def partial_correlation(x: pd.Series, y: pd.Series, z: pd.Series):
+        """Calculates partial correlation between arrays X and Y, controlling for the effect of Z
+
+        Args:
+            x (pd.Series): dependent variable
+            y (pd.Series): independent variable
+            z (pd.Series): control variable
+
+        Returns:
+            float
+
+        """
+        xy = x.corr(y, method='pearson')
+        xz = x.corr(z, method='pearson')
+        yz = y.corr(z, method='pearson')
+        return (xy - (xz * yz)) / np.sqrt((1 - xz ** 2) * (1 - yz ** 2))
+
+    @staticmethod
+    def pvalue(n: int, k: int, r: float) -> float:
+        """Extracts p-value from degrees of freedom and regression coefficient"""
+        dof = n - k - 2
+        tval = r * np.sqrt(dof / (1 - r ** 2))
+        return 2 * stats.t.sf(np.abs(tval), dof)
+
+    def extract_partial_correlations(
+            self,
+            my_onsets: pd.Series,
+            their_onsets: pd.DataFrame | pd.Series,
+            **kwargs
+    ) -> Generator:
+        """Extracts partial correlation between inter-onset intervals and onset asynchrony at required lags"""
+        # Get our initial inter-onset interval values
+        my_differenced_iois = my_onsets.diff()
+        # Apply any filtering and further differencing as required
+        if kwargs.get('difference_iois', self.difference_iois):
+            my_differenced_iois = my_differenced_iois.diff()
+        if kwargs.get('iqr_filter', self.iqr_filter):
+            my_differenced_iois = pd.Series(utils.iqr_filter(my_differenced_iois, fill_nans=True))
+        # Get our next inter-onset intervals: this is what we'll be predicting
+        my_next_iois = my_differenced_iois.shift(-1)
+        # Iterate through all instruments played by the other instruments in our group
+        for partner_instrument in their_onsets.columns:
+            # Get the asynchrony values between that instrument and ours
+            my_asynchronies = their_onsets[partner_instrument] - my_onsets
+            for i in range(self.order):
+                # Shift our asynchronies and interval variables by the required lag term
+                my_prev_asynchronies = my_asynchronies.shift(i)    # Independent variable
+                my_prev_iois = my_differenced_iois.shift(i)    # Control variable
+                # Construct the dataframe, drop NaN values, and set column titles
+                df = pd.concat([my_next_iois, my_prev_asynchronies, my_prev_iois], axis=1).dropna()
+                df.columns = ['my_next_iois', 'my_prev_asynchronies', 'my_prev_iois']
+                # Create the partial correlation matrix and extract p-value
+                # The results here should be identical to those given by the `pingouin.partial_corr` function
+                pcorr = self.partial_correlation(x=df.my_next_iois, y=df.my_prev_asynchronies, z=df.my_prev_iois)
+                pval = self.pvalue(df.shape[0], df.shape[1] - 2, pcorr)
+                # Yield the results in a nice dictionary format
+                yield {
+                    f'{my_onsets.name}_{partner_instrument}_lag{i}_pcorr': pcorr,
+                    f'{my_onsets.name}_{partner_instrument}_lag{i}_p': pval,
+                    f'{my_onsets.name}_{partner_instrument}_lag{i}_n': df.shape[0]
+                }
 
 
 class CrossCorrelationExtractor(BaseExtractor):
