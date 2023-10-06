@@ -12,8 +12,7 @@ from math import isclose
 
 from yt_dlp.utils import DownloadError
 
-import src.clean.clean_utils
-import src.global_utils
+from src import utils
 from src.clean.clean_utils import ItemMaker
 
 
@@ -130,7 +129,7 @@ class ItemMakerTest(unittest.TestCase):
         """
 
         # Check that this file is present (should always work)
-        self.assertTrue(src.utils.global_utils.check_item_present_locally(fname="test_itemmaker.py"))
+        self.assertTrue(utils.check_item_present_locally(fname="test_itemmaker.py"))
 
     def test_downloading_from_youtube(self):
         """
@@ -142,7 +141,7 @@ class ItemMakerTest(unittest.TestCase):
             warnings.simplefilter("ignore", ResourceWarning)
             im.get_item()
         # Should return True after a successful download
-        self.assertTrue(src.utils.global_utils.check_item_present_locally(im.in_file))
+        self.assertTrue(utils.check_item_present_locally(im.in_file))
         os.remove(im.in_file)
 
     def test_error_raised_when_downloading_from_invalid_videos(self):
@@ -166,7 +165,7 @@ class ItemMakerTest(unittest.TestCase):
             warnings.simplefilter("ignore", ResourceWarning)
             im.get_item()
         # Should be approximately 10 seconds in duration
-        self.assertTrue(isclose(im._get_audio_duration(im.in_file), 10, abs_tol=0.01))
+        self.assertTrue(isclose(utils.get_audio_duration(im.in_file), 10, abs_tol=0.01))
         os.remove(im.in_file)
 
     def test_source_separation_timeout(self):

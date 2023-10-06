@@ -6,24 +6,24 @@
 import csv
 import inspect
 import json
-import logging
 import os
 import pickle
 import re
 import time
+import warnings
 from ast import literal_eval
 from datetime import datetime, timedelta
 from functools import wraps
+from multiprocessing import Manager, Process
 from pathlib import Path
 from string import punctuation
 from tempfile import NamedTemporaryFile
-from typing import Generator, Any
+from typing import Generator, Any, Callable
 
 import audioread
 import dill
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 
 # Set options in pandas and numpy here, so they carry through whenever this file is imported by another
 # This disables scientific notation and forces all rows/columns to be printed: helps with debugging!
@@ -240,11 +240,11 @@ class CorpusMaker:
     ) -> Generator:
         """Formats each dictionary, corresponding to a single track"""
 
-        to_drop = ['youtube_link', 'start_timestamp', 'end_timestamp', 'bassist', 'drummer',]
+        to_drop = ['youtube_link', 'start_timestamp', 'end_timestamp', 'bassist', 'drummer']
         # Iterate over every track in our list of dictionaries
         for track in track_dict:
             # Format the YouTube links correctly
-            track['links'] = {'external': [l for l in [track['youtube_link']]]}
+            track['links'] = {'external': [i for i in [track['youtube_link']]]}
             # Get the total duration of the excerpt
             track['excerpt_duration'] = self.get_excerpt_duration(track['start_timestamp'], track['end_timestamp'])
             # Format our timestamps correctly
@@ -327,15 +327,24 @@ def serialise_object(
 
 def unserialise_object(
         fpath: str,
-        fname: str,
-        use_pickle: bool = False
-) -> object:
-    """Simple wrapper around `dill.load` that unserialises an object and returns it"""
+        use_pickle: bool = False,
+        _ext: str = 'p'
+) -> list:
+    """Simple wrapper that unserialises an iterable pickle object using pickle or dill and returns it"""
     if use_pickle:
         loader = pickle.load
     else:
         loader = dill.load
-    return loader(open(fr'{fpath}\{fname}.p', 'rb'))
+    data = []
+    fpath = fpath if fpath.endswith(f'.{_ext}') else f'{fpath}.{_ext}'
+    with open(fpath, 'rb') as fr:
+        # Iteratively append from our Pickle file until we run out of data
+        try:
+            while True:
+                data.append(loader(fr))
+        except EOFError:
+            pass
+    return data
 
 
 @retry(json.JSONDecodeError)
@@ -376,7 +385,6 @@ def load_csv(
             return literal_eval(i)
         except (ValueError, SyntaxError) as _:
             return str(i)
-
 
     with open(rf'{fpath}\{fname}.csv', "r+") as in_file:
         return [{k: eval_(v) for k, v in row.items()} for row in csv.DictReader(in_file, skipinitialspace=True)]
@@ -451,19 +459,6 @@ def try_get_kwarg_and_remove(
     return got
 
 
-class TqdmLoggingHandler(logging.Handler):
-    def __init__(self, level=logging.NOTSET):
-        super().__init__(level)
-
-    def emit(self, record):
-        try:
-            msg = self.format(record)
-            tqdm.write(msg)
-            self.flush()
-        except Exception:
-            self.handleError(record)
-
-
 def return_function_kwargs(func) -> list:
     """Returns a list of keyword arguments accepted by a given function"""
     return [p for p in inspect.signature(func).parameters]
@@ -486,7 +481,7 @@ def iqr_filter(
         fill_nans (bool, optional): replace cleaned values with `np.nan`, such that the array shape remains the same
 
     Returns:
-        np.array
+        `np.array`
 
     """
     # Get our upper and lower bound from the array
@@ -510,3 +505,139 @@ def iqr_filter(
 
 if __name__ == '__main__':
     pass
+
+
+def get_tracks_with_manual_annotations(
+        annotation_dir: str = fr'{get_project_root()}\references\manual_annotation',
+        annotation_ext: str = 'txt',
+        corpus_json: list[dict] = None
+) -> list:
+    """Returns the IDs of tracks that should be annotated"""
+    res = {}
+    track_ids = '\t'.join([track['mbz_id'] for track in corpus_json])
+    for file in os.listdir(annotation_dir):
+        if file.endswith(annotation_ext):
+            split = file.split('_')
+            track_id = split[0].split('-')[-1]
+            if track_id not in track_ids:
+                continue
+            try:
+                res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
+            except KeyError:
+                res[split[0]] = []
+                res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
+    roles = [*INSTRUMENTS_TO_PERFORMER_ROLES.keys(), 'mix']
+    annotated_with_all_instrs = [k for k, v in res.items() if sorted(v) == sorted(roles)]
+    return [t['mbz_id'] for t in corpus_json if t['fname'] in annotated_with_all_instrs]
+
+
+def serialise_from_queue(item_queue, fpath: str) -> None:
+    """Iteratively append items in a queue to a single file. Process dies when `NoneType` added to queue
+
+    Args:
+        item_queue: the `multiprocessing.Manager.Queue` instance to draw items from
+        fpath (str): the filepath to save items to (file will be created if it does not exist)
+
+    Returns:
+        None
+
+    """
+    with open(fr'{fpath}.p', 'ab+') as out:
+        # Keep getting items from our queue and appending them to our Pickle file
+        while True:
+            val = item_queue.get()
+            # When we receive a NoneType object from the queue, break out and terminate the process
+            if val is None:
+                break
+            pickle.dump(val, out)
+
+
+def initialise_queue(target_func: Callable = serialise_from_queue, *target_func_args) -> tuple:
+    """Initialise the objects we need for caching through multiprocessing
+
+    Args:
+        target_func (Callable, optional): target function for the worker process, defaults to `serialise_from_queue`
+        *target_func_args: arguments passed to `target_func`
+
+    Returns:
+        tuple
+
+    """
+    m = Manager()
+    q = m.Queue()
+    # Initialise our worker for saving completed tracks
+    p = Process(target=target_func, args=(q, *target_func_args))
+    p.start()
+    return p, q
+
+
+def get_cached_track_ids(fpath: str, **kwargs) -> Generator:
+    """Open a pickle file and get the IDs of tracks that have already been processed
+
+    Args:
+        fpath (str): filepath to load object from
+        **kwargs: passed to `unserialise_object`
+
+    Yields:
+        str: the Musicbrainz ID of the processed track
+
+    Returns:
+        None: if `fpath` is not found
+
+    """
+    try:
+        data = unserialise_object(fpath, **kwargs)
+    # If we have not created the item yet, return None
+    except FileNotFoundError:
+        return
+    else:
+        for track in data:
+            yield track.item['mbz_id']
+
+
+def ignore_warning(*args, **kwargs):
+    """Decorator function for suppressing warnings during a function call"""
+    def inner(func):
+        @wraps(func)
+        def wrapper():
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore")
+                return func(*args, **kwargs)
+        return wrapper
+    return inner
+
+
+def combine_features(features: list, *args) -> pd.DataFrame:
+    needs_exploding = set()
+    res = []
+    for track in features:
+        atts = {instr: {} for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys()}
+        for desired_feature in args:
+            att = getattr(track, desired_feature)
+            for instrument, feature in att.items():
+                if isinstance(feature, dict):
+                    atts[instrument].update(feature)
+                elif isinstance(feature, list):
+                    dl = None
+                    try:
+                        dl = {k: [dic.summary_dict[k] for dic in feature] for k in feature[0].summary_dict}
+                    except (AttributeError, TypeError):
+                        ld = [k for item in feature for k in item.summary_dict]
+                        dl = {k: [dic[k] for dic in ld] for k in ld[0]}
+                    finally:
+                        atts[instrument].update(dl)
+                        needs_exploding.update(list(dl.keys()))
+                else:
+                    atts[instrument].update(feature.summary_dict)
+        res.extend(list(atts.values()))
+    df = pd.DataFrame(res).drop(columns=['log'])
+    if len(needs_exploding) > 0:
+        needs_exploding = list(needs_exploding)
+        df1 = pd.concat([df[x].explode()
+                        .to_frame()
+                        .assign(g=lambda x: x.groupby(level=0).cumcount())
+                        .set_index('g', append=True)
+                        .astype(float)
+                         for x in needs_exploding], axis=1)
+        df = df.drop(needs_exploding, axis=1).join(df1.droplevel(1)).reset_index(drop=True)
+    return df

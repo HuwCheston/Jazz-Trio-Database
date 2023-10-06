@@ -16,12 +16,12 @@ import dotenv
 import pandas as pd
 import requests
 
-import src.global_utils
+from src import utils
 
 
 class CorpusTest(unittest.TestCase):
-    corpus = src.utils.global_utils.load_json(rf'{src.utils.global_utils.get_project_root()}\references', 'corpus')
-    dotenv.load_dotenv(rf"{src.utils.global_utils.get_project_root()}\.env")
+    corpus = utils.CorpusMaker.from_excel(rf'{utils.get_project_root()}\references\corpus_bill_evans')
+    dotenv.load_dotenv(rf"{utils.get_project_root()}\.env")
     df = pd.DataFrame(corpus)
     links = [link for track in corpus for link in track["links"]["external"]]
 

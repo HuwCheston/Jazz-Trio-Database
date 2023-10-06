@@ -3,8 +3,6 @@
 
 """Utility classes, functions, and variables used in the onset detection process."""
 
-import os
-import pickle
 import warnings
 from typing import Generator
 
@@ -919,7 +917,6 @@ class OnsetMaker:
         if generate_click:
             self.generate_click_track('mix', self.ons['downbeats_manual'])
 
-
     def finalize_output(
             self
     ) -> None:
@@ -1056,31 +1053,6 @@ class _ClickTrackMaker:
         return signal.lfilter(b, a, aud)
 
 
-def get_tracks_with_manual_annotations(
-        annotation_dir: str = fr'{utils.get_project_root()}\references\manual_annotation',
-        annotation_ext: str = 'txt',
-        corpus_json: list[dict] = None
-) -> list:
-    """Returns the IDs of tracks that should be annotated"""
-    # return [t.strip('\n') for t in open(rf'{annotation_dir}\tracks_to_annotate.{annotation_ext}', 'r').readlines()]
-    res = {}
-    track_ids = '\t'.join([track['mbz_id'] for track in corpus_json])
-    for file in os.listdir(annotation_dir):
-        if file.endswith(annotation_ext):
-            split = file.split('_')
-            track_id = split[0].split('-')[-1]
-            if track_id not in track_ids:
-                continue
-            try:
-                res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
-            except KeyError:
-                res[split[0]] = []
-                res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
-    roles =  [*utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(), 'mix']
-    annotated_with_all_instrs = [k for k, v in res.items() if sorted(v) == sorted(roles)]
-    return [t['mbz_id'] for t in corpus_json if t['fname'] in annotated_with_all_instrs]
-
-
 def calculate_tempo(
         pass_: np.ndarray
 ) -> float:
@@ -1088,24 +1060,6 @@ def calculate_tempo(
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)
         return np.nanmean(np.array([60 / p for p in np.diff(pass_)]))
-
-
-def get_cached_track_ids(fpath):
-    """Open a pickle file and get the IDs of tracks that have already been processed"""
-    data = []
-    try:
-        with open(f'{fpath}.p', 'rb') as fr:
-            # Iteratively append from our Pickle file until we run out of data
-            try:
-                while True:
-                    data.append(pickle.load(fr))
-            except EOFError:
-                pass
-    except FileNotFoundError:
-        return
-    else:
-        for track in data:
-            yield track.item['mbz_id']
 
 
 if __name__ == '__main__':

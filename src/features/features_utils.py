@@ -18,23 +18,48 @@ from src.detect.detect_utils import OnsetMaker
 
 
 class FeatureExtractor:
-    instrs = list(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys())
+    """Base class for extracting all features from all instruments within one track
+
+    Examples:
+        >>> onsets = OnsetMaker(...)
+        >>> made = FeatureExtractor(om=onsets, interpolate=True, interpolation_limit=1)
+        >>> made.extract_features()
+        >>> made.IOI_beats
+        dict(piano=IOISummaryStatsExtractor(...))
+
+    Args:
+        om (OnsetMaker): finalized `OnsetMaker` class, corresponding to one track in the corpus
+        interpolate (bool, optional): whether to interpolate missing onsets, defaults to True
+        interpolation_limit (int, optional): depth in quarter notes to interpolate, defaults to 1
+
+    """
+    _feature_attr_names = [
+        'IOI_beats', 'IOI_onsets', 'IOI_bpms', 'IOI_beatsdiff', 'IOI_beatsrolling', 'IOI_onsetsrolling', 'BURs',
+        'event_density', 'tempo_slope', 'asynchrony', 'phase_correction', 'granger_causality', 'cross_correlation',
+        'partial_correlation', 'metadata'
+    ]
 
     def __init__(
             self,
             om: OnsetMaker,
             **kwargs
     ):
+        instrs = utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()
+        # Set class attributes from input
         self.om = om
         self.item = om.item
-        self.interpolate: bool = kwargs.get('interpolate', True)
-        self.num_interpolated: dict = {k: 0 for k in self.instrs}
-        self.interpolation_limit: int = kwargs.get('interpolation_limit', 1)
         self.df = pd.DataFrame(om.summary_dict)
-        if self.interpolate:
-            for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+        self.max_order = kwargs.get('max_order', 8)    # Maximum order to go up to when creating models
+        # If we're interpolating missing IOIs (defaults to true)
+        if kwargs.get('interpolate', True):
+            # We define these variables only when interpolating
+            self.num_interpolated: dict = {k: 0 for k in instrs}
+            self.interpolation_limit: int = kwargs.get('interpolation_limit', 1)
+            # Iterate through all instruments and replace their extracted beat-onsets with interpolated values
+            for instr in instrs:
                 self.df[instr] = self.interpolate_missing_onsets(self.df[instr], instr=instr)
-        self.features = {}
+        for feature in self._feature_attr_names:
+            setattr(self, feature, None)
 
     def interpolate_missing_onsets(
             self,
@@ -102,81 +127,148 @@ class FeatureExtractor:
         # Return the interpolated array
         return onset_arr
 
-    def create_instrument_dict(
-            self,
-            endog_ins: str,
-            # md: RegressionResultsWrapper,
-    ) -> dict:
-        """Creates summary dictionary for a single instrument, containing all extracted features.
+    # noinspection PyAttributeOutsideInit
+    # @utils.ignore_warning
+    def extract_features(self):
+        """Central function for extracting all features from all instruments in a track"""
+        def roll(cl, **kwargs) -> dict:
+            """Create multiple class instances with given `**kwargs` up to `self.max_order`"""
+            return [cl(order=num, **kwargs) for num in range(1, self.max_order)]
 
-        Arguments:
-            endog_ins (str): the name of the instrument to create the dictionary for
+        def their_instrs(my_instr: str) -> list:
+            """Return list of instruments played by our partners"""
+            return [ins for ins in instrs if ins != my_instr]
 
-        Returns:
-            dict: summary dictionary containing extracted features as key-value pairs
+        # Get instrument name list
+        instrs = utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()
+        warnings.filterwarnings('ignore')
+        # Extract instrument metadata from `self.item` class
+        self.metadata = {i: self._extract_instrument_metadata(i) for i in instrs}
+        # Inter-onset interval feature classes
+        self.IOI_beats = {i: IOISummaryStats(self.df[i]) for i in instrs}    # Quarter note beats
+        self.IOI_onsets = {i: IOISummaryStats(self.om.ons[i]) for i in instrs}    # All onsets
+        self.IOI_bpms = {i: IOISummaryStats(self.df[i], use_bpms=True) for i in instrs}    # BPMs
+        self.IOI_beatsdiff = {i: IOISummaryStats(self.df[i].diff()) for i in instrs}    # Quarter note diff
+        self.IOI_beatsrolling = {
+            i: roll(RollingIOISummaryStats, my_onsets=self.df[i], downbeats=self.om.ons['downbeats_manual'])
+            for i in instrs
+        }
+        self.IOI_onsetsrolling = {
+            i: roll(RollingIOISummaryStats, my_onsets=self.om.ons[i], downbeats=self.om.ons['downbeats_manual'])
+            for i in instrs
+        }
+        # Beat-upbeat ratio features
+        self.BURs = {i: BeatUpbeatRatio(my_onsets=self.om.ons[i], my_beats=self.df[i]) for i in instrs}
+        # Tempo slope features
+        self.tempo_slope = dict(
+            # Tempo slope classes for each individual instrument
+            **{i: TempoSlope(my_beats=self.df[i]) for i in instrs},
+            # Tempo slope class for the beat tracking algorithm
+            madmom=TempoSlope(my_beats=self.df['beats']),
+            # Tempo slope class for the average position of the ensemble
+            group=TempoSlope(my_beats=self.df[instrs].mean(axis=1, skipna=True).rename(1))
+        )
+        # Asynchrony features
+        self.asynchrony = {i: Asynchrony(my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in instrs}
+        # Phase correction model features
+        self.phase_correction = {
+            i: roll(PhaseCorrection, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in instrs
+        }
+        self.granger_causality = {
+            i: roll(GrangerCausality, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in instrs
+        }
+        # Correlation features
+        self.partial_correlation = {
+            i: roll(PartialCorrelation, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in instrs
+        }
+        self.cross_correlation = {
+            i: roll(CrossCorrelation, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in instrs
+        }
+        # Event density features
+        self.event_density = {
+            i: {
+                num: EventDensity(
+                    my_onsets=self.om.ons[i], downbeats=self.om.ons['downbeats_manual'], bar_period=num, time_period=num
+                ) for num in range(1, 8)
+            } for i in instrs
+        }
+        # We delete the onset maker and item variables here as we no longer need to refer to them: saves memory!
+        del self.om
 
-        """
-        # TODO: this should combine all of summary dictionaries defined in all the BaseExtractor classes into a df
+    def _extract_instrument_metadata(self, x_ins: str):
+        def __get_onset_evaluation_data() -> dict:
+            """Gets information from manual onset annotations, e.g. F-score"""
+            cols = ['f_score', 'precision', 'recall', 'mean_asynchrony', 'fraction_matched']
+            if not self.om.onset_evaluation:
+                return {col: np.nan for col in cols}
+            else:
+                return {col: i[0][col] for col in cols for i in self.om.onset_evaluation if i[0]['instr'] == x_ins}
 
         return {
-            # Item metadata
             **self.item,
             'tempo': self.om.tempo,
-            'instrument': endog_ins,
-            'performer': self.item['musicians'][utils.INSTRUMENTS_TO_PERFORMER_ROLES[endog_ins]],
-            # 'recording_tempo_slope': self.recording_tempo_slope,
+            'instrument': x_ins,
+            'performer': self.item['musicians'][utils.INSTRUMENTS_TO_PERFORMER_ROLES[x_ins]],
             # Raw beats
-            'raw_beats': self.df[endog_ins],
-            'interpolated_beats': self.num_interpolated[endog_ins],
-            'observed_beats': self.df[endog_ins].notna().sum(),
-            'missing_beats': self.df[endog_ins].isna().sum(),
-            # Performance summary statistics
-            # 'ioi_mean': self.df[f'{endog_ins}_prev_ioi'].mean(),
-            # 'ioi_median': self.df[f'{endog_ins}_prev_ioi'].median(),
-            # 'ioi_std': self.df[f'{endog_ins}_prev_ioi'].std(),
+            'interpolated_beats': self.num_interpolated[x_ins],
+            'actual_beats': self.df[x_ins].notna().sum(),
+            'missing_beats': self.df[x_ins].isna().sum(),
             # Cleaning metadata, e.g. missing beats
-            'fraction_silent': self.om.silent_perc[endog_ins],
-            'missing_beats_fraction': self.df[endog_ins].isna().sum() / self.df.shape[0],
-            'total_beats': self.df.shape[0],
-            # 'model_compiled': md is not None,
-            # Event density functions
-            # 'event_density': self.extract_event_density(endog_ins=endog_ins).mean(),
-            # Tempo slopes
-            # 'instrument_tempo_slope': self.extract_tempo_slope(f'{endog_ins}_onset', ),
-            # 'instrument_tempo_drift': self.extract_tempo_slope(f'{endog_ins}_onset', drift=True),
-            # Pairwise asynchrony
-            # Grainger causality model
-            # Kuramoto coupling model?
-            # Model goodness-of-fit
-            # **self._extract_model_goodness_of_fit(md=md),
-            # Model coefficients
-            # **self._extract_model_coefs(endog_ins=endog_ins, md=md),
-            # Beat-upbeat ratio stats
-            # **self.extract_bur_summary(endog_ins=endog_ins)
+            'fraction_silent': self.om.silent_perc[x_ins],
+            'missing_beats_fraction': self.df[x_ins].isna().sum() / self.df.shape[0],
+            # Manual annotation evaluation data (will be NaN if no manual annotations present)
+            **__get_onset_evaluation_data()
         }
-
-    def extract_features(self):
-        # TODO: This function should iterate through all instruments and populate the self.features dictionary with the
-        #  summary_dict attribute inside the classes defined below that inherit from BaseExtractor
-        pass
 
 
 class BaseExtractor:
     """Base feature extraction class, with some methods that are useful for all classes"""
-    # These are the default functions we'll call on any array to populate our summary statistics dictionary
-    summary_funcs = dict(
-        mean=np.nanmean,
-        median=np.nanmedian,
-        std=np.nanstd,
-        var=np.nanvar,
-        quantile25=lambda x: np.nanquantile(x, 0.25),
-        quantile75=lambda x: np.nanquantile(x, 0.75),
-        count=len,
-        count_nonzero=lambda x: np.count_nonzero(~np.isnan(x))
-    )
 
     def __init__(self):
+        # These are the default functions we'll call on any array to populate our summary statistics dictionary
+        # We have to define these inside __init__ otherwise they'll be overwritten in the child classes
+        self.summary_funcs = dict(
+            mean=np.nanmean,
+            median=np.nanmedian,
+            std=np.nanstd,
+            var=np.nanvar,
+            quantile25=self.quantile25,
+            quantile75=self.quantile75,
+            count=len,
+            count_nonzero=self.count_nonzero,
+        )
         self.summary_dict = {}
+
+    @staticmethod
+    def count_nonzero(x) -> int:
+        """Simple wrapper around `np.count_nonzero` that removes NaN values from an array"""
+        return np.count_nonzero(~np.isnan(x))
+
+    @staticmethod
+    def quantile25(x) -> float:
+        """Simple wrapper around `np.nanquantile` with arguments set"""
+        return np.nanquantile(x, 0.25)
+
+    @staticmethod
+    def quantile75(x) -> float:
+        """Simple wrapper around `np.nanquantile` with arguments set"""
+        return np.nanquantile(x, 0.75)
+
+    def __bool__(self):
+        """Overrides built-in boolean method to return whether the summary dictionary has been populated"""
+        return len(self.summary_dict.keys()) < 0
+
+    def __contains__(self, item: str):
+        """Overrides built-in method to return item from summary dictionary by key"""
+        return item in self.summary_dict.keys()
+
+    def __iter__(self):
+        """Overrides built-in method to return iterable of key-value pairs from summary dictionary"""
+        return self.summary_dict.items()
+
+    def __len__(self):
+        """Overrides built-in method to return length of summary dictionary"""
+        return len(self.summary_dict.keys())
 
     def __repr__(self) -> dict:
         """Overrides default string representation to print a dictionary of summary stats"""
@@ -193,37 +285,20 @@ class BaseExtractor:
         return arr[np.where(np.logical_and(arr >= i1, arr <= i2))]
 
     @staticmethod
-    def truncate_series(arr: pd.Series, low: float, high: float, fill_nans: bool = False) -> pd.Series:
-        """Truncate a series between a low and high threshold.
+    def truncate_df(
+            arr: pd.DataFrame | pd.Series,
+            low: float,
+            high: float,
+            col: str = None,
+            fill_nans: bool = False
+    ) -> pd.DataFrame:
+        """Truncate a dataframe or series between a low and high threshold.
 
         Args:
-            arr (pd.DataFrame): dataframe to truncate
+            arr (pd.DataFrame | pd.Series): dataframe to truncate
             low (float): lower boundary for truncating
             high (float): upper boundary for truncating. Must be greater than `low`.
-            fill_nans (bool, optional): whether to replace values outside `low` and `high` with `np.nan`
-
-        Raises:
-            AssertionError: if `high` < `low`
-
-        Returns:
-            pd.Series
-
-        """
-        assert low < high
-        if fill_nans:
-            return arr.mask(~arr.between(low, high))
-        else:
-            return arr[lambda x: (low <= x) & (x <= high)]
-
-    @staticmethod
-    def truncate_df(df: pd.DataFrame, col: str, low: float, high: float, fill_nans: bool = False) -> pd.DataFrame:
-        """Truncate a dataframe between a low and high threshold.
-
-        Args:
-            df (pd.DataFrame): dataframe to truncate
-            col (str): array to use when truncating
-            low (float): lower boundary for truncating
-            high (float): upper boundary for truncating. Must be greater than `low`.
+            col (str): array to use when truncating. Must be provided if `isinstance(arr, pd.DataFrame)`
             fill_nans (bool, optional): whether to replace values outside `low` and `high` with `np.nan`
 
         Raises:
@@ -233,31 +308,58 @@ class BaseExtractor:
             pd.DataFrame
 
         """
-        assert low < high
-        mask = (low <= df[col]) & (df[col] <= high)
-        if fill_nans:
-            return df.mask(~mask)
-        else:
-            return df[mask]
+        # If both our lower and higher thresholds are NaN, return the array without masking
+        if all([np.isnan(low), np.isnan(high)]):
+            return arr
+        # If we only have one value in our dataframe, or every value is NaN, low = high: this doesn't affect things
+        assert low <= high
+        # If we've passed in a series, we have to deal with it in a slightly different way
+        if isinstance(arr, pd.Series):
+            if fill_nans:
+                return arr.mask(~arr.between(low, high))
+            else:
+                return arr[lambda x: (low <= x) & (x <= high)]
+        # Otherwise, if we've passed in a dataframe, we have to deal with it in a different way
+        elif isinstance(arr, pd.DataFrame):
+            # We must provide a column to use for truncating in this case
+            if col is None:
+                raise AttributeError('Must provide argument `col` with `isinstance(arr, pd.DataFrame)`')
+            mask = (low <= arr[col]) & (arr[col] <= high)
+            if fill_nans:
+                return arr.mask(~mask)
+            else:
+                return arr[mask]
 
 
-class IOISummaryStatsExtractor(BaseExtractor):
-    """Extracts various baseline summary statistics from an array of IOIs"""
-    def __init__(self, my_onsets: pd.Series, **kwargs):
+class IOISummaryStats(BaseExtractor):
+    """Extracts various baseline summary statistics from an array of IOIs
+
+    Args:
+        my_onsets (pd.Series): onsets to compute summary statistics for
+        use_bpms (bool, optional): convert IOIs into beat-per-minute values, i.e. 60 / IOI (defaults to False)
+        iqr_filter (bool, optional): apply IQR range filtering to IOI/BPM values (defaults to False)
+
+    """
+    def __init__(self, my_onsets, **kwargs):
         super().__init__()
+        if isinstance(my_onsets, np.ndarray):
+            my_onsets = pd.Series(my_onsets)
         iois = my_onsets.diff()
+        name = 'iois'
         # Divide 60 / IOI if we want to use BPM values instead
         if kwargs.get('use_bpms', False):
             iois = 60 / iois
+            name = 'bpms'
         # Filter our IOIs using an IQR filter, if required
         if kwargs.get('iqr_filter', False):
             iois = utils.iqr_filter(iois, fill_nans=True)
+            name += '_filter'
         # Add in some extra functions to our summary functions dictionary
         self.summary_funcs['binary_entropy'] = self.binary_entropy
         self.summary_funcs['npvi'] = self.npvi
         self.summary_funcs['lempel_ziv_complexity'] = self.lempel_ziv_complexity
         # Update the summary dictionary by obtaining results for every function in `self.summary_funcs`
-        self.update_summary_dict(['ioi'], [iois])
+        self.update_summary_dict([name], [iois])
 
     @staticmethod
     def binary_entropy(iois: pd.Series) -> float:
@@ -273,58 +375,85 @@ class IOISummaryStatsExtractor(BaseExtractor):
         # return stats.entropy((ioi * 1000).dropna().astype(int).value_counts().squeeze(), base=2)
 
     @staticmethod
-    def npvi(iois) -> float:
+    def npvi(iois: pd.Series) -> float:
         """Extract the normalised pairwise variability index (nPVI) from an iterable"""
+        # Drop NaN values and convert array to Numpy
         dat = iois.dropna().to_numpy()
+        # If we only have one element in our array after dropping NaN values, we can't calculate nPVI, so return NaN
+        if len(dat) <= 1:
+            return np.nan
+        # Otherwise, we can go ahead and return the nPVI value for the array
         return sum([abs((k - k1) / ((k + k1) / 2)) for (k, k1) in zip(dat, dat[1:])]) * 100 / (sum(1 for _ in dat) - 1)
 
     @staticmethod
-    def binarize_sequence(sequence: np.array) -> np.array:
-        """Converts sequence to binary: values below mean set to 0, above mean to 1"""
-        return np.vectorize(lambda x: int(x > np.nanmean(sequence)))(sequence)
-
-    def lempel_ziv_complexity(self, iois: np.array) -> int:
-        """Extract complexity from a binary sequence using Lempel-Ziv compression algorithm"""
-        binary_sequence = self.binarize_sequence(iois)
-        u, v, w = 0, 1, 1
-        v_max = 1
-        complexity = 1
-        while True:
-            if binary_sequence[u + v - 1] == binary_sequence[w + v - 1]:
-                v += 1
-                if w + v >= len(binary_sequence):
-                    complexity += 1
-                    break
-            else:
-                if v > v_max:
-                    v_max = v
-                u += 1
-                if u == w:
-                    complexity += 1
-                    w += v_max
-                    if w > len(binary_sequence):
+    def lempel_ziv_complexity(iois: pd.Series) -> float:
+        """Extract complexity from a binary sequence using Lempel-Ziv compression algorithm,"""
+        def lz(binary: np.array) -> int:
+            """Function code for Lempel-Ziv compression algorithm"""
+            # Convert our sequence into binary: values below mean = 0, above mean = 1
+            # Set starting values for complexity calculation
+            u, v, w = 0, 1, 1
+            v_max, complexity = 1, 1
+            # Begin calculating LZ complexity
+            while True:
+                if binary[u + v - 1] == binary[w + v - 1]:
+                    v += 1
+                    if w + v >= len(binary):
+                        complexity += 1
                         break
-                    else:
-                        u = 0
-                        v = 1
-                        v_max = 1
                 else:
-                    v = 1
-        return complexity
+                    if v > v_max:
+                        v_max = v
+                    u += 1
+                    if u == w:
+                        complexity += 1
+                        w += v_max
+                        if w > len(binary):
+                            break
+                        else:
+                            u = 0
+                            v = 1
+                            v_max = 1
+                    else:
+                        v = 1
+            return complexity
+
+        # Try and convert our sequence to binary
+        try:
+            binary_sequence = np.vectorize(lambda x: int(x > np.nanmean(iois)))(iois[~np.isnan(iois)])
+        # If we only have NaNs in our array we'll raise an error, so catch this and return NaN
+        except ValueError:
+            return np.nan
+        # We need a sequence with at least 3 items in to calculate LZ complexity, so catch this and return NaN
+        else:
+            if len(binary_sequence) < 3:
+                return np.nan
+            # If we've passed all these checks, we should be able to calculate LZ complexity; do so now and return
+            else:
+                return lz(binary_sequence)
 
 
-class IOISummaryStatsExtractorRolling(IOISummaryStatsExtractor):
+class RollingIOISummaryStats(IOISummaryStats):
     """Extracts the statistics in `IOISummaryStatsExtractor` on a rolling basis, window defaults to 4 bars length"""
-    def __init__(self, my_onsets: pd.Series, downbeats, period: int = 4, **kwargs):
-        super().__init__(my_onsets=my_onsets, **kwargs)
-        self.summary_dict = {f'iois_rolling_{func_k}': [] for func_k in self.summary_funcs.keys()}
-        self.summary_dict['iois_rolling_bars'] = []
-        self.period = period
-        self.extract_rolling_statistics(my_onsets, downbeats, **kwargs)
 
-    def extract_rolling_statistics(self, my_onsets: pd.Series, downbeats: np.array, **kwargs) -> None:
-        """Extract rolling summary statistics and append to summary statistics dictionary"""
-        for bar_num, (i1, i2) in enumerate(zip(downbeats, downbeats[self.period:]), 1):
+    def __init__(self, my_onsets: pd.Series, downbeats, bar_period: int = 4, **kwargs):
+        super().__init__(my_onsets=my_onsets, **kwargs)
+        if isinstance(my_onsets, np.ndarray):
+            my_onsets = pd.Series(my_onsets)
+        self.summary_dict.clear()
+        self.bar_period = bar_period
+        # We get our raw rolling statistics here
+        self.rolling_statistics = self.extract_rolling_statistics(my_onsets, downbeats, **kwargs)
+        # We redefine summary_funcs here, as we want to remove extra functions added in `IOISummaryStatsExtractor`
+        self.summary_funcs = BaseExtractor().summary_funcs
+        # Update the summary dictionary
+        self.summary_dict['bar_period'] = bar_period
+        self.update_summary_dict(self.rolling_statistics.keys(), self.rolling_statistics.values())
+
+    def extract_rolling_statistics(self, my_onsets: pd.Series, downbeats: np.array, **kwargs) -> dict:
+        """Extract rolling summary statistics across the given bar period"""
+        results = {f'rolling_{func_k}': [] for func_k in self.summary_funcs.keys()}
+        for bar_num, (i1, i2) in enumerate(zip(downbeats, downbeats[self.bar_period:]), 1):
             iois_between = pd.Series(self.get_between(my_onsets.values, i1, i2)).diff()
             # Divide 60 / IOI if we want to use BPM values instead
             if kwargs.get('use_bpms', False):
@@ -332,55 +461,85 @@ class IOISummaryStatsExtractorRolling(IOISummaryStatsExtractor):
             # Filter our IOIs using an IQR filter, if required
             if kwargs.get('iqr_filter', False):
                 iois_between = utils.iqr_filter(iois_between, fill_nans=True)
+            # Iterate through each of our summary functions
             for func_k, func_v in self.summary_funcs.items():
-                self.summary_dict[f'iois_rolling_{func_k}'].append(func_v(iois_between))
-                self.summary_dict['iois_rolling_bars'].append(f'{bar_num}-{bar_num + self.period}')
+                # Try and apply the summary function to the IOIs, and return NaN on an error
+                try:
+                    results[f'rolling_{func_k}'].append(func_v(iois_between))
+                # These are all the errors that can result from our summary functions with NaN arrays
+                except (IndexError, ValueError, ZeroDivisionError):
+                    results[f'rolling_{func_k}'].append(np.nan)
+        return results
 
 
-class EventDensityExtractor(BaseExtractor):
-    """Extract various features related to event density, on both a per-bar and per-second basis"""
-    # TODO: add in support for custom periods (i.e. 5 seconds, 4 bars)
-    def __init__(self, my_onsets: pd.Series, quarter_note_downbeats: np.array):
+class EventDensity(BaseExtractor):
+    """Extract various features related to event density, on both a per-bar and per-second basis.
+
+    Args:
+        my_onsets (pd.series): onsets to calculate event density for
+        downbeats (np.array): array of times corresponding to the first beat of each bar
+        time_period (str, optional): the timeframe to calculate event density over, defaults to '1s' (one second)
+        bar_period (int, optional): the number of bars to calculate event density over, defaults to 1 (bar)
+
+    """
+    def __init__(
+            self,
+            my_onsets: pd.Series,
+            downbeats: np.array,
+            time_period: int = 1,
+            bar_period: int = 1
+    ):
         super().__init__()
+        if isinstance(my_onsets, np.ndarray):
+            my_onsets = pd.Series(my_onsets)
+        # Set attributes
+        self.time_period = f'{time_period}s'
+        self.bar_period = bar_period
+        # Extract event density
         self.per_second = self.extract_ed_per_second(my_onsets)
-        self.per_bar = self.extract_ed_per_bar(my_onsets, quarter_note_downbeats)
+        self.per_bar = self.extract_ed_per_bar(my_onsets, downbeats)
         # Update our summary dictionary
+        self.summary_dict['time_period'] = time_period
+        self.summary_dict['bar_period'] = bar_period
         self.update_summary_dict(['ed_per_second', 'ed_per_bar'], [self.per_second['density'], self.per_bar['density']])
 
-    @staticmethod
-    def extract_ed_per_second(my_onsets) -> pd.DataFrame:
+    def extract_ed_per_second(self, my_onsets) -> pd.DataFrame:
         """For every second in a performance, extract the number of notes played"""
         return (
             pd.DataFrame({'ts': pd.to_datetime(my_onsets, unit='s'), 'density': my_onsets})
             .set_index('ts')
-            .resample('1s', label='left')
+            .resample(self.time_period, label='left')
             .count()
             .reset_index(drop=False)
         )
 
     def extract_ed_per_bar(self, my_onsets, quarter_note_downbeats) -> pd.DataFrame:
-        """For every complete bar in a performance, extract the number of notes"""
-        sequential_downbeats = zip(quarter_note_downbeats, quarter_note_downbeats[1:])
+        """Extract the number of notes played within each specified bar period"""
+        sequential_downbeats = zip(quarter_note_downbeats, quarter_note_downbeats[self.bar_period:])
         my_onsets_arr = my_onsets.to_numpy()
-        matches = [len(self.get_between(my_onsets_arr, i1, i2)) for i1, i2 in sequential_downbeats]
-        matches.append(np.nan)
-        return pd.DataFrame({'downbeat': pd.to_datetime(quarter_note_downbeats, unit='s'), 'density': matches})
+        matches = [
+            {f'bars': f'{bar_num}-{bar_num + self.bar_period}', 'density': len(self.get_between(my_onsets_arr, i1, i2))}
+            for bar_num, (i1, i2) in enumerate(sequential_downbeats, 1)
+        ]
+        return pd.DataFrame(matches)
 
 
-class BeatUpbeatRatioExtractor(BaseExtractor):
+class BeatUpbeatRatio(BaseExtractor):
     """Extract various features related to beat-upbeat ratios (BURs)"""
-    def __init__(self, my_onsets, quarter_note_beats):
+    def __init__(self, my_onsets, my_beats):
         super().__init__()
+        if isinstance(my_onsets, np.ndarray):
+            my_onsets = pd.Series(my_onsets)
         # Extract our burs here, so we can access them as instance properties
-        self.bur = self.extract_burs(my_onsets, quarter_note_beats, use_log_burs=False)
-        self.bur_log = self.extract_burs(my_onsets, quarter_note_beats, use_log_burs=True)
+        self.bur = self.extract_burs(my_onsets, my_beats, use_log_burs=False)
+        self.bur_log = self.extract_burs(my_onsets, my_beats, use_log_burs=True)
         # Update our summary dictionary
         self.update_summary_dict(['bur', 'bur_log'], [self.bur['burs'], self.bur_log['burs']])
 
     def extract_burs(
             self,
             my_onsets: np.array,
-            quarter_note_beats: np.array,
+            my_beats: np.array,
             use_log_burs: bool = False
     ) -> pd.DataFrame:
         """Extracts beat-upbeat ratio (BUR) values from an array of onsets.
@@ -392,7 +551,7 @@ class BeatUpbeatRatioExtractor(BaseExtractor):
 
         Arguments:
             my_onsets (np.array, optional): the array of raw onsets.
-            quarter_note_beats (np.array, optional): the array of crotchet beat positions.
+            my_beats (np.array, optional): the array of crotchet beat positions.
             use_log_burs (bool, optional): whether to use the log^2 of inter-onset intervals to calculate BURs,
                 as employed in [2]. Defaults to False.
 
@@ -427,39 +586,43 @@ class BeatUpbeatRatioExtractor(BaseExtractor):
         if isinstance(my_onsets, pd.Series):
             my_onsets = my_onsets.to_numpy()
         # Iterate through consecutive pairs of beats and get the BUR
-        burs = [bur(i1, i2) for i1, i2 in zip(quarter_note_beats, quarter_note_beats[1:])]
-        # We can't know the BUR for the final beat, so append None
-        burs.append(None)
-        return pd.DataFrame({'beat': pd.to_datetime(quarter_note_beats, unit='s'), 'burs': burs})
+        burs = [bur(i1, i2) for i1, i2 in zip(my_beats, my_beats[1:])]
+        # We can't know the BUR for the final beat, so append NaN
+        burs.append(np.nan)
+        return pd.DataFrame({'beat': pd.to_datetime(my_beats, unit='s'), 'burs': burs})
 
 
-class TempoSlopeExtractor(BaseExtractor):
+class TempoSlope(BaseExtractor):
     """Extract features related to tempo slope, i.e. instantaneous tempo change (in beats-per-minute) per second"""
-    def __init__(self, my_onsets: pd.Series):
+    def __init__(self, my_beats: pd.Series):
         super().__init__()
-        bpms = 60 / my_onsets.diff()
-        self.model = self.extract_tempo_slope(my_onsets, bpms)
+        my_bpms = 60 / my_beats.diff()
+        self.model = self.extract_tempo_slope(my_beats, my_bpms)
         self.update_summary_dict([], [])
 
     @staticmethod
-    def extract_tempo_slope(my_onsets: np.array, bpms: np.array) -> RegressionResultsWrapper:
+    def extract_tempo_slope(my_beats: np.array, my_bpms: np.array) -> RegressionResultsWrapper | None:
         """Create the tempo slope regression model"""
         # Dependent variable: the BPM measurements
-        y = bpms
+        y = my_bpms
         # Predictor variable: the onset time (with an added intercept
-        x = sm.add_constant(my_onsets)
+        x = sm.add_constant(my_beats)
         # Fit the model and return
-        return sm.OLS(y, x, missing='drop').fit()
+        try:
+            return sm.OLS(y, x, missing='drop').fit()
+        # These are all the different error types that can emerge when fitting to data with too many NaNs
+        except (ValueError, IndexError, KeyError):
+            return None
 
     def update_summary_dict(self, array_names, arrays, *args, **kwargs) -> None:
         """Update the summary dictionary with tempo slope and drift coefficients"""
         self.summary_dict.update({
-            f'tempo_slope': self.model.params[1],
-            f'tempo_drift': self.model.bse[1]
+            f'tempo_slope': self.model.params[1] if self.model is not None else np.nan,
+            f'tempo_drift': self.model.bse[1] if self.model is not None else np.nan
         })
 
 
-class AsynchronyExtractor(BaseExtractor):
+class Asynchrony(BaseExtractor):
     """Extracts various features relating to asynchrony of onsets.
 
     Many of these features rely on the definitions established in the `onsetsync` package (Eerola & Clayton, 2023),
@@ -468,10 +631,8 @@ class AsynchronyExtractor(BaseExtractor):
     """
     # TODO: implement some sort of way of calculating circular statistics here?
 
-    def __init__(self, my_onsets: pd.Series, their_onsets: pd.DataFrame | pd.Series):
+    def __init__(self, my_beats: pd.Series, their_beats: pd.DataFrame | pd.Series):
         super().__init__()
-        # Extract onset asynchronies with respect to the performance of my partners
-        asynchronies = self.extract_asynchronies(my_onsets, their_onsets)
         # For many summary functions, we just need the asynchrony columns themselves
         self.summary_funcs.update(dict(
             pairwise_asynchronization=self.pairwise_asynchronization,
@@ -479,11 +640,10 @@ class AsynchronyExtractor(BaseExtractor):
             mean_absolute_asynchrony=self.mean_absolute_asynchrony,
             mean_pairwise_asynchrony=self.mean_pairwise_asynchrony
         ))
-        self.update_summary_dict(array_names=asynchronies.keys(), arrays=asynchronies.values())
-        # For mean relative asynchrony, we need to create a new series
-        # This is because we need to refer to the entire group, not just one partner
-        mra = self.mean_relative_asynchrony(my_onsets, their_onsets)
-        self.summary_dict.update({f'{my_onsets.name}_mean_relative_asynchrony': mra})
+        self.extract_asynchronies(my_beats, their_beats)
+        # We calculate mean relative asynchrony slightly differently to other variables
+        mra = self.mean_relative_asynchrony(my_beats, their_beats)
+        self.summary_dict.update({'mean_relative_asynchrony': mra})
 
     @staticmethod
     def pairwise_asynchronization(asynchronies: pd.Series) -> float:
@@ -525,36 +685,41 @@ class AsynchronyExtractor(BaseExtractor):
         # Alternative, should lead to identical results
         # return (1 / len(asynchronies)) * sum(asynchronies)
 
-    def mean_relative_asynchrony(self, my_onsets, their_onsets: pd.Series | pd.DataFrame) -> float:
+    def mean_relative_asynchrony(self, my_beats, their_beats: pd.Series | pd.DataFrame) -> float:
         """Extract the mean position of an instrument's onsets relative to the average position of the group"""
         # Get the average position of the whole group
-        average_group_position = pd.concat([my_onsets, their_onsets], axis=1).dropna().mean(axis=1)
+        average_group_position = pd.concat([my_beats, their_beats], axis=1).dropna().mean(axis=1)
         # Get the relative position in comparison to the average: my_onset - average_onsets
-        my_relative_asynchrony = my_onsets - average_group_position
+        my_relative_asynchrony = my_beats - average_group_position
         # Return the mean asynchrony from our relative asynchrony
         return self.mean_pairwise_asynchrony(my_relative_asynchrony)
 
-    @staticmethod
-    def extract_asynchronies(my_onsets: pd.Series, their_onsets: pd.DataFrame | pd.Series) -> dict:
-        """Extract asynchrony between an instrument of interest and all other instruments, then return a dictionary"""
-        if isinstance(their_onsets, pd.Series):
-            their_onsets = pd.DataFrame
-        results = {}
-        for partner_instrument in their_onsets.columns:
-            partner_onsets = their_onsets[partner_instrument]
-            # Calculate asynchrony: my_onset - partner_onset, then drop NaN values
-            asynchronies = my_onsets - partner_onsets
-            asynchronies.name = f'{my_onsets.name}_{partner_instrument}'
-            results[asynchronies.name] = asynchronies
-        return results
+    def extract_asynchronies(self, my_beats: pd.Series, their_beats: pd.DataFrame | pd.Series) -> dict:
+        """Extract asynchrony between an instrument of interest and all other instruments and calculate functions"""
+        if isinstance(their_beats, pd.Series):
+            their_beats = pd.DataFrame
+        # Iterate through all instruments in the ensemble
+        for partner_instrument in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+            # We can't have asynchrony to our own performance, so append NaN in these cases
+            if partner_instrument == my_beats.name:
+                for func_k, func_v in self.summary_funcs.items():
+                    self.summary_dict[f'{partner_instrument}_async_{func_k}'] = np.nan
+            # Otherwise, calculate the asynchrony to this instrument
+            else:
+                partner_beats = their_beats[partner_instrument]
+                # Calculate asynchrony: my_onset - partner_onset, then drop NaN values
+                asynchronies = my_beats - partner_beats
+                # Update our summary dictionary
+                for func_k, func_v in self.summary_funcs.items():
+                    self.summary_dict[f'{partner_instrument}_async_{func_k}'] = func_v(asynchronies)
 
 
-class PhaseCorrectionExtractor(BaseExtractor):
+class PhaseCorrection(BaseExtractor):
     """Extract various features related to phase correction
 
     Args:
-        my_onsets (pd.Series): onsets of instrument to model
-        their_onsets (pd.DataFrame | pd.Series, optional): onsets of other instrument(s), defaults to None
+        my_beats (pd.Series): onsets of instrument to model
+        their_beats (pd.DataFrame | pd.Series, optional): onsets of other instrument(s), defaults to None
         order (int, optional): the order of the model to create, defaults to 1 (i.e. 1st-order model, no lagged terms)
         iqr_filter (bool, optional): whether to apply an iqr filter to data, defaults to False
         difference_iois (bool, optional): whether to take the first difference of IOI values, defaults to True
@@ -563,69 +728,84 @@ class PhaseCorrectionExtractor(BaseExtractor):
 
     def __init__(
             self,
-            my_onsets: pd.Series,
-            their_onsets: pd.DataFrame | pd.Series = None,
+            my_beats: pd.Series,
+            their_beats: pd.DataFrame | pd.Series = None,
             order: int = 1,
-            iqr_filter: bool = False,
-            difference_iois: bool = True,
-            low_threshold: float = None,
-            high_threshold: float = None
+            **kwargs,
     ):
         super().__init__()
         self.order = order
-        self.iqr_filter = iqr_filter
-        self.difference_iois = difference_iois
+        self.iqr_filter = kwargs.get('iqr_filter', False)
+        self.difference_iois = kwargs.get('difference_iois', True)
+        self.standardize = kwargs.get('standardize', False)
         # Threshold dataframe based on provided low and high threshold
-        self.low_threshold, self.high_threshold = low_threshold, high_threshold
+        self.low_threshold, self.high_threshold = kwargs.get('low_threshold', None), kwargs.get('high_threshold', None)
         # Create an empty variable to hold the data actually going into the model
-        self.df = None
+        self.model_data = None
         # Create the model
-        self.model = self.generate_model(my_onsets, their_onsets)
-        self.update_summary_dict([], [])
+        self.model = self.generate_model(my_beats, their_beats)
+        # Create the dataframe and model summary information
+        self.df = pd.DataFrame(self.extract_model_coefficients())
+        self.summary_dict = self.df.to_dict(orient='records')
 
-    def truncate(self, my_onsets, their_onsets) -> tuple:
-        """Truncates our input data between low and high thresholds, based on """
+    def truncate(self, my_beats, their_beats) -> tuple:
+        """Truncates our input data between given low and high thresholds"""
+        # If we haven't set a lower and upper threshold, don't threshold the data
+        if self.low_threshold is None and self.high_threshold is None:
+            return my_beats, their_beats
         threshold = self.truncate_df(
-            self.df,
-            col=my_onsets.name,
+            pd.concat([my_beats, their_beats], axis=1),
+            col=my_beats.name,
             # If we haven't provided a low or high threshold, we want to use all the data
-            low=self.low_threshold if self.low_threshold is not None else my_onsets.min(),
-            high=self.high_threshold if self.high_threshold is not None else my_onsets.max()
+            low=self.low_threshold if self.low_threshold is not None else my_beats.min(numeric_only=True),
+            high=self.high_threshold if self.high_threshold is not None else my_beats.max(numeric_only=True)
         )
-        my_onsets = threshold[my_onsets.name]
-        their_onsets = threshold[their_onsets.columns if isinstance(their_onsets, pd.DataFrame) else their_onsets.name]
-        return my_onsets, their_onsets
+        # Apply the threshold to `my_beats`
+        my_beats = threshold[my_beats.name]
+        # If we haven't passed in any data as `their_beats`, then break here
+        if their_beats is None:
+            return my_beats, their_beats
+        # Otherwise, go ahead and threshold every column in `their_beats`
+        their_beats = threshold[their_beats.columns if isinstance(their_beats, pd.DataFrame) else their_beats.name]
+        return my_beats, their_beats
 
-    def format_async_arrays(self, their_onsets: pd.Series | pd.DataFrame | None, my_onsets: pd.Series) -> pd.DataFrame:
+    def format_async_arrays(self, their_beats: pd.Series | pd.DataFrame | None, my_beats: pd.Series) -> pd.DataFrame:
         """Format our asynchrony columns"""
         # If we haven't specified any asynchrony terms, i.e. we want a restricted model
-        if their_onsets is None:
+        if their_beats is None:
             return pd.DataFrame([], [])
         # If we've only passed in one asynchrony term as a series, convert it to a dataframe
-        elif isinstance(their_onsets, pd.Series):
-            their_onsets = pd.DataFrame(their_onsets)
+        elif isinstance(their_beats, pd.Series):
+            their_beats = pd.DataFrame(their_beats)
         results = []
-        for partner_instrument in their_onsets.columns:
-            partner_onsets = their_onsets[partner_instrument]
+        for partner_instrument in their_beats.columns:
+            partner_onsets = their_beats[partner_instrument]
             # In the phase correction model, the asynchrony terms are our partner's asynchrony with relation to us,
             # i.e. their_onset - my_onset (from their perspective, this is my_onset - their_onset).
             # Normally we would calculate asynchrony instead as my_onset - their_onset.
-            asynchronies = partner_onsets - my_onsets
+            asynchronies = partner_onsets - my_beats
             # Format our asynchrony array by adding IQR filter, etc.; we don't want to difference them, though
             asynchronies_fmt = self.format_array(asynchronies, difference_iois=False)
-            asynchronies_fmt.name = f'{my_onsets.name}_{partner_instrument}_asynchrony'
+            asynchronies_fmt.name = f'{my_beats.name}_{partner_instrument}_asynchrony'
             # Shift our formatted asynchronies variable by the correct amount and extend the list
             results.extend(list(self.shifter(asynchronies_fmt)))
         return pd.concat(results, axis=1)
 
-    def format_array(self, arr: np.array, iqr_filter: bool = None, difference_iois: bool = None):
+    def format_array(
+            self,
+            arr: np.array,
+            iqr_filter: bool = None,
+            difference_iois: bool = None,
+            standardize: bool = None
+    ) -> pd.Series:
         """Applies formatting to a single array used in creating the model"""
         # Use the default settings, if we haven't overridden them
-        # TODO: implement standardisation using z-scores here (see earlier git commits)
-        if iqr_filter is None:
-            iqr_filter = self.iqr_filter
         if difference_iois is None:
             difference_iois = self.difference_iois
+        if iqr_filter is None:
+            iqr_filter = self.iqr_filter
+        if standardize is None:
+            standardize = self.standardize
         if arr is None:
             return
         # Save the name of the array here
@@ -636,6 +816,9 @@ class PhaseCorrectionExtractor(BaseExtractor):
         # Apply the IQR filter, preserving the position of NaN values
         if iqr_filter:
             arr = pd.Series(utils.iqr_filter(arr, fill_nans=True))
+        # Convert the score to standardized values (Z-score)
+        if standardize:
+            arr = stats.zscore(arr)
         # Restore the name of the array and return
         arr.name = name
         return arr
@@ -650,37 +833,37 @@ class PhaseCorrectionExtractor(BaseExtractor):
 
     def generate_model(
             self,
-            my_onsets: pd.Series,
-            their_onsets: pd.DataFrame | pd.Series | None
+            my_beats: pd.Series,
+            their_beats: pd.DataFrame | pd.Series | None
     ) -> RegressionResultsWrapper:
         """Generate the phase correction linear regression model"""
         # Truncate incoming data based on set thresholds
-        my_onsets, their_onsets = self.truncate(my_onsets, their_onsets)
+        my_beats, their_beats = self.truncate(my_beats, their_beats)
         # Get my previous inter-onset intervals from my onsets and format
-        my_prev_iois = my_onsets.diff()
+        my_prev_iois = my_beats.diff()
         my_prev_iois = self.format_array(my_prev_iois)
-        my_prev_iois.name = f'{my_onsets.name}_prev_ioi'
+        my_prev_iois.name = f'{my_beats.name}_prev_ioi'
         # Get my next inter-onset intervals by shifting my previous intervals (dependent variable)
         y = my_prev_iois.shift(-1)
-        y.name = f'{my_onsets.name}_next_ioi'
+        y.name = f'{my_beats.name}_next_ioi'
         # Get array of 'previous' inter-onset intervals (independent variable #1)
         my_prev_iois = pd.concat(list(self.shifter(my_prev_iois)), axis=1)
         # Get arrays of asynchrony values (independent variables #2, #3)
-        async_arrs = self.format_async_arrays(their_onsets, my_onsets)
+        async_arrs = self.format_async_arrays(their_beats, my_beats)
         # Combine independent variables into one dataframe and add constant term
         x = pd.concat([my_prev_iois, async_arrs], axis=1)
         x = sm.add_constant(x)
         # Update our instance attribute here, so we can debug the data going into the model, if needed
-        self.df = pd.concat([my_onsets, their_onsets, x, y], axis=1)
+        self.model_data = pd.concat([my_beats, their_beats, x, y], axis=1)
         # Fit the regression model and return
         try:
             return sm.OLS(y, x, missing='drop').fit()
-        except (ValueError, IndexError):
+        # These are all the different error types that can emerge when fitting to data with too many NaNs
+        except (ValueError, KeyError, IndexError):
             return None
 
-    def extract_model_coefficients(self) -> dict:
+    def extract_model_coefficients(self) -> Generator:
         """Extracts coefficients from linear phase correction model and format them correctly"""
-
         def extract_endog_instrument() -> str:
             """Returns name of instrument used in dependent variable of the model"""
             ei = self.model.model.endog_names.split('_')[0].lower()
@@ -688,65 +871,69 @@ class PhaseCorrectionExtractor(BaseExtractor):
             assert ei in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()
             return ei
 
-        def getter(exog_ins: str, order: int) -> dict:
-            """Gets a coupling value between endog_ins and exog_ins with lag order"""
-            for name, coef in self.model.params.to_dict().items():
-                if f'{endog_ins}_{exog_ins}_asynchrony_lag{order}' in name:
-                    return coef
-            return np.nan
+        def getter(st: str) -> float:
+            """Tries to get a coupling value from a given string"""
+            try:
+                return model_params[st]
+            except KeyError:
+                return np.nan
 
-        endog_ins = extract_endog_instrument()
-        # Start creating our results dictionary
-        results = {'intercept': self.model.params.to_dict()['const']}
-        # Iterate through every instrument
-        for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+        # These are all basic statsmodels attributes we can extract easily from the model
+        attributes = ['nobs', 'rsquared', 'rsquared_adj', 'aic', 'bic', 'llf']
+        # If the model did not compile, return a dictionary filled with NaNs for every variable
+        if self.model is None:
+            extra_vars = ['intercept', 'resid_std', 'resid_len', 'self_coupling']
+            instrs = utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()
+            for lagterm in range(self.order):
+                yield {
+                    'phase_correction_order': self.order,
+                    'phase_correction_lag': lagterm,
+                    **{ke: np.nan for ke in attributes + extra_vars + [f'coupling_{i}' for i in instrs]}
+                }
+        # Otherwise, get basic model fit attributes from the model class
+        else:
+            # Extract the name of the endog instrument from our model
+            endog_ins = extract_endog_instrument()
+            # Convert our model parameters to a dictionary
+            model_params = self.model.params.to_dict()
             # Iterate through every lag term
             for lagterm in range(self.order):
-                # Append the coupling coefficient to our results dictionary
-                results.update({f'coupling_{instr}_lag{lagterm}': getter(instr, lagterm)})
-        return results
-
-    def update_summary_dict(self, array_names, arrays, *args, **kwargs) -> None:
-        """Update summary dictionary with parameters taken from model"""
-        if self.model is None:
-            warnings.warn(f'model failed to compile !', UserWarning)
-            return {}
-        # Get basic model fit attributes
-        attributes = ['nobs', 'rsquared', 'rsquared_adj', 'aic', 'bic', 'llf']
-        for attribute in attributes:
-            self.summary_dict.update({attribute: getattr(self.model, attribute)})
-        # Get model fit attributes related to residuals
-        self.summary_dict.update({
-            'order': self.order,
-            f'resid_std': np.std(self.model.resid),
-            f'resid_len': len(self.model.resid),
-        })
-        # Get model coefficients
-        self.summary_dict.update(**self.extract_model_coefficients())
+                yield {
+                    'phase_correction_order': self.order,
+                    'phase_correction_lag': lagterm,
+                    'coupling_piano': getter(f'{endog_ins}_piano_asynchrony_lag{lagterm}'),
+                    'coupling_bass': getter(f'{endog_ins}_bass_asynchrony_lag{lagterm}'),
+                    'coupling_drums': getter(f'{endog_ins}_drums_asynchrony_lag{lagterm}'),
+                    'self_coupling': model_params[f'{endog_ins}_prev_ioi_lag{lagterm}'],
+                    'intercept': model_params['const'],
+                    f'resid_std': np.std(self.model.resid),
+                    f'resid_len': len(self.model.resid),
+                    **{attribute: getattr(self.model, attribute) for attribute in attributes}
+                }
 
 
-class GrangerExtractor(BaseExtractor):
+class GrangerCausality(BaseExtractor):
     """Extracts various features related to Granger causality.
 
     Args:
-        my_onsets (pd.Series): onsets of instrument to model
-        their_onsets (pd.DataFrame | pd.Series): onsets of remaining instrument(s)
+        my_beats (pd.Series): onsets of instrument to model
+        their_beats (pd.DataFrame | pd.Series): onsets of remaining instrument(s)
+        order (int, optional): the order of the model to create, defaults to 1 (i.e. 1st-order model, no lagged terms)
         **kwargs: keyword arguments passed to `PhaseCorrectionExtractor`
 
     """
 
     def __init__(
             self,
-            my_onsets: pd.Series,
-            their_onsets: pd.DataFrame | pd.Series,
+            my_beats: pd.Series,
+            their_beats: pd.DataFrame | pd.Series,
+            order: int = 1,
             **kwargs
     ):
         super().__init__()
-        self.order = kwargs.get("order", 1)
-        self.grangers = self.compute_granger_indexes(my_onsets, their_onsets, **kwargs)
+        self.order = order
         # Update the summary dictionary
-        self.summary_dict.update(self.grangers)
-        self.summary_dict.update(kwargs)
+        self.summary_dict = self.compute_granger_indexes(my_beats, their_beats, **kwargs)
 
     def compute_fisher_test(self, var_restricted: float, var_unrestricted: float, n: int) -> float:
         """Evaluate statistical significance of Granger test with Fisher test"""
@@ -757,37 +944,46 @@ class GrangerExtractor(BaseExtractor):
         f_statistic = ((var_restricted - var_unrestricted) / df1) / (var_unrestricted / df2)
         return float(1 - stats.f.cdf(f_statistic, df1, df2))
 
-    def compute_granger_index(self, my_onsets, their_onsets, **kwargs) -> tuple[float, float]:
+    def compute_granger_index(self, my_beats, their_beats, **kwargs) -> tuple[float, float]:
         """Compute the Granger index between a restricted (self) and unrestricted (joint) model"""
         # TODO: think about whether we want to compute GCI at every lag UP TO self.order and use smallest,
         #  or just at self.order (current)
         # Create the restricted (self) model: just the self-coupling term(s)
-        restricted_model = PhaseCorrectionExtractor(my_onsets, **kwargs).model
+        restricted_model = PhaseCorrection(my_beats, order=self.order, **kwargs).model
         # Create the unrestricted (joint) model: the self-coupling and partner-coupling terms
-        unrestricted_model = PhaseCorrectionExtractor(my_onsets, their_onsets, **kwargs).model
+        unrestricted_model = PhaseCorrection(my_beats, their_beats, order=self.order, **kwargs).model
         # In the case of either model breaking (i.e. if we have no values), return NaN for both GCI and p
         if restricted_model is None or unrestricted_model is None:
             return np.nan, np.nan
-        # Extract the variance from both models
-        var_restricted = np.var(restricted_model.resid)
-        var_unrestricted = np.var(unrestricted_model.resid)
+        # Otherwise, extract the variance from both models
+        var_restricted = np.nanvar(restricted_model.resid)
+        var_unrestricted = np.nanvar(unrestricted_model.resid)
         # Calculate the Granger-causality index: the log of the ratio between the variance of the model residuals
         gci = np.log(var_restricted / var_unrestricted)
         # Carry out the Fisher test and obtain a p-value
         p = self.compute_fisher_test(var_restricted, var_unrestricted, restricted_model.nobs)
         return gci, p
 
-    def compute_granger_indexes(self, my_onsets, their_onsets: pd.DataFrame, **kwargs) -> dict:
+    def compute_granger_indexes(self, my_beats, their_beats: pd.DataFrame, **kwargs) -> dict:
         """Compute Granger indexes for given input array and all async arrays, i.e. for both possible leaders in trio"""
-        results = {}
-        for col in their_onsets.columns:
-            gci, p = self.compute_granger_index(my_onsets, their_onsets[col], **kwargs)
-            results[f'{col}_gci'] = gci
-            results[f'{col}_p'] = p
-        return results
+        di = {'granger_causality_order': self.order}
+        for instrument in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+            # We can't compute Granger causality in relation to our own performance, so we yield an empty dictionary
+            if instrument == my_beats.name:
+                di.update({
+                    f'granger_causality_{my_beats.name}_i': np.nan,
+                    f'granger_causality_{my_beats.name}_p': np.nan,
+                })
+            else:
+                gci, p = self.compute_granger_index(my_beats, their_beats[instrument], **kwargs)
+                di.update({
+                    f'granger_causality_{instrument}_i': gci,
+                    f'granger_causality_{instrument}_p': p,
+                })
+        return di
 
 
-class PartialLaggedCorrelationExtractor(BaseExtractor):
+class PartialCorrelation(BaseExtractor):
     """Extracts various features related to partial correlation between inter-onset intervals and onset asynchrony.
 
     This class calculates the partial correlation between (differenced) inter-onset intervals by musician `X` and
@@ -795,8 +991,8 @@ class PartialLaggedCorrelationExtractor(BaseExtractor):
     i.e. accounting for the possibility of autocorrelated beat durations by `X`; see [1].
 
     Args:
-        my_onsets (pd.Series): onsets of instrument to model
-        their_onsets (pd.DataFrame | pd.Series): onsets of remaining instrument(s)
+        my_beats (pd.Series): onsets of instrument to model
+        their_beats (pd.DataFrame | pd.Series): onsets of remaining instrument(s)
         order (int, optional): number of lag terms to calculate, defaults to 1
         iqr_filter (bool, optional): apply an iqr filter to inter-onset intervals, defaults to False
         difference_iois (bool, optional): whether to detrend inter-onset intervals via differencing, defaults to True
@@ -809,11 +1005,10 @@ class PartialLaggedCorrelationExtractor(BaseExtractor):
     iqr_filter = False
     difference_iois = True
 
-    def __init__(self, my_onsets: pd.Series, their_onsets: pd.DataFrame | pd.Series, order: int = 1, **kwargs):
-        from collections import ChainMap
+    def __init__(self, my_beats: pd.Series, their_beats: pd.DataFrame | pd.Series, order: int = 1, **kwargs):
         super().__init__()
         self.order = order
-        self.pcorrs = dict(ChainMap(*self.extract_partial_correlations(my_onsets, their_onsets, **kwargs)))
+        self.summary_dict = self.extract_partial_correlations(my_beats, their_beats, **kwargs)
 
     @staticmethod
     def partial_correlation(x: pd.Series, y: pd.Series, z: pd.Series):
@@ -842,13 +1037,13 @@ class PartialLaggedCorrelationExtractor(BaseExtractor):
 
     def extract_partial_correlations(
             self,
-            my_onsets: pd.Series,
-            their_onsets: pd.DataFrame | pd.Series,
+            my_beats: pd.Series,
+            their_beats: pd.DataFrame | pd.Series,
             **kwargs
-    ) -> Generator:
+    ) -> dict:
         """Extracts partial correlation between inter-onset intervals and onset asynchrony at required lags"""
         # Get our initial inter-onset interval values
-        my_differenced_iois = my_onsets.diff()
+        my_differenced_iois = my_beats.diff()
         # Apply any filtering and further differencing as required
         if kwargs.get('difference_iois', self.difference_iois):
             my_differenced_iois = my_differenced_iois.diff()
@@ -856,14 +1051,22 @@ class PartialLaggedCorrelationExtractor(BaseExtractor):
             my_differenced_iois = pd.Series(utils.iqr_filter(my_differenced_iois, fill_nans=True))
         # Get our next inter-onset intervals: this is what we'll be predicting
         my_next_iois = my_differenced_iois.shift(-1)
+        di = {'partial_corr_order': self.order}
         # Iterate through all instruments played by the other instruments in our group
-        for partner_instrument in their_onsets.columns:
-            # Get the asynchrony values between that instrument and ours
-            my_asynchronies = their_onsets[partner_instrument] - my_onsets
-            for i in range(self.order):
+        for instrument in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+            if instrument == my_beats.name:
+                di.update({
+                    f'partial_corr_{instrument}_r': np.nan,
+                    f'partial_corr_{instrument}_p': np.nan,
+                    f'partial_corr_{instrument}_n': np.nan,
+                })
+            else:
+                # Get the asynchrony values between that instrument and ours
+                my_asynchronies = their_beats[instrument] - my_beats
+                # TODO: think about labelling of lag terms: is lag 0 really lag 0?
                 # Shift our asynchronies and interval variables by the required lag term
-                my_prev_asynchronies = my_asynchronies.shift(i)    # Independent variable
-                my_prev_iois = my_differenced_iois.shift(i)    # Control variable
+                my_prev_asynchronies = my_asynchronies.shift(self.order)    # Independent variable
+                my_prev_iois = my_differenced_iois.shift(self.order)    # Control variable
                 # Construct the dataframe, drop NaN values, and set column titles
                 df = pd.concat([my_next_iois, my_prev_asynchronies, my_prev_iois], axis=1).dropna()
                 df.columns = ['my_next_iois', 'my_prev_asynchronies', 'my_prev_iois']
@@ -872,23 +1075,63 @@ class PartialLaggedCorrelationExtractor(BaseExtractor):
                 pcorr = self.partial_correlation(x=df.my_next_iois, y=df.my_prev_asynchronies, z=df.my_prev_iois)
                 pval = self.pvalue(df.shape[0], df.shape[1] - 2, pcorr)
                 # Yield the results in a nice dictionary format
-                yield {
-                    f'{my_onsets.name}_{partner_instrument}_lag{i}_pcorr': pcorr,
-                    f'{my_onsets.name}_{partner_instrument}_lag{i}_p': pval,
-                    f'{my_onsets.name}_{partner_instrument}_lag{i}_n': df.shape[0]
-                }
+                di.update({
+                    f'partial_corr_{instrument}_r': pcorr,
+                    f'partial_corr_{instrument}_p': pval,
+                    f'partial_corr_{instrument}_n': df.shape[0],
+                })
+        return di
 
 
-class CrossCorrelationExtractor(BaseExtractor):
-    pass
+class CrossCorrelation(BaseExtractor):
+    """Extract features related to the cross-correlation of inter-onset intervals and onset asynchrony"""
+    difference_iois = True
+    iqr_filter = False
 
+    def __init__(self, my_beats: pd.Series, their_beats: pd.DataFrame, order: int = 1, **kwargs):
+        super().__init__()
+        if not isinstance(their_beats, pd.DataFrame):
+            their_beats = pd.DataFrame(their_beats)
+        self.order = order
+        self.summary_dict = self.extract_cross_correlations(my_beats, their_beats, **kwargs)
 
-class PeriodCorrectionExtractor(BaseExtractor):
-    pass
-
-
-class KuramotoExtractor(BaseExtractor):
-    pass
+    def extract_cross_correlations(self, my_beats: pd.Series, their_beats: pd.DataFrame, **kwargs) -> dict:
+        """Extract cross correlation coefficients at all lags up to `self.order`"""
+        # Get inter-onset intervals from onsets and apply any additional filtering needed
+        my_iois = my_beats.diff()
+        if kwargs.get('difference_iois', self.difference_iois):
+            my_iois = my_iois.diff()
+        if kwargs.get('iqr_filter', self.iqr_filter):
+            my_iois = pd.Series(utils.iqr_filter(my_iois, fill_nans=True))
+        di = {'cross_corr_order': self.order}
+        # Iterate through each instrument
+        for instrument in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+            # We can't have cross-correlation with ourselves
+            # TODO: investigate whether we want to provide auto-correlation here
+            if instrument == my_beats.name:
+                di.update({
+                    f'cross_corr_{instrument}_r': np.nan,
+                    f'cross_corr_{instrument}_p': np.nan,
+                    f'cross_corr_{instrument}_n': np.nan,
+                })
+            else:
+                # Get the asynchronies between us and this instrument
+                asynchronies = their_beats[instrument] - my_beats
+                # Lag the asynchronies, concatenate with IOIs, and drop NaN values
+                combined = pd.concat([my_iois, asynchronies.shift(self.order)], axis=1).dropna()
+                combined.columns = ['iois', 'asynchronies']
+                # If, after dropping NaN values, we have fewer than 2 values, we can't calculate r, so return NaN
+                if len(combined) < 2:
+                    r, p = np.nan, np.nan
+                # Otherwise, compute the correlation and return the necessary statistics
+                else:
+                    r, p = stats.pearsonr(combined['iois'], combined['asynchronies'])
+                di.update({
+                    f'cross_corr_{instrument}_r': r,
+                    f'cross_corr_{instrument}_p': p,
+                    f'cross_corr_{instrument}_n': int(combined.shape[0]),
+                })
+        return di
 
 
 if __name__ == '__main__':

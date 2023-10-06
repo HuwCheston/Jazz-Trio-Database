@@ -4,8 +4,6 @@
 """Automatically detects note and beat onsets in the source separated tracks for each item in the corpus"""
 
 import logging
-import pickle
-from multiprocessing import Process, Manager
 from pathlib import Path
 from time import time
 
@@ -14,19 +12,7 @@ from dotenv import find_dotenv, load_dotenv
 from joblib import Parallel, delayed
 
 from src import utils
-from src.detect.detect_utils import OnsetMaker, get_tracks_with_manual_annotations, get_cached_track_ids
-
-
-def serialise_from_queue(item_queue, fpath):
-    """Iteratively append items in a queue to a single file, break when `NoneType` added to queue"""
-    with open(fr'{fpath}.p', 'ab+') as out:
-        # Keep getting items from our queue and appending them to our Pickle file
-        while True:
-            val = item_queue.get()
-            # When we receive a NoneType object from the queue, break out and terminate the process
-            if val is None:
-                break
-            pickle.dump(val, out)
+from src.detect.detect_utils import OnsetMaker
 
 
 def process_item(
@@ -54,23 +40,14 @@ def process_item(
     # Put the completed class instance into the queue for saving
     item_queue.put(made)
 
-def initialise_queue(fname: str) -> tuple:
-    """Initialise the objects we need for caching"""
-    m = Manager()
-    q = m.Queue()
-    # Initialise our worker for saving completed tracks
-    p = Process(target=serialise_from_queue, args=(q, fname))
-    p.start()
-    return p, q
-
 
 @click.command()
-@click.option("-corpus", "corpus_filename", type=str, default="corpus_chronology", help='Name of the corpus to use')
+@click.option("-corpus", "corpus_filename", type=str, default="corpus_bill_evans", help='Name of the corpus to use')
 @click.option("-n_jobs", "n_jobs", type=click.IntRange(-1, clamp=True), default=-1, help='Number of CPU cores to use')
 @click.option("-click", "generate_click", is_flag=True, default=True, help='Generate click tracks')
 @click.option("-annotated-only", "annotated_only", is_flag=True, default=False, help='Only use items with annotations')
 @click.option("-one-track-only", "one_track_only", is_flag=True, default=False, help='Only process one item')
-@click.option("-ignore-cache", "ignore_cache", is_flag=True, default=True, help='Ignore any cached items')
+@click.option("-ignore-cache", "ignore_cache", is_flag=True, default=False, help='Ignore any cached items')
 def main(
         corpus_filename: str,
         n_jobs: int,
@@ -88,27 +65,31 @@ def main(
     corpus = utils.CorpusMaker.from_excel(fname=corpus_filename)
     fname = rf"{utils.get_project_root()}\models\matched_onsets_{corpus_filename}"
     # Remove any tracks which we've already processed
+    from_cache = 0
     if not ignore_cache:
-        corpus.tracks = [track for track in corpus.tracks if track['mbz_id'] not in get_cached_track_ids(fname)]
+        cached_ids = list(utils.get_cached_track_ids(fname, use_pickle=True))
+        from_cache = len(cached_ids)
+        corpus.tracks = [track for track in corpus.tracks if track['mbz_id'] not in cached_ids]
     # If we only want to analyse tracks which have corresponding manual annotation files present
     if annotated_only:
-        annotated = get_tracks_with_manual_annotations(corpus_json=corpus.tracks)
+        annotated = utils.get_tracks_with_manual_annotations(corpus_json=corpus.tracks)
         corpus.tracks = [item for item in corpus.tracks if item['mbz_id'] in annotated]
     # If we only want to process one track, useful for debugging
     if one_track_only:
         corpus.tracks = [corpus.tracks[0]]
     # Process each item in the corpus, using multiprocessing in job-lib
-    logger.info(f"detecting onsets in {len(corpus.tracks)} tracks using {n_jobs} CPUs ...")
-    p, q = initialise_queue(fname) # worker process for saving tracks
+    logger.info(f"detecting onsets in {len(corpus.tracks)} tracks ({from_cache} from disc) using {n_jobs} CPUs ...")
+    p, q = utils.initialise_queue(utils.serialise_from_queue, fname)    # worker process for saving tracks
     res = Parallel(n_jobs=n_jobs, backend='loky')(delayed(process_item)(
         corpus_filename, corpus_item, generate_click, q,
-    ) for corpus_item in corpus.tracks) # worker processes for detecting onsets
+    ) for corpus_item in corpus.tracks)    # worker processes for detecting onsets
     # Kill the track saving worker by adding a NoneType object to its queue
     q.put(None)
     p.join()
     # Log the completion time and return the class instances
-    logger.info(f'onsets detected for all items in corpus in {round(time() - start)} secs !')
+    logger.info(f'onsets detected for all tracks in corpus {corpus_filename} in {round(time() - start)} secs !')
     return res
+
 
 if __name__ == '__main__':
     log_fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

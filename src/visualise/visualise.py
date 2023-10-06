@@ -6,13 +6,20 @@ import pandas as pd
 import seaborn as sns
 
 from src import utils
+from src.detect.detect_utils import OnsetMaker
 import src.visualise.visualise_utils as vutils
 
 
 class ScatterPlotByBeat(vutils.BasePlot):
-    def __init__(self, item, **kwargs):
-        self.item = item
-        super().__init__(figure_title=rf'onsets_plots\scatterplot_bybeat_{self.item.item["fname"]}', **kwargs)
+    wraparound = 0.9
+
+    def __init__(self, onset_maker: OnsetMaker, **kwargs):
+        self.onset_maker = onset_maker
+        self.time_sig = self.onset_maker.item['time_signature']
+        super().__init__(
+            figure_title=rf'onsets_plots\scatterplot_bybeat_{self.onset_maker.item["fname"]}',
+            **kwargs
+        )
         self.df = pd.DataFrame(self.format_df())
         self.cmap = sns.color_palette(
             kwargs.get('cmap', 'husl'),
@@ -29,8 +36,8 @@ class ScatterPlotByBeat(vutils.BasePlot):
 
     def format_df(self):
         for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-            instr_ons = self.item.ons[instr]
-            z = zip(self.item.ons['mix'], self.item.ons['mix'][1:], self.item.ons['metre_manual'])
+            instr_ons = self.onset_maker.ons[instr]
+            z = zip(self.onset_maker.ons['mix'], self.onset_maker.ons['mix'][1:], self.onset_maker.ons['metre_manual'])
             for beat1, beat2, beat1pos in z:
                 vals = instr_ons[np.logical_and(beat1 <= instr_ons, instr_ons < beat2)]
                 for i in vals:
@@ -38,7 +45,7 @@ class ScatterPlotByBeat(vutils.BasePlot):
                     yield {
                         'instrument': instr,
                         'timestamp': pd.to_datetime(datetime.fromtimestamp(beat1).strftime('%H:%M:%S')),
-                        'musical_position': pos if pos < 4.9 else pos - 4
+                        'musical_position': pos if pos < self.time_sig + self.wraparound else pos - self.time_sig
                     }
 
     def _create_plot(self):
@@ -49,7 +56,7 @@ class ScatterPlotByBeat(vutils.BasePlot):
     def _format_ax(self):
         minor_ticks = [i + f for i in range(1, 5) for f in (1 / 3, 2 / 3)]
         for ax in self.ax.flatten():
-            ax.set(xlim=(0.8, 5.2), xticks=list(range(1, self.item['time_signature'] + 1)), xlabel='', ylabel='')
+            ax.set(xlim=(0.8, 5.2), xticks=list(range(1, self.time_sig + 1)), xlabel='', ylabel='')
             ax.set_xticks(minor_ticks, labels=[], minor=True)
             ax.grid(which='major', ls='-', lw=1)
             ax.grid(which='minor', ls='--', lw=0.3)
@@ -59,7 +66,7 @@ class ScatterPlotByBeat(vutils.BasePlot):
     def _format_fig(self):
         self.fig.supxlabel(r'Beat ($\frac{1}{4}$ note)')
         self.fig.supylabel('Time (s)')
-        self.fig.suptitle(self.item.item['fname'])
+        self.fig.suptitle(self.onset_maker.item['fname'])
         self.fig.subplots_adjust(left=0.11, right=0.95, top=0.85, bottom=0.15)
 
 

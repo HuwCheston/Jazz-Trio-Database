@@ -18,7 +18,8 @@ from dotenv import find_dotenv, load_dotenv
 from joblib import Parallel, delayed
 
 from src import utils
-from src.detect.detect_utils import OnsetMaker, FREQUENCY_BANDS, get_tracks_with_manual_annotations
+from src.detect.detect_utils import OnsetMaker, FREQUENCY_BANDS
+from src.utils import get_tracks_with_manual_annotations
 
 
 class Optimizer:
