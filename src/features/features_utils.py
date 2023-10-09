@@ -128,7 +128,7 @@ class FeatureExtractor:
         return onset_arr
 
     # noinspection PyAttributeOutsideInit
-    # @utils.ignore_warning
+    @utils.ignore_warning
     def extract_features(self):
         """Central function for extracting all features from all instruments in a track"""
         def roll(cl, **kwargs) -> dict:
@@ -137,52 +137,52 @@ class FeatureExtractor:
 
         def their_instrs(my_instr: str) -> list:
             """Return list of instruments played by our partners"""
-            return [ins for ins in instrs if ins != my_instr]
+            return [i for i in ins if i != my_instr]
 
         # Get instrument name list
-        instrs = utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()
+        ins = utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()
         warnings.filterwarnings('ignore')
         # Extract instrument metadata from `self.item` class
-        self.metadata = {i: self._extract_instrument_metadata(i) for i in instrs}
+        self.metadata = {i: self._extract_instrument_metadata(i) for i in ins}
         # Inter-onset interval feature classes
-        self.IOI_beats = {i: IOISummaryStats(self.df[i]) for i in instrs}    # Quarter note beats
-        self.IOI_onsets = {i: IOISummaryStats(self.om.ons[i]) for i in instrs}    # All onsets
-        self.IOI_bpms = {i: IOISummaryStats(self.df[i], use_bpms=True) for i in instrs}    # BPMs
-        self.IOI_beatsdiff = {i: IOISummaryStats(self.df[i].diff()) for i in instrs}    # Quarter note diff
+        self.IOI_beats = {i: IOISummaryStats(self.df[i]) for i in ins}    # Quarter note beats
+        self.IOI_onsets = {i: IOISummaryStats(self.om.ons[i]) for i in ins}    # All onsets
+        self.IOI_bpms = {i: IOISummaryStats(self.df[i], use_bpms=True) for i in ins}    # BPMs
+        self.IOI_beatsdiff = {i: IOISummaryStats(self.df[i].diff()) for i in ins}    # Quarter note diff
         self.IOI_beatsrolling = {
             i: roll(RollingIOISummaryStats, my_onsets=self.df[i], downbeats=self.om.ons['downbeats_manual'])
-            for i in instrs
+            for i in ins
         }
         self.IOI_onsetsrolling = {
             i: roll(RollingIOISummaryStats, my_onsets=self.om.ons[i], downbeats=self.om.ons['downbeats_manual'])
-            for i in instrs
+            for i in ins
         }
         # Beat-upbeat ratio features
-        self.BURs = {i: BeatUpbeatRatio(my_onsets=self.om.ons[i], my_beats=self.df[i]) for i in instrs}
+        self.BURs = {i: BeatUpbeatRatio(my_onsets=self.om.ons[i], my_beats=self.df[i]) for i in ins}
         # Tempo slope features
         self.tempo_slope = dict(
             # Tempo slope classes for each individual instrument
-            **{i: TempoSlope(my_beats=self.df[i]) for i in instrs},
+            **{i: TempoSlope(my_beats=self.df[i]) for i in ins},
             # Tempo slope class for the beat tracking algorithm
             madmom=TempoSlope(my_beats=self.df['beats']),
             # Tempo slope class for the average position of the ensemble
-            group=TempoSlope(my_beats=self.df[instrs].mean(axis=1, skipna=True).rename(1))
+            group=TempoSlope(my_beats=self.df[ins].mean(axis=1, skipna=True).rename(1))
         )
         # Asynchrony features
-        self.asynchrony = {i: Asynchrony(my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in instrs}
+        self.asynchrony = {i: Asynchrony(my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in ins}
         # Phase correction model features
         self.phase_correction = {
-            i: roll(PhaseCorrection, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in instrs
+            i: roll(PhaseCorrection, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in ins
         }
         self.granger_causality = {
-            i: roll(GrangerCausality, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in instrs
+            i: roll(GrangerCausality, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in ins
         }
         # Correlation features
         self.partial_correlation = {
-            i: roll(PartialCorrelation, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in instrs
+            i: roll(PartialCorrelation, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in ins
         }
         self.cross_correlation = {
-            i: roll(CrossCorrelation, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in instrs
+            i: roll(CrossCorrelation, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in ins
         }
         # Event density features
         self.event_density = {
@@ -190,9 +190,9 @@ class FeatureExtractor:
                 num: EventDensity(
                     my_onsets=self.om.ons[i], downbeats=self.om.ons['downbeats_manual'], bar_period=num, time_period=num
                 ) for num in range(1, 8)
-            } for i in instrs
+            } for i in ins
         }
-        # We delete the onset maker and item variables here as we no longer need to refer to them: saves memory!
+        # We delete the onset maker and item variables here as we no longer need to refer to them: this saves memory!
         del self.om
 
     def _extract_instrument_metadata(self, x_ins: str):
@@ -204,11 +204,27 @@ class FeatureExtractor:
             else:
                 return {col: i[0][col] for col in cols for i in self.om.onset_evaluation if i[0]['instr'] == x_ins}
 
+        def __get_subjective_rating_data() -> dict:
+            """Gets information from subjective ratings of this instrument"""
+            cols = [f'rating_{x_ins}_audio', f'rating_{x_ins}_detection', 'rating_mix', 'rating_comments']
+            return {col: self.item[col] for col in cols}
+
+        def __get_channel_overrides() -> str:
+            """Gets information on channel overrides (if any) used for this particular instrument"""
+            try:
+                return self.item['channel_overrides'][x_ins]
+            except KeyError:
+                return ''
+
+        mcols = ['track_name', 'album_name', 'recording_year', 'pianist', 'mbz_id', 'time_signature', 'first_downbeat']
         return {
-            **self.item,
+            # Get metadata from item dictionary using required columns
+            **{col: self.item[col] for col in mcols},
+            # Get generic track metadata
             'tempo': self.om.tempo,
             'instrument': x_ins,
             'performer': self.item['musicians'][utils.INSTRUMENTS_TO_PERFORMER_ROLES[x_ins]],
+            'channel_overrides': __get_channel_overrides(),
             # Raw beats
             'interpolated_beats': self.num_interpolated[x_ins],
             'actual_beats': self.df[x_ins].notna().sum(),
@@ -216,6 +232,8 @@ class FeatureExtractor:
             # Cleaning metadata, e.g. missing beats
             'fraction_silent': self.om.silent_perc[x_ins],
             'missing_beats_fraction': self.df[x_ins].isna().sum() / self.df.shape[0],
+            # Subjective rating data (will be NaN if no subjective ratings conducted for this item)
+            **__get_subjective_rating_data(),
             # Manual annotation evaluation data (will be NaN if no manual annotations present)
             **__get_onset_evaluation_data()
         }
