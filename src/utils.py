@@ -93,7 +93,7 @@ class CorpusMaker:
         """Construct corpus from an Excel spreadsheet, potentially containing multiple sheets"""
         realdata = []
         # These are the names of sheets that we don't want to process
-        sheets_to_skip = ['notes', 'template', 'manual annotation']
+        sheets_to_skip = ['notes', 'template', 'manual annotation', 'track rating']
         # Open the Excel file
         xl = pd.read_excel(pd.ExcelFile(fr'{get_project_root()}\references\{fname}.{ext}'), None, header=1).items()
         # Iterate through all sheets in the spreadsheet
@@ -150,7 +150,15 @@ class CorpusMaker:
             'mbz_id',
             'notes',
             'time_signature',
-            'first_downbeat'
+            'first_downbeat',
+            "rating_bass_audio",
+            "rating_bass_detection",
+            "rating_drums_audio",
+            "rating_drums_detection",
+            "rating_mix",
+            "rating_piano_audio",
+            "rating_piano_detection",
+            "rating_comments"
         ]
         # Remove tracks that did not pass selection criteria
         sheet = trio_df[(trio_df['is_acceptable(Y/N)'] == 'Y') & (~trio_df['youtube_link'].isna())]
