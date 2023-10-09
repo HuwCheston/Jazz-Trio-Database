@@ -7,11 +7,8 @@ import functools
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 
 from src import utils
 
@@ -19,15 +16,25 @@ from src import utils
 plt.set_loglevel('WARNING')
 
 # Define constants
-WIDTH = 18.8
+WIDTH = 18.8    # This is a full page width: half page plots will need to use 18.8 / 2
 FONTSIZE = 18
 
 ALPHA = 0.4
 BLACK = '#000000'
 WHITE = '#FFFFFF'
+
 RED = '#FF0000'
+GREEN = '#008000'
+BLUE = '#0000FF'
+RGB = [RED, GREEN, BLUE]
+
+LINEWIDTH = 2
+LINESTYLE = '-'
+TICKWIDTH = 3
+MARKERSCALE = 1.6
 
 N_BOOT = 10000
+N_BINS = 50
 
 
 def plot_decorator(plotter: callable):
@@ -145,76 +152,3 @@ class BarPlotCouplingCoefficients(BasePlot):
         self.fig.supxlabel('Influencer instrument')
         self.fig.subplots_adjust(top=0.95, bottom=0.1, left=0.075, right=0.885)
 
-
-class ViolinPlotBURs(BasePlot):
-    # TODO: fix this to plot BUR trends for multiple instruments
-
-    def __init__(self, extracted_features, **kwargs):
-        self.corpus_title = kwargs.get('corpus_title', 'corpus')
-        super().__init__(figure_title=fr'bur_plots\violinplot_burs_{self.corpus_title}', **kwargs)
-        self.df = self._format_df(self._get_burs(extracted_features))
-        self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(WIDTH, WIDTH / 2))
-
-    @staticmethod
-    def _get_burs(extracted):
-        res = []
-        for track in extracted:
-            for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-                musician = track.metadata[instr]['performer']
-                burs_list = track.BURs[instr].bur['burs'].dropna().to_list()
-                for bur in burs_list:
-                    res.append(dict(musician=musician, bur=bur, instrument=instr))
-        return res
-
-    @staticmethod
-    def _format_df(burs: list[dict]) -> pd.DataFrame:
-        df = pd.DataFrame(burs)
-        df = df[(df['instrument'] == 'piano') & (df['bur'] > 0.25) & (df['bur'] < 4)]
-        res = df.groupby("musician")["bur"].quantile([0.05, 0.95]).unstack(level=1)
-        df = df.loc[((res.loc[df['musician'], 0.05] < df['bur'].values) & (
-                    df['bur'].values < res.loc[df['musician'], 0.95])).values]
-        df['bur_'] = utils.iqr_filter(df['bur'], low=5, high=95, fill_nans=True)
-        return df.sort_values(by='musician')
-
-    def _create_plot(self):
-        sns.violinplot(
-            data=self.df, x='bur_', y='musician', linecolor=BLACK, density_norm='count', cut=0, hue=True,
-            palette='pastel', hue_order=[True, False], split=True, legend=False, inner='quart',
-            inner_kws=dict(color=BLACK, lw=2), ax=self.ax
-        )
-
-    def _format_ax(self):
-        def add_bur_images():
-            for x in [0.5, 1, 2, 3]:
-                self.ax.axvline(x, ymin=-0.5, ymax=9, color=BLACK, alpha=1, lw=2, ls='dashed', zorder=1)
-                img = plt.imread(fr'{utils.get_project_root()}\references\images\bur_notation\bur_{x}.png')
-                img = mpl.offsetbox.OffsetImage(img, clip_on=False)
-                ab = mpl.offsetbox.AnnotationBbox(
-                    img, (x, -1.2), frameon=False, xycoords='data', clip_on=False, annotation_clip=False
-                )
-                self.ax.add_artist(ab, )
-
-        self.ax.get_legend().remove()
-        for collect in self.ax.collections:
-            collect.set_edgecolor(BLACK)
-            collect.set_linewidth(2)
-        new_ticks = []
-        for tick in self.ax.get_yticklabels():
-            new_ticks.append(
-                f'{tick.get_text()} ({len(self.df[self.df["musician"] == tick.get_text()]["bur_"].dropna())})')
-        for tick in self.ax.get_yticks():
-            self.ax.axhline(tick, 0, 3.25, color=BLACK, alpha=ALPHA, lw=2)
-        for line in self.ax.lines:
-            line.set_linestyle('-')
-            line.set_color('black')
-            line.set_alpha(0.8)
-        add_bur_images()
-        self.ax.set(
-            yticklabels=new_ticks, xticks=[0.5, 1, 2, 3], xlim=(0.4, 3.1), ylim=(9, -0.5),
-            xlabel='BUR', ylabel='Performer'
-        )
-
-    def _format_fig(self):
-        plt.setp(self.ax.spines.values(), linewidth=2)
-        self.ax.tick_params(axis='both', width=3)
-        self.fig.subplots_adjust(left=0.2, right=0.9, top=0.85, bottom=0.1)
