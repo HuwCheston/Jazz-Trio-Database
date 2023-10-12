@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """Utility classes, functions, and variables used specifically in the analysis and feature extraction process"""
+
 import json
 import warnings
 from functools import reduce
@@ -31,6 +32,7 @@ class FeatureExtractor:
         om (OnsetMaker): finalized `OnsetMaker` class, corresponding to one track in the corpus
         interpolate (bool, optional): whether to interpolate missing onsets, defaults to True
         interpolation_limit (int, optional): depth in quarter notes to interpolate, defaults to 1
+        max_order (int, optional): maximum order to create models up to, defaults to 8 (i.e. 8th-order model)
 
     """
     _feature_attr_names = [

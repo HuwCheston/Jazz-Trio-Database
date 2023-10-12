@@ -72,8 +72,7 @@ def main(
         corpus.tracks = [track for track in corpus.tracks if track['mbz_id'] not in cached_ids]
     # If we only want to analyse tracks which have corresponding manual annotation files present
     if annotated_only:
-        annotated = utils.get_tracks_with_manual_annotations(corpus_json=corpus.tracks)
-        corpus.tracks = [item for item in corpus.tracks if item['mbz_id'] in annotated]
+        corpus.tracks = [track for track in corpus.tracks if track['has_annotations']]
     # If we only want to process one track, useful for debugging
     if one_track_only:
         corpus.tracks = [corpus.tracks[0]]

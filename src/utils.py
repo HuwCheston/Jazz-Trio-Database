@@ -42,6 +42,11 @@ INSTRUMENTS_TO_PERFORMER_ROLES = {
 }
 
 
+def get_project_root() -> Path:
+    """Returns the root directory of the project"""
+    return Path(__file__).absolute().parent.parent
+
+
 def check_item_present_locally(fname: str) -> bool:
     """Returns whether a given filepath is present locally or not"""
     return os.path.isfile(os.path.abspath(fname))
@@ -158,7 +163,8 @@ class CorpusMaker:
             "rating_mix",
             "rating_piano_audio",
             "rating_piano_detection",
-            "rating_comments"
+            "rating_comments",
+            "has_annotations"
         ]
         # Remove tracks that did not pass selection criteria
         sheet = trio_df[(trio_df['is_acceptable(Y/N)'] == 'Y') & (~trio_df['youtube_link'].isna())]
@@ -172,6 +178,8 @@ class CorpusMaker:
         sheet['notes'] = sheet['notes'].fillna('')
         # Get the year the track was recorded in
         sheet['recording_year'] = pd.to_datetime(sheet['recording_date_estimate']).dt.year.astype(str)
+        # Convert has annotation column to boolean
+        sheet['has_annotations'] = sheet['has_annotations'].map({'Y': True, np.nan: False})
         # Return the formatted dataframe, as a list of dictionaries
         return (
             sheet.rename(columns=to_rename)
@@ -293,11 +301,6 @@ class CorpusMaker:
             for remove in to_drop:
                 del track[remove]
             yield track
-
-
-def get_project_root() -> Path:
-    """Returns the root directory of the project"""
-    return Path(__file__).absolute().parent.parent
 
 
 def retry(exception, tries=4, delay=3, backoff=2):
@@ -511,34 +514,6 @@ def iqr_filter(
         )
 
 
-if __name__ == '__main__':
-    pass
-
-
-def get_tracks_with_manual_annotations(
-        annotation_dir: str = fr'{get_project_root()}\references\manual_annotation',
-        annotation_ext: str = 'txt',
-        corpus_json: list[dict] = None
-) -> list:
-    """Returns the IDs of tracks that should be annotated"""
-    res = {}
-    track_ids = '\t'.join([track['mbz_id'] for track in corpus_json])
-    for file in os.listdir(annotation_dir):
-        if file.endswith(annotation_ext):
-            split = file.split('_')
-            track_id = split[0].split('-')[-1]
-            if track_id not in track_ids:
-                continue
-            try:
-                res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
-            except KeyError:
-                res[split[0]] = []
-                res[split[0]].append(split[1].replace(f'.{annotation_ext}', ''))
-    roles = [*INSTRUMENTS_TO_PERFORMER_ROLES.keys(), 'mix']
-    annotated_with_all_instrs = [k for k, v in res.items() if sorted(v) == sorted(roles)]
-    return [t['mbz_id'] for t in corpus_json if t['fname'] in annotated_with_all_instrs]
-
-
 def serialise_from_queue(item_queue, fpath: str) -> None:
     """Iteratively append items in a queue to a single file. Process dies when `NoneType` added to queue
 
@@ -649,3 +624,7 @@ def combine_features(features: list, *args) -> pd.DataFrame:
                          for x in needs_exploding], axis=1)
         df = df.drop(needs_exploding, axis=1).join(df1.droplevel(1)).reset_index(drop=True)
     return df
+
+
+if __name__ == '__main__':
+    pass

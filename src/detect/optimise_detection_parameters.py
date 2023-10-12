@@ -19,12 +19,11 @@ from joblib import Parallel, delayed
 
 from src import utils
 from src.detect.detect_utils import OnsetMaker, FREQUENCY_BANDS
-from src.utils import get_tracks_with_manual_annotations
 
 
 class Optimizer:
     """Base class for non-linear optimization of parameters"""
-    joblib_backend ='threading'
+    joblib_backend = 'threading'
     # These attributes may be overridden in child classes
     audio_cutoff = None
     csv_name = ''
@@ -70,7 +69,8 @@ class Optimizer:
         kwargs = self.return_kwargs(x)
         # Get the IDs and F-scores of tracks we've already processed with this set of parameters
         cached_ids, cached_fs = self.lookup_results_from_cache(params=kwargs)
-        res = Parallel(n_jobs=self.n_jobs, backend=self.joblib_backend)(delayed(self.analyze_track)(item, **kwargs)
+        res = Parallel(n_jobs=self.n_jobs, backend=self.joblib_backend)(
+            delayed(self.analyze_track)(item, **kwargs)
             for item in [item_ for item_ in self.items if item_['mbz_id'] not in cached_ids]
         )
         # Save the results from the previous iteration
@@ -265,7 +265,9 @@ def optimize_onset_detection(json_name: str, tracks: list[dict], **kwargs) -> No
 
     """
     def optimize_(instr_: str, center_: bool = True, backtrack_: bool = False) -> None:
-        o = OptimizeOnsetDetect(json_name=json_name, items=tracks, instr=instr_, center=center_, backtrack=backtrack_, **kwargs)
+        o = OptimizeOnsetDetect(
+            json_name=json_name, items=tracks, instr=instr_, center=center_, backtrack=backtrack_, **kwargs
+        )
         optimized_args, optimized_f_score = o.run_optimization()
         d = dict(
             instrument=o.instr,
@@ -346,7 +348,7 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
     help='Number of CPU cores to use in parallel processing, defaults to maximum available'
 )
 @click.option(
-    "-corpus", "corpus_fname", type=str, default='corpus_bill_evans',
+    "-corpus", "corpus_fname", type=str, default='corpus_chronology',
     help='The filename of the corpus to use when optimizing, defaults to the chronology corpus'
 )
 def main(
@@ -355,38 +357,21 @@ def main(
         maxeval: int,
         maxtime: int,
         n_jobs: int,
-        corpus_fname: str = 'corpus_chronology'
+        corpus_fname: str
 ):
     # Configure the logger here
     logger = logging.getLogger(__name__)
     # Load in the results for tracks which have already been optimized
     corpus = utils.CorpusMaker.from_excel(fname=corpus_fname).tracks
-    with_annotations = get_tracks_with_manual_annotations(corpus_json=corpus)
-    # We have annotations from these tracks, but we don't want to include them in this round of optimization
-    exclude_ids = []
-    if corpus_fname == 'corpus_bill_evans':
-        exclude_ids = [
-            '787dba5c-2486-48e4-9439-95b04628599b',    # Emily, used on chronology corpus
-            '360d7a67-b8ff-4002-8c5a-e5d87b74c214',    # TTT, created but not used
-            '616886f2-9997-4902-8bdf-4a1eff4f3720',    # TTT, created but not used
-            'f9fa0f9b-b3d7-4f59-a376-54fc83d42e80',    # Emily, used in chronology corpus
-        ]
-    elif corpus_fname == 'corpus_chronology':
-        exclude_ids = [
-            '9cee7e1-f0a4-4ee0-be3b-ad1129933c7a',
-            '57707551-2a88-4a64-ae65-552f1b9ce4bc',
-            '29cee7e1-f0a4-4ee0-be3b-ad1129933c7a',
-            '360d7a67-b8ff-4002-8c5a-e5d87b74c214'
-        ]
     # Remove any tracks we don't want to use in the optimization process at this point
-    to_optimise = [
-        track for track in corpus if track['mbz_id'] in with_annotations and track['mbz_id'] not in exclude_ids
-    ]
+    to_optimise = [track for track in corpus if track['has_annotations']]
     # Optimize stems
     if optimize_stems:
         stems = ", ".join(i for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys())
         logger.info(f'optimizing onset detection for {stems} ...')
-        optimize_onset_detection(json_name=corpus_fname, n_jobs=n_jobs, maxtime=maxtime, maxeval=maxeval, tracks=to_optimise)
+        optimize_onset_detection(
+            json_name=corpus_fname, n_jobs=n_jobs, maxtime=maxtime, maxeval=maxeval, tracks=to_optimise
+        )
         logger.info(f"... finished optimizing onset detection !")
     # Optimize beat tracking
     if optimize_mix:
