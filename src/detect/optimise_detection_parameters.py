@@ -329,7 +329,7 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
 
 @click.command()
 @click.option(
-    "-optimize_stems", "optimize_stems", is_flag=True, default=False,
+    "-optimize_stems", "optimize_stems", is_flag=True, default=True,
     help='Optimize onset detection in given stems (e.g. piano, bass, drums)'
 )
 @click.option(

@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from multiprocessing import Manager, Process
 from pathlib import Path
-from string import punctuation
+from string import punctuation, printable
 from tempfile import NamedTemporaryFile
 from typing import Generator, Any, Callable
 
@@ -74,7 +74,7 @@ def disable_settingwithcopy_warning(func):
 
 def remove_punctuation(s: str) -> str:
     """Removes punctuation from a string"""
-    return s.translate(str.maketrans('', '', punctuation)).replace('’', '')
+    return ''.join(ch for ch in s.translate(str.maketrans('', '', punctuation)).replace('’', '') if ch in printable)
 
 
 class CorpusMaker:
@@ -431,7 +431,12 @@ def save_csv(
         dict_writer.writeheader()
         # Write all the rows, if we've passed in a list
         if isinstance(obj, list):
-            dict_writer.writerows(obj)
+            try:
+                dict_writer.writerows(obj)
+            except UnicodeEncodeError:
+                for line in obj:
+                    line['track_name'] = remove_punctuation(line['track_name'])
+                    dict_writer.writerow(line)
         # Alternatively, write a single row, if we've passed in a dictionary
         else:
             dict_writer.writerow(obj)
