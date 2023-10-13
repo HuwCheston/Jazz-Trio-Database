@@ -522,10 +522,15 @@ class OnsetMaker:
                 warnings.simplefilter('ignore', RuntimeWarning)
                 warnings.simplefilter('ignore', UserWarning)
                 # Calculate the mean asynchrony between the reference and estimate onsets
-                matched = match_events(ref, estimate, window)
-                # TODO: Is this throwing runtime warnings??
-                mean_async = np.nanmean([estimate[e] - ref[r] for r, e in matched])
+                try:
+                    matched = match_events(ref, estimate, window)
+                except IndexError:
+                    mean_async = np.nan
+                else:
+                    # TODO: Is this throwing runtime warnings??
+                    mean_async = np.nanmean([estimate[e] - ref[r] for r, e in matched])
                 # Generate the F, precision, and recall values from mir_eval and yield as a dictionary
+                # TODO: I wonder if we could get rid of the dependency on mir_eval here? This is a simple function.
                 f, p, r = f_measure(ref, estimate, window=window)
             yield {
                 'name': name,
