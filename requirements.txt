@@ -3,29 +3,30 @@
 
 # external requirements
 click~=7.1.2
-Sphinx
-coverage
-flake8
+Sphinx==6.2.1
+coverage==7.2.3
+flake8==6.0.0
 python-dotenv>=0.5.1
 
 requests~=2.29.0
 pandas~=1.5.3
 setuptools~=67.8.0
-spleeter
+spleeter~=2.3.2
 yt_dlp>=2023.7.6
 librosa~=0.8.1
 soundfile~=0.12.1
-soxr
+soxr~=0.3.5
 statsmodels~=0.13.1
 numpy~=1.22.1
 audioread~=3.0.0
 dill~=0.3.6
-seaborn
-numba
+seaborn==0.12.2
+numba==0.55.2
 demucs<=2.0.3
 madmom @ git+https://github.com/CPJKU/madmom.git
 joblib~=1.2.0
 tensorflow~=2.11.1
 scipy~=1.10.1
 nlopt~=2.7.1
-mir_eval
+mir_eval==0.7
+openpyxl~=3.1.2
