@@ -494,17 +494,11 @@ class OnsetMaker:
             dict: each dictionary contains summary statistics for one evaluation
 
         """
-        def reader(fpath) -> Generator:
-            """Simple file reader that gets the onset position from the output of Sonic Visualiser"""
-            with open(fpath, 'r') as file:
-                for line in file.readlines():
-                    yield line.split('\t')[0]
-
         if ref is None and fname is None:
             raise AttributeError('At least one of ref, fname must be provided')
         # If we haven't passed in reference onsets but we have passed in a file path, generate the array from the file
         elif ref is None and fname is not None:
-            ref = np.genfromtxt(reader(fname))
+            ref = np.loadtxt(fname, ndmin=1, usecols=1)
         # If we haven't provided any names for our different onset lists, create these now
         if onsets_name is None:
             onsets_name = [None for _ in range(len(onsets))]
@@ -522,13 +516,8 @@ class OnsetMaker:
                 warnings.simplefilter('ignore', RuntimeWarning)
                 warnings.simplefilter('ignore', UserWarning)
                 # Calculate the mean asynchrony between the reference and estimate onsets
-                try:
-                    matched = match_events(ref, estimate, window)
-                except IndexError:
-                    mean_async = np.nan
-                else:
-                    # TODO: Is this throwing runtime warnings??
-                    mean_async = np.nanmean([estimate[e] - ref[r] for r, e in matched])
+                matched = match_events(ref, estimate, window)
+                mean_async = np.nanmean([estimate[e] - ref[r] for r, e in matched])
                 # Generate the F, precision, and recall values from mir_eval and yield as a dictionary
                 # TODO: I wonder if we could get rid of the dependency on mir_eval here? This is a simple function.
                 f, p, r = f_measure(ref, estimate, window=window)
