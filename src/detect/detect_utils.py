@@ -498,7 +498,7 @@ class OnsetMaker:
             raise AttributeError('At least one of ref, fname must be provided')
         # If we haven't passed in reference onsets but we have passed in a file path, generate the array from the file
         elif ref is None and fname is not None:
-            ref = np.loadtxt(fname, ndmin=1, usecols=1)
+            ref = np.loadtxt(fname, ndmin=1, usecols=0)
         # If we haven't provided any names for our different onset lists, create these now
         if onsets_name is None:
             onsets_name = [None for _ in range(len(onsets))]
