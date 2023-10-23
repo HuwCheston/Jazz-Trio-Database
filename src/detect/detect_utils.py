@@ -156,6 +156,7 @@ class OnsetMaker:
             # Catch any UserWarnings that might be raised, usually to do with different algorithms being used to load
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore', UserWarning)
+                # TODO: we should apply the bandpass filter here
                 y, sr = librosa.load(
                     path=self._get_channel_override_fpath(name, fpath),
                     sr=utils.SAMPLE_RATE,
@@ -998,7 +999,8 @@ class _ClickTrackMaker:
         # Iterate through all of our passed onsets, with a counter to increase click output frequency
         clicks = [self.clicks_from_onsets(self.start_freq * n, onsets) for n, onsets in enumerate(onsets_list, 1)]
         # Filter the audio signal to only include the frequencies used in detecting onsets
-        audio = self.bandpass_filter(aud=self.audio, lowcut=self.lowcut, highcut=self.highcut)
+        # TODO: if we filter audio when we load it, we don't need to include this as well
+        audio = bandpass_filter(audio=self.audio, lowcut=self.lowcut, highcut=self.highcut)
         # Sum the click signals together and lower the volume by the given threshold
         clicks = sum(clicks) * self.volume_threshold
         # Sum the combined click signal with the audio and return
@@ -1006,8 +1008,8 @@ class _ClickTrackMaker:
 
     def clicks_from_onsets(self, freq, onsets, **kwargs) -> np.array:
         """Renders detected onsets to a click sound with a given frequency"""
-        return self.bandpass_filter(
-            aud=librosa.clicks(
+        return bandpass_filter(
+            audio=librosa.clicks(
                 times=onsets[~np.isnan(onsets)],  # Remove any NaN values obtained from matching onsets & beats
                 sr=utils.SAMPLE_RATE,
                 hop_length=utils.HOP_LENGTH,
@@ -1020,31 +1022,66 @@ class _ClickTrackMaker:
             highcut=freq + self.width
         )
 
-    @staticmethod
-    def bandpass_filter(
-            aud: np.array,
-            lowcut: int,
-            highcut: int,
-            order: int = 2
-    ) -> np.array:
-        """Applies a bandpass filter with given low and high cut frequencies to an audio signal.
 
-        Arguments:
-            aud (np.array): the audio array to filter
-            lowcut (int): the lower frequency to filter
-            highcut (int): the higher frequency to filter
-            order (int, optional): the filter order, defaults to 2 as this avoids weird issues with audio not rendering
+def bandpass_filter(
+        audio: np.array,
+        lowcut: float,
+        highcut: float,
+        num_taps: int = 1001,
+        window: str = 'blackman',
+        alpha: float = 1.0,
+        **kwargs
+) -> np.array:
+    """Applies a bandpass filter with given low and high cut frequencies to an audio signal. New method, using
+    `signal.firwin` (windowed FIR) for more precise filtering, and `signal.filtfilt` for less group delay (in comparison
+    to `signal.lfilter`).
 
-        Returns:
-            np.array: the filtered audio array
+    Arguments:
+        audio (np.array): the audio array to filter
+        lowcut (int): the lower frequency to filter
+        highcut (int): the higher frequency to filter
+        num_taps (int, optional): effects strength/'knee' of the filter, defaults to 1001
+        window (str, optional): filter window to use, defaults to 'blackman'
+        alpha (float, optional): passed to `scipy.filtfilt`
+        **kwargs: passed to `scipy.firwin`
 
-        """
-        # Create the filter with the given values
-        # Weird bug in PyCharm with signal.butter return here, so we disable checking for this statement
-        # noinspection PyTupleAssignmentBalance
-        b, a = signal.butter(N=order, Wn=[lowcut, highcut], fs=utils.SAMPLE_RATE, btype='band', output='ba')
-        # Apply the filter to the audio signal
-        return signal.lfilter(b, a, aud)
+    Returns:
+        np.array: the filtered audio array
+
+    """
+    def _filter(cut: int, pass_zero: str):
+        # Create the filter
+        filt = signal.firwin(
+            num_taps,
+            cut / (utils.SAMPLE_RATE / 2),
+            window=window,
+            pass_zero=pass_zero,
+            scale=False,
+            **kwargs
+        )
+        # Apply the filter to the audio
+        return signal.filtfilt(filt, alpha, audio)
+
+    # Apply the highpass filter
+    audio = _filter(lowcut, 'highpass')
+    # Apply the lowpass filter and return the audio
+    return _filter(highcut, 'lowpass')
+
+
+def __bandpass_filter(
+        aud: np.array,
+        lowcut: int,
+        highcut: int,
+        order: int = 2
+) -> np.array:
+    """Deprecated: old method using Butterworth filters."""
+    # Create the filter with the given values
+    # Weird bug in PyCharm with signal.butter return here, so we disable checking for this statement
+    # noinspection PyTupleAssignmentBalance
+    b, a = signal.butter(N=order, Wn=[lowcut, highcut], fs=utils.SAMPLE_RATE, btype='band', output='ba')
+    # Apply the filter to the audio signal
+    # We fit the filter twice to get the same frequency response as `signal.filtfilt`
+    return signal.lfilter(b, a, signal.lfilter(b, a, aud))
 
 
 def calculate_tempo(
