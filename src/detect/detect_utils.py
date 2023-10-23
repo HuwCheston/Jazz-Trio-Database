@@ -67,6 +67,8 @@ class OnsetMaker:
         # Set inputs as class parameters
         self.item = item
         self.corpus_name = corpus_name
+        # The sharpness of the filter
+        self.num_taps = kwargs.get('num_taps', 251)
         # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
         # These defaults were found through a parameter search against a reference set of onsets, annotated manually
         self.onset_strength_params, self.onset_detect_params = self.return_converged_paramaters()
@@ -165,7 +167,12 @@ class OnsetMaker:
                     res_type=res_type,
                 )
             # We apply the bandpass filter to the audio here in order to be sure that it's applied when detecting
-            y = bandpass_filter(audio=y, lowcut=FREQUENCY_BANDS[name]['fmin'], highcut=FREQUENCY_BANDS[name]['fmax'])
+            y = bandpass_filter(
+                audio=y,
+                lowcut=FREQUENCY_BANDS[name]['fmin'],
+                highcut=FREQUENCY_BANDS[name]['fmax'],
+                num_taps=self.num_taps
+            )
             # Warn if our track exceeds silence threshold
             if name in self.top_db.keys():
                 self.silent_perc[name] = self.get_silent_track_percent(y.T, top_db=self.top_db[name])
@@ -971,10 +978,12 @@ class OnsetMaker:
 
 class _ClickTrackMaker:
     width = 200
-    start_freq = 1000
-    volume_threshold = 1/2
+    start_freq = 750
+    volume_threshold = 4
+    num_taps = 51    # Lower than the value used for the stems as less precise filtering is needed here
 
     def __init__(self, audio: np.array):
+        # Convert the input audio to mono, if we haven't done this already
         self.audio = audio.mean(axis=1)
 
     def generate_audio(
@@ -1015,15 +1024,17 @@ class _ClickTrackMaker:
                 **kwargs
             ),
             lowcut=freq - self.width,
-            highcut=freq + self.width
+            highcut=freq + self.width,
+            # We can pass in a low num_taps value here to reduce the amount of time the filtering takes
+            num_taps=self.num_taps
         )
 
 
 def bandpass_filter(
         audio: np.array,
-        lowcut: float,
-        highcut: float,
-        num_taps: int = 1001,
+        lowcut: int,
+        highcut: int,
+        num_taps: int = 251,
         window: str = 'blackman',
         alpha: float = 1.0,
         **kwargs
@@ -1032,11 +1043,14 @@ def bandpass_filter(
     `signal.firwin` (windowed FIR) for more precise filtering, and `signal.filtfilt` for less group delay (in comparison
     to `signal.lfilter`).
 
+    The default `num_taps`, 251, seems to provide a good trade-off between filter sharpness and processing time; on my
+    machine, it takes about 1 second to process 100 seconds of audio, compared to 3 seconds with `num_taps = 1001`.
+
     Arguments:
         audio (np.array): the audio array to filter
         lowcut (int): the lower frequency to filter
         highcut (int): the higher frequency to filter
-        num_taps (int, optional): effects strength/'knee' of the filter, defaults to 1001
+        num_taps (int, optional): effects strength/'knee' of the filter, defaults to 301
         window (str, optional): filter window to use, defaults to 'blackman'
         alpha (float, optional): passed to `scipy.filtfilt`
         **kwargs: passed to `scipy.firwin`
@@ -1045,23 +1059,17 @@ def bandpass_filter(
         np.array: the filtered audio array
 
     """
-    def _filter(cut: int, pass_zero: str):
-        # Create the filter
-        filt = signal.firwin(
-            num_taps,
-            cut / (utils.SAMPLE_RATE / 2),
-            window=window,
-            pass_zero=pass_zero,
-            scale=False,
-            **kwargs
-        )
-        # Apply the filter to the audio
-        return signal.filtfilt(filt, alpha, audio)
-
-    # Apply the highpass filter
-    audio = _filter(lowcut, 'highpass')
-    # Apply the lowpass filter and return the audio
-    return _filter(highcut, 'lowpass')
+    # Create the filter
+    filt = signal.firwin(
+        num_taps,
+        [lowcut / (utils.SAMPLE_RATE / 2), highcut / (utils.SAMPLE_RATE / 2)],
+        window=window,
+        pass_zero='bandpass',
+        scale=False,
+        **kwargs
+    )
+    # Apply the filter to the audio
+    return signal.filtfilt(filt, alpha, audio)
 
 
 def __bandpass_filter(

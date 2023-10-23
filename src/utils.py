@@ -616,6 +616,7 @@ def combine_features(features: list, *args) -> pd.DataFrame:
                         atts[instrument].update(dl)
                         needs_exploding.update(list(dl.keys()))
                 else:
+                    # TODO: seems to be some issue with madmom -- tempo slope?
                     atts[instrument].update(feature.summary_dict)
         res.extend(list(atts.values()))
     df = pd.DataFrame(res).drop(columns=['log'])
