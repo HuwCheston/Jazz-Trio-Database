@@ -28,7 +28,7 @@ FREQUENCY_BANDS = {
     ),
     'drums': dict(
         fmin=2000,    # Approximate upper range of the snare drum, to be filtered out
-        fmax=10000,    # Upper frequency range of a cymbal
+        fmax=11000,    # Upper frequency range of a cymbal
     ),
     'mix': dict(
         fmin=20,    # Approximately the lower limit of human hearing
@@ -155,8 +155,7 @@ class OnsetMaker:
             # Catch any UserWarnings that might be raised, usually to do with different algorithms being used to load
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore', UserWarning)
-                # TODO: we should apply the bandpass filter here
-                y, sr = librosa.load(
+                y, _ = librosa.load(
                     path=self._get_channel_override_fpath(name, fpath),
                     sr=utils.SAMPLE_RATE,
                     mono=mono,
@@ -165,6 +164,8 @@ class OnsetMaker:
                     dtype=dtype,
                     res_type=res_type,
                 )
+            # We apply the bandpass filter to the audio here in order to be sure that it's applied when detecting
+            y = bandpass_filter(audio=y, lowcut=FREQUENCY_BANDS[name]['fmin'], highcut=FREQUENCY_BANDS[name]['fmax'])
             # Warn if our track exceeds silence threshold
             if name in self.top_db.keys():
                 self.silent_perc[name] = self.get_silent_track_percent(y.T, top_db=self.top_db[name])
@@ -177,7 +178,8 @@ class OnsetMaker:
         return audio
 
     def _get_channel_override_fpath(
-            self, name: str,
+            self,
+            name: str,
             fpath: str
     ) -> str:
         """Gets the filepath for an item, with any channel overrides specified.
@@ -355,6 +357,7 @@ class OnsetMaker:
                 y=aud,
                 sr=utils.SAMPLE_RATE,
                 hop_length=utils.HOP_LENGTH,
+                # We pass our minimum and maximum frequencies in to this function
                 **kws
             )
 
@@ -447,12 +450,11 @@ class OnsetMaker:
             None
 
         """
-        # Get our required low and high frequency bands, our onset list, and our filename
-        lc, hc = FREQUENCY_BANDS[instr]['fmin'], FREQUENCY_BANDS[instr]['fmax']
+        # Get our onset list and our filename
         onsets_list = [self.ons[instr], *args]
         fname = rf'{self.reports_dir}\click_tracks\{self.item["fname"]}_{instr}_beats.{utils.AUDIO_FILE_FMT}'
         # Create the click track maker class and then generate the click track using the above variables
-        click_track_cls = _ClickTrackMaker(audio=self.audio[instr], lowcut=lc, highcut=hc)
+        click_track_cls = _ClickTrackMaker(audio=self.audio[instr])
         click_track_audio = click_track_cls.generate_audio(onsets_list)
         # Create the audio file and save into the click tracks directory
         with open(fname, 'wb') as f:
@@ -972,10 +974,8 @@ class _ClickTrackMaker:
     start_freq = 1000
     volume_threshold = 1/2
 
-    def __init__(self, audio: np.array, lowcut: float, highcut: float):
+    def __init__(self, audio: np.array):
         self.audio = audio.mean(axis=1)
-        self.lowcut = lowcut
-        self.highcut = highcut
 
     def generate_audio(
             self,
