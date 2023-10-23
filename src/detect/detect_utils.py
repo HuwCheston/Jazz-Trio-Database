@@ -17,23 +17,22 @@ from scipy import signal as signal
 from src import utils
 
 
-N_PLP_PASSES = 3    # This seems to lead to the best results after optimization
 FREQUENCY_BANDS = {
     'piano': dict(
-        fmin=110,  # Minimum frequency to use
-        fmax=4100,  # Maximum frequency to use
+        fmin=110,    # A2, the A lying two octaves below middle C4
+        fmax=1760,    # A6, the A lying three octaves above middle C4
     ),
     'bass': dict(
-        fmin=30,
-        fmax=500,
+        fmin=41,     # E1, the lowest string on a four-string double bass
+        fmax=392,     # G4, two octaves above open G2 on a four-string double bass
     ),
     'drums': dict(
-        fmin=3500,
-        fmax=11000,
+        fmin=2000,    # Approximate upper range of the snare drum, to be filtered out
+        fmax=10000,    # Upper frequency range of a cymbal
     ),
     'mix': dict(
-        fmin=20,
-        fmax=20000,
+        fmin=20,    # Approximately the lower limit of human hearing
+        fmax=20000,     # Approximately the upper limit of human hearing
     ),
 }
 
@@ -969,9 +968,9 @@ class OnsetMaker:
 
 
 class _ClickTrackMaker:
-    width = 100
-    start_freq = 750
-    volume_threshold = 1/3
+    width = 200
+    start_freq = 1000
+    volume_threshold = 1/2
 
     def __init__(self, audio: np.array, lowcut: float, highcut: float):
         self.audio = audio.mean(axis=1)
@@ -998,13 +997,10 @@ class _ClickTrackMaker:
 
         # Iterate through all of our passed onsets, with a counter to increase click output frequency
         clicks = [self.clicks_from_onsets(self.start_freq * n, onsets) for n, onsets in enumerate(onsets_list, 1)]
-        # Filter the audio signal to only include the frequencies used in detecting onsets
-        # TODO: if we filter audio when we load it, we don't need to include this as well
-        audio = bandpass_filter(audio=self.audio, lowcut=self.lowcut, highcut=self.highcut)
         # Sum the click signals together and lower the volume by the given threshold
         clicks = sum(clicks) * self.volume_threshold
         # Sum the combined click signal with the audio and return
-        return audio + clicks
+        return self.audio + clicks
 
     def clicks_from_onsets(self, freq, onsets, **kwargs) -> np.array:
         """Renders detected onsets to a click sound with a given frequency"""
