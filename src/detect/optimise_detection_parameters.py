@@ -205,7 +205,8 @@ class OptimizeBeatTrack(Optimizer):
         ('passes', int, 1, 5, 2),
     ]
     instr = 'mix'
-    audio_cutoff = 30
+    # If the track is longer than 1 minute, only use the first 60 seconds (reduces processing time)
+    audio_cutoff = 60
     # We can't use multithreading with MadMom, so this line ensures that joblib will process tracks linearly
     n_jobs = 1
 
