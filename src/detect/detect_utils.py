@@ -217,7 +217,8 @@ class OnsetMaker:
             starting_max: int = 300,
             use_nonoptimised_defaults: bool = False,
             audio_start: int = 0,
-            audio_cutoff: int = None,
+            audio_cutoff: int = 0,
+            passes: int = 1,
             **kwargs
     ) -> np.array:
         """Tracks the position of crotchet beats in the full mix of a track using recurrent neural networks.
@@ -235,6 +236,7 @@ class OnsetMaker:
             use_nonoptimised_defaults (bool, optional): use default parameters over optimised, defaults to False
             audio_start (int, optional): start reading audio from this point (in total seconds)
             audio_cutoff (int, optional): stop reading audio after this point (in total seconds)
+            passes (int, optional): the number of passes of the processer to use, defaults to 1
             **kwargs: passed to `madmom.features.downbeat.DBNDownBeatTrackingProcessor`
 
         Returns:
@@ -246,17 +248,19 @@ class OnsetMaker:
         # Update our default parameters with any kwargs we've passed in
         kws.update(**kwargs)
         passes = utils.try_get_kwarg_and_remove('passes', kws)
-        # Load in the audio file using soundfile, with the given audio cutoff point (defaults to no cutoff)
-        if audio_cutoff is not None:
-            audio_cutoff *= utils.SAMPLE_RATE
-        # TODO: why are we using soundfile here? Why can't we just use the output from Librosa?
-        samples, _ = sf.read(
-            self.instrs['mix'],
-            start=audio_start * utils.SAMPLE_RATE,
-            stop=audio_cutoff,
-            # TODO: check which dtype we need here
-            dtype='float64'
-        )
+        # Define the start point for sampling the audio
+        start = audio_start * utils.SAMPLE_RATE
+        # If we haven't passed a cutoff, our last sample is the very end of the audio file
+        if audio_cutoff == 0:
+            end = len(self.audio['mix'])
+        # Otherwise, create the cutoff by adding it to the start time and multiplying by the sample rate
+        else:
+            end = (audio_cutoff + audio_start) * utils.SAMPLE_RATE
+        # If the cutoff is past the length of the track, rectify this here
+        if end > len(self.audio['mix']):
+            end = len(self.audio['mix'])
+        # Slice the audio file according to the start and end point
+        samples = self.audio['mix'][start: end]
 
         def tracker(
                 tempo_min_: int = 100,
@@ -290,8 +294,8 @@ class OnsetMaker:
             # We don't pass in our **kwargs here
             **dict(threshold=0, transition_lambda=75)
         )
-
-        # Start creating our passes
+        # Start creating our passes, progressively cleaning the data from our first pass
+        # We count our initial pass as our first pass, so passes=2 will only iterate through this loop once
         for i in range(1, passes):
             # Extract the BPM value for each IOI obtained from our most recent pass
             bpms = np.array([60 / p for p in np.diff(timestamps)])
@@ -299,23 +303,13 @@ class OnsetMaker:
             clean = utils.iqr_filter(bpms)
             with warnings.catch_warnings():
                 warnings.simplefilter('ignore', RuntimeWarning)
+                # Try and get our new tempo from the lower and upper quantile of the detected BPM values
                 try:
-                    # Extract mean, standard deviation, lower and upper quartiles
-                    mean = np.nanmean(clean)
-                    std = np.nanstd(clean)
-                    low = np.nanpercentile(clean, 25)
-                    high = np.nanpercentile(clean, 75)
+                    tempo_min, tempo_max = np.nanpercentile(clean, 25), np.nanpercentile(clean, 75)
                 # If we didn't detect any onsets, the above lines will throw an error, so return an empty array
                 except ValueError:
-                    # TODO: we should probably log this somehow
+                    warnings.warn(f'item {self.item["fname"]}, did not detect any beats in mix')
                     return np.array([0])
-            # If the distance between upper and lower bound is less than the distance between mean +/- std
-            if high - low < (mean + std) - (mean - std):
-                # Use upper and lower bounds as our maximum and minimum allowed tempo
-                tempo_min, tempo_max = low, high
-            else:
-                # Use mean +/- 1 standard deviation as our maximum and minimum allowed tempo
-                tempo_min, tempo_max = (mean - std), (mean + std)
             # Create the new pass, using the new maximum and minimum tempo
             timestamps, metre_positions = tracker(
                 tempo_min_=tempo_min,
