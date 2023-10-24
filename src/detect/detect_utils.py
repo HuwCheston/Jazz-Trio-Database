@@ -68,7 +68,7 @@ class OnsetMaker:
         self.item = item
         self.corpus_name = corpus_name
         # The sharpness of the filter
-        self.num_taps = kwargs.get('num_taps', 251)
+        self.order = kwargs.get('order', 30)
         # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
         # These defaults were found through a parameter search against a reference set of onsets, annotated manually
         self.onset_strength_params, self.onset_detect_params = self.return_converged_paramaters()
@@ -148,7 +148,7 @@ class OnsetMaker:
         duration = kwargs.get('duration', None)
         offset = kwargs.get('offset', 0)
         res_type = kwargs.get('res_type', 'soxr_vhq')
-        mono = kwargs.get('mono', False)
+        mono = kwargs.get('mono', True)
         dtype = kwargs.get('dtype', np.float64)
         # Empty dictionary to hold audio
         audio = {}
@@ -171,7 +171,7 @@ class OnsetMaker:
                 audio=y,
                 lowcut=FREQUENCY_BANDS[name]['fmin'],
                 highcut=FREQUENCY_BANDS[name]['fmax'],
-                num_taps=self.num_taps
+                order=self.order
             )
             # Warn if our track exceeds silence threshold
             if name in self.top_db.keys():
@@ -181,7 +181,7 @@ class OnsetMaker:
                         f'item {self.item["fname"]}, track {name} exceeds silence threshold: '
                         f'({round(self.silent_perc[name], 2)} > {round(self.silence_threshold, 2)})'
                     )
-            audio[name] = y.T
+            audio[name] = y
         return audio
 
     def _get_channel_override_fpath(
@@ -249,10 +249,12 @@ class OnsetMaker:
         # Load in the audio file using soundfile, with the given audio cutoff point (defaults to no cutoff)
         if audio_cutoff is not None:
             audio_cutoff *= utils.SAMPLE_RATE
+        # TODO: why are we using soundfile here? Why can't we just use the output from Librosa?
         samples, _ = sf.read(
             self.instrs['mix'],
             start=audio_start * utils.SAMPLE_RATE,
             stop=audio_cutoff,
+            # TODO: check which dtype we need here
             dtype='float64'
         )
 
@@ -351,7 +353,11 @@ class OnsetMaker:
         """
         # If we haven't passed any audio in, then construct this using the instrument name that we've passed
         if aud is None:
-            aud = self.audio[instr].mean(axis=1)
+            aud = self.audio[instr]
+            # If the audio is stereo, convert it to mono for the onset strength calculation
+            if len(aud.shape) == 2:
+                aud = aud.mean(axis=1)
+
         # If we're using defaults, set kwargs to an empty dictionary
         kws = self.onset_strength_params[instr] if not use_nonoptimised_defaults else dict()
         # Update our default parameters with any kwargs we've passed in
@@ -398,7 +404,11 @@ class OnsetMaker:
         """
         # If we haven't passed any input audio, get this now
         if aud is None:
-            aud = self.audio[instr].mean(axis=1)
+            aud = self.audio[instr]
+            # If the audio is stereo, convert it to mono for the onset strength calculation
+            if len(aud.shape) == 2:
+                aud = aud.mean(axis=1)
+
         # If we haven't passed an input onset envelope, get this now
         if env is None:
             env = self.env[instr]
@@ -979,12 +989,14 @@ class OnsetMaker:
 class _ClickTrackMaker:
     width = 200
     start_freq = 750
-    volume_threshold = 4
-    num_taps = 51    # Lower than the value used for the stems as less precise filtering is needed here
+    volume_threshold = 1/3
+    order = 20    # Lower than the value used for the stems as less precise filtering is needed here
 
     def __init__(self, audio: np.array):
         # Convert the input audio to mono, if we haven't done this already
-        self.audio = audio.mean(axis=1)
+        if len(audio.shape) == 2:
+            audio = audio.mean(axis=1)
+        self.audio = audio
 
     def generate_audio(
             self,
@@ -1025,8 +1037,10 @@ class _ClickTrackMaker:
             ),
             lowcut=freq - self.width,
             highcut=freq + self.width,
-            # We can pass in a low num_taps value here to reduce the amount of time the filtering takes
-            num_taps=self.num_taps
+            # We can pass in a lower order value here to reduce the amount of time the filtering takes
+            order=self.order,
+            # We don't need to apply any fading to our click track, it'll just take extra time
+            fade_dur=0
         )
 
 
@@ -1034,58 +1048,51 @@ def bandpass_filter(
         audio: np.array,
         lowcut: int,
         highcut: int,
-        num_taps: int = 251,
-        window: str = 'blackman',
-        alpha: float = 1.0,
-        **kwargs
+        order: int = 30,
+        pad_len: float = 1.0,
+        fade_dur: float = 0.5,
 ) -> np.array:
-    """Applies a bandpass filter with given low and high cut frequencies to an audio signal. New method, using
-    `signal.firwin` (windowed FIR) for more precise filtering, and `signal.filtfilt` for less group delay (in comparison
-    to `signal.lfilter`).
-
-    The default `num_taps`, 251, seems to provide a good trade-off between filter sharpness and processing time; on my
-    machine, it takes about 1 second to process 100 seconds of audio, compared to 3 seconds with `num_taps = 1001`.
+    """Applies a bandpass filter with given low and high cut frequencies to an audio signal.
 
     Arguments:
         audio (np.array): the audio array to filter
         lowcut (int): the lower frequency to filter
         highcut (int): the higher frequency to filter
-        num_taps (int, optional): effects strength/'knee' of the filter, defaults to 301
-        window (str, optional): filter window to use, defaults to 'blackman'
-        alpha (float, optional): passed to `scipy.filtfilt`
-        **kwargs: passed to `scipy.firwin`
+        order (int): the sharpness of the filter, defaults to 30
+        pad_len (float): the number of seconds to pad the audio by, defaults to 1
+        fade_dur (float): the length of time to fade the audio in and out by
 
     Returns:
         np.array: the filtered audio array
 
     """
-    # Create the filter
-    filt = signal.firwin(
-        num_taps,
-        [lowcut / (utils.SAMPLE_RATE / 2), highcut / (utils.SAMPLE_RATE / 2)],
-        window=window,
-        pass_zero='bandpass',
-        scale=False,
-        **kwargs
+    # Create the filter: we use a second-order butterworth filter here
+    filt = signal.butter(
+        N=order,
+        Wn=[lowcut, highcut],
+        output='sos',
+        btype='bandpass',
+        analog=False,
+        fs=utils.SAMPLE_RATE,
     )
-    # Apply the filter to the audio
-    return signal.filtfilt(filt, alpha, audio)
-
-
-def __bandpass_filter(
-        aud: np.array,
-        lowcut: int,
-        highcut: int,
-        order: int = 2
-) -> np.array:
-    """Deprecated: old method using Butterworth filters."""
-    # Create the filter with the given values
-    # Weird bug in PyCharm with signal.butter return here, so we disable checking for this statement
-    # noinspection PyTupleAssignmentBalance
-    b, a = signal.butter(N=order, Wn=[lowcut, highcut], fs=utils.SAMPLE_RATE, btype='band', output='ba')
-    # Apply the filter to the audio signal
-    # We fit the filter twice to get the same frequency response as `signal.filtfilt`
-    return signal.lfilter(b, a, signal.lfilter(b, a, aud))
+    # Apply the filter to the audio (with padding)
+    filtered = signal.sosfiltfilt(
+        filt,
+        audio,
+        padtype='constant',
+        padlen=int(utils.SAMPLE_RATE * pad_len)
+    )
+    # If we don't want to apply any fading to the audio, return it straight away
+    if fade_dur == 0:
+        return filtered
+    # Else, create the fade curve: we use a log curve so that the earliest events fade quickest
+    dur = int(fade_dur * utils.SAMPLE_RATE)
+    fade_curve = 1.0 - np.logspace(0, -2, num=dur)
+    # Apply the fade to the start and end of the audio using the fade curve (fliped for a fade out)
+    filtered[:dur] *= fade_curve
+    filtered[-dur:] *= np.flip(fade_curve)
+    # Return the audio with the fade applied
+    return filtered
 
 
 def calculate_tempo(
@@ -1098,4 +1105,23 @@ def calculate_tempo(
 
 
 if __name__ == '__main__':
-    pass
+    import logging
+
+    # Initialise the logger
+    fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.INFO, format=fmt)
+    # Load in the first track from the Bill Evans corpus, for demonstration
+    corpus = utils.CorpusMaker.from_excel(fname='corpus_bill_evans')
+    corpus_item = corpus.tracks[0]
+    # Create the OnsetMaker class instance for this item in the corpus
+    made = OnsetMaker(corpus_name='corpus_bill_evans', item=corpus_item)
+    # Run our processing on the mixed audio
+    logger.info(f'processing audio mix for item {corpus_item["mbz_id"]}, track name {corpus_item["track_name"]} ...')
+    made.process_mixed_audio(generate_click=False)
+    # Run our processing on the separated audio
+    logger.info(f'processing audio stems for item {corpus_item["mbz_id"]}, track name {corpus_item["track_name"]} ...')
+    made.process_separated_audio(generate_click=False, remove_silence=True)
+    # Clean up the results
+    made.finalize_output()
+    logger.info(f'... processing finished !')
