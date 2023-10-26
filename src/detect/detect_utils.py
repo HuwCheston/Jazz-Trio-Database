@@ -23,8 +23,8 @@ FREQUENCY_BANDS = {
         fmax=1760,    # A6, the A lying three octaves above middle C4
     ),
     'bass': dict(
-        fmin=41,     # E1, the lowest string on a four-string double bass
-        fmax=392,     # G4, two octaves above open G2 on a four-string double bass
+        fmin=30,     # B0, the lowest string on a five-string double bass
+        fmax=494,     # B4, four octaves above lowest note let through in band
     ),
     'drums': dict(
         fmin=2000,    # Approximate upper range of the snare drum, to be filtered out
