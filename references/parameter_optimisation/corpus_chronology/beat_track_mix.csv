@@ -1,351 +1,721 @@
 track_name,mbz_id,fname,instrument,correct,f_score,iterations,time,threshold,transition_lambda,passes
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.47798742138364786,0,08-08-23_19-19-28,0.05,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,0,08-08-23_19-19-42,0.05,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,0,08-08-23_19-19-56,0.05,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,0,08-08-23_19-20-11,0.05,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9230769230769231,0,08-08-23_19-20-24,0.05,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,0,08-08-23_19-20-37,0.05,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,0,08-08-23_19-20-53,0.05,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9891304347826088,0,08-08-23_19-21-10,0.05,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,1.0,0,08-08-23_19-21-23,0.05,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,0,08-08-23_19-21-36,0.05,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,1,08-08-23_19-21-51,0.08750000000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,1,08-08-23_19-22-06,0.08750000000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,1,08-08-23_19-22-20,0.08750000000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,1,08-08-23_19-22-34,0.08750000000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,1,08-08-23_19-22-47,0.08750000000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,1,08-08-23_19-22-59,0.08750000000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,1,08-08-23_19-23-14,0.08750000000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,1,08-08-23_19-23-30,0.08750000000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,1,08-08-23_19-23-43,0.08750000000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,1,08-08-23_19-23-57,0.08750000000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.43209876543209874,2,08-08-23_19-24-11,0.08750000000000001,8.75,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,2,08-08-23_19-24-27,0.08750000000000001,8.75,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,2,08-08-23_19-24-40,0.08750000000000001,8.75,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,2,08-08-23_19-24-55,0.08750000000000001,8.75,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,2,08-08-23_19-25-08,0.08750000000000001,8.75,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,2,08-08-23_19-25-21,0.08750000000000001,8.75,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,2,08-08-23_19-25-36,0.08750000000000001,8.75,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,2,08-08-23_19-25-52,0.08750000000000001,8.75,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,2,08-08-23_19-26-05,0.08750000000000001,8.75,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,2,08-08-23_19-26-18,0.08750000000000001,8.75,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,3,08-08-23_19-26-33,0.05,1.25,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,3,08-08-23_19-26-48,0.05,1.25,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,3,08-08-23_19-27-02,0.05,1.25,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,3,08-08-23_19-27-17,0.05,1.25,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9230769230769231,3,08-08-23_19-27-31,0.05,1.25,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,3,08-08-23_19-27-44,0.05,1.25,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8654545454545454,3,08-08-23_19-27-59,0.05,1.25,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9891304347826088,3,08-08-23_19-28-15,0.05,1.25,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,1.0,3,08-08-23_19-28-28,0.05,1.25,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,3,08-08-23_19-28-41,0.05,1.25,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.4905660377358491,4,08-08-23_19-28-56,0.059375000000000004,3.125,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,4,08-08-23_19-29-12,0.059375000000000004,3.125,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,4,08-08-23_19-29-26,0.059375000000000004,3.125,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,4,08-08-23_19-29-40,0.059375000000000004,3.125,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9230769230769231,4,08-08-23_19-29-53,0.059375000000000004,3.125,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,4,08-08-23_19-30-05,0.059375000000000004,3.125,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,4,08-08-23_19-30-20,0.059375000000000004,3.125,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9891304347826088,4,08-08-23_19-30-36,0.059375000000000004,3.125,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,4,08-08-23_19-30-50,0.059375000000000004,3.125,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,4,08-08-23_19-31-03,0.059375000000000004,3.125,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.40243902439024387,5,08-08-23_19-31-24,0.08750000000000001,5.0,3
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,5,08-08-23_19-31-46,0.08750000000000001,5.0,3
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,5,08-08-23_19-32-05,0.08750000000000001,5.0,3
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,5,08-08-23_19-32-25,0.08750000000000001,5.0,3
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,5,08-08-23_19-32-44,0.08750000000000001,5.0,3
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.967391304347826,5,08-08-23_19-33-02,0.08750000000000001,5.0,3
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,5,08-08-23_19-33-22,0.08750000000000001,5.0,3
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,5,08-08-23_19-33-44,0.08750000000000001,5.0,3
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,5,08-08-23_19-34-02,0.08750000000000001,5.0,3
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,5,08-08-23_19-34-21,0.08750000000000001,5.0,3
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.588957055214724,6,08-08-23_19-34-31,0.08750000000000001,5.0,1
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.869198312236287,6,08-08-23_19-34-41,0.08750000000000001,5.0,1
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9664429530201343,6,08-08-23_19-34-49,0.08750000000000001,5.0,1
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,6,08-08-23_19-34-57,0.08750000000000001,5.0,1
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.8441558441558442,6,08-08-23_19-35-05,0.08750000000000001,5.0,1
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9304812834224598,6,08-08-23_19-35-11,0.08750000000000001,5.0,1
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8750000000000001,6,08-08-23_19-35-21,0.08750000000000001,5.0,1
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9891304347826088,6,08-08-23_19-35-31,0.08750000000000001,5.0,1
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9677419354838709,6,08-08-23_19-35-38,0.08750000000000001,5.0,1
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.9577464788732395,6,08-08-23_19-35-46,0.08750000000000001,5.0,1
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.588957055214724,7,08-08-23_19-35-56,0.08750000000000001,5.0,1
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.869198312236287,7,08-08-23_19-36-06,0.08750000000000001,5.0,1
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9664429530201343,7,08-08-23_19-36-14,0.08750000000000001,5.0,1
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,7,08-08-23_19-36-22,0.08750000000000001,5.0,1
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.8441558441558442,7,08-08-23_19-36-30,0.08750000000000001,5.0,1
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9304812834224598,7,08-08-23_19-36-36,0.08750000000000001,5.0,1
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8750000000000001,7,08-08-23_19-36-46,0.08750000000000001,5.0,1
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9891304347826088,7,08-08-23_19-36-56,0.08750000000000001,5.0,1
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9677419354838709,7,08-08-23_19-37-03,0.08750000000000001,5.0,1
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.9577464788732395,7,08-08-23_19-37-11,0.08750000000000001,5.0,1
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,8,08-08-23_19-37-26,0.08750000000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,8,08-08-23_19-37-42,0.08750000000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,8,08-08-23_19-37-55,0.08750000000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,8,08-08-23_19-38-10,0.08750000000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,8,08-08-23_19-38-22,0.08750000000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,8,08-08-23_19-38-35,0.08750000000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,8,08-08-23_19-38-50,0.08750000000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,8,08-08-23_19-39-06,0.08750000000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,8,08-08-23_19-39-19,0.08750000000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,8,08-08-23_19-39-33,0.08750000000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.588957055214724,9,08-08-23_19-39-42,0.08750000000000001,5.0,1
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.869198312236287,9,08-08-23_19-39-52,0.08750000000000001,5.0,1
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9664429530201343,9,08-08-23_19-40-00,0.08750000000000001,5.0,1
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,9,08-08-23_19-40-09,0.08750000000000001,5.0,1
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.8441558441558442,9,08-08-23_19-40-17,0.08750000000000001,5.0,1
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9304812834224598,9,08-08-23_19-40-23,0.08750000000000001,5.0,1
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8750000000000001,9,08-08-23_19-40-33,0.08750000000000001,5.0,1
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9891304347826088,9,08-08-23_19-40-43,0.08750000000000001,5.0,1
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9677419354838709,9,08-08-23_19-40-50,0.08750000000000001,5.0,1
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.9577464788732395,9,08-08-23_19-40-58,0.08750000000000001,5.0,1
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,10,08-08-23_19-41-13,0.08750000000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,10,08-08-23_19-41-29,0.08750000000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,10,08-08-23_19-41-42,0.08750000000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,10,08-08-23_19-41-57,0.08750000000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,10,08-08-23_19-42-10,0.08750000000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,10,08-08-23_19-42-22,0.08750000000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,10,08-08-23_19-42-37,0.08750000000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,10,08-08-23_19-42-53,0.08750000000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,10,08-08-23_19-43-06,0.08750000000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,10,08-08-23_19-43-19,0.08750000000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,11,08-08-23_19-43-34,0.08750000000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,11,08-08-23_19-43-50,0.08750000000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,11,08-08-23_19-44-03,0.08750000000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,11,08-08-23_19-44-18,0.08750000000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,11,08-08-23_19-44-31,0.08750000000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,11,08-08-23_19-44-43,0.08750000000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,11,08-08-23_19-44-58,0.08750000000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,11,08-08-23_19-45-14,0.08750000000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,11,08-08-23_19-45-27,0.08750000000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,11,08-08-23_19-45-40,0.08750000000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.588957055214724,12,08-08-23_19-45-50,0.08750000000000001,5.0,1
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.869198312236287,12,08-08-23_19-46-00,0.08750000000000001,5.0,1
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9664429530201343,12,08-08-23_19-46-08,0.08750000000000001,5.0,1
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,12,08-08-23_19-46-16,0.08750000000000001,5.0,1
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.8441558441558442,12,08-08-23_19-46-24,0.08750000000000001,5.0,1
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9304812834224598,12,08-08-23_19-46-30,0.08750000000000001,5.0,1
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8750000000000001,12,08-08-23_19-46-41,0.08750000000000001,5.0,1
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9891304347826088,12,08-08-23_19-46-51,0.08750000000000001,5.0,1
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9677419354838709,12,08-08-23_19-46-59,0.08750000000000001,5.0,1
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.9577464788732395,12,08-08-23_19-47-07,0.08750000000000001,5.0,1
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,13,08-08-23_19-47-21,0.08750000000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,13,08-08-23_19-47-37,0.08750000000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,13,08-08-23_19-47-50,0.08750000000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,13,08-08-23_19-48-05,0.08750000000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,13,08-08-23_19-48-18,0.08750000000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,13,08-08-23_19-48-30,0.08750000000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,13,08-08-23_19-48-45,0.08750000000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,13,08-08-23_19-49-01,0.08750000000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,13,08-08-23_19-49-14,0.08750000000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,13,08-08-23_19-49-28,0.08750000000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,14,08-08-23_19-49-43,0.08750000000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,14,08-08-23_19-49-58,0.08750000000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,14,08-08-23_19-50-12,0.08750000000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,14,08-08-23_19-50-26,0.08750000000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,14,08-08-23_19-50-39,0.08750000000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,14,08-08-23_19-50-51,0.08750000000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,14,08-08-23_19-51-06,0.08750000000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,14,08-08-23_19-51-22,0.08750000000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,14,08-08-23_19-51-35,0.08750000000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,14,08-08-23_19-51-48,0.08750000000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,15,08-08-23_19-52-03,0.08750000000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,15,08-08-23_19-52-19,0.08750000000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,15,08-08-23_19-52-33,0.08750000000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,15,08-08-23_19-52-47,0.08750000000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,15,08-08-23_19-53-00,0.08750000000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,15,08-08-23_19-53-12,0.08750000000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,15,08-08-23_19-53-27,0.08750000000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,15,08-08-23_19-53-43,0.08750000000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,15,08-08-23_19-53-56,0.08750000000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,15,08-08-23_19-54-10,0.08750000000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,16,08-08-23_19-54-24,0.09125000000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,16,08-08-23_19-54-40,0.09125000000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,16,08-08-23_19-54-54,0.09125000000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,16,08-08-23_19-55-08,0.09125000000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,16,08-08-23_19-55-21,0.09125000000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,16,08-08-23_19-55-33,0.09125000000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,16,08-08-23_19-55-48,0.09125000000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,16,08-08-23_19-56-04,0.09125000000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,16,08-08-23_19-56-17,0.09125000000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,16,08-08-23_19-56-31,0.09125000000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,17,08-08-23_19-56-46,0.08375,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,17,08-08-23_19-57-01,0.08375,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,17,08-08-23_19-57-15,0.08375,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,17,08-08-23_19-57-29,0.08375,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,17,08-08-23_19-57-42,0.08375,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,17,08-08-23_19-57-54,0.08375,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,17,08-08-23_19-58-09,0.08375,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9891304347826088,17,08-08-23_19-58-25,0.08375,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,17,08-08-23_19-58-38,0.08375,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,17,08-08-23_19-58-51,0.08375,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,18,08-08-23_19-59-07,0.08937500000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,18,08-08-23_19-59-22,0.08937500000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,18,08-08-23_19-59-36,0.08937500000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,18,08-08-23_19-59-51,0.08937500000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,18,08-08-23_20-00-04,0.08937500000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,18,08-08-23_20-00-16,0.08937500000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,18,08-08-23_20-00-31,0.08937500000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,18,08-08-23_20-00-48,0.08937500000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,18,08-08-23_20-01-00,0.08937500000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,18,08-08-23_20-01-14,0.08937500000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,19,08-08-23_20-01-29,0.08750000000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,19,08-08-23_20-01-45,0.08750000000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,19,08-08-23_20-01-59,0.08750000000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,19,08-08-23_20-02-13,0.08750000000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,19,08-08-23_20-02-27,0.08750000000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,19,08-08-23_20-02-39,0.08750000000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,19,08-08-23_20-02-54,0.08750000000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,19,08-08-23_20-03-10,0.08750000000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,19,08-08-23_20-03-23,0.08750000000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,19,08-08-23_20-03-37,0.08750000000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,20,08-08-23_20-03-51,0.08937500000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,20,08-08-23_20-04-07,0.08937500000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,20,08-08-23_20-04-20,0.08937500000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,20,08-08-23_20-04-35,0.08937500000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,20,08-08-23_20-04-48,0.08937500000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,20,08-08-23_20-05-00,0.08937500000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,20,08-08-23_20-05-16,0.08937500000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,20,08-08-23_20-05-34,0.08937500000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,20,08-08-23_20-05-47,0.08937500000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,20,08-08-23_20-06-01,0.08937500000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,21,08-08-23_20-06-16,0.085625,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,21,08-08-23_20-06-32,0.085625,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,21,08-08-23_20-06-45,0.085625,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,21,08-08-23_20-07-00,0.085625,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,21,08-08-23_20-07-13,0.085625,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,21,08-08-23_20-07-25,0.085625,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,21,08-08-23_20-07-41,0.085625,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9891304347826088,21,08-08-23_20-07-57,0.085625,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,21,08-08-23_20-08-10,0.085625,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,21,08-08-23_20-08-24,0.085625,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,22,08-08-23_20-08-39,0.0884375,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,22,08-08-23_20-08-54,0.0884375,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,22,08-08-23_20-09-08,0.0884375,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,22,08-08-23_20-09-23,0.0884375,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,22,08-08-23_20-09-37,0.0884375,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,22,08-08-23_20-09-49,0.0884375,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,22,08-08-23_20-10-04,0.0884375,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,22,08-08-23_20-10-21,0.0884375,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,22,08-08-23_20-10-34,0.0884375,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,22,08-08-23_20-10-48,0.0884375,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,23,08-08-23_20-11-03,0.08750000000000001,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,23,08-08-23_20-11-18,0.08750000000000001,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,23,08-08-23_20-11-32,0.08750000000000001,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,23,08-08-23_20-11-47,0.08750000000000001,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,23,08-08-23_20-12-00,0.08750000000000001,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,23,08-08-23_20-12-12,0.08750000000000001,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,23,08-08-23_20-12-27,0.08750000000000001,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,23,08-08-23_20-12-43,0.08750000000000001,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,23,08-08-23_20-12-56,0.08750000000000001,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,23,08-08-23_20-13-10,0.08750000000000001,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,24,08-08-23_20-13-26,0.0884375,5.0,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,24,08-08-23_20-13-42,0.0884375,5.0,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,24,08-08-23_20-13-55,0.0884375,5.0,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,24,08-08-23_20-14-10,0.0884375,5.0,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,24,08-08-23_20-14-23,0.0884375,5.0,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,24,08-08-23_20-14-35,0.0884375,5.0,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,24,08-08-23_20-14-51,0.0884375,5.0,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,24,08-08-23_20-15-07,0.0884375,5.0,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,24,08-08-23_20-15-20,0.0884375,5.0,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,24,08-08-23_20-15-33,0.0884375,5.0,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,25,08-08-23_20-15-49,0.0884375,4.625,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,25,08-08-23_20-16-04,0.0884375,4.625,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,25,08-08-23_20-16-18,0.0884375,4.625,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,25,08-08-23_20-16-33,0.0884375,4.625,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,25,08-08-23_20-16-46,0.0884375,4.625,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,25,08-08-23_20-17-00,0.0884375,4.625,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,25,08-08-23_20-17-15,0.0884375,4.625,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,25,08-08-23_20-17-31,0.0884375,4.625,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,25,08-08-23_20-17-44,0.0884375,4.625,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,25,08-08-23_20-17-58,0.0884375,4.625,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,26,08-08-23_20-18-13,0.0884375,5.375,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,26,08-08-23_20-18-28,0.0884375,5.375,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,26,08-08-23_20-18-42,0.0884375,5.375,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,26,08-08-23_20-18-56,0.0884375,5.375,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,26,08-08-23_20-19-10,0.0884375,5.375,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,26,08-08-23_20-19-22,0.0884375,5.375,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,26,08-08-23_20-19-38,0.0884375,5.375,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,26,08-08-23_20-19-54,0.0884375,5.375,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,26,08-08-23_20-20-07,0.0884375,5.375,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,26,08-08-23_20-20-20,0.0884375,5.375,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,27,08-08-23_20-20-35,0.0884375,4.8125,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,27,08-08-23_20-20-51,0.0884375,4.8125,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,27,08-08-23_20-21-05,0.0884375,4.8125,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,27,08-08-23_20-21-19,0.0884375,4.8125,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,27,08-08-23_20-21-32,0.0884375,4.8125,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,27,08-08-23_20-21-44,0.0884375,4.8125,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,27,08-08-23_20-22-00,0.0884375,4.8125,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,27,08-08-23_20-22-16,0.0884375,4.8125,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,27,08-08-23_20-22-29,0.0884375,4.8125,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,27,08-08-23_20-22-42,0.0884375,4.8125,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,28,08-08-23_20-22-57,0.0884375,4.8125,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,28,08-08-23_20-23-13,0.0884375,4.8125,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,28,08-08-23_20-23-27,0.0884375,4.8125,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,28,08-08-23_20-23-41,0.0884375,4.8125,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,28,08-08-23_20-23-54,0.0884375,4.8125,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,28,08-08-23_20-24-07,0.0884375,4.8125,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,28,08-08-23_20-24-22,0.0884375,4.8125,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,28,08-08-23_20-24-38,0.0884375,4.8125,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,28,08-08-23_20-24-51,0.0884375,4.8125,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,28,08-08-23_20-25-04,0.0884375,4.8125,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,29,08-08-23_20-25-19,0.0884375,5.1875,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,29,08-08-23_20-25-35,0.0884375,5.1875,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,29,08-08-23_20-25-49,0.0884375,5.1875,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,29,08-08-23_20-26-03,0.0884375,5.1875,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,29,08-08-23_20-26-16,0.0884375,5.1875,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,29,08-08-23_20-26-29,0.0884375,5.1875,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,29,08-08-23_20-26-44,0.0884375,5.1875,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,29,08-08-23_20-27-00,0.0884375,5.1875,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,29,08-08-23_20-27-13,0.0884375,5.1875,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,29,08-08-23_20-27-26,0.0884375,5.1875,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,30,08-08-23_20-27-41,0.0884375,4.90625,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,30,08-08-23_20-27-57,0.0884375,4.90625,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,30,08-08-23_20-28-11,0.0884375,4.90625,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,30,08-08-23_20-28-25,0.0884375,4.90625,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,30,08-08-23_20-28-38,0.0884375,4.90625,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,30,08-08-23_20-28-50,0.0884375,4.90625,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,30,08-08-23_20-29-06,0.0884375,4.90625,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,30,08-08-23_20-29-22,0.0884375,4.90625,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,30,08-08-23_20-29-35,0.0884375,4.90625,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,30,08-08-23_20-29-49,0.0884375,4.90625,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,31,08-08-23_20-30-04,0.0884375,4.90625,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,31,08-08-23_20-30-20,0.0884375,4.90625,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,31,08-08-23_20-30-36,0.0884375,4.90625,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,31,08-08-23_20-30-53,0.0884375,4.90625,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,31,08-08-23_20-31-08,0.0884375,4.90625,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,31,08-08-23_20-31-20,0.0884375,4.90625,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,31,08-08-23_20-31-36,0.0884375,4.90625,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,31,08-08-23_20-31-52,0.0884375,4.90625,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,31,08-08-23_20-32-06,0.0884375,4.90625,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,31,08-08-23_20-32-20,0.0884375,4.90625,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,32,08-08-23_20-32-35,0.0884375,5.09375,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,32,08-08-23_20-32-51,0.0884375,5.09375,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,32,08-08-23_20-33-04,0.0884375,5.09375,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,32,08-08-23_20-33-19,0.0884375,5.09375,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,32,08-08-23_20-33-32,0.0884375,5.09375,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,32,08-08-23_20-33-44,0.0884375,5.09375,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,32,08-08-23_20-34-00,0.0884375,5.09375,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,32,08-08-23_20-34-16,0.0884375,5.09375,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,32,08-08-23_20-34-29,0.0884375,5.09375,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,32,08-08-23_20-34-43,0.0884375,5.09375,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,33,08-08-23_20-34-58,0.0884375,4.953125,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,33,08-08-23_20-35-13,0.0884375,4.953125,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,33,08-08-23_20-35-27,0.0884375,4.953125,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,33,08-08-23_20-35-41,0.0884375,4.953125,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,33,08-08-23_20-35-54,0.0884375,4.953125,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,33,08-08-23_20-36-07,0.0884375,4.953125,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,33,08-08-23_20-36-22,0.0884375,4.953125,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,33,08-08-23_20-36-38,0.0884375,4.953125,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,33,08-08-23_20-36-51,0.0884375,4.953125,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,33,08-08-23_20-37-05,0.0884375,4.953125,2
-Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,0.48101265822784817,34,08-08-23_20-37-20,0.0884375,4.953125,2
-Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9282700421940928,34,08-08-23_20-37-35,0.0884375,4.953125,2
-Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9932885906040269,34,08-08-23_20-37-49,0.0884375,4.953125,2
-Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,34,08-08-23_20-38-04,0.0884375,4.953125,2
-Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9290322580645162,34,08-08-23_20-38-17,0.0884375,4.953125,2
-Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9782608695652174,34,08-08-23_20-38-29,0.0884375,4.953125,2
-All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8727272727272727,34,08-08-23_20-38-44,0.0884375,4.953125,2
-Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.994535519125683,34,08-08-23_20-39-00,0.0884375,4.953125,2
-Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.9971014492753623,34,08-08-23_20-39-14,0.0884375,4.953125,2
-Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,0.8489208633093526,34,08-08-23_20-39-28,0.0884375,4.953125,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,0,27-10-23_03-21-17,0.05,5.0,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,0,27-10-23_03-21-46,0.05,5.0,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,0,27-10-23_03-22-14,0.05,5.0,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,0.9959514170040485,0,27-10-23_03-22-44,0.05,5.0,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9515789473684211,0,27-10-23_03-23-15,0.05,5.0,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9897959183673469,0,27-10-23_03-23-42,0.05,5.0,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,0,27-10-23_03-24-12,0.05,5.0,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,0,27-10-23_03-24-39,0.05,5.0,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,0,27-10-23_03-25-10,0.05,5.0,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,0,27-10-23_03-25-33,0.05,5.0,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,0,27-10-23_03-26-01,0.05,5.0,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9876106194690265,0,27-10-23_03-26-29,0.05,5.0,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,0,27-10-23_03-26-53,0.05,5.0,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,0,27-10-23_03-27-17,0.05,5.0,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,0,27-10-23_03-27-43,0.05,5.0,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.762962962962963,0,27-10-23_03-28-12,0.05,5.0,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.957983193277311,0,27-10-23_03-28-27,0.05,5.0,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9929411764705881,0,27-10-23_03-28-54,0.05,5.0,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9812734082397004,0,27-10-23_03-29-24,0.05,5.0,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8983957219251336,0,27-10-23_03-29-53,0.05,5.0,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,0,27-10-23_03-30-25,0.05,5.0,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,0,27-10-23_03-30-54,0.05,5.0,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9972451790633609,0,27-10-23_03-31-25,0.05,5.0,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.968421052631579,0,27-10-23_03-31-52,0.05,5.0,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,0,27-10-23_03-32-15,0.05,5.0,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,0,27-10-23_03-32-40,0.05,5.0,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,0,27-10-23_03-33-04,0.05,5.0,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,0,27-10-23_03-33-29,0.05,5.0,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,0,27-10-23_03-33-55,0.05,5.0,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,0,27-10-23_03-34-23,0.05,5.0,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,1,27-10-23_03-34-53,0.08750000000000001,5.0,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,1,27-10-23_03-35-22,0.08750000000000001,5.0,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,1,27-10-23_03-35-50,0.08750000000000001,5.0,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,0.9959514170040485,1,27-10-23_03-36-20,0.08750000000000001,5.0,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9515789473684211,1,27-10-23_03-36-50,0.08750000000000001,5.0,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9897959183673469,1,27-10-23_03-37-15,0.08750000000000001,5.0,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,1,27-10-23_03-37-42,0.08750000000000001,5.0,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,1,27-10-23_03-38-08,0.08750000000000001,5.0,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,1,27-10-23_03-38-39,0.08750000000000001,5.0,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,0.9959839357429718,1,27-10-23_03-39-02,0.08750000000000001,5.0,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,1,27-10-23_03-39-31,0.08750000000000001,5.0,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9876106194690265,1,27-10-23_03-40-00,0.08750000000000001,5.0,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,1,27-10-23_03-40-24,0.08750000000000001,5.0,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,1,27-10-23_03-40-48,0.08750000000000001,5.0,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,1,27-10-23_03-41-15,0.08750000000000001,5.0,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.762962962962963,1,27-10-23_03-41-45,0.08750000000000001,5.0,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.957983193277311,1,27-10-23_03-42-00,0.08750000000000001,5.0,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9929411764705881,1,27-10-23_03-42-27,0.08750000000000001,5.0,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9812734082397004,1,27-10-23_03-42-57,0.08750000000000001,5.0,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.8924731182795699,1,27-10-23_03-43-27,0.08750000000000001,5.0,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,1,27-10-23_03-43-59,0.08750000000000001,5.0,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,1,27-10-23_03-44-29,0.08750000000000001,5.0,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,1,27-10-23_03-45-00,0.08750000000000001,5.0,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.968421052631579,1,27-10-23_03-45-28,0.08750000000000001,5.0,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,1,27-10-23_03-45-51,0.08750000000000001,5.0,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,1,27-10-23_03-46-16,0.08750000000000001,5.0,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,1,27-10-23_03-46-40,0.08750000000000001,5.0,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,1,27-10-23_03-47-05,0.08750000000000001,5.0,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,1,27-10-23_03-47-30,0.08750000000000001,5.0,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,0.9977011494252873,1,27-10-23_03-47-57,0.08750000000000001,5.0,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,2,27-10-23_03-48-27,0.05,8.75,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,2,27-10-23_03-48-56,0.05,8.75,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,2,27-10-23_03-49-23,0.05,8.75,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,0.9959514170040485,2,27-10-23_03-49-52,0.05,8.75,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9515789473684211,2,27-10-23_03-50-22,0.05,8.75,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9897959183673469,2,27-10-23_03-50-46,0.05,8.75,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,2,27-10-23_03-51-13,0.05,8.75,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,2,27-10-23_03-51-38,0.05,8.75,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,2,27-10-23_03-52-08,0.05,8.75,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,2,27-10-23_03-52-31,0.05,8.75,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,2,27-10-23_03-52-59,0.05,8.75,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9876106194690265,2,27-10-23_03-53-27,0.05,8.75,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,2,27-10-23_03-53-51,0.05,8.75,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,2,27-10-23_03-54-15,0.05,8.75,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,2,27-10-23_03-54-41,0.05,8.75,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.81203007518797,2,27-10-23_03-55-10,0.05,8.75,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,2,27-10-23_03-55-25,0.05,8.75,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9929411764705881,2,27-10-23_03-55-52,0.05,8.75,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9812734082397004,2,27-10-23_03-56-21,0.05,8.75,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.9,2,27-10-23_03-56-50,0.05,8.75,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,2,27-10-23_03-57-22,0.05,8.75,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,2,27-10-23_03-57-51,0.05,8.75,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,0.9972451790633609,2,27-10-23_03-58-22,0.05,8.75,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.968421052631579,2,27-10-23_03-58-49,0.05,8.75,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,2,27-10-23_03-59-12,0.05,8.75,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,2,27-10-23_03-59-35,0.05,8.75,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,2,27-10-23_03-59-59,0.05,8.75,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,2,27-10-23_04-00-24,0.05,8.75,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,2,27-10-23_04-00-49,0.05,8.75,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,2,27-10-23_04-01-16,0.05,8.75,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,3,27-10-23_04-01-47,0.012499999999999997,8.75,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,3,27-10-23_04-02-16,0.012499999999999997,8.75,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,3,27-10-23_04-02-43,0.012499999999999997,8.75,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,3,27-10-23_04-03-12,0.012499999999999997,8.75,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9515789473684211,3,27-10-23_04-03-43,0.012499999999999997,8.75,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,3,27-10-23_04-04-06,0.012499999999999997,8.75,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,3,27-10-23_04-04-33,0.012499999999999997,8.75,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,3,27-10-23_04-04-59,0.012499999999999997,8.75,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,3,27-10-23_04-05-29,0.012499999999999997,8.75,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,3,27-10-23_04-05-52,0.012499999999999997,8.75,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,3,27-10-23_04-06-20,0.012499999999999997,8.75,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9876106194690265,3,27-10-23_04-06-50,0.012499999999999997,8.75,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,3,27-10-23_04-07-14,0.012499999999999997,8.75,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,3,27-10-23_04-07-42,0.012499999999999997,8.75,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,3,27-10-23_04-08-08,0.012499999999999997,8.75,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.81203007518797,3,27-10-23_04-08-37,0.012499999999999997,8.75,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,3,27-10-23_04-08-52,0.012499999999999997,8.75,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,3,27-10-23_04-09-19,0.012499999999999997,8.75,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,3,27-10-23_04-09-48,0.012499999999999997,8.75,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,3,27-10-23_04-10-18,0.012499999999999997,8.75,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,3,27-10-23_04-10-51,0.012499999999999997,8.75,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,3,27-10-23_04-11-21,0.012499999999999997,8.75,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,3,27-10-23_04-11-52,0.012499999999999997,8.75,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,3,27-10-23_04-12-19,0.012499999999999997,8.75,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,3,27-10-23_04-12-42,0.012499999999999997,8.75,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,3,27-10-23_04-13-06,0.012499999999999997,8.75,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,3,27-10-23_04-13-30,0.012499999999999997,8.75,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,3,27-10-23_04-13-55,0.012499999999999997,8.75,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,3,27-10-23_04-14-22,0.012499999999999997,8.75,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,3,27-10-23_04-14-49,0.012499999999999997,8.75,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,4,27-10-23_04-15-20,0.0,10.625,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,4,27-10-23_04-15-49,0.0,10.625,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,4,27-10-23_04-16-16,0.0,10.625,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,4,27-10-23_04-16-46,0.0,10.625,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,4,27-10-23_04-17-17,0.0,10.625,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,4,27-10-23_04-17-41,0.0,10.625,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,4,27-10-23_04-18-09,0.0,10.625,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,4,27-10-23_04-18-35,0.0,10.625,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,4,27-10-23_04-19-05,0.0,10.625,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,4,27-10-23_04-19-29,0.0,10.625,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,4,27-10-23_04-19-57,0.0,10.625,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,4,27-10-23_04-20-26,0.0,10.625,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,4,27-10-23_04-20-51,0.0,10.625,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,4,27-10-23_04-21-15,0.0,10.625,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,4,27-10-23_04-21-42,0.0,10.625,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8195488721804511,4,27-10-23_04-22-11,0.0,10.625,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,4,27-10-23_04-22-27,0.0,10.625,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,4,27-10-23_04-22-54,0.0,10.625,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,4,27-10-23_04-23-24,0.0,10.625,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,4,27-10-23_04-23-54,0.0,10.625,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,4,27-10-23_04-24-26,0.0,10.625,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,4,27-10-23_04-24-55,0.0,10.625,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,4,27-10-23_04-25-27,0.0,10.625,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,4,27-10-23_04-25-54,0.0,10.625,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,4,27-10-23_04-26-18,0.0,10.625,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,4,27-10-23_04-26-42,0.0,10.625,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,4,27-10-23_04-27-06,0.0,10.625,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,4,27-10-23_04-27-31,0.0,10.625,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,4,27-10-23_04-27-57,0.0,10.625,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,4,27-10-23_04-28-25,0.0,10.625,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,5,27-10-23_04-28-55,0.0,14.375,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,5,27-10-23_04-29-24,0.0,14.375,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,5,27-10-23_04-29-52,0.0,14.375,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,5,27-10-23_04-30-21,0.0,14.375,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9600000000000001,5,27-10-23_04-30-52,0.0,14.375,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,5,27-10-23_04-31-16,0.0,14.375,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,5,27-10-23_04-31-44,0.0,14.375,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,5,27-10-23_04-32-10,0.0,14.375,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,5,27-10-23_04-32-40,0.0,14.375,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,5,27-10-23_04-33-04,0.0,14.375,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,5,27-10-23_04-33-32,0.0,14.375,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,5,27-10-23_04-34-01,0.0,14.375,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,5,27-10-23_04-34-25,0.0,14.375,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,5,27-10-23_04-34-49,0.0,14.375,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,5,27-10-23_04-35-15,0.0,14.375,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8345864661654135,5,27-10-23_04-35-44,0.0,14.375,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,5,27-10-23_04-35-59,0.0,14.375,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,5,27-10-23_04-36-26,0.0,14.375,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,5,27-10-23_04-36-55,0.0,14.375,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,5,27-10-23_04-37-24,0.0,14.375,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,5,27-10-23_04-37-56,0.0,14.375,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,5,27-10-23_04-38-25,0.0,14.375,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,5,27-10-23_04-38-56,0.0,14.375,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,5,27-10-23_04-39-24,0.0,14.375,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,5,27-10-23_04-39-46,0.0,14.375,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,5,27-10-23_04-40-10,0.0,14.375,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,5,27-10-23_04-40-33,0.0,14.375,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,5,27-10-23_04-40-58,0.0,14.375,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,5,27-10-23_04-41-24,0.0,14.375,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,5,27-10-23_04-41-51,0.0,14.375,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,6,27-10-23_04-42-21,0.0,19.0625,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,6,27-10-23_04-42-49,0.0,19.0625,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,6,27-10-23_04-43-16,0.0,19.0625,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,6,27-10-23_04-43-45,0.0,19.0625,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9600000000000001,6,27-10-23_04-44-15,0.0,19.0625,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,6,27-10-23_04-44-39,0.0,19.0625,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,6,27-10-23_04-45-06,0.0,19.0625,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,6,27-10-23_04-45-32,0.0,19.0625,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,6,27-10-23_04-46-02,0.0,19.0625,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,6,27-10-23_04-46-25,0.0,19.0625,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,6,27-10-23_04-46-52,0.0,19.0625,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,6,27-10-23_04-47-21,0.0,19.0625,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,6,27-10-23_04-47-45,0.0,19.0625,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,6,27-10-23_04-48-08,0.0,19.0625,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,6,27-10-23_04-48-35,0.0,19.0625,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8345864661654135,6,27-10-23_04-49-04,0.0,19.0625,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,6,27-10-23_04-49-19,0.0,19.0625,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9671361502347418,6,27-10-23_04-49-45,0.0,19.0625,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,6,27-10-23_04-50-14,0.0,19.0625,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,6,27-10-23_04-50-43,0.0,19.0625,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,6,27-10-23_04-51-15,0.0,19.0625,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,6,27-10-23_04-51-44,0.0,19.0625,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,6,27-10-23_04-52-15,0.0,19.0625,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,6,27-10-23_04-52-42,0.0,19.0625,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,6,27-10-23_04-53-05,0.0,19.0625,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,6,27-10-23_04-53-28,0.0,19.0625,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,6,27-10-23_04-53-52,0.0,19.0625,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,6,27-10-23_04-54-17,0.0,19.0625,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,6,27-10-23_04-54-42,0.0,19.0625,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,6,27-10-23_04-55-09,0.0,19.0625,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,7,27-10-23_04-55-39,0.0,16.25,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,7,27-10-23_04-56-07,0.0,16.25,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,7,27-10-23_04-56-34,0.0,16.25,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,7,27-10-23_04-57-03,0.0,16.25,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9600000000000001,7,27-10-23_04-57-33,0.0,16.25,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,7,27-10-23_04-57-57,0.0,16.25,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,7,27-10-23_04-58-24,0.0,16.25,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,7,27-10-23_04-58-49,0.0,16.25,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,7,27-10-23_04-59-20,0.0,16.25,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,7,27-10-23_04-59-43,0.0,16.25,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,7,27-10-23_05-00-10,0.0,16.25,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,7,27-10-23_05-00-39,0.0,16.25,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,7,27-10-23_05-01-02,0.0,16.25,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,7,27-10-23_05-01-26,0.0,16.25,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,7,27-10-23_05-01-52,0.0,16.25,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8345864661654135,7,27-10-23_05-02-22,0.0,16.25,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,7,27-10-23_05-02-36,0.0,16.25,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9671361502347418,7,27-10-23_05-03-03,0.0,16.25,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,7,27-10-23_05-03-32,0.0,16.25,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,7,27-10-23_05-04-01,0.0,16.25,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,7,27-10-23_05-04-33,0.0,16.25,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,7,27-10-23_05-05-02,0.0,16.25,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,7,27-10-23_05-05-33,0.0,16.25,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,7,27-10-23_05-06-00,0.0,16.25,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,7,27-10-23_05-06-23,0.0,16.25,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,7,27-10-23_05-06-46,0.0,16.25,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,7,27-10-23_05-07-10,0.0,16.25,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,7,27-10-23_05-07-35,0.0,16.25,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,7,27-10-23_05-08-00,0.0,16.25,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,7,27-10-23_05-08-27,0.0,16.25,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,8,27-10-23_05-08-57,0.0,14.375,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,8,27-10-23_05-09-25,0.0,14.375,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,8,27-10-23_05-09-52,0.0,14.375,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,8,27-10-23_05-10-22,0.0,14.375,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9600000000000001,8,27-10-23_05-10-52,0.0,14.375,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,8,27-10-23_05-11-16,0.0,14.375,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,8,27-10-23_05-11-43,0.0,14.375,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,8,27-10-23_05-12-08,0.0,14.375,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,8,27-10-23_05-12-38,0.0,14.375,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,8,27-10-23_05-13-01,0.0,14.375,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,8,27-10-23_05-13-29,0.0,14.375,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,8,27-10-23_05-13-57,0.0,14.375,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,8,27-10-23_05-14-21,0.0,14.375,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,8,27-10-23_05-14-45,0.0,14.375,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,8,27-10-23_05-15-11,0.0,14.375,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8345864661654135,8,27-10-23_05-15-40,0.0,14.375,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,8,27-10-23_05-15-55,0.0,14.375,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,8,27-10-23_05-16-22,0.0,14.375,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,8,27-10-23_05-16-51,0.0,14.375,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,8,27-10-23_05-17-20,0.0,14.375,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,8,27-10-23_05-17-52,0.0,14.375,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,8,27-10-23_05-18-22,0.0,14.375,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,8,27-10-23_05-18-53,0.0,14.375,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,8,27-10-23_05-19-20,0.0,14.375,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,8,27-10-23_05-19-43,0.0,14.375,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,8,27-10-23_05-20-07,0.0,14.375,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,8,27-10-23_05-20-30,0.0,14.375,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,8,27-10-23_05-20-55,0.0,14.375,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,8,27-10-23_05-21-21,0.0,14.375,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,8,27-10-23_05-21-48,0.0,14.375,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,9,27-10-23_05-22-18,0.0,18.125,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,9,27-10-23_05-22-46,0.0,18.125,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,9,27-10-23_05-23-13,0.0,18.125,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,9,27-10-23_05-23-42,0.0,18.125,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9600000000000001,9,27-10-23_05-24-12,0.0,18.125,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,9,27-10-23_05-24-36,0.0,18.125,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,9,27-10-23_05-25-03,0.0,18.125,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,9,27-10-23_05-25-29,0.0,18.125,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,9,27-10-23_05-25-59,0.0,18.125,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,9,27-10-23_05-26-22,0.0,18.125,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,9,27-10-23_05-26-49,0.0,18.125,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,9,27-10-23_05-27-18,0.0,18.125,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,9,27-10-23_05-27-41,0.0,18.125,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,9,27-10-23_05-28-05,0.0,18.125,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,9,27-10-23_05-28-31,0.0,18.125,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8345864661654135,9,27-10-23_05-29-00,0.0,18.125,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,9,27-10-23_05-29-15,0.0,18.125,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9671361502347418,9,27-10-23_05-29-42,0.0,18.125,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,9,27-10-23_05-30-11,0.0,18.125,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,9,27-10-23_05-30-40,0.0,18.125,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,9,27-10-23_05-31-12,0.0,18.125,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,9,27-10-23_05-31-41,0.0,18.125,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,9,27-10-23_05-32-12,0.0,18.125,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,9,27-10-23_05-32-39,0.0,18.125,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,9,27-10-23_05-33-02,0.0,18.125,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,9,27-10-23_05-33-25,0.0,18.125,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,9,27-10-23_05-33-49,0.0,18.125,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,9,27-10-23_05-34-14,0.0,18.125,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,9,27-10-23_05-34-39,0.0,18.125,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,9,27-10-23_05-35-06,0.0,18.125,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,10,27-10-23_05-35-36,0.0,12.5,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,10,27-10-23_05-36-04,0.0,12.5,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,10,27-10-23_05-36-31,0.0,12.5,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,10,27-10-23_05-37-01,0.0,12.5,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,10,27-10-23_05-37-31,0.0,12.5,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,10,27-10-23_05-37-54,0.0,12.5,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,10,27-10-23_05-38-21,0.0,12.5,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,10,27-10-23_05-38-47,0.0,12.5,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,10,27-10-23_05-39-16,0.0,12.5,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,10,27-10-23_05-39-40,0.0,12.5,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,10,27-10-23_05-40-07,0.0,12.5,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,10,27-10-23_05-40-36,0.0,12.5,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,10,27-10-23_05-41-00,0.0,12.5,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,10,27-10-23_05-41-23,0.0,12.5,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,10,27-10-23_05-41-49,0.0,12.5,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,10,27-10-23_05-42-19,0.0,12.5,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,10,27-10-23_05-42-34,0.0,12.5,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,10,27-10-23_05-43-00,0.0,12.5,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,10,27-10-23_05-43-29,0.0,12.5,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,10,27-10-23_05-43-58,0.0,12.5,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,10,27-10-23_05-44-30,0.0,12.5,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,10,27-10-23_05-44-59,0.0,12.5,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,10,27-10-23_05-45-31,0.0,12.5,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,10,27-10-23_05-45-58,0.0,12.5,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,10,27-10-23_05-46-22,0.0,12.5,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,10,27-10-23_05-46-46,0.0,12.5,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,10,27-10-23_05-47-10,0.0,12.5,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,10,27-10-23_05-47-35,0.0,12.5,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,10,27-10-23_05-48-01,0.0,12.5,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,10,27-10-23_05-48-29,0.0,12.5,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,11,27-10-23_05-48-59,0.0,12.5,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,11,27-10-23_05-49-28,0.0,12.5,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,11,27-10-23_05-49-55,0.0,12.5,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,11,27-10-23_05-50-25,0.0,12.5,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,11,27-10-23_05-50-56,0.0,12.5,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,11,27-10-23_05-51-20,0.0,12.5,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,11,27-10-23_05-51-48,0.0,12.5,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,11,27-10-23_05-52-14,0.0,12.5,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,11,27-10-23_05-52-44,0.0,12.5,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,11,27-10-23_05-53-08,0.0,12.5,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,11,27-10-23_05-53-36,0.0,12.5,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,11,27-10-23_05-54-05,0.0,12.5,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,11,27-10-23_05-54-29,0.0,12.5,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,11,27-10-23_05-54-54,0.0,12.5,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,11,27-10-23_05-55-20,0.0,12.5,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,11,27-10-23_05-55-50,0.0,12.5,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,11,27-10-23_05-56-06,0.0,12.5,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,11,27-10-23_05-56-33,0.0,12.5,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,11,27-10-23_05-57-03,0.0,12.5,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,11,27-10-23_05-57-32,0.0,12.5,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,11,27-10-23_05-58-05,0.0,12.5,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,11,27-10-23_05-58-34,0.0,12.5,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,11,27-10-23_05-59-06,0.0,12.5,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,11,27-10-23_05-59-34,0.0,12.5,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,11,27-10-23_05-59-57,0.0,12.5,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,11,27-10-23_06-00-21,0.0,12.5,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,11,27-10-23_06-00-45,0.0,12.5,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,11,27-10-23_06-01-10,0.0,12.5,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,11,27-10-23_06-01-37,0.0,12.5,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,11,27-10-23_06-02-04,0.0,12.5,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,12,27-10-23_06-02-35,0.0,10.625,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,12,27-10-23_06-03-03,0.0,10.625,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,12,27-10-23_06-03-31,0.0,10.625,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,12,27-10-23_06-04-01,0.0,10.625,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,12,27-10-23_06-04-31,0.0,10.625,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,12,27-10-23_06-04-56,0.0,10.625,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,12,27-10-23_06-05-24,0.0,10.625,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,12,27-10-23_06-05-49,0.0,10.625,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,12,27-10-23_06-06-20,0.0,10.625,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,12,27-10-23_06-06-43,0.0,10.625,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,12,27-10-23_06-07-10,0.0,10.625,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,12,27-10-23_06-07-38,0.0,10.625,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,12,27-10-23_06-08-02,0.0,10.625,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,12,27-10-23_06-08-26,0.0,10.625,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,12,27-10-23_06-08-52,0.0,10.625,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8195488721804511,12,27-10-23_06-09-21,0.0,10.625,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,12,27-10-23_06-09-36,0.0,10.625,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,12,27-10-23_06-10-03,0.0,10.625,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,12,27-10-23_06-10-32,0.0,10.625,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,12,27-10-23_06-11-01,0.0,10.625,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,12,27-10-23_06-11-33,0.0,10.625,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,12,27-10-23_06-12-02,0.0,10.625,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,12,27-10-23_06-12-33,0.0,10.625,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,12,27-10-23_06-13-00,0.0,10.625,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,12,27-10-23_06-13-23,0.0,10.625,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,12,27-10-23_06-13-46,0.0,10.625,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,12,27-10-23_06-14-10,0.0,10.625,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,12,27-10-23_06-14-35,0.0,10.625,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,12,27-10-23_06-15-00,0.0,10.625,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,12,27-10-23_06-15-27,0.0,10.625,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,13,27-10-23_06-15-57,0.0,13.4375,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,13,27-10-23_06-16-25,0.0,13.4375,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,13,27-10-23_06-16-52,0.0,13.4375,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,13,27-10-23_06-17-22,0.0,13.4375,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,13,27-10-23_06-17-52,0.0,13.4375,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,13,27-10-23_06-18-16,0.0,13.4375,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,13,27-10-23_06-18-43,0.0,13.4375,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,13,27-10-23_06-19-08,0.0,13.4375,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,13,27-10-23_06-19-38,0.0,13.4375,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,13,27-10-23_06-20-01,0.0,13.4375,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,13,27-10-23_06-20-29,0.0,13.4375,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,13,27-10-23_06-20-57,0.0,13.4375,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,13,27-10-23_06-21-22,0.0,13.4375,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,13,27-10-23_06-21-46,0.0,13.4375,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,13,27-10-23_06-22-13,0.0,13.4375,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,13,27-10-23_06-22-43,0.0,13.4375,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,13,27-10-23_06-22-58,0.0,13.4375,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,13,27-10-23_06-23-25,0.0,13.4375,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,13,27-10-23_06-23-55,0.0,13.4375,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,13,27-10-23_06-24-25,0.0,13.4375,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,13,27-10-23_06-24-57,0.0,13.4375,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,13,27-10-23_06-25-26,0.0,13.4375,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,13,27-10-23_06-25-58,0.0,13.4375,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,13,27-10-23_06-26-25,0.0,13.4375,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,13,27-10-23_06-26-49,0.0,13.4375,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,13,27-10-23_06-27-12,0.0,13.4375,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,13,27-10-23_06-27-36,0.0,13.4375,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,13,27-10-23_06-28-00,0.0,13.4375,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,13,27-10-23_06-28-26,0.0,13.4375,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,13,27-10-23_06-28-53,0.0,13.4375,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,14,27-10-23_06-29-23,0.0,13.4375,3
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,14,27-10-23_06-29-51,0.0,13.4375,3
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,14,27-10-23_06-30-18,0.0,13.4375,3
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,14,27-10-23_06-30-47,0.0,13.4375,3
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,14,27-10-23_06-31-18,0.0,13.4375,3
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,14,27-10-23_06-31-43,0.0,13.4375,3
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,14,27-10-23_06-32-10,0.0,13.4375,3
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,14,27-10-23_06-32-36,0.0,13.4375,3
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,14,27-10-23_06-33-06,0.0,13.4375,3
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,14,27-10-23_06-33-29,0.0,13.4375,3
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,14,27-10-23_06-33-56,0.0,13.4375,3
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,14,27-10-23_06-34-26,0.0,13.4375,3
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,14,27-10-23_06-34-50,0.0,13.4375,3
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,14,27-10-23_06-35-15,0.0,13.4375,3
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,14,27-10-23_06-35-41,0.0,13.4375,3
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,14,27-10-23_06-36-11,0.0,13.4375,3
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,14,27-10-23_06-36-26,0.0,13.4375,3
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,14,27-10-23_06-36-54,0.0,13.4375,3
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,14,27-10-23_06-37-24,0.0,13.4375,3
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,14,27-10-23_06-37-53,0.0,13.4375,3
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,14,27-10-23_06-38-26,0.0,13.4375,3
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,14,27-10-23_06-38-55,0.0,13.4375,3
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,14,27-10-23_06-39-27,0.0,13.4375,3
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,14,27-10-23_06-39-55,0.0,13.4375,3
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,14,27-10-23_06-40-18,0.0,13.4375,3
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,14,27-10-23_06-40-42,0.0,13.4375,3
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,14,27-10-23_06-41-06,0.0,13.4375,3
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,14,27-10-23_06-41-32,0.0,13.4375,3
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,14,27-10-23_06-41-58,0.0,13.4375,3
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,14,27-10-23_06-42-25,0.0,13.4375,3
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,15,27-10-23_06-42-56,0.0,13.4375,1
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,15,27-10-23_06-43-25,0.0,13.4375,1
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,15,27-10-23_06-43-52,0.0,13.4375,1
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,15,27-10-23_06-44-22,0.0,13.4375,1
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,15,27-10-23_06-44-52,0.0,13.4375,1
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,15,27-10-23_06-45-16,0.0,13.4375,1
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,15,27-10-23_06-45-43,0.0,13.4375,1
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,15,27-10-23_06-46-08,0.0,13.4375,1
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,15,27-10-23_06-46-38,0.0,13.4375,1
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,15,27-10-23_06-47-01,0.0,13.4375,1
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,15,27-10-23_06-47-29,0.0,13.4375,1
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,15,27-10-23_06-47-57,0.0,13.4375,1
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,15,27-10-23_06-48-21,0.0,13.4375,1
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,15,27-10-23_06-48-45,0.0,13.4375,1
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,15,27-10-23_06-49-11,0.0,13.4375,1
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,15,27-10-23_06-49-40,0.0,13.4375,1
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,15,27-10-23_06-49-55,0.0,13.4375,1
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,15,27-10-23_06-50-21,0.0,13.4375,1
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,15,27-10-23_06-50-51,0.0,13.4375,1
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,15,27-10-23_06-51-20,0.0,13.4375,1
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,15,27-10-23_06-51-52,0.0,13.4375,1
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,15,27-10-23_06-52-20,0.0,13.4375,1
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,15,27-10-23_06-52-52,0.0,13.4375,1
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,15,27-10-23_06-53-19,0.0,13.4375,1
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,15,27-10-23_06-53-42,0.0,13.4375,1
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,15,27-10-23_06-54-05,0.0,13.4375,1
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,15,27-10-23_06-54-29,0.0,13.4375,1
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,15,27-10-23_06-54-53,0.0,13.4375,1
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,15,27-10-23_06-55-19,0.0,13.4375,1
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,15,27-10-23_06-55-46,0.0,13.4375,1
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,16,27-10-23_06-56-16,0.0,13.4375,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,16,27-10-23_06-56-44,0.0,13.4375,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,16,27-10-23_06-57-12,0.0,13.4375,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,16,27-10-23_06-57-42,0.0,13.4375,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,16,27-10-23_06-58-13,0.0,13.4375,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,16,27-10-23_06-58-37,0.0,13.4375,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,16,27-10-23_06-59-05,0.0,13.4375,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,16,27-10-23_06-59-30,0.0,13.4375,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,16,27-10-23_07-00-01,0.0,13.4375,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,16,27-10-23_07-00-24,0.0,13.4375,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,16,27-10-23_07-00-52,0.0,13.4375,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,16,27-10-23_07-01-22,0.0,13.4375,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,16,27-10-23_07-01-45,0.0,13.4375,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,16,27-10-23_07-02-09,0.0,13.4375,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,16,27-10-23_07-02-35,0.0,13.4375,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,16,27-10-23_07-03-05,0.0,13.4375,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,16,27-10-23_07-03-20,0.0,13.4375,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,16,27-10-23_07-03-46,0.0,13.4375,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,16,27-10-23_07-04-15,0.0,13.4375,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,16,27-10-23_07-04-44,0.0,13.4375,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,16,27-10-23_07-05-16,0.0,13.4375,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,16,27-10-23_07-05-45,0.0,13.4375,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,16,27-10-23_07-06-16,0.0,13.4375,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,16,27-10-23_07-06-43,0.0,13.4375,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,16,27-10-23_07-07-06,0.0,13.4375,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,16,27-10-23_07-07-29,0.0,13.4375,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,16,27-10-23_07-07-53,0.0,13.4375,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,16,27-10-23_07-08-18,0.0,13.4375,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,16,27-10-23_07-08-43,0.0,13.4375,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,16,27-10-23_07-09-10,0.0,13.4375,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,17,27-10-23_07-09-40,0.0,13.4375,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,17,27-10-23_07-10-09,0.0,13.4375,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,17,27-10-23_07-10-36,0.0,13.4375,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,17,27-10-23_07-11-05,0.0,13.4375,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,17,27-10-23_07-11-35,0.0,13.4375,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,17,27-10-23_07-11-59,0.0,13.4375,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,17,27-10-23_07-12-26,0.0,13.4375,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,17,27-10-23_07-12-51,0.0,13.4375,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,17,27-10-23_07-13-21,0.0,13.4375,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,17,27-10-23_07-13-44,0.0,13.4375,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,17,27-10-23_07-14-12,0.0,13.4375,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,17,27-10-23_07-14-40,0.0,13.4375,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,17,27-10-23_07-15-04,0.0,13.4375,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,17,27-10-23_07-15-28,0.0,13.4375,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,17,27-10-23_07-15-55,0.0,13.4375,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,17,27-10-23_07-16-25,0.0,13.4375,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,17,27-10-23_07-16-40,0.0,13.4375,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,17,27-10-23_07-17-07,0.0,13.4375,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,17,27-10-23_07-17-37,0.0,13.4375,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,17,27-10-23_07-18-06,0.0,13.4375,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,17,27-10-23_07-18-39,0.0,13.4375,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,17,27-10-23_07-19-09,0.0,13.4375,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,17,27-10-23_07-19-40,0.0,13.4375,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,17,27-10-23_07-20-08,0.0,13.4375,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,17,27-10-23_07-20-31,0.0,13.4375,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,17,27-10-23_07-20-55,0.0,13.4375,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,17,27-10-23_07-21-20,0.0,13.4375,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,17,27-10-23_07-21-45,0.0,13.4375,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,17,27-10-23_07-22-11,0.0,13.4375,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,17,27-10-23_07-22-38,0.0,13.4375,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,18,27-10-23_07-23-08,0.0,13.4375,1
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,18,27-10-23_07-23-36,0.0,13.4375,1
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,18,27-10-23_07-24-04,0.0,13.4375,1
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,18,27-10-23_07-24-33,0.0,13.4375,1
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,18,27-10-23_07-25-04,0.0,13.4375,1
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,18,27-10-23_07-25-28,0.0,13.4375,1
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,18,27-10-23_07-25-56,0.0,13.4375,1
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,18,27-10-23_07-26-21,0.0,13.4375,1
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,18,27-10-23_07-26-52,0.0,13.4375,1
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,18,27-10-23_07-27-15,0.0,13.4375,1
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,18,27-10-23_07-27-43,0.0,13.4375,1
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,18,27-10-23_07-28-12,0.0,13.4375,1
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,18,27-10-23_07-28-37,0.0,13.4375,1
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,18,27-10-23_07-29-01,0.0,13.4375,1
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,18,27-10-23_07-29-28,0.0,13.4375,1
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,18,27-10-23_07-29-57,0.0,13.4375,1
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,18,27-10-23_07-30-12,0.0,13.4375,1
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,18,27-10-23_07-30-38,0.0,13.4375,1
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,18,27-10-23_07-31-08,0.0,13.4375,1
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,18,27-10-23_07-31-37,0.0,13.4375,1
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,18,27-10-23_07-32-09,0.0,13.4375,1
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,18,27-10-23_07-32-37,0.0,13.4375,1
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,18,27-10-23_07-33-09,0.0,13.4375,1
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,18,27-10-23_07-33-36,0.0,13.4375,1
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,18,27-10-23_07-33-58,0.0,13.4375,1
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,18,27-10-23_07-34-22,0.0,13.4375,1
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,18,27-10-23_07-34-45,0.0,13.4375,1
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,18,27-10-23_07-35-10,0.0,13.4375,1
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,18,27-10-23_07-35-35,0.0,13.4375,1
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,18,27-10-23_07-36-03,0.0,13.4375,1
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,19,27-10-23_07-36-32,0.0,13.4375,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,19,27-10-23_07-37-01,0.0,13.4375,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,19,27-10-23_07-37-28,0.0,13.4375,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,19,27-10-23_07-37-57,0.0,13.4375,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,19,27-10-23_07-38-27,0.0,13.4375,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,19,27-10-23_07-38-51,0.0,13.4375,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,19,27-10-23_07-39-18,0.0,13.4375,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,19,27-10-23_07-39-43,0.0,13.4375,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,19,27-10-23_07-40-13,0.0,13.4375,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,19,27-10-23_07-40-36,0.0,13.4375,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,19,27-10-23_07-41-04,0.0,13.4375,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,19,27-10-23_07-41-33,0.0,13.4375,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,19,27-10-23_07-41-57,0.0,13.4375,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,19,27-10-23_07-42-22,0.0,13.4375,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,19,27-10-23_07-42-48,0.0,13.4375,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,19,27-10-23_07-43-18,0.0,13.4375,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,19,27-10-23_07-43-33,0.0,13.4375,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,19,27-10-23_07-44-01,0.0,13.4375,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,19,27-10-23_07-44-30,0.0,13.4375,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,19,27-10-23_07-45-00,0.0,13.4375,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,19,27-10-23_07-45-33,0.0,13.4375,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,19,27-10-23_07-46-02,0.0,13.4375,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,19,27-10-23_07-46-34,0.0,13.4375,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,19,27-10-23_07-47-01,0.0,13.4375,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,19,27-10-23_07-47-25,0.0,13.4375,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,19,27-10-23_07-47-49,0.0,13.4375,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,19,27-10-23_07-48-13,0.0,13.4375,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,19,27-10-23_07-48-38,0.0,13.4375,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,19,27-10-23_07-49-04,0.0,13.4375,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,19,27-10-23_07-49-31,0.0,13.4375,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,20,27-10-23_07-50-02,0.0,13.4375,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,20,27-10-23_07-50-30,0.0,13.4375,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,20,27-10-23_07-50-58,0.0,13.4375,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,20,27-10-23_07-51-28,0.0,13.4375,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,20,27-10-23_07-51-58,0.0,13.4375,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,20,27-10-23_07-52-22,0.0,13.4375,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,20,27-10-23_07-52-49,0.0,13.4375,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,20,27-10-23_07-53-14,0.0,13.4375,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,20,27-10-23_07-53-44,0.0,13.4375,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,20,27-10-23_07-54-07,0.0,13.4375,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,20,27-10-23_07-54-35,0.0,13.4375,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,20,27-10-23_07-55-04,0.0,13.4375,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,20,27-10-23_07-55-27,0.0,13.4375,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,20,27-10-23_07-55-51,0.0,13.4375,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,20,27-10-23_07-56-17,0.0,13.4375,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,20,27-10-23_07-56-47,0.0,13.4375,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,20,27-10-23_07-57-02,0.0,13.4375,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,20,27-10-23_07-57-29,0.0,13.4375,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,20,27-10-23_07-57-59,0.0,13.4375,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,20,27-10-23_07-58-29,0.0,13.4375,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,20,27-10-23_07-59-01,0.0,13.4375,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,20,27-10-23_07-59-30,0.0,13.4375,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,20,27-10-23_08-00-02,0.0,13.4375,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,20,27-10-23_08-00-30,0.0,13.4375,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,20,27-10-23_08-00-53,0.0,13.4375,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,20,27-10-23_08-01-17,0.0,13.4375,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,20,27-10-23_08-01-42,0.0,13.4375,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,20,27-10-23_08-02-07,0.0,13.4375,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,20,27-10-23_08-02-33,0.0,13.4375,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,20,27-10-23_08-03-00,0.0,13.4375,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,21,27-10-23_08-03-31,0.0,13.4375,1
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,21,27-10-23_08-04-00,0.0,13.4375,1
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,21,27-10-23_08-04-27,0.0,13.4375,1
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,21,27-10-23_08-04-57,0.0,13.4375,1
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,21,27-10-23_08-05-28,0.0,13.4375,1
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,21,27-10-23_08-05-52,0.0,13.4375,1
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,21,27-10-23_08-06-20,0.0,13.4375,1
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,21,27-10-23_08-06-45,0.0,13.4375,1
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,21,27-10-23_08-07-16,0.0,13.4375,1
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,21,27-10-23_08-07-40,0.0,13.4375,1
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,21,27-10-23_08-08-07,0.0,13.4375,1
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,21,27-10-23_08-08-37,0.0,13.4375,1
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,21,27-10-23_08-09-01,0.0,13.4375,1
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,21,27-10-23_08-09-25,0.0,13.4375,1
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,21,27-10-23_08-09-52,0.0,13.4375,1
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,21,27-10-23_08-10-22,0.0,13.4375,1
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,21,27-10-23_08-10-37,0.0,13.4375,1
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,21,27-10-23_08-11-04,0.0,13.4375,1
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,21,27-10-23_08-11-34,0.0,13.4375,1
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,21,27-10-23_08-12-04,0.0,13.4375,1
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,21,27-10-23_08-12-36,0.0,13.4375,1
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,21,27-10-23_08-13-06,0.0,13.4375,1
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,21,27-10-23_08-13-37,0.0,13.4375,1
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,21,27-10-23_08-14-05,0.0,13.4375,1
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,21,27-10-23_08-14-28,0.0,13.4375,1
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,21,27-10-23_08-14-52,0.0,13.4375,1
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,21,27-10-23_08-15-16,0.0,13.4375,1
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,21,27-10-23_08-15-42,0.0,13.4375,1
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,21,27-10-23_08-16-07,0.0,13.4375,1
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,21,27-10-23_08-16-35,0.0,13.4375,1
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,22,27-10-23_08-17-04,0.0,13.4375,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,22,27-10-23_08-17-33,0.0,13.4375,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,22,27-10-23_08-18-00,0.0,13.4375,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,22,27-10-23_08-18-30,0.0,13.4375,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,22,27-10-23_08-19-01,0.0,13.4375,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,22,27-10-23_08-19-25,0.0,13.4375,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,22,27-10-23_08-19-52,0.0,13.4375,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,22,27-10-23_08-20-17,0.0,13.4375,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,22,27-10-23_08-20-47,0.0,13.4375,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,22,27-10-23_08-21-10,0.0,13.4375,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,22,27-10-23_08-21-38,0.0,13.4375,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,22,27-10-23_08-22-06,0.0,13.4375,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,22,27-10-23_08-22-30,0.0,13.4375,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,22,27-10-23_08-22-54,0.0,13.4375,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,22,27-10-23_08-23-20,0.0,13.4375,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,22,27-10-23_08-23-49,0.0,13.4375,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,22,27-10-23_08-24-04,0.0,13.4375,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,22,27-10-23_08-24-31,0.0,13.4375,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,22,27-10-23_08-25-01,0.0,13.4375,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,22,27-10-23_08-25-30,0.0,13.4375,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,22,27-10-23_08-26-01,0.0,13.4375,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,22,27-10-23_08-26-30,0.0,13.4375,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,22,27-10-23_08-27-01,0.0,13.4375,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,22,27-10-23_08-27-28,0.0,13.4375,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,22,27-10-23_08-27-51,0.0,13.4375,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,22,27-10-23_08-28-15,0.0,13.4375,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,22,27-10-23_08-28-38,0.0,13.4375,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,22,27-10-23_08-29-03,0.0,13.4375,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,22,27-10-23_08-29-29,0.0,13.4375,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,22,27-10-23_08-29-56,0.0,13.4375,2
+Blues for Gwen,72d0306f-d3ed-4332-9d59-1c22271568d7,tynerm-bluesforgwen-davisajonese-1962-72d0306f,mix,True,0.9836829836829836,23,27-10-23_08-30-25,0.0,13.4375,2
+Lil Darlin,f892ef46-a5e6-4624-a694-36444677cfa2,tynerm-lildarlin-sharpeahayesl-1986-f892ef46,mix,True,1.0,23,27-10-23_08-30-54,0.0,13.4375,2
+TraneLike,f61d311f-067d-4ff3-986f-ac91a571a381,tynerm-tranelike-clarkesfostera-1998-f61d311f,mix,True,0.9876543209876543,23,27-10-23_08-31-21,0.0,13.4375,2
+Someday My Prince Will Come,709cf40e-fd3f-4af7-9028-d96c90741cce,barronk-somedaymyprincewillcome-williamsbrileyb-1982-709cf40e,mix,True,1.0,23,27-10-23_08-31-50,0.0,13.4375,2
+Take the Coltrane,d8efd19a-95cb-47b7-a113-846ac138be11,barronk-takethecoltrane-hadenchaynesr-1994-d8efd19a,mix,True,0.9557894736842105,23,27-10-23_08-32-20,0.0,13.4375,2
+Shuffle Boil,3a37bdb6-b048-480b-b367-43d0f60e2313,barronk-shuffleboil-kitagawakblakej-2015-3a37bdb6,mix,True,0.9923273657289001,23,27-10-23_08-32-44,0.0,13.4375,2
+Just Friends,0469f84b-0b9d-4e06-8c82-8d634fd8e8e1,flanagant-justfriends-tuckerbbaileyd-1961-0469f84b,mix,True,1.0,23,27-10-23_08-33-11,0.0,13.4375,2
+Denzils Best,b4be29dc-0604-4d35-9eec-a1134ddf4d18,flanagant-denzilsbest-mrazgjonese-1976-b4be29dc,mix,True,0.9966329966329966,23,27-10-23_08-33-36,0.0,13.4375,2
+Birdsong,1538c8eb-ccd3-4df9-9680-2f866b90ebef,flanagant-birdsong-washingtonpnashl-1997-1538c8eb,mix,True,0.9981308411214954,23,27-10-23_08-34-06,0.0,13.4375,2
+Ralphs New Blues,7dfd6f62-eb98-4ab1-a82a-faffdc919479,mancej-ralphsnewblues-tuckerbthomasb-1960-7dfd6f62,mix,True,1.0,23,27-10-23_08-34-30,0.0,13.4375,2
+Holy Mama,9983c9b5-42f8-430f-803c-1afa05bfd4bd,mancej-holymama-riveramlaroccas-1977-9983c9b5,mix,True,1.0,23,27-10-23_08-34-57,0.0,13.4375,2
+Broadway,97763166-9e4b-426b-9bcc-8cf687051dfe,mancej-broadway-tanakahwilliamsj-2007-97763166,mix,True,0.9893992932862191,23,27-10-23_08-35-26,0.0,13.4375,2
+Spring Will Be a Little Late This Year,828208f2-3ae0-4de4-878c-ffd8f7cda68c,jamala-springwillbealittle-crosbyiperkinsw-1955-828208f2,mix,True,1.0,23,27-10-23_08-35-49,0.0,13.4375,2
+Dolphin Dance,87cd9343-6d9e-4651-aabc-aa191fd7c6b0,jamala-dolphindance-nasserjgantf-1971-87cd9343,mix,True,0.9294871794871795,23,27-10-23_08-36-13,0.0,13.4375,2
+Milan,16ff9b1f-39ac-4116-83a7-17ae46b76cc5,jamala-milan-cammackjmuhammadi-2004-16ff9b1f,mix,True,0.9928825622775801,23,27-10-23_08-36-39,0.0,13.4375,2
+No Cover No Minimum,f675dc4a-15fd-44f2-b929-9908d878a3b0,evansb-nocovernominimum-koticktmotianp-1956-f675dc4a,mix,True,0.8473282442748091,23,27-10-23_08-37-09,0.0,13.4375,2
+Emily,f9fa0f9b-b3d7-4f59-a376-54fc83d42e80,evansb-emily-gomezemorellm-1968-f9fa0f9b,mix,True,0.9663865546218487,23,27-10-23_08-37-24,0.0,13.4375,2
+Bills Hit Tune,8907b003-9e93-4b74-b35a-981879c9e36e,evansb-billshittune-johnsonmlabarberaj-1980-8907b003,mix,True,0.9953051643192489,23,27-10-23_08-37-50,0.0,13.4375,2
+Rainbow,2c0f6494-cc8b-4a94-9b0c-9350a97499b2,jarrettk-rainbow-hadencmotianp-1972-2c0f6494,mix,True,0.9850746268656716,23,27-10-23_08-38-19,0.0,13.4375,2
+All the Things You Are,c82aab89-ca2b-4211-842f-9c69583d03ca,jarrettk-allthethingsyouare-peacockgdejohnettej-1989-c82aab89,mix,True,0.900355871886121,23,27-10-23_08-38-49,0.0,13.4375,2
+Between the Devil and the Deep Blue Sea,7e485343-1cb9-4798-acc0-c35320949854,jarrettk-betweenthedevilandthe-peacockgdejohnettej-2009-7e485343,mix,True,0.9939759036144579,23,27-10-23_08-39-20,0.0,13.4375,2
+With Malice Towards None,d5c51907-81dd-42d8-9e78-956ff9f0d28e,hicksj-withmalicetowardsnone-bookerwmuhammadi-1981-d5c51907,mix,True,1.0,23,27-10-23_08-39-49,0.0,13.4375,2
+Expectations,78892a40-bee3-490c-90e8-226203310b97,hicksj-expectations-drummondrsmittym-1993-78892a40,mix,True,1.0,23,27-10-23_08-40-21,0.0,13.4375,2
+Fly Little Bird Fly,e3e5bd4a-a7c4-4b49-8308-c63420605332,hicksj-flylittlebirdfly-williamsbhayesl-2006-e3e5bd4a,mix,True,0.9705882352941176,23,27-10-23_08-40-49,0.0,13.4375,2
+Back Home Again in Indiana,b0e03bf2-6c3d-48e7-aa7c-ab321ae8a459,petersono-backhomeagaininindiana-kingawilkinsonm-1947-b0e03bf2,mix,True,0.9866666666666667,23,27-10-23_08-41-12,0.0,13.4375,2
+Tristeza,55736745-695f-4703-a51b-637db2db7324,petersono-tristeza-jonessdurhamb-1970-55736745,mix,True,0.6666666666666666,23,27-10-23_08-41-36,0.0,13.4375,2
+The Man I Love,20c60566-3170-41b9-992c-a3062948fca6,petersono-themanilove-orstedndrewm-1984-20c60566,mix,True,1.0,23,27-10-23_08-42-00,0.0,13.4375,2
+Sweet Georgia Brown,25a7592c-4709-4429-9ca9-7070b32c7f25,powellb-sweetgeorgiabrown-russellcroachm-1950-25a7592c,mix,True,0.659217877094972,23,27-10-23_08-42-25,0.0,13.4375,2
+Like Someone in Love,cebd562d-6606-40b5-8d58-01c96609470c,powellb-likesomeoneinlove-michelotpclarkek-1953-cebd562d,mix,True,1.0,23,27-10-23_08-42-51,0.0,13.4375,2
+Rifftide,8a86e370-95b2-48d1-8346-7664ab9f2b7f,powellb-rifftide-orstednschiopffew-1962-8a86e370,mix,True,1.0,23,27-10-23_08-43-19,0.0,13.4375,2
