@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import pandas as pd
+import seaborn as sns
 
 from src import utils
 import src.visualise.visualise_utils as vutils
@@ -192,10 +193,58 @@ class TrianglePlotChronology(vutils.BasePlot):
         self.fig.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01, hspace=0.01, wspace=0.01)
 
 
+class BarPlotCouplingCoefficients(vutils.BasePlot):
+    nobs_cutoff = 30
+    # TODO: fix this so that it'll work with the Bill Evans corpus, not just the chronology corpus
+
+    def __init__(self, data, **kwargs):
+        self.corpus_title = kwargs.get('corpus_title', 'corpus')
+        super().__init__(figure_title=fr'phase_correction_plots\barplot_couplingcoefficients_{self.corpus_title}',
+                         **kwargs)
+        self.df = self._format_df(data)
+        self.fig, self.ax = plt.subplots(nrows=2, ncols=5, sharex=True, sharey=True, figsize=(vutils.WIDTH, 8))
+        self.hand, self.lab = None, None
+        if self.df['pianist'].nunique() < len(self.ax.flatten()):
+            for band_num in range(len(self.ax.flatten()) - self.df['pianist'].nunique()):
+                self.ax.flatten()[len(self.ax.flatten()) - band_num].axis('off')
+
+    @staticmethod
+    def _format_df(data):
+        return data.melt(id_vars=['instrument', 'performer', 'nobs', 'pianist'],
+                         value_vars=['coupling_bass', 'coupling_piano', 'coupling_drums']).reset_index(drop=True)
+
+    def _create_plot(self):
+        for ax, (idx, grp) in zip(self.ax.flatten(), self.df.groupby('pianist')):
+            grp = grp[grp['nobs'] > self.nobs_cutoff]
+            g = sns.barplot(
+                data=grp, x='variable', y='value', hue='instrument', ax=ax,
+                errorbar=('ci', 95), estimator=np.nanmean, errwidth=2,
+                errcolor=vutils.BLACK, edgecolor=vutils.BLACK, lw=2,
+                n_boot=10, seed=1, capsize=0.1, width=0.8
+            )
+            self.hand, self.lab = g.get_legend_handles_labels()
+            g.get_legend().remove()
+            g.set(title=idx)
+
+    def _format_ax(self):
+        for ax in self.ax.flatten():
+            ax.set(ylabel='', xlabel='', xticklabels=['Bass', 'Piano', 'Drums'], ylim=(0, 1))
+            plt.setp(ax.spines.values(), linewidth=2)
+            ax.tick_params(axis='both', width=3)
+
+    def _format_fig(self):
+        self.fig.legend(
+            self.hand, [i.title() for i in self.lab], title='Influenced\ninstrument', frameon=False,
+            bbox_to_anchor=(1, 0.625), ncol=1, markerscale=1.6, fontsize=vutils.FONTSIZE
+        )
+        self.fig.supylabel('Coupling constant')
+        self.fig.supxlabel('Influencer instrument')
+        self.fig.subplots_adjust(top=0.95, bottom=0.1, left=0.075, right=0.885)
+
+
 if __name__ == '__main__':
     extracted = utils.unserialise_object(
         fr'{utils.get_project_root()}\models\extracted_features_corpus_chronology', use_pickle=True
     )
     combined = utils.combine_features(extracted, 'metadata', 'phase_correction')
     df = combined[combined['phase_correction_order'] == 1]
-
