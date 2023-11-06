@@ -30,3 +30,4 @@ scipy~=1.10.1
 nlopt~=2.7.1
 mir_eval==0.7
 openpyxl~=3.1.2
+scikit-learn>=1.3
