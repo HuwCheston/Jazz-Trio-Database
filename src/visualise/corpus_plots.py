@@ -78,11 +78,11 @@ class BarPlotSubjectiveRatings(vutils.BasePlot):
         errwidth=2, errcolor=vutils.BLACK, estimator=np.mean,
     )
     COLS = [vutils.WHITE, *vutils.RGB, vutils.WHITE, *vutils.RGB]
-    HATCHES = [*['' for _ in range(5)], *['/' for _ in range(3)]]
+    HATCHES = [*['' for _ in range(4)], *['/' for _ in range(4)]]
 
     def __init__(self, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus_chronology')
-        super().__init__(figure_title=fr'corpus_plots\barplot_fscores_{self.corpus_title}',
+        super().__init__(figure_title=fr'corpus_plots\barplot_subjective_rating_{self.corpus_title}',
                          **kwargs)
         self.df = self._format_df()
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 3))
@@ -95,7 +95,7 @@ class BarPlotSubjectiveRatings(vutils.BasePlot):
             df.drop(columns=['rating_comments'])
             .melt(id_vars=['mbz_id', ], value_vars=columns, value_name='rating')
         )
-        clean['is_audio'] = ~clean['variable'].str.contains('audio|mix')
+        clean['is_audio'] = ~clean['variable'].str.contains('audio')
         for st in ['rating_', '_audio', '_detection']:
             clean['variable'] = clean['variable'].str.replace(st, '')
         return (
