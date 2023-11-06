@@ -14,7 +14,10 @@ import seaborn as sns
 import src.visualise.visualise_utils as vutils
 from src import utils
 
-__all__ = ['BarPlotFScores', 'TimelinePlotBandleaders', 'BarPlotBandleaderDuration', 'BarPlotLastFMStreams']
+__all__ = [
+    'BarPlotFScores', 'TimelinePlotBandleaders', 'BarPlotBandleaderDuration', 'BarPlotLastFMStreams',
+    'BarPlotSubjectiveRatings'
+]
 
 
 class BarPlotFScores(vutils.BasePlot):
@@ -29,7 +32,7 @@ class BarPlotFScores(vutils.BasePlot):
             .loc[['mix', *utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]]
             .reset_index(drop=False)
         )
-        self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
+        self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 3))
 
     def _format_df(self):
         fpath = rf'{utils.get_project_root()}\references\parameter_optimisation\{self.corpus_title}'
@@ -61,6 +64,71 @@ class BarPlotFScores(vutils.BasePlot):
         self.ax.get_legend().remove()
         self.ax.set(xticklabels=['Mixture', 'Piano', 'Bass', 'Drums'], xlabel='Instrument', ylabel='$F$-Measure',
                     ylim=(0, 1.02))
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH)
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
+class BarPlotSubjectiveRatings(vutils.BasePlot):
+    BAR_KWS = dict(
+        zorder=1, edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE,
+        n_boot=vutils.N_BOOT, errorbar=('ci', 95), seed=1, capsize=0.1, width=0.8,
+        errwidth=2, errcolor=vutils.BLACK, estimator=np.mean,
+    )
+    COLS = [vutils.WHITE, *vutils.RGB, vutils.WHITE, *vutils.RGB]
+    HATCHES = [*['' for _ in range(5)], *['/' for _ in range(3)]]
+
+    def __init__(self, **kwargs):
+        self.corpus_title = kwargs.get('corpus_title', 'corpus_chronology')
+        super().__init__(figure_title=fr'corpus_plots\barplot_fscores_{self.corpus_title}',
+                         **kwargs)
+        self.df = self._format_df()
+        self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 3))
+
+    def _format_df(self):
+        corp = utils.CorpusMaker.from_excel(self.corpus_title)
+        df = pd.DataFrame([track for track in corp.tracks if not np.isnan(track['rating_bass_audio'])])
+        columns = [c for c in df.columns if 'rating' in c and 'comments' not in c]
+        clean = (
+            df.drop(columns=['rating_comments'])
+            .melt(id_vars=['mbz_id', ], value_vars=columns, value_name='rating')
+        )
+        clean['is_audio'] = ~clean['variable'].str.contains('audio|mix')
+        for st in ['rating_', '_audio', '_detection']:
+            clean['variable'] = clean['variable'].str.replace(st, '')
+        return (
+            clean.reset_index(drop=True)
+            .set_index('variable')
+            .loc[['mix', *utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]]
+            .reset_index(drop=False)
+        )
+
+    def _create_plot(self):
+        return sns.barplot(data=self.df, x='variable', y='rating', hue='is_audio', ax=self.ax, **self.BAR_KWS)
+
+    @staticmethod
+    def _get_color(hex_code: str):
+        return [*[round(i / 255, 2) for i in [int(hex_code.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)]], vutils.ALPHA]
+
+    @staticmethod
+    def _get_legend_handles():
+        p1 = mpl.patches.Patch(facecolor=vutils.BLACK, alpha=vutils.ALPHA, hatch='', label='Audio')
+        p2 = mpl.patches.Patch(facecolor=vutils.BLACK, alpha=vutils.ALPHA, hatch='/', label='Detection')
+        return [p1, p2]
+
+    def _format_ax(self):
+        for col, patch, hatch in zip(self.COLS, self.ax.patches, self.HATCHES):
+            patch.set_facecolor(self._get_color(col))
+            patch.set_hatch(hatch)
+        self.ax.get_legend().remove()
+        self.ax.legend(handles=self._get_legend_handles(), loc='lower left', frameon=True, framealpha=1,
+                       edgecolor=vutils.BLACK)
+        self.ax.set(
+            xticklabels=['Mixture', *[i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]],
+            xlabel='Instrument', ylabel='Rating', ylim=(0, 3.06)
+        )
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH)
 
