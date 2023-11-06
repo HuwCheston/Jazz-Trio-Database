@@ -85,8 +85,10 @@ class OnsetMaker:
         self.ons = {}
         # Empty attribute to hold our tempo
         self.tempo = None
-        # Empty dictionary to hold the percentage of silence in each track
+        # Empty dictionary to hold the percentage of silence, signal-to-noise-ratio, and spectral flatness of each track
         self.silent_perc = {}
+        self.snr = {}
+        self.spectral_flatness = {}
         # Empty attribute to hold our matched onset dictionary
         self.summary_dict = {}
         # Empty attribute to hold our evaluation with a reference
@@ -182,6 +184,9 @@ class OnsetMaker:
                         f'({round(self.silent_perc[name], 2)} > {round(self.silence_threshold, 2)})'
                     )
             audio[name] = y
+            # Get the signal-to-noise ratio and mean spectral flatness for the track
+            self.snr[name] = self.get_signal_to_noise_ratio(y)
+            self.spectral_flatness[name] = np.mean(self.get_spectral_flatness(y))
         return audio
 
     def _get_channel_override_fpath(
@@ -461,9 +466,11 @@ class OnsetMaker:
             None
 
         """
-        # Get our onset list and our filename
+        # Get our onset list
         onsets_list = [self.ons[instr], *args]
-        fname = rf'{self.reports_dir}\click_tracks\{self.item["fname"]}_{instr}_beats.{utils.AUDIO_FILE_FMT}'
+        # Construct our filename
+        fold = rf'{self.reports_dir}\click_tracks\{self.corpus_name}'
+        fname = rf'{fold}\{self.item["fname"]}_{instr}_beats.{utils.AUDIO_FILE_FMT}'
         # Create the click track maker class and then generate the click track using the above variables
         click_track_cls = _ClickTrackMaker(audio=self.audio[instr])
         click_track_audio = click_track_cls.generate_audio(onsets_list)
@@ -737,6 +744,27 @@ class OnsetMaker:
                     li[np.where(li == row[0])] = row[1]
         finally:
             return li
+
+    @staticmethod
+    def get_spectral_flatness(
+            audio: np.array,
+    ) -> np.array:
+        flatness = librosa.feature.spectral_flatness(audio, hop_length=utils.HOP_LENGTH)
+        return 10 * np.log10(flatness)
+
+    @staticmethod
+    def get_signal_to_noise_ratio(
+            audio: np.array,
+            axis: int = 0,
+            ddof: int = 0
+    ) -> float:
+        # This code is copied from an earlier version of `scipy.signal.snr`, which is deprecated in current releases
+        a = np.asanyarray(audio)
+        m = a.mean(axis=axis)
+        sd = a.std(axis=axis, ddof=ddof)
+        arr = np.where(sd == 0, 0, m / sd)
+        # Return the SNR formatted in decibels
+        return 20 * np.log10(abs(arr))
 
     def get_silent_track_percent(
             self,

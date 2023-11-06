@@ -42,7 +42,7 @@ def process_item(
 
 
 @click.command()
-@click.option("-corpus", "corpus_filename", type=str, default="corpus_bill_evans", help='Name of the corpus to use')
+@click.option("-corpus", "corpus_filename", type=str, default="corpus_chronology", help='Name of the corpus to use')
 @click.option("-n_jobs", "n_jobs", type=click.IntRange(-1, clamp=True), default=-1, help='Number of CPU cores to use')
 @click.option("-click", "generate_click", is_flag=True, default=True, help='Generate click tracks')
 @click.option("-annotated-only", "annotated_only", is_flag=True, default=False, help='Only use items with annotations')
