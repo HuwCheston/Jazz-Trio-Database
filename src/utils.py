@@ -74,7 +74,7 @@ def disable_settingwithcopy_warning(func):
 
 def remove_punctuation(s: str) -> str:
     """Removes punctuation from a string"""
-    return ''.join(ch for ch in s.translate(str.maketrans('', '', punctuation)).replace('’', '') if ch in printable)
+    return ''.join(ch for ch in str(s).translate(str.maketrans('', '', punctuation)).replace('’', '') if ch in printable)
 
 
 class CorpusMaker:
@@ -82,18 +82,22 @@ class CorpusMaker:
     lbz_url_cutoff = 49
     json_indent = 4
     bandleader_instr = 'piano'
+    keep_all_tracks = False
 
     def __init__(
             self,
-            data: list[dict]
+            data: list[dict],
+            **kwargs
     ):
         self.tracks = list(self.format_track_dict(data))
+
 
     @classmethod
     def from_excel(
             cls,
             fname: str,
-            ext: str = 'xlsx'
+            ext: str = 'xlsx',
+            **kwargs
     ):
         """Construct corpus from an Excel spreadsheet, potentially containing multiple sheets"""
         realdata = []
@@ -104,7 +108,7 @@ class CorpusMaker:
         # Iterate through all sheets in the spreadsheet
         for sheet_name, trio in xl:
             if sheet_name.lower() not in sheets_to_skip:
-                realdata.extend(cls.format_trio_spreadsheet(cls, trio))
+                realdata.extend(cls.format_trio_spreadsheet(cls, trio, **kwargs))
         return cls(realdata)
 
     @classmethod
@@ -124,7 +128,8 @@ class CorpusMaker:
     @disable_settingwithcopy_warning
     def format_trio_spreadsheet(
             self,
-            trio_df: pd.DataFrame
+            trio_df: pd.DataFrame,
+            **kwargs
     ) -> list[dict]:
         """Formats the spreadsheet for an individual trio and returns a list of dictionaries"""
 
@@ -167,7 +172,10 @@ class CorpusMaker:
             "has_annotations"
         ]
         # Remove tracks that did not pass selection criteria
-        sheet = trio_df[(trio_df['is_acceptable(Y/N)'] == 'Y') & (~trio_df['youtube_link'].isna())]
+        if kwargs.get('keep_all_tracks', False):
+            sheet = trio_df[~(trio_df['recording_id_for_lbz'].isna())]
+        else:
+            sheet = trio_df[(trio_df['is_acceptable(Y/N)'] == 'Y') & (~trio_df['youtube_link'].isna())]
         # Strip punctuation from album and track name
         sheet['release_title'] = sheet['release_title'].apply(remove_punctuation)
         sheet['recording_title'] = sheet['recording_title'].apply(remove_punctuation)
@@ -198,6 +206,9 @@ class CorpusMaker:
     def format_timestamp(ts: str, as_string: bool = True):
         """Formats a timestamp string correctly. Returns as either a datetime or string, depending on `as_string`"""
         ts = str(ts)
+        if ts == 'nan':
+            return pd.NaT
+
         fmt = '%M:%S' if len(ts) < 6 else '%H:%M:%S'
         if as_string:
             return datetime.strptime(ts, fmt).strftime(fmt)
@@ -209,7 +220,10 @@ class CorpusMaker:
         dur = (
                 self.format_timestamp(stop, as_string=False) - self.format_timestamp(start, as_string=False)
         ).total_seconds()
-        return str(timedelta(seconds=dur))[2:]
+        try:
+            return str(timedelta(seconds=dur))[2:]
+        except ValueError:
+            return ''
 
     @staticmethod
     def construct_filename(item, id_chars: int = 8, desired_words: int = 5) -> str:
@@ -238,7 +252,10 @@ class CorpusMaker:
         # Get the required number of words of the track title, nicely formatted
         track = name_formatter("track_name")
         # Return our track name formatted nicely
-        return rf"{pianist}-{track}-{bassist}{drummer}-{item['recording_year']}-{item['mbz_id'][:id_chars]}"
+        try:
+            return rf"{pianist}-{track}-{bassist}{drummer}-{item['recording_year']}-{item['mbz_id'][:id_chars]}"
+        except TypeError:
+            return ''
 
     def format_first_downbeat(
             self,
@@ -247,8 +264,12 @@ class CorpusMaker:
     ) -> float:
         """Gets the position of the first downbeat in seconds, from the start of an excerpt"""
         start = self.format_timestamp(start_ts, as_string=False)
-        start_td = timedelta(hours=start.hour, minutes=start.minute, seconds=start.second)
-        return (timedelta(seconds=first_downbeat) - start_td).total_seconds()
+        try:
+            start_td = timedelta(hours=start.hour, minutes=start.minute, seconds=start.second)
+        except ValueError:
+            return np.nan
+        else:
+            return (timedelta(seconds=first_downbeat) - start_td).total_seconds()
 
     def format_track_dict(
             self,
@@ -271,7 +292,10 @@ class CorpusMaker:
             # Format our first downbeat using our start timestamp
             track['first_downbeat'] = self.format_first_downbeat(track['start_timestamp'], track['first_downbeat'])
             # Replace time signature with integer value
-            track['time_signature'] = int(track['time_signature'])
+            try:
+                track['time_signature'] = int(track['time_signature'])
+            except ValueError:
+                track['time_signature'] = np.nan
             # Add an empty list for our log
             track['log'] = []
             # Format our musician names correctly
