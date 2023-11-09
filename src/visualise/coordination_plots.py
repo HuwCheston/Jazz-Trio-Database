@@ -15,8 +15,10 @@ import src.visualise.visualise_utils as vutils
 
 FOLDER_PATH = 'coordination_plots'
 
+__all__ = ['TriangleAxis', 'TrianglePlotChronology', 'RegPlotCouplingHalves', 'RegPlotCouplingGrangerCross']
 
-class _TriangleAxis:
+
+class TriangleAxis:
     """This class plots a single axes, showing the measured couplings between each musician in a trio.
 
     The direction of arrows indicates the influence and influencer instruments, namely the tendency of one performer
@@ -150,6 +152,8 @@ class _TriangleAxis:
                 utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
                 vutils.RGB
         ):
+            # Get the number of observations for this instrument
+            nobs = self.grp[self.grp['instrument'] == txt].shape[0]
             # Get the filepath from the performer's name
             mus = str(self.grp[self.grp['instrument'] == txt]['performer'].iloc[0]).replace(' ', '_').lower()
             # Try and get the image corresponding to the performers name
@@ -168,7 +172,12 @@ class _TriangleAxis:
                 self.ax.add_artist(ab)
             # Add the text in, adjacent to the image
             self.ax.text(
-                x, y + 0.15 if y < 0.5 else y - 0.175, txt.title(),
+                x, y + 0.1 if y < 0.5 else y - 0.1, txt.title(),
+                ha='center', va='center', color=col, fontsize=vutils.FONTSIZE,
+            )
+            # Add in the number of observations
+            self.ax.text(
+                x, y - 0.1 if y < 0.5 else y + 0.1, f'$n=$ {nobs}',
                 ha='center', va='center', color=col, fontsize=vutils.FONTSIZE,
             )
 
@@ -186,7 +195,7 @@ class TrianglePlotChronology(vutils.BasePlot):
     def _create_plot(self):
         """Create a `_TriangleAxis` object for each trio"""
         for a, (idx, grp) in zip(self.ax.flatten(), self.df.groupby('pianist')):
-            self.g = _TriangleAxis(grp, a).create_plot()
+            self.g = TriangleAxis(grp, a).create_plot()
 
     def _format_fig(self):
         """Format figure-level parameters"""
@@ -199,7 +208,7 @@ class BarPlotCouplingCoefficients(vutils.BasePlot):
 
     def __init__(self, data, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus')
-        super().__init__(figure_title=fr'phase_correction_plots\barplot_couplingcoefficients_{self.corpus_title}',
+        super().__init__(figure_title=fr'{FOLDER_PATH}\barplot_couplingcoefficients_{self.corpus_title}',
                          **kwargs)
         self.df = self._format_df(data)
         self.fig, self.ax = plt.subplots(nrows=2, ncols=5, sharex=True, sharey=True, figsize=(vutils.WIDTH, 8))
@@ -240,6 +249,257 @@ class BarPlotCouplingCoefficients(vutils.BasePlot):
         self.fig.supylabel('Coupling constant')
         self.fig.supxlabel('Influencer instrument')
         self.fig.subplots_adjust(top=0.95, bottom=0.1, left=0.075, right=0.885)
+
+
+class RegPlotCouplingHalves(vutils.BasePlot):
+    # These are keywords that we pass into our given plot types
+    REG_KWS = dict(
+        scatter=False, ci=95, n_boot=vutils.N_BOOT
+    )
+    LINE_KWS = dict(
+        lw=vutils.LINEWIDTH * 2, ls=vutils.LINESTYLE, zorder=5,
+        color=vutils.BLACK
+    )
+    SCATTER_KWS = dict(
+        hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
+        palette=vutils.RGB, markers=['o', 's', 'D'], s=40,
+        edgecolor=vutils.BLACK, zorder=3, alpha=vutils.ALPHA * 2,
+        style_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
+    )
+    HIST_KWS = dict(
+        kde=False, color=vutils.BLACK, alpha=vutils.ALPHA,
+        lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE
+    )
+    TEXT_BBOX = dict(
+        facecolor=vutils.WHITE, edgecolor=vutils.BLACK,
+        lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE,
+        boxstyle='round,pad=1'
+    )
+
+    def __init__(self, halves_df, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        # Initialise the base plot with our given kwargs
+        super().__init__(figure_title=fr'{FOLDER_PATH}\regplot_recordinghalves_{self.corpus_title}', **kwargs)
+        self.df = halves_df
+        self.fig, self.ax = plt.subplots(
+            nrows=2, ncols=2, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2),
+            gridspec_kw=dict(width_ratios=(11, 1), height_ratios=(1, 5)),
+        )
+        # The main ax for plotting the regression/scatter plot
+        self.main_ax = self.ax[1, 0]
+        # Marginal ax, for plotting histograms
+        self.marginal_ax = np.array([self.ax[0, 0], self.ax[1, 1]])
+        # Top right corner ax, which we can go ahead and disable
+        self.ax[0, 1].axis('off')
+
+    def _create_main_plot(self):
+        sns.scatterplot(
+            data=self.df, x='half_1', y='half_2', hue='variable', style='variable', ax=self.main_ax, **self.SCATTER_KWS
+        )
+        sns.regplot(data=self.df, x='half_1', y='half_2',  ax=self.main_ax, line_kws=self.LINE_KWS, **self.REG_KWS)
+
+    def _create_marginal_plot(self):
+        # Top marginal plot
+        sns.histplot(
+            data=self.df, x='half_1', ax=self.marginal_ax[0],
+            bins=vutils.N_BINS,  **self.HIST_KWS
+        )
+        # Right marginal plot
+        sns.histplot(
+            data=self.df, y='half_2', ax=self.marginal_ax[1],
+            bins=vutils.N_BINS,  **self.HIST_KWS
+        )
+
+    def _create_plot(self):
+        self._create_main_plot()
+        self._create_marginal_plot()
+
+    def _format_main_ax(self):
+        # Add a grid onto the plot
+        self.main_ax.grid(visible=True, axis='both', which='major', zorder=0, **vutils.GRID_KWS)
+        # Get our legend handles, and set their edge color to black
+        hand, _ = self.main_ax.get_legend_handles_labels()
+        for ha in hand:
+            ha.set_edgecolor(vutils.BLACK)
+        # Remove the old legend, then add the new one on
+        self.main_ax.get_legend().remove()
+        self.main_ax.legend(
+            hand, [i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()],
+            loc='lower right', title='Influencer', frameon=True, framealpha=1,
+            edgecolor=vutils.BLACK
+        )
+        # Final attributes to set here
+        self.main_ax.set(
+            xticks=[-0.5, 0, 0.5, 1.0, 1.5], xlim=(-0.5, 1.6), ylim=(-0.5, 1.6),
+            xlabel='Coupling, first half', ylabel='Coupling, second half',
+            yticks=[-0.5, 0, 0.5, 1.0, 1.5]
+        )
+        plt.setp(self.main_ax.spines.values(), linewidth=vutils.LINEWIDTH)
+        self.main_ax.plot(
+            self.main_ax.get_xlim(), self.main_ax.get_ylim(), lw=vutils.LINEWIDTH,
+            ls='dashed', color=vutils.BLACK, alpha=vutils.ALPHA
+        )
+        self.main_ax.tick_params(axis='both', bottom=True, right=True, width=vutils.TICKWIDTH)
+
+    def _format_marginal_ax(self):
+        # Remove correct spines from marginal axis
+        for spine, ax in zip(['left', "bottom"], self.marginal_ax.flatten()):
+            ax.spines[[spine, 'right', 'top']].set_visible(False)
+            ax.tick_params(axis='both', width=vutils.TICKWIDTH)
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+        # Set other features for the main axis
+        self.marginal_ax[0].set(
+            xlabel='', ylabel='', yticks=[0], yticklabels=[''], xticklabels=[],
+            xlim=self.main_ax.get_xlim(), xticks=self.main_ax.get_xticks()
+        )
+        self.marginal_ax[1].set(
+            xlabel='', ylabel='', xticks=[0], xticklabels=[''], yticklabels=[],
+            ylim=self.main_ax.get_ylim(), yticks=self.main_ax.get_yticks()
+        )
+
+    def _add_regression_text(self):
+        r = self.df[['half_1', 'half_2']].corr().iloc[1].iloc[0]
+        self.main_ax.text(
+            -0.35, 1.4, rf'$r=${round(r, 2)}', bbox=self.TEXT_BBOX
+        )
+
+    def _format_ax(self):
+        self._format_marginal_ax()
+        self._format_main_ax()
+        self._add_regression_text()
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
+class RegPlotCouplingGrangerCross(vutils.BasePlot):
+    COUPLING_COLS = ['coupling_piano', 'coupling_bass', 'coupling_drums']
+    GRANGER_COLS = ['granger_causality_piano_i', 'granger_causality_bass_i', 'granger_causality_drums_i']
+    CROSS_COLS = ['cross_corr_piano_r', 'cross_corr_bass_r', 'cross_corr_drums_r']
+
+    # These are keywords that we pass into our given plot types
+    REG_KWS = dict(
+        scatter=False, ci=95, n_boot=vutils.N_BOOT
+    )
+    LINE_KWS = dict(
+        lw=vutils.LINEWIDTH * 2, ls=vutils.LINESTYLE, zorder=5,
+        color=vutils.BLACK
+    )
+    SCATTER_KWS = dict(
+        hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
+        palette=vutils.RGB, markers=['o', 's', 'D'], s=40,
+        edgecolor=vutils.BLACK, zorder=3, alpha=vutils.ALPHA,
+        style_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
+    )
+    HIST_KWS = dict(
+        kde=False, color=vutils.BLACK, alpha=vutils.ALPHA,
+        lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE
+    )
+    TEXT_BBOX = dict(
+        facecolor=vutils.WHITE, edgecolor=vutils.BLACK,
+        lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE,
+        boxstyle='round,pad=1'
+    )
+
+    def __init__(self, model_df, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        # Initialise the base plot with our given kwargs
+        super().__init__(figure_title=fr'{FOLDER_PATH}\regplot_couplinggrangercross_{self.corpus_title}', **kwargs)
+        self.df = self._format_df(model_df)
+        self.fig, self.ax = plt.subplots(
+            nrows=2, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 2), sharey='row', sharex='col',
+            gridspec_kw=dict(width_ratios=(1, 1, 0.2), height_ratios=(0.2, 1)),
+        )
+        # The main ax for plotting the regression/scatter plot
+        self.main_ax = np.array(self.ax[[1, 0]])
+        # Marginal ax, for plotting histograms
+        self.marginal_ax = np.array([self.ax[0, 0], self.ax[0, 1], self.ax[-1, -1]])
+        # Top right corner ax, which we can go ahead and disable
+        self.ax[0, 2].axis('off')
+        self.hand = None
+
+    def _format_df(self, model_df):
+        pc = model_df[self.COUPLING_COLS].melt(var_name='instrument', value_name='coupling').dropna()
+        gc = model_df[self.GRANGER_COLS].melt(var_name='instrument', value_name='causality').dropna()['causality']
+        cc = model_df[self.CROSS_COLS].melt(var_name='instrument', value_name='corr').dropna()['corr']
+        conc = pd.concat([pc, gc, cc], axis=1)
+        conc['instrument'] = conc['instrument'].str.replace('coupling_', '')
+        return conc
+
+    def _create_main_plot(self):
+        for a, var, xp in zip(self.main_ax.flatten(), ['causality', 'corr'], [-0.3, -0.0]):
+            sns.scatterplot(
+                data=self.df, x=var, y='coupling', hue='instrument', style='instrument', ax=a, **self.SCATTER_KWS
+            )
+            sns.regplot(data=self.df, x=var, y='coupling', ax=a, line_kws=self.LINE_KWS, **self.REG_KWS)
+            self._add_regression_coeff(var, a, xp)
+
+    def _add_regression_coeff(self, var, ax, xpos):
+        r = self.df[['coupling', var]].corr().iloc[1].iloc[0]
+        ax.text(xpos, 1.4, rf'$r=${round(r, 2)}', bbox=self.TEXT_BBOX)
+
+    def _create_marginal_plot(self):
+        # Top marginal plots
+        for num, var in enumerate(['causality', 'corr']):
+            sns.histplot(
+                data=self.df, x=var, ax=self.marginal_ax.flatten()[num],
+                bins=vutils.N_BINS,  **self.HIST_KWS
+            )
+        # Right marginal plot
+        sns.histplot(
+            data=self.df, y='coupling', ax=self.marginal_ax.flatten()[-1],
+            bins=vutils.N_BINS,  **self.HIST_KWS
+        )
+
+    def _create_plot(self):
+        self._create_main_plot()
+        self._create_marginal_plot()
+
+    def _format_main_ax(self):
+        for ax, xl, xlab, ylab in zip(
+                self.main_ax.flatten(), [(-0.4, 1.3), (-0.1, 0.9)],
+                ['Granger index', 'Cross-correlation ($r$)'], ['Coupling', '']
+        ):
+            # Add a grid onto the plot
+            ax.grid(visible=True, axis='both', which='major', zorder=0, **vutils.GRID_KWS)
+            ax.tick_params(axis='both', bottom=True, right=True, width=vutils.TICKWIDTH)
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+            ax.set(
+                xlim=xl, ylim=(-0.5, 1.6),
+                xlabel=xlab, ylabel=ylab,
+                xticks=np.linspace(xl[0], xl[1], 5),
+                yticks=[-0.5, 0, 0.5, 1.0, 1.5]
+            )
+            self.hand, _ = ax.get_legend_handles_labels()
+            ax.get_legend().remove()
+            ax.plot(
+                ax.get_xlim(), ax.get_ylim(), lw=vutils.LINEWIDTH,
+                ls='dashed', color=vutils.BLACK, alpha=vutils.ALPHA
+            )
+
+    def _format_marginal_ax(self):
+        # Remove correct spines from marginal axis
+        for spine, ax in zip(['left', 'left', "bottom"], self.marginal_ax.flatten()):
+            ax.spines[[spine, 'right', 'top']].set_visible(False)
+            ax.tick_params(axis='both', width=vutils.TICKWIDTH)
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+            ax.set(xlabel='', ylabel='')
+            if spine == 'left':
+                ax.set(yticks=[0], yticklabels=[''])
+            else:
+                ax.set(xticks=[0], xticklabels=[''])
+
+    def _format_ax(self):
+        self._format_main_ax()
+        self._format_marginal_ax()
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+        self.fig.legend(
+            self.hand, [i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()],
+            loc='upper right', title='Influencer', frameon=True, framealpha=1,
+            edgecolor=vutils.BLACK
+        )
 
 
 if __name__ == '__main__':
