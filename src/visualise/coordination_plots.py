@@ -15,7 +15,10 @@ import src.visualise.visualise_utils as vutils
 
 FOLDER_PATH = 'coordination_plots'
 
-__all__ = ['TriangleAxis', 'TrianglePlotChronology', 'RegPlotCouplingHalves', 'RegPlotCouplingGrangerCross']
+__all__ = [
+    'TriangleAxis', 'TrianglePlotChronology', 'RegPlotCouplingHalves', 'BarPlotSimulationComparison',
+    'RegPlotCouplingGrangerCross', 'BarPlotCouplingCoefficients',
+]
 
 
 class TriangleAxis:
@@ -37,9 +40,13 @@ class TriangleAxis:
 
     """
     img_loc = fr'{utils.get_project_root()}\references\images\musicians'
-    starting_zoom = 1.2
 
-    def __init__(self, grp: pd.DataFrame, ax: plt.Axes):
+    def __init__(self, grp: pd.DataFrame, ax: plt.Axes, **kwargs):
+        self.starting_zoom = kwargs.get('starting_zoom', 1)
+        self.add_text = kwargs.get('add_text', True)
+        self.arrow_mod = kwargs.get('arrow_mod', 25)
+        self.len_mod = kwargs.get('len_mod', 1)
+        self.head_width = kwargs.get('head_width', 20)
         self.grp = grp
         self.ax = ax
         self.ax.axis('off')
@@ -51,7 +58,8 @@ class TriangleAxis:
         """Called from outside the class to generate the required plot elements, show them, and save"""
 
         self._add_musicians_images()
-        self._add_center_text()
+        if self.add_text:
+            self._add_center_text()
         self._create_plot()
         return self.ax
 
@@ -61,9 +69,7 @@ class TriangleAxis:
         txt = str(self.grp['pianist'].iloc[0]).replace(' ', '\n')
         self.ax.text(0.5, 0.5, txt, ha='center', va='center', fontsize=vutils.FONTSIZE * 2)
 
-    def _create_plot(
-            self, arrow_mod: float = 25
-    ) -> None:
+    def _create_plot(self,) -> None:
         """Creates the plot arrows and annotations, according to the modelled coupling responses."""
         # The starting coordinate for each arrow, i.e. the arrow tail
         start_coords = [
@@ -90,16 +96,19 @@ class TriangleAxis:
                 # Get our coupling coefficient
                 c, q1, q2 = self._get_coupling_coefficient(influenced, influencer)
                 # Add in the arrow
-                self.ax.annotate(
-                    '', xy=(x, y), xycoords=self.ax.transAxes,
-                    xytext=(x2, y2), textcoords=self.ax.transAxes,
-                    arrowprops=dict(
-                        width=c * arrow_mod, edgecolor=col, lw=1.5, facecolor=col, headwidth=20
+                if c > 0:
+                    self.ax.annotate(
+                        '', xy=(x, y), xycoords=self.ax.transAxes,
+                        xytext=(x2, y2), textcoords=self.ax.transAxes,
+                        arrowprops=dict(
+                            width=c * self.arrow_mod, edgecolor=col, lw=1.5 * self.len_mod,
+                            facecolor=col, headwidth=self.head_width
+                        )
                     )
-                )
-                # Add the coupling coefficient text in
-                txt = f'{round(abs(c), 2)} [{round(abs(q1), 2)}–{round(abs(q2), 2)}]'
-                self._add_coupling_coefficient_text(txt, x, x2, y, y2, rotation=rot12[num])
+                if self.add_text:
+                    # Add the coupling coefficient text in
+                    txt = f'{round(abs(c), 2)} [{round(abs(q1), 2)}–{round(abs(q2), 2)}]'
+                    self._add_coupling_coefficient_text(txt, x, x2, y, y2, rotation=rot12[num])
 
     def _get_coupling_coefficient(
             self, influenced: str, influencer: str
@@ -165,21 +174,22 @@ class TriangleAxis:
                 img = plt.imread(fr'{self.img_loc}\_{txt}.png')
             # Add the image into the graph, with the correct parameters and properties
             finally:
-                img = mpl.offsetbox.OffsetImage(img, zoom=zoom)
+                img = mpl.offsetbox.OffsetImage(img, zoom=zoom * self.starting_zoom)
                 ab = mpl.offsetbox.AnnotationBbox(
                     img, (x, y), xycoords='data', bboxprops=dict(edgecolor=col, lw=2, boxstyle=boxstyle)
                 )
                 self.ax.add_artist(ab)
             # Add the text in, adjacent to the image
-            self.ax.text(
-                x, y + 0.1 if y < 0.5 else y - 0.1, txt.title(),
-                ha='center', va='center', color=col, fontsize=vutils.FONTSIZE,
-            )
-            # Add in the number of observations
-            self.ax.text(
-                x, y - 0.1 if y < 0.5 else y + 0.1, f'$n=$ {nobs}',
-                ha='center', va='center', color=col, fontsize=vutils.FONTSIZE,
-            )
+            if self.add_text:
+                self.ax.text(
+                    x, y + 0.1 if y < 0.5 else y - 0.1, txt.title(),
+                    ha='center', va='center', color=col, fontsize=vutils.FONTSIZE,
+                )
+                # Add in the number of observations
+                self.ax.text(
+                    x, y - 0.1 if y < 0.5 else y + 0.1, f'$n=$ {nobs}',
+                    ha='center', va='center', color=col, fontsize=vutils.FONTSIZE,
+                )
 
 
 class TrianglePlotChronology(vutils.BasePlot):
@@ -500,6 +510,130 @@ class RegPlotCouplingGrangerCross(vutils.BasePlot):
             loc='upper right', title='Influencer', frameon=True, framealpha=1,
             edgecolor=vutils.BLACK
         )
+
+
+class BarPlotCouplingCoefficients(vutils.BasePlot):
+    BAR_KWS = dict(
+        dodge=True, errorbar=None, width=0.8, estimator=np.mean,
+        zorder=3, hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
+        ec=vutils.BLACK, ls=vutils.LINESTYLE, lw=vutils.LINEWIDTH, alpha=1,
+    )
+
+    def __init__(self, model_df, **kwargs):
+        self.corpus_title = kwargs.get('corpus_title', 'corpus_chronology')
+        super().__init__(figure_title=fr'coordination_plots\barplot_coefficients_{self.corpus_title}', **kwargs)
+        self.df = (
+            model_df.melt(
+                id_vars=['mbz_id', 'instrument'],
+                value_vars=['coupling_piano', 'coupling_bass', 'coupling_drums']
+            )
+            .dropna()
+            .reset_index(drop=False)
+            .set_index('instrument')
+            .loc[utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
+            .reset_index(drop=False)
+        )
+        instr = self.df['variable'].str.replace('coupling_', '').str.title()
+        self.df['variable'] = self.df['instrument'].str.title() + '→' + instr
+        self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 4))
+
+    def _create_plot(self):
+        sns.barplot(data=self.df, x='variable', y='value', **self.BAR_KWS)
+        sns.stripplot(data=self.df, x='variable', y='value', s=2, color=vutils.BLACK, zorder=5)
+        marker_df = self.df.groupby('variable').mean().reset_index(drop=False)
+        sns.stripplot(data=marker_df, x='variable', y='value', s=10, color='#8ffbfd', marker='s', zorder=10)
+
+    def _format_ax(self):
+        repeater = lambda x: [val for val in x for _ in (0, 1)]
+        for patch, col, hatch in zip(self.ax.patches, repeater(vutils.RGB), repeater(vutils.HATCHES)):
+            patch.set_facecolor(col)
+            patch.set_hatch(hatch)
+        self.ax.axhline(0, 0, 1, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, color=vutils.BLACK)
+        self.ax.set_xticklabels(self.ax.get_xticklabels(), rotation=30, ha='right')
+        self.ax.yaxis.grid(True, zorder=0, **vutils.GRID_KWS)
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
+        self.ax.tick_params(axis='both', bottom=True, right=True, width=vutils.TICKWIDTH)
+        self.ax.set(xlabel='', ylabel='Coupling constant')
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
+class BarPlotSimulationComparison(vutils.BasePlot):
+    BAR_KWS = dict(
+        dodge=False, edgecolor=vutils.BLACK, errorbar=('ci', 95),
+        lw=vutils.LINEWIDTH, seed=42, capsize=0.1, width=0.8,
+        ls=vutils.LINESTYLE, estimator=np.mean,
+        errcolor=vutils.BLACK, zorder=3, alpha=1
+    )
+    TRIANGLE_KWS = dict(
+        starting_zoom=0.3, arrow_mod=7.5, add_text=False, head_width=7.5, len_mod=0.8
+    )
+    PAL = ['#6fcbdc', *vutils.RGB, '#6fcbdc', '#6fcbdc']
+    HATCHES = ['', *vutils.HATCHES[:3], '', '']
+
+    def __init__(self, all_sims, all_params: list, **kwargs):
+        self.corpus_title = kwargs.get('corpus_title', 'corpus_chronology')
+        super().__init__(figure_title=fr'coordination_plots\barplot_simulationcomparison_{self.corpus_title}', **kwargs)
+        self.df = self._format_df(all_sims)
+        self.params = all_params
+        self.fig = plt.figure(figsize=(vutils.WIDTH / 1.5, vutils.WIDTH / 3))
+        gs = self.fig.add_gridspec(2, 6, height_ratios=[3, 1])
+        self.main_ax = self.fig.add_subplot(gs[0, :])
+        self.small_axs = np.array([self.fig.add_subplot(gs[1, i]) for i in range(len(all_sims))])
+
+    @staticmethod
+    def _format_df(all_sims):
+        names = ['original', 'piano_leader', 'bass_leader', 'drums_leader', 'democracy', 'anarchy']
+        all_rms = (
+            pd.DataFrame([s.get_rms_values() for s in all_sims])
+            .transpose()
+            .rename(columns={i: k for i, k in zip(range(6), names)})
+        )
+        shift_value = all_rms['original'].mean()
+        all_rms = all_rms.melt()
+        all_rms['value'] /= shift_value
+        all_rms.loc[all_rms['variable'] == 'anarchy', 'value'] = 7
+        return all_rms
+
+    @staticmethod
+    def _format_params(param_dict):
+        small = (
+            pd.DataFrame(param_dict)
+            .transpose()
+            .reset_index(drop=False)
+            .rename(columns={'index': 'instrument'})
+        )
+        small['pianist'] = ''
+        small['performer'] = ''
+        return small
+
+    def _create_plot(self):
+        sns.barplot(data=self.df, x='variable', y='value', ax=self.main_ax, **self.BAR_KWS)
+        for ax, param_dict in zip(self.small_axs, self.params):
+            TriangleAxis(self._format_params(param_dict), ax, **self.TRIANGLE_KWS).create_plot()
+
+    def _format_ax(self):
+        self.main_ax.set(
+            ylim=(0, 7), xlabel='', yticks=[1, 2, 3, 4, 5, 6, 7], yticklabels=['1', '2', '3', '4', '5', '6', '>6'],
+            xticklabels=[
+                'Original', 'Leadership\npiano', 'Leadership\nbass',
+                'Leadership\ndrums', 'Equally\nbalanced', 'No\ncoupling'
+            ]
+        )
+        self.main_ax.set_ylabel('Normalized RMS of the simulated\nasynchrony (1 = original RMS)', x=-0.01)
+        plt.setp(self.main_ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.main_ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
+        # Add a vertical grid
+        self.main_ax.grid(zorder=0, axis='y', **vutils.GRID_KWS)
+        for patch, col, hatch in zip(self.main_ax.patches, self.PAL, self.HATCHES):
+            patch.set_facecolor(col)
+            patch.set_hatch(hatch)
+        for line in self.main_ax.lines:
+            line.set_zorder(5)
+
+    def _format_fig(self):
+        self.fig.subplots_adjust(wspace=0.1, hspace=0.3, left=0.095, right=0.975, top=0.95, bottom=0.05)
 
 
 if __name__ == '__main__':

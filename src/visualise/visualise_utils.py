@@ -6,10 +6,8 @@
 import functools
 from pathlib import Path
 
-import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 from src import utils
 
