@@ -4,8 +4,11 @@
 """Utility classes, functions, and variables used specifically in the analysis and feature extraction process"""
 
 import json
+import string
 import warnings
+from collections import OrderedDict
 from functools import reduce
+from itertools import pairwise, combinations
 from typing import Generator
 
 import numpy as np
@@ -130,7 +133,6 @@ class FeatureExtractor:
         return onset_arr
 
     # noinspection PyAttributeOutsideInit
-    @utils.ignore_warning
     def extract_features(self):
         """Central function for extracting all features from all instruments in a track"""
         def roll(cl, **kwargs) -> dict:
@@ -187,12 +189,9 @@ class FeatureExtractor:
             i: roll(CrossCorrelation, my_beats=self.df[i], their_beats=self.df[their_instrs(i)]) for i in ins
         }
         # Event density features
+        # TODO: do we want to calculate this on a rolling basis?
         self.event_density = {
-            i: {
-                num: EventDensity(
-                    my_onsets=self.om.ons[i], downbeats=self.om.ons['downbeats_manual'], bar_period=num, time_period=num
-                ) for num in range(1, 8)
-            } for i in ins
+            i: EventDensity(my_onsets=self.om.ons[i], downbeats=self.om.ons['downbeats_manual']) for i in ins
         }
         # We delete the onset maker and item variables here as we no longer need to refer to them: this saves memory!
         del self.om
@@ -209,7 +208,12 @@ class FeatureExtractor:
         def __get_subjective_rating_data() -> dict:
             """Gets information from subjective ratings of this instrument"""
             cols = [f'rating_{x_ins}_audio', f'rating_{x_ins}_detection', 'rating_mix', 'rating_comments']
-            return {col: self.item[col] for col in cols}
+            di = {col: self.item[col] for col in cols}
+            # Rename the subjective rating columns here
+            # TODO: do we want to do this renaming somewhere earlier in the pipeline?
+            di[f'rating_audio'] = di.pop(f'rating_{x_ins}_audio')
+            di[f'rating_detection'] = di.pop(f'rating_{x_ins}_detection')
+            return di
 
         def __get_channel_overrides() -> str:
             """Gets information on channel overrides (if any) used for this particular instrument"""
@@ -456,18 +460,19 @@ class IOISummaryStats(BaseExtractor):
 class RollingIOISummaryStats(IOISummaryStats):
     """Extracts the statistics in `IOISummaryStatsExtractor` on a rolling basis, window defaults to 4 bars length"""
 
-    def __init__(self, my_onsets: pd.Series, downbeats, bar_period: int = 4, **kwargs):
+    def __init__(self, my_onsets: pd.Series, downbeats, order: int = 4, **kwargs):
         super().__init__(my_onsets=my_onsets, **kwargs)
         if isinstance(my_onsets, np.ndarray):
             my_onsets = pd.Series(my_onsets)
         self.summary_dict.clear()
-        self.bar_period = bar_period
+        # TODO: implement a time-based window here!
+        self.bar_period = order
         # We get our raw rolling statistics here
         self.rolling_statistics = self.extract_rolling_statistics(my_onsets, downbeats, **kwargs)
         # We redefine summary_funcs here, as we want to remove extra functions added in `IOISummaryStatsExtractor`
         self.summary_funcs = BaseExtractor().summary_funcs
         # Update the summary dictionary
-        self.summary_dict['bar_period'] = bar_period
+        self.summary_dict['bar_period'] = order
         self.update_summary_dict(self.rolling_statistics.keys(), self.rolling_statistics.values())
 
     def extract_rolling_statistics(self, my_onsets: pd.Series, downbeats: np.array, **kwargs) -> dict:
@@ -545,11 +550,14 @@ class EventDensity(BaseExtractor):
 
 
 class BeatUpbeatRatio(BaseExtractor):
+    LOW_THRESH, HIGH_THRESH = 0.25, 4
+
     """Extract various features related to beat-upbeat ratios (BURs)"""
-    def __init__(self, my_onsets, my_beats):
+    def __init__(self, my_onsets, my_beats, clean_outliers: bool = True):
         super().__init__()
         if isinstance(my_onsets, np.ndarray):
             my_onsets = pd.Series(my_onsets)
+        self.clean_outliers = clean_outliers
         # Extract our burs here, so we can access them as instance properties
         self.bur = self.extract_burs(my_onsets, my_beats, use_log_burs=False)
         self.bur_log = self.extract_burs(my_onsets, my_beats, use_log_burs=True)
@@ -597,8 +605,19 @@ class BeatUpbeatRatio(BaseExtractor):
             match = self.get_between(my_onsets, a, b)
             # If we have a group of three notes (i.e. three quavers), including a and b
             if len(match) == 3:
-                # Then return the BUR (otherwise, we return None, which is converted to NaN)
-                return func((match[1] - match[0]) / (match[2] - match[1]))
+                bur_val = func((match[1] - match[0]) / (match[2] - match[1]))
+                # If we're cleaning outliers
+                if self.clean_outliers:
+                    # If the BUR is above or high threshold, or below our low threshold, return NaN
+                    if bur_val > func(self.HIGH_THRESH) or bur_val < func(self.LOW_THRESH):
+                        return np.nan
+                    # Otherwise, return the BUR
+                    else:
+                        return bur_val
+                # If we're not cleaning outliers, just return the BUR
+                else:
+                    return bur_val
+            # If we don't have a match in the first place, return NaN
             else:
                 return np.nan
 
@@ -637,8 +656,8 @@ class TempoSlope(BaseExtractor):
     def update_summary_dict(self, array_names, arrays, *args, **kwargs) -> None:
         """Update the summary dictionary with tempo slope and drift coefficients"""
         self.summary_dict.update({
-            f'tempo_slope': self.model.params[1] if self.model is not None else np.nan,
-            f'tempo_drift': self.model.bse[1] if self.model is not None else np.nan
+            f'tempo_slope': self.model.params.iloc[1] if self.model is not None else np.nan,
+            f'tempo_drift': self.model.bse.iloc[1] if self.model is not None else np.nan
         })
 
 
@@ -707,6 +726,7 @@ class Asynchrony(BaseExtractor):
 
     def mean_relative_asynchrony(self, my_beats, their_beats: pd.Series | pd.DataFrame) -> float:
         """Extract the mean position of an instrument's onsets relative to the average position of the group"""
+        # TODO: if one instrument is all NaN, this seems to result in a NaN result even if the other instrument is there
         # Get the average position of the whole group
         average_group_position = pd.concat([my_beats, their_beats], axis=1).dropna().mean(axis=1)
         # Get the relative position in comparison to the average: my_onset - average_onsets
@@ -745,6 +765,7 @@ class PhaseCorrection(BaseExtractor):
         difference_iois (bool, optional): whether to take the first difference of IOI values, defaults to True
 
     """
+    warnings.filterwarnings('ignore', category=RuntimeWarning)
 
     def __init__(
             self,
@@ -766,7 +787,8 @@ class PhaseCorrection(BaseExtractor):
         self.model = self.generate_model(my_beats, their_beats)
         # Create the dataframe and model summary information
         self.df = pd.DataFrame(self.extract_model_coefficients())
-        self.summary_dict = self.df.to_dict(orient='records')
+        # TODO: why are we subsetting here?
+        self.summary_dict = self.df.to_dict(orient='records')[0]
 
     def truncate(self, my_beats, their_beats) -> tuple:
         """Truncates our input data between given low and high thresholds"""
@@ -1152,6 +1174,167 @@ class CrossCorrelation(BaseExtractor):
                     f'cross_corr_{instrument}_n': int(combined.shape[0]),
                 })
         return di
+
+
+class IOIComplexity(BaseExtractor):
+    col_names = ['bar_range', 'lz77', 'n_onsets']
+
+    def __init__(
+            self,
+            my_onsets: np.array,
+            downbeats: np.array,
+            tempo: float,
+            time_signature: int,
+            bar_period: int = 4,
+    ):
+        super().__init__()
+        # Set attributes
+        self.bar_period = bar_period
+        self.quarter_note = 60 / tempo
+        self.time_signature = time_signature
+        self.fracs = [1, 1/2, 5/12, 3/8, 1/3, 1/4, 1/6, 1/8, 1/12, 0]
+        # Extract event density
+        binned_iois = pd.DataFrame(self.bin_iois(my_onsets, downbeats))
+        self.complexity_df = pd.DataFrame(self.extract_complexity(binned_iois), columns=self.col_names)
+        # Update our summary dictionary
+        self.summary_dict['bar_period'] = bar_period
+        self.summary_dict.update(**self._get_summary_dict())
+
+    def _get_summary_dict(self):
+        return utils.flatten_dict(self.complexity_df[['lz77', 'n_onsets']].agg(['mean', 'std']).to_dict())
+
+    def _bin_ioi(self, ioi: float) -> float:
+        proportional_ioi = (ioi / self.quarter_note) / self.time_signature
+        if proportional_ioi > 1:
+            return np.nan
+        else:
+            return min(self.fracs, key=lambda x: abs(x - proportional_ioi))
+
+    def _bin_to_ascii(self, bin_) -> str:
+        alphabet = [list(string.ascii_lowercase)[i] for i in range(len(self.fracs))]
+        return alphabet[self.fracs.index(bin_)]
+
+    def bin_iois(self, my_onsets, downbeats) -> list:
+        for i in range(len(downbeats) - self.bar_period):
+            first_bar = downbeats[i]
+            last_bar = downbeats[i + self.bar_period]
+            iois_bar = np.ediff1d(self.get_between(my_onsets, first_bar, last_bar))
+            binned_iois = np.array([self._bin_ioi(i) for i in iois_bar])
+            binned_iois_clean = binned_iois[~np.isnan(binned_iois)]
+            for binned_ioi in binned_iois_clean:
+                yield dict(
+                    bar_range=f'{i + 1}_{i + self.bar_period + 1}',
+                    binned_ioi=binned_ioi,
+                    binned_ascii=self._bin_to_ascii(binned_ioi)
+                )
+
+    @staticmethod
+    def lz77_compress(data, window_size: int = 4096) -> list:
+        compressed = []
+        index = 0
+        while index < len(data):
+            best_offset = -1
+            best_length = -1
+            best_match = ''
+            # Search for the longest match in the sliding window
+            for length in range(1, min(len(data) - index, window_size)):
+                substring = data[index:index + length]
+                offset = data.rfind(substring, max(0, index - window_size), index)
+                if offset != -1 and length > best_length:
+                    best_offset = index - offset
+                    best_length = length
+                    best_match = substring
+            if best_match:
+                # Add the (offset, length, next_character) tuple to the compressed data
+                compressed.append((best_offset, best_length, data[index + best_length]))
+                index += best_length + 1
+            else:
+                # No match found, add a zero-offset tuple
+                compressed.append((0, 0, data[index]))
+                index += 1
+        return compressed
+
+    @staticmethod
+    def rle(inp):
+        dic = OrderedDict.fromkeys(inp, 0)
+        for ch in inp:
+            dic[ch] += 1
+        output = ''
+        for key, value in dic.items():
+            output = output + key + str(value)
+        return output
+
+    def extract_complexity(self, binned_iois):
+        if len(binned_iois) == 0:
+            return [], [], [], []
+        for idx, grp in binned_iois.groupby('bar_range', sort=False):
+            ascii_ = ''.join(grp['binned_ascii'].to_list())
+            # lz77 compression
+            compressed = self.lz77_compress(ascii_)
+            yield idx, len(compressed), len(ascii_)
+
+
+class ProportionalAsynchrony(BaseExtractor):
+    UPPER_BOUND = 1/16
+    LOWER_BOUND = 1/32
+    REF_INSTR = 'drums'
+    # TODO: this whole class is cursed, jesus christ
+
+    def __init__(self, summary_df, my_instr_name):
+        super().__init__()
+        asy = pd.DataFrame(self._extract_asynchronies(summary_df))
+        self.asynchronies = self._format_async_df(asy)
+        mean_async = self.asynchronies.groupby('instr')['asynchrony_adjusted_offset'].agg([np.nanmean, np.nanstd])
+        async_count = len(self.asynchronies[self.asynchronies['instr'] == my_instr_name].dropna())
+        self.summary_dict = {
+            f'{my_instr_name}_prop_async_count': len(self.asynchronies[self.asynchronies['instr'] == my_instr_name]),
+            f'{my_instr_name}_prop_async_count_nonzero': async_count,
+            **self._get_mean_asyncs(mean_async)
+        }
+
+    @staticmethod
+    def _get_mean_asyncs(mean_async) -> dict:
+        loc = lambda name, c: mean_async[c].loc[name]
+        res = {}
+        for col in mean_async.columns:
+            for i1, i2 in combinations(list(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()), 2):
+                res[f'{i1}_{i2}_prop_async_{col}'] = loc(i1, col) - loc(i2, col)
+        return res
+
+    def _format_async_df(self, async_df):
+        mean_reference = async_df[(async_df['instr'] == self.REF_INSTR) & (async_df['beat'] == 1)]['asynchrony'].mean()
+        # Offset the asynchrony column so that drums average beat 1 is shifted to 0
+        async_df['asynchrony_offset'] = async_df['asynchrony'] - mean_reference
+        # Adjust the asynchrony values so that asynchrony is independent of beat location
+        async_df['asynchrony_adjusted'] = (async_df['asynchrony'] / 360) - ((async_df['beat'] - 1) * 1/4)
+        # Adjust the offset beat values
+        async_df['asynchrony_adjusted_offset'] = (async_df['asynchrony_offset'] / 360) - ((async_df['beat'] - 1) * 1/4)
+        return async_df
+
+    def _extract_asynchronies(self, summary_df):
+        idx = summary_df[summary_df['metre_manual'] == 1].index
+        for downbeat1, downbeat2 in pairwise(idx):
+            # Get all the beats marked between our two downbeats (beat 1 bar 1, beat 1 bar 2)
+            bw = summary_df[(downbeat1 <= summary_df.index) & (summary_df.index < downbeat2)]
+            sub = bw[utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
+            # Get the first downbeat of the first bar, and the last downbeat of the second
+            first = summary_df[summary_df.index == downbeat1]['beats'].iloc[0]
+            last = summary_df[summary_df.index == downbeat2]['beats'].iloc[0]
+            # Scale our onsets to be proportional with our first and last values
+            prop = (sub - first) / (last - first)
+            # Drop values after 1/16th note or before 1/32nd note
+            upper_bound = (((bw['metre_manual'] - 1) * 1/4) + self.UPPER_BOUND)
+            lower_bound = ((bw['metre_manual'] - 1) * 1/4) - self.LOWER_BOUND
+            # Set values below upper and lower bound to NaN
+            for col in prop.columns:
+                prop[col][(prop[col] < lower_bound) | (prop[col] > upper_bound)] = np.nan
+            # Convert values to degrees
+            prop *= 360
+            prop = pd.concat([prop, bw['metre_manual']], axis=1)
+            # Iterate through all instruments
+            for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+                for _, val in prop[[instr, 'metre_manual']].iterrows():
+                    yield dict(instr=instr, asynchrony=val[instr], beat=val['metre_manual'])
 
 
 if __name__ == '__main__':
