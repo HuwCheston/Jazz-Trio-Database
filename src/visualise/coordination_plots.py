@@ -46,7 +46,9 @@ class TriangleAxis:
         self.add_text = kwargs.get('add_text', True)
         self.arrow_mod = kwargs.get('arrow_mod', 25)
         self.len_mod = kwargs.get('len_mod', 1)
+        self.text_mod = kwargs.get('text_mod', 0.1)
         self.head_width = kwargs.get('head_width', 20)
+        self.performer_picture_zoom = kwargs.get('performer_picture_zoom', 1)
         self.grp = grp
         self.ax = ax
         self.ax.axis('off')
@@ -168,10 +170,12 @@ class TriangleAxis:
             # Try and get the image corresponding to the performers name
             try:
                 img = plt.imread(fr'{self.img_loc}\{mus}.png')
-                boxstyle, zoom = 'sawtooth', zoom + 0.25
             # If we don't have the image, use the default image corresponding to that instrument
             except FileNotFoundError:
                 img = plt.imread(fr'{self.img_loc}\_{txt}.png')
+            else:
+                boxstyle = 'sawtooth'
+                zoom *= self.performer_picture_zoom
             # Add the image into the graph, with the correct parameters and properties
             finally:
                 img = mpl.offsetbox.OffsetImage(img, zoom=zoom * self.starting_zoom)
@@ -182,12 +186,12 @@ class TriangleAxis:
             # Add the text in, adjacent to the image
             if self.add_text:
                 self.ax.text(
-                    x, y + 0.1 if y < 0.5 else y - 0.1, txt.title(),
+                    x, y + self.text_mod if y < 0.5 else y - self.text_mod, txt.title(),
                     ha='center', va='center', color=col, fontsize=vutils.FONTSIZE,
                 )
                 # Add in the number of observations
                 self.ax.text(
-                    x, y - 0.1 if y < 0.5 else y + 0.1, f'$n=$ {nobs}',
+                    x, y - self.text_mod if y < 0.5 else y + self.text_mod, f'$n=$ {nobs}',
                     ha='center', va='center', color=col, fontsize=vutils.FONTSIZE,
                 )
 
@@ -577,7 +581,7 @@ class BarPlotSimulationComparison(vutils.BasePlot):
         super().__init__(figure_title=fr'coordination_plots\barplot_simulationcomparison_{self.corpus_title}', **kwargs)
         self.df = self._format_df(all_sims)
         self.params = all_params
-        self.fig = plt.figure(figsize=(vutils.WIDTH / 1.5, vutils.WIDTH / 3))
+        self.fig = plt.figure(figsize=(vutils.WIDTH, vutils.WIDTH / 3))
         gs = self.fig.add_gridspec(2, 6, height_ratios=[3, 1])
         self.main_ax = self.fig.add_subplot(gs[0, :])
         self.small_axs = np.array([self.fig.add_subplot(gs[1, i]) for i in range(len(all_sims))])
