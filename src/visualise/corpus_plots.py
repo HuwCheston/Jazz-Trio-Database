@@ -137,6 +137,7 @@ class BarPlotSubjectiveRatings(vutils.BasePlot):
 
 
 class TimelinePlotBandleaders(vutils.BasePlot):
+    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
     SCATTER_KWS = dict(s=50, marker='x', color=vutils.BLACK, alpha=1, zorder=1, label='Recording')
     TEXT_KWS = dict(va='center', ha='left', zorder=2, fontsize=vutils.FONTSIZE / 1.2)
     BAR_KWS = dict(edgecolor=vutils.BLACK, zorder=0, label=None)
@@ -147,7 +148,7 @@ class TimelinePlotBandleaders(vutils.BasePlot):
         self.timeline_df = self._format_timeline_df(bandleaders_df)
         self.corpus_df = self._format_corpus_df(bandleaders_df)
         super().__init__(figure_title=fr'corpus_plots\timeline_bandleaders_{self.corpus_title}', **kwargs)
-        self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH, vutils.WIDTH / 3))
+        self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
     @staticmethod
     def _format_timeline_df(bandleaders_df):
@@ -180,7 +181,19 @@ class TimelinePlotBandleaders(vutils.BasePlot):
                 row['mean'].year, row['median'].year, True if row['bandleader'] == 'Ahmad Jamal' else row['alive']
             )
             self.ax.text(row['min'], idx + 0.2, f"{row['bandleader']} {dates}", **self.TEXT_KWS)
+            self._add_pianist_image(row['bandleader'], row['min'], idx)
         sns.scatterplot(data=self.corpus_df, x='date_fmt', y='mapping', ax=self.ax, **self.SCATTER_KWS)
+
+    def _add_pianist_image(self, bandleader_name, x, y):
+        fpath = fr'{self.img_loc}\{bandleader_name.replace(" ", "_").lower()}.png'
+        img = mpl.offsetbox.OffsetImage(
+            plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.35
+        )
+        ab = mpl.offsetbox.AnnotationBbox(
+            img, (x - 1.5, y - 0.05), xycoords='data', clip_on=False, transform=self.ax.transAxes,
+            annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
+        )
+        self.ax.add_artist(ab)
 
     def _format_ax(self):
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
@@ -192,7 +205,7 @@ class TimelinePlotBandleaders(vutils.BasePlot):
         sns.despine(ax=self.ax, left=True, top=True, right=True, bottom=False)
 
     def _format_fig(self):
-        self.fig.tight_layout()
+        self.fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.1)
 
 
 class BarPlotBandleaderDuration(vutils.BasePlot):
@@ -274,41 +287,28 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
 
 
 class BarPlotLastFMStreams(vutils.BasePlot):
-    BAR_KWS = dict(edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=5)
+    PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=2, n_colors=20, as_cmap=False)
+    BAR_KWS = dict(edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=5, palette=reversed(PAL))
 
     def __init__(self, streams_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'corpus_plots\batplot_lastfmstreams_{self.corpus_title}', **kwargs)
-        self.df = self._format_df(streams_df.copy(deep=True))
+        super().__init__(figure_title=fr'corpus_plots\batplot_lastfmstreams_total_{self.corpus_title}', **kwargs)
+        self.df = streams_df.copy(deep=True).iloc[:20]
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
 
-    @staticmethod
-    def _format_df(streams_df):
-        # for col in ['track_1_plays', 'track_2_plays', 'track_3_plays']:
-        #     streams_df[col] /= 1000
-        streams_df['combined_plays'] = streams_df[['track_1_plays', 'track_2_plays', 'track_3_plays']].sum(axis=1)
-        return streams_df.sort_values(by='combined_plays', ascending=False).iloc[:20]
-
     def _create_plot(self):
-        self.ax.barh(self.df['name'], self.df['track_1_plays'], label='1st', **self.BAR_KWS)
-        self.ax.barh(
-            self.df['name'], self.df['track_2_plays'], left=self.df['track_1_plays'], label='2nd', **self.BAR_KWS
-        )
-        self.ax.barh(
-            self.df['name'], self.df['track_3_plays'], left=self.df['track_1_plays'] + self.df['track_2_plays'],
-            label='3rd', **self.BAR_KWS
-        )
+        sns.barplot(data=self.df, x='playcount', y='name', ax=self.ax, **self.BAR_KWS)
 
     def _format_ax(self):
         self.ax.grid(visible=True, which='major', axis='x', zorder=0, **vutils.GRID_KWS)
         self.ax.set(
-            xlabel='Streams (millions)', ylabel='', xticks=[0, 1000000, 2000000, 3000000, 4000000],
-            xticklabels=["0M", '1M', '2M', '3M', '4M']
+            xlabel='Streams (millions)', ylabel='', xticks=[1000000, 5000000, 10000000, ],
+            xticklabels=['1M', '5M', '10M',]
         )
         self.ax.set_yticklabels(self.ax.get_yticklabels(), fontsize=vutils.FONTSIZE / 1.3)
         self.ax.set_xticklabels(self.ax.get_xticklabels(), fontsize=vutils.FONTSIZE / 1.3)
-        self.ax.legend(loc='upper right', frameon=True, framealpha=1, edgecolor=vutils.BLACK, title='Track')
-        self.ax.get_legend().get_frame().set_linewidth(vutils.LINEWIDTH)
+        # self.ax.legend(loc='upper right', frameon=True, framealpha=1, edgecolor=vutils.BLACK, title='Track')
+        # self.ax.get_legend().get_frame().set_linewidth(vutils.LINEWIDTH)
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
 
