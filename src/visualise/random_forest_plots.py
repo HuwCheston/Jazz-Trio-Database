@@ -3,17 +3,23 @@
 
 """Plotting classes for random forest model, e.g. heatmaps, feature importance."""
 
+import os
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from scipy.cluster.hierarchy import dendrogram
+from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import confusion_matrix
 
+from src import utils
 import src.visualise.visualise_utils as vutils
 
 __all__ = [
-    'BarPlotCategoryImportances', 'BarPlotFeatureImportances', 'HeatMapFeatureCorrelation', 'HeatMapPredictionProb'
+    'BarPlotCategoryImportances', 'BarPlotFeatureImportances', 'HeatMapFeatureCorrelation',
+    'HeatMapPredictionProbDendro'
 ]
 
 PREDICTORS_CATEGORIES = {
@@ -22,7 +28,7 @@ PREDICTORS_CATEGORIES = {
     'Feel': ['piano_bass_prop_async_nanmean', 'piano_drums_prop_async_nanmean',
              'piano_bass_prop_async_nanstd', 'piano_drums_prop_async_nanstd'],
     'Interaction': ['self_coupling', 'coupling_drums', 'coupling_bass', 'coupling_piano_drums', 'coupling_piano_bass'],
-    'Tempo': ['rolling_std_median', 'tempo', 'tempo_slope', 'tempo_drift']
+    'Tempo': ['rolling_std_median', 'tempo', 'tempo_slope']
 }
 CATEGORY_CMAP = {
     cat: col for cat, col in zip(PREDICTORS_CATEGORIES.keys(), plt.rcParams['axes.prop_cycle'].by_key()['color'])
@@ -45,7 +51,6 @@ COL_MAPPING = {
     'self_coupling': 'Piano→Piano, coupling',
     'rolling_std_median': 'Tempo stability',
     'tempo': 'Tempo average',
-    'tempo_drift': 'Tempo drift',
     'tempo_slope': 'Tempo slope',
 }
 
@@ -205,7 +210,9 @@ class BarPlotCategoryImportances(vutils.BasePlot):
 
     def __init__(self, importances: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'random_forest_plots\barplot_category_importances_{self.corpus_title}', **kwargs)
+        super().__init__(
+            figure_title=fr'random_forest_plots\barplot_category_importances_{self.corpus_title}', **kwargs
+        )
         # Create both dataframes
         self.grouped_importances = (
             importances.copy(deep=True)
@@ -264,56 +271,143 @@ class BarPlotCategoryImportances(vutils.BasePlot):
         self.fig.tight_layout()
 
 
-class HeatMapPredictionProb(vutils.BasePlot):
+class HeatMapPredictionProbDendro(vutils.BasePlot):
+    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    MODEL_KWS = dict(n_clusters=None, distance_threshold=0, metric='precomputed', linkage='average')
+    DENDRO_KWS = dict(truncate_mode=None, no_labels=False, color_threshold=0, above_threshold_color=vutils.BLACK)
+
     def __init__(self, prob_df, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'random_forest_plots\heatmap_prediction_prob_{self.corpus_title}', **kwargs)
+        super().__init__(
+            figure_title=fr'random_forest_plots\heatmap_prediction_prob_dendro_{self.corpus_title}', **kwargs
+        )
         self.hm = self._format_df(prob_df)
-        self.fig = plt.figure(figsize=(vutils.WIDTH / 2, vutils.WIDTH/2))
-        gs0 = mpl.gridspec.GridSpec(1, 2, width_ratios=[20, 1], hspace=0.0, height_ratios=[1])
-        self.ax = self.fig.add_subplot(gs0[0])
+        self.md = self._fit_agg()
+        self.fig = plt.figure(figsize=(vutils.WIDTH, vutils.WIDTH))
+        gs0 = mpl.gridspec.GridSpec(2, 2, width_ratios=[20, 1], hspace=0.0, height_ratios=[4, 20])
+        self.ax = self.fig.add_subplot(gs0[2])
+        self.dax = self.fig.add_subplot(gs0[0])
+        self.mapping = {i: k for i, k in enumerate(prob_df['actual'].unique())}
+
+    def _fit_agg(self):
+        dm = (1 - np.corrcoef(self.hm))
+        md = AgglomerativeClustering(**self.MODEL_KWS)
+        md.fit(dm)
+        return md
 
     @staticmethod
     def _format_df(prob_df):
-        labs = [l.split(' ')[-1] for l in prob_df['actual'].unique()]
-        hm = pd.DataFrame(confusion_matrix(prob_df['actual'], prob_df['prediction'], normalize='true'))
-        hm *= 100
-        hm.index = labs
-        hm.columns = labs
-        return hm.sort_index(ascending=False).reindex(sorted(hm.columns), axis=1)
+        return pd.DataFrame(confusion_matrix(
+            y_true=prob_df['actual'], y_pred=prob_df['prediction'], normalize='true')
+        )
+
+    def _create_dendrogram(self):
+        counts = np.zeros(self.md.children_.shape[0])
+        n_samples = len(self.md.labels_)
+        for i, merge in enumerate(self.md.children_):
+            current_count = 0
+            for child_idx in merge:
+                if child_idx < n_samples:
+                    current_count += 1  # leaf node
+                else:
+                    current_count += counts[child_idx - n_samples]
+            counts[i] = current_count
+        linkage_matrix = np.column_stack(
+            [self.md.children_, self.md.distances_, counts]
+        ).astype(float)
+        # Plot the corresponding dendrogram
+        with plt.rc_context({'lines.linewidth': vutils.LINEWIDTH, 'lines.linestyle': vutils.LINESTYLE}):
+            dendrogram(linkage_matrix, ax=self.dax, **self.DENDRO_KWS)
 
     def _create_plot(self):
+        self._create_dendrogram()
+        self._format_dax()
+        self.labs = [int(i.get_text()) for i in self.dax.get_xticklabels()]
+        reord = self.hm[self.labs].reindex(reversed(self.labs))
         sns.heatmap(
-            self.hm, ax=self.ax, cmap="Purples", linecolor=vutils.WHITE, square=True,
-            annot=True, fmt='.0f', linewidths=vutils.LINEWIDTH/2, vmin=0, vmax=100,
+            reord * 100, ax=self.ax, cmap="Purples", linecolor=vutils.WHITE, square=True, annot=True,
+            fmt='.0f', linewidths=vutils.LINEWIDTH/2, vmin=0, vmax=100, norm=mpl.colors.LogNorm(0.1, 100),
             cbar_kws=dict(
-                label='Predictions (%)',
-                use_gridspec=False, location="right", pad=0.2, shrink=0.725
+                label='Probability (%)', use_gridspec=False, location="right", pad=0.2, shrink=0.725,
+                ticks=[0.1, 1, 5, 10, 50, 100],
             )
         )
 
+    def _add_pianist_images(self):
+        for num, mus in enumerate(self.ax.get_xticklabels()):
+            for f in os.listdir(self.img_loc):
+                if mus.get_text().lower() in f.lower():
+                    img = mpl.offsetbox.OffsetImage(
+                        plt.imread(fr'{self.img_loc}\{f}'), clip_on=False, transform=self.ax.transAxes, zoom=0.75
+                    )
+                    ab = mpl.offsetbox.AnnotationBbox(
+                        img, (num + 0.5, -0.5), xycoords='data', clip_on=False, transform=self.ax.transAxes,
+                        annotation_clip=False, bboxprops=dict(
+                            edgecolor=vutils.BLACK, lw=2, boxstyle='sawtooth', clip_on=False,
+                        ),
+                    )
+                    self.ax.add_artist(ab)
+                    ab = mpl.offsetbox.AnnotationBbox(
+                        img, (10.5, -num + 9.5), xycoords='data', clip_on=False, transform=self.ax.transAxes,
+                        annotation_clip=False, bboxprops=dict(
+                            edgecolor=vutils.BLACK, lw=2, boxstyle='sawtooth', clip_on=False,
+                        )
+                    )
+                    self.ax.add_artist(ab)
+
     def _format_annotations(self):
-        for t in self.ax.texts:
-            if float(t.get_text()) > 25:
-                t.set_text(t.get_text(),)
-                t.set_fontsize(vutils.FONTSIZE / 1.25)
+        texts = np.array(self.ax.texts).reshape(-1, 10)
+        masks = np.fliplr(np.eye(texts.shape[0], dtype=bool))
+        for text, mask in zip(texts.flatten(), masks.flatten()):
+            if mask:
+                text.set_fontsize((vutils.FONTSIZE * 2) * (int(text.get_text())) / 80)
+                text.set_color(vutils.WHITE)
+                text.set_text(text.get_text() + '%')
             else:
-                t.set_text('')
+                text.set_text('')
+
+    def _format_dax(self):
+        self.dax.set(ylim=(0, 1.2), yticks=[])
+        self.dax.axhline(1.15, 0, 1, color=vutils.BLACK, lw=vutils.LINEWIDTH * 2, ls='dashed', alpha=vutils.ALPHA)
+        plt.setp(self.dax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.dax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, bottom=True)
+        for spine in ['top', 'left', 'right']:
+            self.dax.spines[spine].set_visible(False)
+
+    def _format_ax_ticks(self):
+        for ax in [self.ax.xaxis, self.ax.yaxis, self.dax.xaxis]:
+            prev_labs = [int(i.get_text()) for i in ax.get_ticklabels()]
+            ax.set_ticklabels([self.mapping[li].split(' ')[-1] for li in prev_labs])
 
     def _format_ax(self):
+        self._format_ax_ticks()
+        self._add_pianist_images()
         self._format_annotations()
-        self.ax.set(ylabel='Actual pianist', xlabel='Predicted pianist')
+        self.ax.set(ylabel='', xlabel='',)
+        self.ax.tick_params(axis='both', top=True, left=True, right=True, bottom=True)
         cax = self.ax.figure.axes[-1]
         for a in [self.ax, cax]:
             for spine in a.spines.values():
                 spine.set_visible(True)
                 spine.set_color(vutils.BLACK)
             plt.setp(a.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
-            a.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
+            a.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
 
     def _format_fig(self):
-        self.fig.subplots_adjust(top=1, bottom=0.1, left=0.2, right=0.9)
-        self.ax.figure.axes[-1].set_position([0.85, 0.245, 0.2, 0.6075])
+        self.fig.supxlabel('Predicted pianist', y=0.03)
+        self.fig.supylabel('Actual pianist')
+        self.fig.subplots_adjust(top=1, bottom=0.075, left=0.1, right=0.95)
+        pos = self.ax.get_position()
+        self.ax.set_position([pos.x0, pos.y0, pos.width, pos.height])
+        cax = self.ax.figure.axes[-1]
+        cax.set_position([0.915, 0.17, 0.2, 0.575])
+        cax.get_yaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
+        cax.set_ylim(0.1, 100)
+        cax.set_yticklabels(['0.1', '1', '5', '10', '50', '100'])
+        cax.tick_params(axis='y', which='minor', width=None, right=False)
+        pos = self.dax.get_position()
+        self.dax.set_position([pos.x0, pos.y0 + 0.055, pos.width, pos.height - 0.06])
+        self.dax.set(xticklabels=[])
 
 
 if __name__ == '__main__':
