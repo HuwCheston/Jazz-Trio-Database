@@ -1287,18 +1287,23 @@ class ProportionalAsynchrony(BaseExtractor):
         mean_async = self.asynchronies.groupby('instr')['asynchrony_adjusted_offset'].agg([np.nanmean, np.nanstd])
         async_count = len(self.asynchronies[self.asynchronies['instr'] == my_instr_name].dropna())
         self.summary_dict = {
-            f'{my_instr_name}_prop_async_count': len(self.asynchronies[self.asynchronies['instr'] == my_instr_name]),
-            f'{my_instr_name}_prop_async_count_nonzero': async_count,
-            **self._get_mean_asyncs(mean_async)
+            f'prop_async_count': len(self.asynchronies[self.asynchronies['instr'] == my_instr_name]),
+            f'prop_async_count_nonzero': async_count,
+            **self._get_mean_asyncs(mean_async, my_instr_name)
         }
 
     @staticmethod
-    def _get_mean_asyncs(mean_async) -> dict:
+    def _get_mean_asyncs(mean_async, my_instr_name) -> dict:
         loc = lambda name, c: mean_async[c].loc[name]
         res = {}
         for col in mean_async.columns:
-            for i1, i2 in combinations(list(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()), 2):
-                res[f'{i1}_{i2}_prop_async_{col}'] = loc(i1, col) - loc(i2, col)
+            for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+                if instr == my_instr_name:
+                    res[f'{instr}_prop_async_{col}'] = np.nan
+                else:
+                    res[f'{instr}_prop_async_{col}'] = loc(my_instr_name, col) - loc(instr, col)
+            # for i1, i2 in combinations(list(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()), 2):
+            #     res[f'{i1}_{i2}_prop_async_{col}'] = loc(i1, col) - loc(i2, col)
         return res
 
     def _format_async_df(self, async_df):

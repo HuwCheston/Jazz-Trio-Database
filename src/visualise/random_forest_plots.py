@@ -25,8 +25,7 @@ __all__ = [
 PREDICTORS_CATEGORIES = {
     'Swing': ['bur_log_mean', 'bur_log_std'],
     'Complexity': ['lz77_mean', 'lz77_std', 'n_onsets_mean', 'n_onsets_std'],
-    'Feel': ['piano_bass_prop_async_nanmean', 'piano_drums_prop_async_nanmean',
-             'piano_bass_prop_async_nanstd', 'piano_drums_prop_async_nanstd'],
+    'Feel': ['bass_prop_async_nanmean', 'drums_prop_async_nanmean', 'bass_prop_async_nanstd', 'drums_prop_async_nanstd'],
     'Interaction': ['self_coupling', 'coupling_drums', 'coupling_bass', 'coupling_piano_drums', 'coupling_piano_bass'],
     'Tempo': ['rolling_std_median', 'tempo', 'tempo_slope']
 }
@@ -40,10 +39,10 @@ COL_MAPPING = {
     'lz77_std': 'Window LZ77, std',
     'n_onsets_mean': 'Window density, mean',
     'n_onsets_std': 'Window density, std',
-    'piano_bass_prop_async_nanmean': 'Piano→Bass, async mean',
-    'piano_bass_prop_async_nanstd': 'Piano→Bass, async std.',
-    'piano_drums_prop_async_nanmean': 'Piano→Drums, async mean',
-    'piano_drums_prop_async_nanstd': 'Piano→Drums, async std.',
+    'bass_prop_async_nanmean': 'Piano→Bass, async mean',
+    'bass_prop_async_nanstd': 'Piano→Bass, async std.',
+    'drums_prop_async_nanmean': 'Piano→Drums, async mean',
+    'drums_prop_async_nanstd': 'Piano→Drums, async std.',
     'coupling_bass': 'Piano→Bass, coupling',
     'coupling_piano_bass': 'Bass→Piano, coupling',
     'coupling_drums': 'Piano→Drums, coupling',
