@@ -465,7 +465,7 @@ def save_csv(
         else:
             dict_writer.writerow(obj)
 
-    @retry(PermissionError)
+    @retry(PermissionError, tries=100, delay=5)
     def replacer():
         os.replace(temp_file.name, rf'{fpath}\{fname}.csv')
 
