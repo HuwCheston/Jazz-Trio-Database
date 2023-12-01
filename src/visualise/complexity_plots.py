@@ -3,6 +3,7 @@
 
 """Classes used for plotting inter-onset interval complexity"""
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -11,7 +12,7 @@ import seaborn as sns
 import src.visualise.visualise_utils as vutils
 from src import utils
 
-__all__ = ['HistPlotBins', 'BarPlotComplexityDensity']
+__all__ = ['HistPlotBins', 'BarPlotComplexityDensity', 'BarPlotTotalBins', 'RegPlotTempoDensityComplexity']
 
 fracs = [1, 1/2, 5/12, 3/8, 1/3, 1/4, 1/6, 1/8, 1/12, 0]
 fracs_s = [r'>$\frac{1}{2}$', r'$\frac{1}{2}$', r'$\frac{5}{12}$', r'$\frac{3}{8}$', r'$\frac{1}{3}$',
@@ -113,3 +114,175 @@ class BarPlotComplexityDensity(vutils.BasePlot):
 
     def _format_fig(self):
         self.fig.subplots_adjust(top=0.9, bottom=0.135, left=0.065, right=0.975)
+
+
+class BarPlotTotalBins(vutils.BasePlot):
+    img_loc = fr'{utils.get_project_root()}\references\images\notation'
+
+    def __init__(self, ioi_df, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        super().__init__(figure_title=fr'complexity_plots\barplot_totalbins_{self.corpus_title}', **kwargs)
+        self.df = self._format_df(ioi_df)
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
+
+    @staticmethod
+    def _format_df(ioi_df):
+        return (
+            ioi_df.groupby(['instr', 'bin'], as_index=True, sort=False)
+            ['prop_ioi']
+            .count()
+            .reset_index(drop=False)
+            .rename(columns={'prop_ioi': 'count'})
+            .pivot(index='bin', columns='instr')
+            .reindex(columns=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(), level=1)
+        )
+
+    def _create_plot(self):
+        return self.df.plot(
+            kind='bar', stacked=True, ax=self.ax, color=vutils.RGB, zorder=10,
+            lw=vutils.LINEWIDTH, edgecolor=vutils.BLACK, ylabel='Count',
+            xlabel='Bin'
+        )
+
+    def _add_notation_images(self, y=155000):
+        for tick in self.ax.get_xticklabels()[1:-1]:
+            fpath = r'\notation_' + '_'.join(tick.get_text().split('{')[1:])[:-1].replace('}', '') + '.png'
+            img = mpl.offsetbox.OffsetImage(
+                plt.imread(self.img_loc + fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
+            )
+            ab = mpl.offsetbox.AnnotationBbox(
+                img, (tick._x, y), xycoords='data', clip_on=False, transform=self.ax.transAxes,
+                annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
+            )
+            self.ax.add_artist(ab)
+
+    def _format_ax(self):
+        self.ax.set(xticklabels=reversed(fracs_s))
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.ax.grid(zorder=0, axis='y', **vutils.GRID_KWS)
+        hand, _ = self.ax.get_legend_handles_labels()
+        self.ax.legend(
+            hand, [i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()], title='Instrument',
+            loc='upper right', frameon=True, framealpha=1, edgecolor=vutils.BLACK
+        )
+        self._add_notation_images()
+        ax_t = self.ax.secondary_xaxis('top')
+        ax_t.set_xticks(self.ax.get_xticks(), labels=[])
+        ax_t.tick_params(width=vutils.TICKWIDTH)
+
+    def _format_fig(self):
+        self.fig.subplots_adjust(left=0.1, right=0.95, bottom=0.1, top=0.9)
+
+
+class RegPlotTempoDensityComplexity(vutils.BasePlot):
+    # These are keywords that we pass into our given plot types
+    REG_KWS = dict(
+        scatter=False, ci=95, n_boot=vutils.N_BOOT
+    )
+    LINE_KWS = dict(
+        lw=vutils.LINEWIDTH * 2, ls=vutils.LINESTYLE, zorder=5,
+        color=vutils.BLACK
+    )
+    SCATTER_KWS = dict(
+        hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
+        palette=vutils.RGB, markers=['o', 's', 'D'], s=40,
+        edgecolor=vutils.BLACK, zorder=3, alpha=vutils.ALPHA,
+        style_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
+    )
+    HIST_KWS = dict(
+        kde=False, color=vutils.BLACK, alpha=vutils.ALPHA,
+        lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE
+    )
+    TEXT_BBOX = dict(
+        facecolor=vutils.WHITE, edgecolor=vutils.BLACK,
+        lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE,
+        boxstyle='round,pad=1'
+    )
+
+    def __init__(self, average_df, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        # Initialise the base plot with our given kwargs
+        super().__init__(figure_title=fr'complexity_plots\regplot_tempo_density_complexity_{self.corpus_title}', **kwargs)
+        self.df = average_df
+        self.fig, self.ax = plt.subplots(
+            nrows=2, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 2), sharey='row', sharex='col',
+            gridspec_kw=dict(width_ratios=(1, 1, 0.2), height_ratios=(0.2, 1)),
+        )
+        # The main ax for plotting the regression/scatter plot
+        self.main_ax = np.array(self.ax[[1, 0]])
+        # Marginal ax, for plotting histograms
+        self.marginal_ax = np.array([self.ax[0, 0], self.ax[0, 1], self.ax[-1, -1]])
+        # Top right corner ax, which we can go ahead and disable
+        self.ax[0, 2].axis('off')
+        self.hand = None
+
+    def _create_plot(self):
+        self._create_main_plot()
+        self._create_marginal_plot()
+
+    def _create_main_plot(self):
+        for ax, var_, xp in zip(self.main_ax.flatten(), ['lz77', 'n_onsets'], [12, 39.5]):
+            sns.scatterplot(data=self.df, x=var_, y='tempo', hue='instr', style='instr', ax=ax, **self.SCATTER_KWS)
+            sns.regplot(data=self.df, x=var_, y='tempo', ax=ax, line_kws=self.LINE_KWS, **self.REG_KWS)
+            self._add_regression_coeff(var_, ax, xp)
+
+    def _create_marginal_plot(self):
+        # Top marginal plots
+        for num, var in enumerate(['lz77', 'n_onsets']):
+            sns.histplot(
+                data=self.df, x=var, ax=self.marginal_ax.flatten()[num],
+                bins=vutils.N_BINS,  **self.HIST_KWS
+            )
+        # Right marginal plot
+        sns.histplot(
+            data=self.df, y='tempo', ax=self.marginal_ax.flatten()[-1],
+            bins=vutils.N_BINS,  **self.HIST_KWS
+        )
+
+    def _add_regression_coeff(self, var_, ax, xpos):
+        r = self.df[['tempo', var_]].corr().iloc[1].iloc[0]
+        ax.text(xpos, 300, rf'$r=${round(r, 2)}', bbox=self.TEXT_BBOX)
+
+    def _format_main_ax(self):
+        for ax, xl, xlab, ylab in zip(
+                self.main_ax.flatten(), [(0, 15), (0, 50)],
+                ['Mean complexity (LZ77, windowed)', 'Mean density ($N$ onsets, windowed)'],
+                ['Mean tempo (BPM)', '']
+        ):
+            # Add a grid onto the plot
+            ax.grid(visible=True, axis='both', which='major', zorder=0, **vutils.GRID_KWS)
+            ax.tick_params(axis='both', bottom=True, right=True, width=vutils.TICKWIDTH)
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+            ax.set(
+                xlim=xl, ylim=(90, 320),
+                xlabel=xlab, ylabel=ylab,
+                # xticks=np.linspace(xl[0], xl[1], 5),
+                # yticks=[-0.5, 0, 0.5, 1.0, 1.5]
+            )
+            self.hand, _ = ax.get_legend_handles_labels()
+            ax.get_legend().remove()
+
+    def _format_marginal_ax(self):
+        # Remove correct spines from marginal axis
+        for spine, ax in zip(['left', 'left', "bottom"], self.marginal_ax.flatten()):
+            ax.spines[[spine, 'right', 'top']].set_visible(False)
+            ax.tick_params(axis='both', width=vutils.TICKWIDTH)
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+            ax.set(xlabel='', ylabel='')
+            if spine == 'left':
+                ax.set(yticks=[0], yticklabels=[''])
+            else:
+                ax.set(xticks=[0], xticklabels=[''])
+
+    def _format_ax(self):
+        self._format_main_ax()
+        self._format_marginal_ax()
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+        self.fig.legend(
+            self.hand, [i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()],
+            loc='upper right', title='Instrument', frameon=True, framealpha=1,
+            edgecolor=vutils.BLACK
+        )
