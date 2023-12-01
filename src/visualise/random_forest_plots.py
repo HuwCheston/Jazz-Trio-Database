@@ -12,20 +12,21 @@ import pandas as pd
 import seaborn as sns
 from scipy.cluster.hierarchy import dendrogram
 from sklearn.cluster import AgglomerativeClustering
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, RocCurveDisplay
 
 from src import utils
 import src.visualise.visualise_utils as vutils
 
 __all__ = [
-    'BarPlotCategoryImportances', 'BarPlotFeatureImportances', 'HeatMapFeatureCorrelation',
-    'HeatMapPredictionProbDendro'
+    'BarPlotCategoryImportances', 'BarPlotFeatureImportances', 'HeatMapFeatureCorrelation', 'CountPlotMissingValues',
+    'HeatMapPredictionProbDendro', 'RocPlotLogRegression', 'StripPlotLogitCoeffs',
 ]
 
 PREDICTORS_CATEGORIES = {
     'Swing': ['bur_log_mean', 'bur_log_std'],
     'Complexity': ['lz77_mean', 'lz77_std', 'n_onsets_mean', 'n_onsets_std'],
-    'Feel': ['bass_prop_async_nanmean', 'drums_prop_async_nanmean', 'bass_prop_async_nanstd', 'drums_prop_async_nanstd'],
+    'Feel': ['bass_prop_async_nanmean', 'drums_prop_async_nanmean',
+             'bass_prop_async_nanstd', 'drums_prop_async_nanstd'],
     'Interaction': ['self_coupling', 'coupling_drums', 'coupling_bass', 'coupling_piano_drums', 'coupling_piano_bass'],
     'Tempo': ['rolling_std_median', 'tempo', 'tempo_slope']
 }
@@ -52,6 +53,51 @@ COL_MAPPING = {
     'tempo': 'Tempo average',
     'tempo_slope': 'Tempo slope',
 }
+
+
+class CountPlotMissingValues(vutils.BasePlot):
+    BAR_KWS = dict(
+        dodge=False, edgecolor=vutils.BLACK, errorbar=None, lw=vutils.LINEWIDTH, zorder=3,
+        capsize=0.1, width=0.8, ls=vutils.LINESTYLE, hue_order=PREDICTORS_CATEGORIES.keys()
+    )
+
+    def __init__(self, predictors_df, category_mapping, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        self.cat_map = category_mapping
+        self.df = self._format_df(predictors_df)
+        super().__init__(
+            figure_title=fr'random_forest_plots\countplot_missing_values_{self.corpus_title}', **kwargs
+        )
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
+
+    def _format_df(self, pred_df):
+        d = (
+            pred_df.isna()
+            .sum()
+            .sort_values()
+            .reset_index(drop=False)
+            .rename(columns={'index': 'variable', 0: 'value'})
+        )
+        d['category'] = d['variable'].map(self.cat_map)
+        d['value'] = (d['value'] / 300) * 100
+        return d
+
+    def _create_plot(self):
+        return sns.barplot(self.df, y='variable', x='value', hue='category', **self.BAR_KWS)
+
+    def _format_ax(self):
+        self.ax.legend(loc='upper right', title='Category', frameon=True, framealpha=1, edgecolor=vutils.BLACK,)
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
+        labs = []
+        for tick in self.ax.get_yticklabels():
+            cat = [k for k, v in PREDICTORS_CATEGORIES.items() if tick.get_text() in v][0]
+            tick.set_color(CATEGORY_CMAP[cat])
+            labs.append(COL_MAPPING[tick.get_text()])
+        self.ax.set(ylabel='Variable', xlabel='% of missing values', yticklabels=labs)
+
+    def _format_fig(self):
+        self.fig.tight_layout()
 
 
 class HeatMapFeatureCorrelation(vutils.BasePlot):
@@ -407,6 +453,127 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
         pos = self.dax.get_position()
         self.dax.set_position([pos.x0, pos.y0 + 0.055, pos.width, pos.height - 0.06])
         self.dax.set(xticklabels=[])
+
+
+class RocPlotLogRegression(vutils.BasePlot):
+    def __init__(self, y_true, y_predict, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        super().__init__(figure_title=fr'random_forest_plots\rainplot_algohuman_onsets_{self.corpus_title}', **kwargs)
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
+        self.y_true = y_true
+        self.y_pred = y_predict
+
+    def _create_plot(self):
+        self.ax.plot(
+            (0, 1.01), (0, 1.01), linestyle='dashed', lw=vutils.LINEWIDTH,
+            color=vutils.BLACK, alpha=vutils.ALPHA, label='Random (AUC = 0.5)'
+        )
+        return RocCurveDisplay.from_predictions(
+            self.y_true, self.y_pred, ax=self.ax, c=vutils.BLACK, lw=vutils.LINEWIDTH,
+            ls=vutils.LINESTYLE, name='Logistic regression'
+        )
+
+    def _format_ax(self):
+        self.ax.legend(loc='lower right', frameon=True, framealpha=1, edgecolor=vutils.BLACK, title='Classifier')
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
+        self.ax.set(xlim=(0, 1.01), ylim=(0, 1.01), xlabel='False positive rate', ylabel='True positive rate')
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
+class StripPlotLogitCoeffs(vutils.BasePlot):
+    STRIP_KWS = dict(edgecolor=vutils.BLACK, linewidth=vutils.LINEWIDTH, zorder=5, )
+    ERROR_KWS = dict(
+        lw=vutils.LINEWIDTH, color=vutils.BLACK, linestyle='none',
+        capsize=5, elinewidth=2, markeredgewidth=2
+    )
+    LEGEND_KWS = dict(frameon=True, framealpha=1, edgecolor=vutils.BLACK)
+    palette = sns.color_palette('tab10')
+    palette = [palette[1], palette[0], palette[4], palette[2]]
+
+    def __init__(self, logit_md, category_mapping, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        super().__init__(
+            figure_title=fr'random_forest_plots\stripplot_logitcoeffs_{self.corpus_title}', **kwargs
+        )
+        self.df = self._format_df(logit_md)
+        self.cat_map = category_mapping
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 3))
+
+    @staticmethod
+    def _format_p(pval):
+        if pval < 0.001:
+            return '***'
+        elif pval < 0.01:
+            return '**'
+        elif pval < 0.05:
+            return '*'
+        else:
+            return ''
+
+    def _format_df(self, logit_md) -> pd.DataFrame:
+        coeff = logit_md.params.rename('coeff').apply(np.exp)
+        ci = logit_md.conf_int().rename(columns={0: 'low', 1: 'high'}).apply(np.exp)
+        pvals = logit_md.pvalues.rename('p').apply(lambda r: self._format_p(r))
+        params = (
+            pd.concat([coeff, ci, pvals], axis=1)
+            .reset_index(drop=False)[1:]
+        )
+        params['low'] = params['coeff'] - params['low']
+        params['high'] -= params['coeff']
+        params['category'] = params['index'].map(self.cat_map)
+        return params
+
+    def _create_plot(self):
+        sns.stripplot(
+            data=self.df, x='coeff', y='index', s=10, hue='category',
+            ax=self.ax, palette=self.palette, **self.STRIP_KWS
+        )
+        self.ax.errorbar(
+            self.df['coeff'], self.df['index'], **self.ERROR_KWS,
+            xerr=(self.df['low'], self.df['high']),
+        )
+        for idx, row in self.df.iterrows():
+            self._add_pvals(row)
+
+    def _format_ax(self):
+        self.ax.grid(axis='y', which='major', **vutils.GRID_KWS)
+        self.ax.axvline(1, 0, 1, color=vutils.BLACK, lw=vutils.LINEWIDTH, ls='dashed', zorder=1, )
+        for spine in ['left', 'right', 'top']:
+            self.ax.spines[spine].set_visible(False)
+        self.ax.set_xscale('log')
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
+        self.ax.set(
+            ylim=(-0.5, 12.5), xlabel='Odds ratio (95% CI, log scale)', xticks=[0.1, 1, 10],
+            xlim=(0.099, 15.5), ylabel='Variable', xticklabels=[0.1, 1, 10],
+            yticklabels=[COL_MAPPING[i.get_text()] for i in self.ax.get_yticklabels()],
+        )
+        self._format_legend()
+        self._format_yticks()
+        self.ax.minorticks_off()
+
+    def _add_pvals(self, row):
+        self.ax.text((row['coeff'] + row['high']) * 0.75, row['index'], str(row['p']))
+
+    def _format_legend(self):
+        handles, labels = self.ax.get_legend_handles_labels()
+        for ha in handles:
+            ha.set_edgecolor(vutils.BLACK)
+            ha.set_linewidth(vutils.LINEWIDTH)
+            ha.set_sizes([100])
+        self.ax.legend(reversed(handles), reversed(labels), loc='upper right', title='Category', **self.LEGEND_KWS)
+
+    def _format_yticks(self):
+        new_pal = [[self.palette[i1] for _ in range(i2)] for i1, i2 in zip(range(4), [4, 2, 3, 4])]
+        for tl, tc in zip(self.ax.get_yticklabels(), [item for sublist in new_pal for item in sublist]):
+            tl.set_color(tc)
+
+    def _format_fig(self):
+        # self.fig.suptitle('Reference: "impressionist" cluster, treatment: "blues" cluster')
+        self.fig.tight_layout()
 
 
 if __name__ == '__main__':
