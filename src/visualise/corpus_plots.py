@@ -4,19 +4,24 @@
 """Plotting classes for corpus description, e.g. F-measures, API scraping results etc."""
 
 import os
+import time
 
+import librosa
+import librosa.display
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from mir_eval.util import match_events
 
 import src.visualise.visualise_utils as vutils
 from src import utils
+from src.detect.detect_utils import FREQUENCY_BANDS
 
 __all__ = [
     'BarPlotFScores', 'TimelinePlotBandleaders', 'BarPlotBandleaderDuration', 'BarPlotLastFMStreams',
-    'BarPlotSubjectiveRatings'
+    'BarPlotSubjectiveRatings', 'BoxPlotRecordingLength', 'SpecPlotBands', 'CountPlotPanning'
 ]
 
 
@@ -303,7 +308,7 @@ class BarPlotLastFMStreams(vutils.BasePlot):
         self.ax.grid(visible=True, which='major', axis='x', zorder=0, **vutils.GRID_KWS)
         self.ax.set(
             xlabel='Streams (millions)', ylabel='', xticks=[1000000, 5000000, 10000000, ],
-            xticklabels=['1M', '5M', '10M',]
+            xticklabels=['1M', '5M', '10M']
         )
         self.ax.set_yticklabels(self.ax.get_yticklabels(), fontsize=vutils.FONTSIZE / 1.3)
         self.ax.set_xticklabels(self.ax.get_xticklabels(), fontsize=vutils.FONTSIZE / 1.3)
@@ -311,6 +316,252 @@ class BarPlotLastFMStreams(vutils.BasePlot):
         # self.ax.get_legend().get_frame().set_linewidth(vutils.LINEWIDTH)
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
+class CountPlotPanning(vutils.BasePlot):
+    LEGEND_KWS = dict(frameon=True, framealpha=1, edgecolor=vutils.BLACK)
+
+    def __init__(self, track_df: pd.DataFrame, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        super().__init__(figure_title=fr'corpus_plots\countplot_panning_{self.corpus_title}', **kwargs)
+        self.df = self._format_df(track_df)
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
+
+    @staticmethod
+    def _format_df(track_df):
+        return (
+            track_df['channel_overrides']
+            .apply(pd.Series, dtype=object)
+            .apply(lambda x: x.fillna('c').value_counts())
+            .reset_index(drop=False)
+            .melt(id_vars='index')
+            .pivot_table(index='index', columns=['variable'])
+            .reindex(columns=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(), level=1)
+            .reindex(index=['l', 'c', 'r'])
+        )
+
+    def _create_plot(self):
+        self.df.index = self.df.index.str.title()
+        return self.df.plot(
+            kind='bar', stacked=True, ax=self.ax, xlabel='Audio channel', ylabel='Number of tracks', color=vutils.RGB,
+            zorder=10, lw=vutils.LINEWIDTH, edgecolor=vutils.BLACK
+        )
+
+    def _add_track_numbers(self):
+        patches = np.array(self.ax.patches)[[6, 7, 8]]
+        for bar, (idx, row) in zip(patches, self.df.iterrows()):
+            x, y = bar.get_xy()
+            self.ax.text(x + (bar.get_width() / 2), y + bar.get_height(), f'N = {row.sum()}', ha='center', va='bottom')
+
+    def _format_ax(self):
+        hand, _ = self.ax.get_legend_handles_labels()
+        self.ax.set_xticklabels(self.ax.get_xticklabels(), rotation=0)
+        self.ax.legend(hand, ['Piano', 'Bass', 'Drums'], title='Instrument', loc='upper right', **self.LEGEND_KWS)
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
+        self.ax.grid(zorder=0, axis='y', **vutils.GRID_KWS)
+        self._add_track_numbers()
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
+class SpecPlotBands(vutils.BasePlot):
+    TRACK_LEN = 5
+
+    def __init__(self, track: str, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        self.track = track
+
+        self.fname = track['fname']
+        super().__init__(figure_title=fr'corpus_plots\specplot_bands_{self.corpus_title}', **kwargs)
+        self.df = self._format_df()
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
+
+    def _format_df(self):
+        y, _ = librosa.load(fr"{utils.get_project_root()}\data\raw\audio\{self.fname}.wav", sr=utils.SAMPLE_RATE)
+        y = y[:utils.SAMPLE_RATE * self.TRACK_LEN]
+        return librosa.amplitude_to_db(np.abs(librosa.stft(y)), ref=np.max)
+
+    def _create_plot(self):
+        return librosa.display.specshow(
+            self.df, y_axis='log', sr=utils.SAMPLE_RATE, x_axis='s', ax=self.ax,
+            auto_aspect=False, cmap=sns.color_palette('Greys', as_cmap=True)
+        )
+
+    def _add_bands(self):
+        for (instr, bands), col in zip(FREQUENCY_BANDS.items(), vutils.RGB):
+            self.ax.axhspan(
+                ymin=bands['fmin'], ymax=bands['fmax'], xmin=0, xmax=self.TRACK_LEN,
+                alpha=vutils.ALPHA, color=col, label=instr.title()
+            )
+
+    def _format_ax(self):
+        self._add_bands()
+        self.ax.legend(loc='upper right', title='Instrument', frameon=True, framealpha=1, edgecolor=vutils.BLACK)
+        self.ax.set(ylim=(0, FREQUENCY_BANDS['drums']['fmax']), xticks=range(self.TRACK_LEN + 1),
+                    ylabel='Frequency (Hz)',
+                    title=f"{self.track['pianist']} – {self.track['track_name']} ({self.track['recording_year']})")
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
+class BoxPlotRecordingLength(vutils.BasePlot):
+    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=2, n_colors=10, as_cmap=False)
+    TICKS = np.linspace(0, 2100, 8)
+
+    def __init__(self, cleaned_df: pd.DataFrame, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        super().__init__(figure_title=fr'corpus_plots\boxplot_recording_length_{self.corpus_title}', **kwargs)
+        self.df = cleaned_df.sort_values(by='birth')
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
+
+    def _create_plot(self):
+        sns.boxplot(
+            self.df.sort_values(by='birth'), x="duration", y="piano",
+            whis=[0, 100], width=.6, palette=self.PAL, ax=self.ax,
+            linewidth=vutils.LINEWIDTH, color=vutils.BLACK
+        )
+        # Add in points to show each observation
+        sns.stripplot(self.df, x="duration", y="piano", size=4, color=vutils.BLACK)
+
+    @staticmethod
+    def _format_time(nos, fmt: str = '%M:%S'):
+        return time.strftime(fmt, time.gmtime(nos))
+
+    def _format_bandleader(self, bl):
+        d = self.df[self.df['piano'] == bl].iloc[0]
+        if bl == 'Ahmad Jamal' or d['death'].year < 2023:
+            return f"{bl}\n({d['birth'].year}–{d['death'].year})"
+        else:
+            return f"{bl}\n(b. {d['birth'].year})"
+
+    def _add_bandleader_images(self, bl, y):
+        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        img = mpl.offsetbox.OffsetImage(
+            plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
+        )
+        ab = mpl.offsetbox.AnnotationBbox(
+            img, (-75, y - 0.05), xycoords='data', clip_on=False, transform=self.ax.transAxes,
+            annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
+        )
+        self.ax.add_artist(ab)
+
+    def _add_number_of_tracks(self, bl, y):
+        tracks = self.df[self.df['piano'] == bl]
+        ti = round(tracks['duration'].sum() / 3600, 2)
+        x = (tracks['duration'].max() - tracks['duration'].min()) * 0.85
+        self.ax.text(x, y - 0.35, f'Total hours: {ti}', va='center')
+
+    def _format_ax(self):
+        # Tweak the visual presentation
+        self.ax.xaxis.grid(True)
+        self.ax.set(
+            ylabel="Pianist", xlabel='Track duration (MM:SS)', xlim=(0, 2200), xticks=self.TICKS,
+            xticklabels=[self._format_time(ti) for ti in self.TICKS],
+            yticklabels=[self._format_bandleader(bl.get_text()) for bl in self.ax.get_yticklabels()]
+        )
+        for num, pi in enumerate(self.df['piano'].unique()):
+            self._add_bandleader_images(pi, num)
+            self._add_number_of_tracks(pi, num)
+        self.ax.tick_params(axis='y', which='both', pad=65)
+        sns.despine(trim=True, left=True)
+        self.ax.tick_params(width=vutils.TICKWIDTH, which='both')
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
+
+    def _format_fig(self):
+        self.fig.subplots_adjust(top=0.95, bottom=0.1, left=0.2, right=1)
+
+
+class RainPlotAlgoHumanOnset(vutils.BasePlot):
+    BP_KWS = dict(
+        patch_artist=True, vert=False, sym='', widths=0.25, manage_ticks=False,
+        zorder=5, boxprops=dict(facecolor=vutils.WHITE, alpha=vutils.ALPHA)
+    )
+    VP_KWS = dict(vert=False, showmeans=False, showextrema=False, showmedians=False)
+    SP_KWS = dict(s=1.5, zorder=5)
+    INSTRS = ['mix', *utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
+    XLABEL = 'Difference between onsets (algorithm – human, ms)'
+
+    def __init__(self, all_onsets, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        super().__init__(figure_title=fr'corpus_plots\rainplot_algohuman_onsets_{self.corpus_title}', **kwargs)
+        self.df = pd.DataFrame(self._format_df(all_onsets))
+        self.vals = [grp['async'].values * 1000 for _, grp in self.df.groupby('instr', sort=False)]
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
+
+    @staticmethod
+    def _format_df(ons):
+        for an in [o for o in ons if o.item['has_annotations']]:
+            for instr in ['mix', *utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]:
+                estimate = an.ons[instr]
+                fname = rf'{an.references_dir}\manual_annotation\{an.item["fname"]}_{instr}.txt'
+                ref = np.loadtxt(fname, ndmin=1, usecols=0)
+                matched = match_events(ref, estimate, window=0.05)
+                for asy in np.array([estimate[e] - ref[r] for r, e in matched]):
+                    yield {'instr': instr, 'async': asy}
+
+    def _create_boxplot(self):
+        bp = self.ax.boxplot(self.vals, positions=[5.75, 3.75, 1.75, -0.25], **self.BP_KWS)
+        # Change to the desired color and add transparency
+        for item in ['boxes', 'whiskers', 'fliers', 'medians', 'caps']:
+            try:
+                plt.setp(bp[item], edgecolor=vutils.BLACK, linewidth=vutils.LINEWIDTH, alpha=1, zorder=5)
+            except AttributeError:
+                plt.setp(bp[item], color=vutils.BLACK, linewidth=vutils.LINEWIDTH, alpha=1, zorder=5)
+        for median, col in zip(bp['medians'], [vutils.BLACK, *vutils.RGB]):
+            median.set_color(col)
+
+    def _create_violinplot(self):
+        vp = self.ax.violinplot(self.vals, positions=[6, 4, 2, 0], **self.VP_KWS)
+        for b, col, idx in zip(vp['bodies'], [vutils.WHITE, *vutils.RGB], reversed(range(0, 7, 2))):
+            # Modify it so we only see the upper half of the violin plot
+            b.get_paths()[0].vertices[:, 1] = np.clip(b.get_paths()[0].vertices[:, 1], idx, idx + 2)
+            b.set_alpha(1)
+            b.set_facecolor(col)
+            b.set_edgecolor(vutils.BLACK)
+            b.set_linewidth(vutils.LINEWIDTH)
+            b.set_zorder(5)
+
+    def _create_scatterplot(self):
+        # Scatterplot data
+        for features, col, idx in zip(self.vals, [vutils.BLACK, *vutils.RGB], reversed(range(0, 7, 2))):
+            # Add jitter effect so the features do not overlap on the y-axis
+            y = np.full(len(features), idx - .6)
+            idxs = np.arange(len(y))
+            out = y.astype(float)
+            out.flat[idxs] += np.random.uniform(low=-.05, high=.05, size=len(idxs))
+            y = out
+            self.ax.scatter(features, y, color=col, **self.SP_KWS)
+
+    def _create_plot(self):
+        self._create_boxplot()
+        self._create_violinplot()
+        self._create_scatterplot()
+
+    def _format_ax(self):
+        wlab = r'Window boundaries ($\pm$ 50 ms)'
+        for x, ls, lab in zip((-50, 0, 50), (vutils.LINESTYLE, 'dashed', 'dashed'), (None, wlab, None)):
+            self.ax.axvline(x, 0, 1, color=vutils.BLACK, lw=vutils.LINEWIDTH, ls=ls, zorder=0, label=lab)
+        ylab = [f'{ins.title()}\nN = {len(self.df[self.df["instr"] == ins])}' for ins in self.INSTRS]
+        self.ax.set(
+            ylim=(-1, 7), xlim=(-55, 55), xticks=[-50, -25, 0, 25, 50], yticks=[-0.25, 1.75, 3.75, 5.75],
+            yticklabels=reversed(ylab), xlabel=self.XLABEL, ylabel='Instrument'
+        )
+        for tick, col in zip(reversed(self.ax.get_yticklabels()), [vutils.BLACK, *vutils.RGB]):
+            tick.set_color(col)
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
+        self.ax.legend(loc='upper right', frameon=True, framealpha=1, edgecolor=vutils.BLACK)
+        self.ax.text(25, 7.25, 'Algorithm detects LATER than human →', ha='center', va='center')
+        self.ax.text(-25, 7.25, '← Algorithm detects EARLIER than human', ha='center', va='center')
 
     def _format_fig(self):
         self.fig.tight_layout()
