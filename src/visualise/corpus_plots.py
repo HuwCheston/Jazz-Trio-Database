@@ -3,6 +3,7 @@
 
 """Plotting classes for corpus description, e.g. F-measures, API scraping results etc."""
 
+import copy
 import os
 import time
 
@@ -21,7 +22,8 @@ from src.detect.detect_utils import FREQUENCY_BANDS
 
 __all__ = [
     'BarPlotFScores', 'TimelinePlotBandleaders', 'BarPlotBandleaderDuration', 'BarPlotLastFMStreams',
-    'BarPlotSubjectiveRatings', 'BoxPlotRecordingLength', 'SpecPlotBands', 'CountPlotPanning'
+    'BarPlotSubjectiveRatings', 'BoxPlotRecordingLength', 'SpecPlotBands', 'CountPlotPanning',
+    'LinePlotOptimizationIterations', 'BarPlotCorpusDuration'
 ]
 
 
@@ -565,3 +567,153 @@ class RainPlotAlgoHumanOnset(vutils.BasePlot):
 
     def _format_fig(self):
         self.fig.tight_layout()
+
+
+class LinePlotOptimizationIterations(vutils.BasePlot):
+    ORDER = ['mix', *utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
+    LINE_KWS = dict(
+        palette=[vutils.BLACK, *vutils.RGB], hue_order=ORDER,
+        lw=vutils.LINEWIDTH * 2, ls=vutils.LINESTYLE, errorbar=None,
+        alpha=vutils.ALPHA, zorder=5
+    )
+    SCATTER_KWS = dict(
+        palette=[vutils.BLACK, *vutils.RGB], hue_order=ORDER,
+        s=200, edgecolor=vutils.BLACK, linewidth=vutils.LINEWIDTH,
+        legend=False, markers=['$M$', '$P$', '$B$', '$D$'], style_order=ORDER
+    )
+
+    def __init__(self, opt_fpath: str, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        # Initialise the base plot with our given kwargs
+        super().__init__(figure_title=fr'corpus_plots\lineplot_optimziationiterations_{self.corpus_title}', **kwargs)
+        self.df = pd.concat(self._format_df(opt_fpath))
+        self.grp_mean = (
+            self.df.groupby(['instrument', 'iterations'], as_index=False)
+            .mean()
+            .groupby('instrument', as_index=False)
+            .agg({'iterations': 'max', 'f_score': 'max'})
+        )
+        tp = self.df.groupby(['instrument', 'iterations'], as_index=False).std()
+        self.grp_std = tp.iloc[tp.groupby('instrument')['iterations'].idxmax()].reset_index(drop=True)
+        self.fig, self.ax = plt.subplots(1, 2, sharey=False, sharex=True, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
+
+    @staticmethod
+    def _format_df(opt_fpath):
+        for f in os.listdir(opt_fpath):
+            if '.csv' in f and 'forest' not in f:
+                d = pd.DataFrame(utils.load_csv(opt_fpath, f.replace('.csv', '')))
+                yield d[['mbz_id', 'instrument', 'f_score', 'iterations']]
+
+    def _create_plot(self):
+        for ax, est, grp in zip(self.ax.flatten(), [np.mean, np.std], [self.grp_mean, self.grp_std]):
+            sns.lineplot(
+                data=self.df, x='iterations', y='f_score', hue='instrument', estimator=est, ax=ax, **self.LINE_KWS
+            )
+            sns.scatterplot(
+                data=grp, x='iterations', y='f_score', hue='instrument', ax=ax, style='instrument', **self.SCATTER_KWS
+            )
+
+    @staticmethod
+    def _format_legend(ax, loc):
+        hand, lab = ax.get_legend_handles_labels()
+        # copy the handles
+        hand = [copy.copy(ha) for ha in hand]
+        # set the linewidths to the copies
+        [ha.set_linewidth(vutils.LINEWIDTH * 2) for ha in hand]
+        ax.legend(
+            hand, [la.title() for la in lab], title='Instrument', loc=loc,
+            frameon=True, framealpha=1, edgecolor=vutils.BLACK,
+        )
+
+    def _format_ax(self):
+        xt = np.linspace(0, 400, 5)
+        yt = np.linspace(0, 1, 5)
+        n = self.df['mbz_id'].nunique()
+        self.ax[0].set(
+            xlabel='Iterations', xticks=xt, yticks=yt, ylabel='$F$-Measure',
+            xlim=(0, 400), ylim=(0, 1), title=f'Mean $F$-Measure ($N$ = {n})'
+        )
+        self.ax[1].set(
+            xlabel='Iterations', xticks=xt, yticks=yt, xlim=(0, 400), ylim=(0, 1),
+            ylabel='$F$-Measure', title=f'Standard Deviation $F$-Measure ($N$ = {n})'
+        )
+        for a, loc in zip(self.ax.flatten(), ['lower right', 'upper right']):
+            self._format_legend(a, loc)
+            a.grid(axis='both', which='major', **vutils.GRID_KWS)
+            a.tick_params(axis='both', width=vutils.TICKWIDTH)
+            plt.setp(a.spines.values(), linewidth=vutils.LINEWIDTH)
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
+class BarPlotCorpusDuration(vutils.BasePlot):
+    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    BAR_KWS = dict(
+        stacked=True, color=[vutils.RED, vutils.GREEN],
+        zorder=10, lw=vutils.LINEWIDTH, edgecolor=vutils.BLACK,
+    )
+    PERC_KWS = dict(zorder=10, ha='center', va='center', color=vutils.WHITE, fontsize=vutils.FONTSIZE / 2)
+
+    def __init__(self, corp_df: str, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        # Initialise the base plot with our given kwargs
+        super().__init__(figure_title=fr'corpus_plots\barplot_corpusduration_{self.corpus_title}', **kwargs)
+        self.df = self._format_df(corp_df)
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
+
+    @staticmethod
+    def _format_df(corp_df_):
+        small_ = (
+            corp_df_.copy(deep=True)
+            .sort_values(by='birth')
+            .groupby(['bandleader', 'in_corpus'], as_index=True)
+            .agg({'duration': 'sum'})
+            .reset_index(drop=False)
+            .pivot_table(index='bandleader', columns=['in_corpus'], aggfunc='first')
+        )
+        small_['sum'] = small_.sum(axis=1)
+        return small_.sort_values(by='sum').drop(columns=['sum'])
+
+    def _create_plot(self):
+        return self.df.plot(
+            kind='barh', ax=self.ax, ylabel='Pianist', **self.BAR_KWS,
+            xlabel='Total duration of all recordings (hours)',
+        )
+
+    def _add_bandleader_images(self, bl, y):
+        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        img = mpl.offsetbox.OffsetImage(
+            plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
+        )
+        ab = mpl.offsetbox.AnnotationBbox(
+            img, (-12500, y - 0.05), xycoords='data', clip_on=False, transform=self.ax.transAxes,
+            annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
+        )
+        self.ax.add_artist(ab)
+
+    def _add_percentage(self):
+        for (idx, row), rect in zip(self.df.iterrows(), self.ax.patches[10:]):
+            perc = str(round((row.values[-1] / row.values.sum()) * 100)) + '%'
+            x, y = rect.xy
+            height, width = rect.get_height(), rect.get_width()
+            self.ax.text(x + (width / 2), y + (height / 2), perc, **self.PERC_KWS)
+
+    def _format_ax(self):
+        for num, pi in enumerate(self.df.index):
+            self._add_bandleader_images(pi, num)
+        self._add_percentage()
+        xt = np.linspace(0, 345600, 5)
+        self.ax.set(xticks=xt, xticklabels=[int(x / 60 / 60) for x in xt])
+        hand, lab = self.ax.get_legend_handles_labels()
+        self.ax.legend(
+            hand, ['False', 'True'], title='Included?', frameon=True,
+            framealpha=1, edgecolor=vutils.BLACK, loc='lower right'
+        )
+        self.ax.grid(axis='x', which='major', **vutils.GRID_KWS)
+        self.ax.tick_params(axis='y', which='both', pad=65)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH)
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
+
+    def _format_fig(self):
+        self.fig.subplots_adjust(top=0.95, bottom=0.1, left=0.2, right=0.95)
