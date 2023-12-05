@@ -6,6 +6,7 @@
 import copy
 import os
 import time
+from datetime import timedelta
 
 import librosa
 import librosa.display
@@ -218,7 +219,7 @@ class TimelinePlotBandleaders(vutils.BasePlot):
 class BarPlotBandleaderDuration(vutils.BasePlot):
     BAR_KWS = dict(
         edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=5, dodge=False,
-        palette=[vutils.RED, vutils.GREEN], estimator=np.sum,
+        palette=[vutils.RED, vutils.GREEN], estimator=np.sum, orient='h'
     )
     bandleaders = ['Bill Evans', 'Ahmad Jamal', 'Bud Powell', 'Oscar Peterson', 'Keith Jarrett', 'Tommy Flanagan',
                    'Junior Mance', 'Kenny Barron', 'John Hicks', 'McCoy Tyner']
@@ -241,6 +242,13 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
         return f'{s.split()[-1]}, {self.initials(s.split()[0:-1])}'
 
     def _format_df(self, cleaned_df):
+        cleaned_df['recording_length_'] = (
+            cleaned_df['recording_length']
+            .astype(int)
+            .apply(lambda x: timedelta(milliseconds=x))
+            .dt
+            .total_seconds()
+        )
         small_df = (
             cleaned_df.groupby('bandleader')
             .agg({'recording_title': 'count', 'recording_length_': 'sum'})
@@ -252,45 +260,46 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
             .apply(lambda s: "".join(c for c in s if ord(c) < 128))
         )
         small_df['in_corpus'] = small_df['bandleader'].isin(self.bandleaders)
-        small_df['recording_length_'] = (small_df['recording_length_'].dt.total_seconds()) / 3600
+        small_df['recording_length_'] /= 3600
         return small_df.sort_values(by='recording_length_', ascending=False)
 
     def _create_plot(self):
         g = sns.barplot(
-            data=self.df, x='bandleader_', y='recording_length_', ax=self.ax, hue='in_corpus', **self.BAR_KWS
+            data=self.df, y='bandleader_', x='recording_length_', ax=self.ax, hue='in_corpus', **self.BAR_KWS
         )
         for patch, (idx_, row_) in zip(g.patches, self.df.iterrows()):
             if not row_['in_corpus']:
                 patch.set_hatch(vutils.HATCHES[0])
 
     def _format_ax(self):
-        self.ax.set_xticks(
-            self.ax.get_xticks(), self.ax.get_xticklabels(), rotation=45, ha='right',
+        self.ax.set_yticks(
+            self.ax.get_yticks(), self.ax.get_yticklabels(), rotation=0, ha='right',
             fontsize=vutils.FONTSIZE / 1.5, rotation_mode="anchor"
         )
-        self.ax.set(ylabel='Total recording duration (hours)', xlabel='Bandleader', xlim=(-0.5, self.ax.get_xlim()[-1]))
-        self.ax.grid(visible=True, which='major', axis='y', zorder=0, **vutils.GRID_KWS)
+        self.ax.set(xlabel='Total recording duration (hours)', ylabel='Bandleader')
+        self.ax.grid(visible=True, which='major', axis='x', zorder=0, **vutils.GRID_KWS)
         self.ax.tick_params(width=vutils.TICKWIDTH, which='both')
-        self.ax.set_yscale('log')
+        self.ax.set_xscale('log')
         self.ax.minorticks_off()
-        self.ax.set_yticklabels([1, 10, 100])
-        self.ax.get_yaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
+        self.ax.set_xticklabels([1, 10, 100])
+        self.ax.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
-        self.ax.axvspan(
-            -0.5, 9, 0, self.ax.get_ylim()[1], alpha=vutils.ALPHA, color=vutils.BLACK,
+        self.ax.axhspan(
+            -0.5, 9.5, 0, self.ax.get_xlim()[1], alpha=vutils.ALPHA, color=vutils.BLACK,
             lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE
         )
-        self.ax.text(9.5, 50, r'$\it{Top}$ $\mathit{10}$', rotation=-90, va='center', ha='center')
+        self.ax.set_ylim(self.ax.get_ylim()[0] - 1.5, -0.5,)
+        self.ax.text(50, 9, r'$\it{Top}$ $\mathit{10}$', rotation=0, va='center', ha='center', c=vutils.WHITE)
         hand, lab = self.ax.get_legend_handles_labels()
         self.ax.get_legend().remove()
         p = mpl.patches.Patch(facecolor=vutils.RED, lw=2, hatch=vutils.HATCHES[0], edgecolor=vutils.BLACK)
         self.ax.legend(
-            [p, hand[-1]], lab, loc='upper right', frameon=True, title='Included?', framealpha=1, edgecolor=vutils.BLACK
+            [p, hand[-1]], lab, loc='lower right', frameon=True, title='Included?', framealpha=1, edgecolor=vutils.BLACK
         )
         self.ax.get_legend().get_frame().set_linewidth(vutils.LINEWIDTH)
 
     def _format_fig(self):
-        self.fig.subplots_adjust(top=0.95, bottom=0.15, left=0.1, right=0.95)
+        self.fig.subplots_adjust(right=0.95, left=0.175, bottom=0.1, top=0.95)
 
 
 class BarPlotLastFMStreams(vutils.BasePlot):
