@@ -65,19 +65,16 @@ class HistPlotBins(vutils.BasePlot):
             ax_t.tick_params(width=vutils.TICKWIDTH)
 
     def _format_fig(self):
-        self.fig.supxlabel(f'Proportional IOI')
+        self.fig.supxlabel(f'Inter-onset interval (measures)')
         self.fig.supylabel('Density')
         self.fig.subplots_adjust(bottom=0.15, top=0.85, left=0.075, right=0.95, hspace=0.05)
 
 
 class BarPlotComplexityDensity(vutils.BasePlot):
     BAR_KWS = dict(
-        dodge=False, edgecolor=vutils.BLACK, errorbar=('ci', 95),
-        lw=vutils.LINEWIDTH, seed=42, capsize=0.1, width=0.8,
-        ls=vutils.LINESTYLE, estimator=np.mean,
-        errcolor=vutils.BLACK, zorder=3,
-        hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
-        palette=vutils.RGB, alpha=0.8
+        dodge=False, edgecolor=vutils.BLACK, errorbar=('ci', 95), lw=vutils.LINEWIDTH, seed=42, capsize=0.1, width=0.8,
+        ls=vutils.LINESTYLE, estimator=np.mean, errcolor=vutils.BLACK, zorder=3, palette=vutils.RGB, alpha=0.8,
+        hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(), n_boot=vutils.N_BOOT
     )
 
     def __init__(self, complex_df, **kwargs):
@@ -87,17 +84,18 @@ class BarPlotComplexityDensity(vutils.BasePlot):
             complex_df.set_index('instr')
             .loc[utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
             .reset_index(drop=False)
+            .dropna()
         )
         self.fig, self.ax = plt.subplots(
             nrows=1, ncols=2, figsize=(vutils.WIDTH, vutils.WIDTH / 4), sharex=True, sharey=False
         )
 
     def _create_plot(self):
-        sns.barplot(data=self.df, x='instr', y='lz77 mean', ax=self.ax[0], **self.BAR_KWS)
-        sns.barplot(data=self.df, x='instr', y='n_onsets mean', ax=self.ax[1], **self.BAR_KWS)
+        sns.barplot(data=self.df, x='instr', y='lz77', ax=self.ax[0], **self.BAR_KWS)
+        sns.barplot(data=self.df, x='instr', y='n_onsets', ax=self.ax[1], **self.BAR_KWS)
 
     def _format_ax(self):
-        for ax, lab in zip(self.ax.flatten(), ['Complexity\n(compressed length)', 'Density\n($N$ onsets)']):
+        for ax, lab in zip(self.ax.flatten(), ['Complexity\n(compressed length)', 'Onset density\n($N$ onsets)']):
             for line in ax.lines:
                 line.set_zorder(5)
             for hatch, bar in zip(vutils.HATCHES, ax.patches):
