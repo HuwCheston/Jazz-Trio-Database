@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import pandas as pd
+import scipy.stats as stats
 import seaborn as sns
 
 from src import utils
@@ -17,7 +18,7 @@ FOLDER_PATH = 'coordination_plots'
 
 __all__ = [
     'TriangleAxis', 'TrianglePlotChronology', 'RegPlotCouplingHalves', 'BarPlotSimulationComparison',
-    'RegPlotCouplingGrangerCross', 'BarPlotCouplingCoefficients',
+    'RegPlotCouplingGrangerCross', 'BarPlotCouplingCoefficients', 'HistPlotCouplingTerms'
 ]
 
 
@@ -48,6 +49,7 @@ class TriangleAxis:
         self.len_mod = kwargs.get('len_mod', 1)
         self.text_mod = kwargs.get('text_mod', 0.1)
         self.head_width = kwargs.get('head_width', 20)
+        self.piano_only = kwargs.get('piano_only', True)
         self.performer_picture_zoom = kwargs.get('performer_picture_zoom', 1)
         self.grp = grp
         self.ax = ax
@@ -95,6 +97,8 @@ class TriangleAxis:
             for num, (influenced, (x, y), (x2, y2)) in enumerate(zip(
                     [i for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys() if i != influencer], start_coord, end_coord
             )):
+                if self.piano_only and influencer != 'piano' and influenced != 'piano':
+                    continue
                 # Get our coupling coefficient
                 c, q1, q2 = self._get_coupling_coefficient(influenced, influencer)
                 # Add in the arrow
@@ -194,6 +198,7 @@ class TriangleAxis:
                     x, y - self.text_mod if y < 0.5 else y + self.text_mod, f'$n=$ {nobs}',
                     ha='center', va='center', color=col, fontsize=vutils.FONTSIZE,
                 )
+
 
 
 class TrianglePlotChronology(vutils.BasePlot):
@@ -638,6 +643,73 @@ class BarPlotSimulationComparison(vutils.BasePlot):
 
     def _format_fig(self):
         self.fig.subplots_adjust(wspace=0.1, hspace=0.3, left=0.095, right=0.975, top=0.95, bottom=0.05)
+
+
+class HistPlotCouplingTerms(vutils.BasePlot):
+    HIST_KWS = dict(lw=vutils.LINEWIDTH / 2, ls=vutils.LINESTYLE, zorder=2, align='edge')
+    KDE_KWS = dict(linestyle=vutils.LINESTYLE, alpha=1, zorder=3, linewidth=vutils.LINEWIDTH)
+    TITLES = [r'Self coupling ($\alpha_{i,i}$)', r'Partner coupling ($\alpha_{i,j}$)',
+              r'Intercept ($\alpha_{i,0}$)']
+
+    def __init__(self, coupling_df, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        super().__init__(figure_title=fr'coordination_plots\histplot_couplingterms_{self.corpus_title}', **kwargs)
+        self.df = (
+            coupling_df.set_index('instrument')
+            .loc[utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
+            .reset_index(drop=False)
+        )
+        self.fig, self.ax = plt.subplots(nrows=3, ncols=3, sharex='col', sharey=True, figsize=(vutils.WIDTH, vutils.WIDTH))
+
+    @staticmethod
+    def _kde(dat, len_data: int = 1000):
+        # Fit the actual KDE to the data, using the default parameters
+        kde = stats.gaussian_kde(dat.T)
+        # Create a linear space of integers ranging from our lowest to our highest BUR
+        data_plot = np.linspace(dat.min(), dat.max(), len_data)[:, np.newaxis]
+        # Evaluate the KDE on our linear space of integers
+        y = kde.evaluate(data_plot.T)
+        return data_plot, np.array([(y_ - min(y)) / (max(y) - min(y)) for y_ in y])
+
+    @staticmethod
+    def _hist(dat, n_bins: int = 30):
+        heights, edges = np.histogram(dat, bins=n_bins)
+        heights = heights / max(heights)
+        return edges[:-1], heights, np.diff(edges)
+
+    def _create_plot(self):
+        num = 0
+        ax_flat = self.ax.flatten()
+        for (idx, grp), col in zip(self.df.clean.groupby('instrument', sort=False), vutils.RGB):
+            self_coupling = grp['self_coupling'].values
+            intercept = grp['intercept'].values
+            partner_coupling = grp[[f'coupling_{i}' for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys() if i != idx]].values.flatten()
+            for variable in [self_coupling, partner_coupling, intercept]:
+                x, height, width = self._hist(variable)
+                ax_flat[num].bar(x=x, height=height, width=width, fc=col, edgecolor='None', alpha=vutils.ALPHA, **self.HIST_KWS)
+                ax_flat[num].bar(x=x, height=height, width=width, fc='None', edgecolor=vutils.BLACK, alpha=1, **self.HIST_KWS)
+                x, y = self._kde(variable)
+                ax_flat[num].plot(x, y, color=col, **self.KDE_KWS)
+                num += 1
+
+    def _format_ax(self):
+        ax_flat = self.ax.flatten()
+        for num, inst in zip([0, 3, 6], utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()):
+            ax_flat[num].set_ylabel(inst.title())
+        for num, tit in zip([0, 1, 2], self.TITLES):
+            ax_flat[num].set_title(tit)
+        for num, tit in zip([6, 7, 8], self.TITLES):
+            ax_flat[num].set_xlabel(tit)
+        for ax in ax_flat:
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+            ax.tick_params(axis='both', width=vutils.TICKWIDTH)
+            ax.grid(axis='x', which='major', **vutils.GRID_KWS)
+            ax.axvline(0, 0, 1, color=vutils.BLACK, linewidth=vutils.LINEWIDTH * 2, linestyle='dashed')
+
+    def _format_fig(self):
+        self.fig.supylabel('Density')
+        self.fig.supxlabel('Model coefficient')
+        self.fig.tight_layout()
 
 
 if __name__ == '__main__':
