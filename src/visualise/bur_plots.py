@@ -50,14 +50,16 @@ def add_bur_images(ax, y) -> Generator:
 class ViolinPlotBURs(vutils.BasePlot):
     """Plots the distribution of BUR values obtained for each musician on a specific instrument"""
     BURS_WITH_IMAGES = [0.5, 1, 2, 3]
+    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
     PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=2, n_colors=20, as_cmap=False)
     VP_KWS = dict(vert=False, showmeans=False, showextrema=False)
 
     def __init__(self, bur_df: pd.DataFrame, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus')
         super().__init__(figure_title=fr'bur_plots\violinplot_burs_{self.corpus_title}', **kwargs)
-        self.df = bur_df[bur_df['instrument'] == 'piano'].copy().sort_values(by='bandleader')
-        self.vals = [g['bur'].values for _, g in self.df.groupby('bandleader', sort=False)]
+        self.df = bur_df[bur_df['instrument'] == 'piano'].copy()
+        order = reversed(self.df.groupby('bandleader', as_index=False)['bur'].mean().sort_values(by='bur')['bandleader'].values)
+        self.df = self.df.set_index('bandleader').loc[order].reset_index(drop=False)
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
     def add_bur_images(self, y):
@@ -78,13 +80,26 @@ class ViolinPlotBURs(vutils.BasePlot):
                     frameon=False, xycoords='data', clip_on=False, annotation_clip=False
                 )
 
+    def _add_bandleader_images(self, bl, y):
+        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        img = mpl.offsetbox.OffsetImage(
+            plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
+        )
+        ab = mpl.offsetbox.AnnotationBbox(
+            img, (-2.15, y - 0.05), xycoords='data', clip_on=False, transform=self.ax.transAxes,
+            annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
+        )
+        self.ax.add_artist(ab)
+
     def _create_plot(self) -> None:
         """Creates violinplot in seaborn"""
         self.g = sns.violinplot(
             data=self.df, x='bur', y='bandleader', linecolor=vutils.BLACK, density_norm='count', hue=True,
             palette=self.PAL, hue_order=[True, False], split=True, legend=False, inner=None, ax=self.ax, bw=0.1,
         )
-        med = self.df.groupby('bandleader', as_index=False)['bur'].median()
+        for patch, col in zip(self.ax.collections, self.PAL):
+            patch.set_facecolor(col)
+        med = self.df.groupby('bandleader', as_index=False, sort=False)['bur'].mean()
         sns.scatterplot(data=med, x='bur', y='bandleader', ax=self.ax)
 
     def _add_nburs_to_tick(self):
@@ -116,8 +131,11 @@ class ViolinPlotBURs(vutils.BasePlot):
         self.ax.set(
             yticklabels=list(self._add_nburs_to_tick()), xticks=[np.log2(b) for b in self.BURS_WITH_IMAGES],
             xticklabels=[-1, 0, 1, 1.585], xlim=(-2, 2), ylim=(9.5, -0.5), xlabel='${Log_2}$ beat-upbeat ratio',
-            ylabel='Performer ($N$ beat-upbeat ratios)'
+            ylabel='Pianist\n($N$ beat-upbeat ratios)'
         )
+        self.ax.tick_params(axis='y', which='major', pad=70)
+        for num, pi in enumerate(self.df['bandleader'].unique()):
+            self._add_bandleader_images(pi, num)
 
     def _format_fig(self) -> None:
         """Format figure-level properties"""
@@ -125,7 +143,7 @@ class ViolinPlotBURs(vutils.BasePlot):
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, labeltop=True)
         # Adjust subplot positioning
-        self.fig.subplots_adjust(left=0.2, right=0.9, top=0.85, bottom=0.1)
+        self.fig.subplots_adjust(left=0.215, right=0.95, top=0.85, bottom=0.1)
 
 
 class HistPlotBURByInstrument(vutils.BasePlot):
