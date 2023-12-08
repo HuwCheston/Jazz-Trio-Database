@@ -20,7 +20,7 @@ from src import utils
 
 __all__ = [
     'PolarPlotAsynchrony', 'BarPlotProportionalAsynchrony', 'HistPlotProportionalAsynchrony',
-    'RegPlotPianistAsynchrony'
+    'RegPlotPianistAsynchrony', 'HistPlotProportionalAsynchronyTrios', 'HistPlotProportionalAsynchronyTriosPiano'
 ]
 
 
@@ -111,9 +111,9 @@ class PolarPlotAsynchrony(vutils.BasePlot):
             curved_line = mpl.patches.ConnectionPatch(xyA=xyA, xyB=xyB, **self.ARROW_KWS)
             self.ax.add_artist(curved_line)
         self.fig.text(0.85, 0.85, 'Time')
-        self.fig.text(0.155, 0.9415, 'avg. drums position $=$')
-        st = r'     Time, $\frac{4}{4}$ measure' \
-             '\n(proportional duration)'
+        self.fig.text(0.135, 0.9415, 'mean drums position $=$')
+        st = r' Time, $\frac{4}{4}$ measure' \
+             '\n(relative position)'
         self.fig.text(0.025, 0.025, st)
         self.fig.tight_layout()
 
@@ -180,7 +180,7 @@ class BarPlotProportionalAsynchrony(vutils.BasePlot):
     def _format_ax(self):
         self.ax.set(
             ylim=(-1/64 - 0.01, 1/32 + 0.005), xticklabels=[1, 2, 3, 4], xlabel='Beat',
-            ylabel='Proportional position\n($\pm0=$ drums, avg. beat 1)', yticks=[-1/64, 0, 1/64, 1/32],
+            ylabel='Relative position\n($\pm0=$ drums, mean beat 1)', yticks=[-1/64, 0, 1/64, 1/32],
             yticklabels=[r'–$\frac{1}{64}$', r'$\pm$0', r'+$\frac{1}{64}$', r'+$\frac{1}{32}$']
         )
         hand, _ = self.ax.get_legend_handles_labels()
@@ -210,7 +210,7 @@ class BarPlotProportionalAsynchrony(vutils.BasePlot):
             # If we can get the image, then yield it to add to our plot
             else:
                 yield mpl.offsetbox.AnnotationBbox(
-                    mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.15), (3.875, 1/val),
+                    mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.5), (3.875, 1/val),
                     frameon=False, xycoords='data', clip_on=False, annotation_clip=False
                  )
 
@@ -262,7 +262,7 @@ class HistPlotProportionalAsynchrony(vutils.BasePlot):
         self.ax.xaxis.grid(True, **vutils.GRID_KWS)
         self.ax.set(
             xlim=(-1/32 - 0.01, 1/16 + 0.001), ylim=(0, 1.01), xticks=[-1/32, -1/64, 0, 1/64, 1/32, 1/16],
-            ylabel='Density', xlabel='Proportional position ($\pm0=$ drums, avg. beat 1)',
+            ylabel='Density', xlabel='Relative position ($\pm0=$ drums, mean beat 1)',
             xticklabels=[
                 r'–$\frac{1}{32}$', r'–$\frac{1}{64}$', r'$\pm$0',
                 r'+$\frac{1}{64}$', r'+$\frac{1}{32}$', r'+$\frac{1}{16}$'
@@ -285,7 +285,7 @@ class HistPlotProportionalAsynchrony(vutils.BasePlot):
                     1/val - 0.001, 1.1, '–' if val < 0 else '+', ha='right', va='center', clip_on=False, zorder=1000
                 )
                 self.ax.add_artist(mpl.offsetbox.AnnotationBbox(
-                    mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.15), (1/val, 1.1),
+                    mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.5), (1/val, 1.15),
                     frameon=False, xycoords='data', clip_on=False, annotation_clip=False, zorder=0
                  ))
 
@@ -462,7 +462,7 @@ class RegPlotPianistAsynchrony(vutils.BasePlot):
             xticks=[100, 150, 200, 250, 300], yticks=[-1/128, 0, 1/128, 1/64, 1/32], xlim=(100, 315),
             yticklabels=[r'–$\frac{1}{128}$', r'$\pm$0', r'+$\frac{1}{128}$', r'+$\frac{1}{64}$', r'+$\frac{1}{32}$'],
             xlabel='Mean Tempo (BPM)', ylim=(-1/128 - 0.001, 1/32 + 0.0065),
-            ylabel='Mean piano asynchrony\n(proportional to measure)',
+            ylabel='Mean piano asynchrony\n(relative to measure)',
 
         )
         plt.setp(self.main_ax.spines.values(), linewidth=vutils.LINEWIDTH)
@@ -511,6 +511,251 @@ class RegPlotPianistAsynchrony(vutils.BasePlot):
     def _format_fig(self):
         """Format figure-level properties"""
         self.fig.subplots_adjust(left=0.075, right=0.99, top=0.99, bottom=0.09, hspace=0.1, wspace=0.1)
+
+
+class HistPlotProportionalAsynchronyTrios(vutils.BasePlot):
+    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    PLOT_KWS = dict(lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=5)
+    FILL_KWS = dict(alpha=0.1, zorder=0)
+    VLINE_KWS = dict(linestyle='dashed', alpha=1, zorder=4, linewidth=vutils.LINEWIDTH * 1.5)
+
+    def __init__(self, async_df: pd.DataFrame, **kwargs):
+        """Called when initialising the class"""
+        self.corpus_title = 'corpus_chronology'
+        # Initialise the base plot with our given kwargs
+        super().__init__(figure_title=fr'asynchrony_plots\histplot_asynchronytrios_{self.corpus_title}', **kwargs)
+        self.df = async_df
+        self.fig, self.ax = plt.subplots(
+            async_df['bandleader'].nunique(), 1, figsize=(vutils.WIDTH, vutils.WIDTH), sharex=True, sharey=True
+        )
+
+    @staticmethod
+    def _kde(vals):
+        # Fit the actual KDE to the data, using the default parameters
+        kde = stats.gaussian_kde(vals.T)
+        # Create a linear space of integers ranging from our lowest to our highest BUR
+        x = np.linspace(vals.min(), vals.max(), 100)[:, np.newaxis].T[0]
+        # Evaluate the KDE on our linear space of integers
+        y = kde.evaluate(x)
+        y = np.array([(y_ - min(y)) / (max(y) - min(y)) for y_ in y])
+        return x, y
+
+    def _create_plot(self):
+        for (idx, grp), a in zip(self.df.groupby('bandleader'), self.ax.flatten()):
+            for (i, g), col in zip(grp.groupby('instr', sort=False), vutils.RGB):
+                vals = g['asynchrony_adjusted_offset'].values
+                x, y = self._kde(vals)
+                a.plot(x, y, color=col, **self.PLOT_KWS, label=i.title())
+                a.fill_between(x, y, color=col, **self.FILL_KWS)
+                a.axvline(np.mean(vals), 0, 1, color=col, **self.VLINE_KWS)
+
+    def _add_bandleader_images(self, bl: str, ax, y: float = 2/3, ):
+        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        img = mpl.offsetbox.OffsetImage(
+            plt.imread(fpath), clip_on=False, transform=ax.transAxes, zoom=0.5
+        )
+        ab = mpl.offsetbox.AnnotationBbox(
+            img, (-0.0475, y), xycoords='data', clip_on=False, transform=ax.transAxes,
+            annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
+        )
+        ax.add_artist(ab)
+
+    def _add_images(self):
+        ax = self.ax.flatten()[0]
+        ax.text(0, 1.25, r'$\pm$0', ha='center', va='center', clip_on=False, zorder=1000)
+        for val in [-32, -64, 32, 64, 16]:
+            try:
+                img = plt.imread(fr'{utils.get_project_root()}\references\images\notation\notation_{abs(val)}.png')
+            except FileNotFoundError:
+                pass
+            # If we can get the image, then yield it to add to our plot
+            else:
+                ax.text(
+                    1/val - 0.001, 1.25, '–' if val < 0 else '+', ha='right', va='center', clip_on=False, zorder=1000
+                )
+                ax.add_artist(mpl.offsetbox.AnnotationBbox(
+                    mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.5), (1/val, 1.35),
+                    frameon=False, xycoords='data', clip_on=False, annotation_clip=False, zorder=0
+                 ))
+
+    def _format_ax(self):
+        self._add_images()
+        for num, ((idx, _), ax) in enumerate(zip(self.df.groupby('bandleader'), self.ax.flatten())):
+            if num == 0:
+                ax.legend(loc='upper right', title='', frameon=True, framealpha=1, edgecolor=vutils.BLACK)
+                spines = ['bottom']
+            elif num == 9:
+                spines = ['top']
+            else:
+                spines = ['bottom', 'top']
+            ax.spines[spines].set_visible(False)
+            if num != 9:
+                ax.axhline(0, 0, 1, color=vutils.BLACK, linewidth=vutils.LINEWIDTH * 2, linestyle=vutils.LINESTYLE)
+            self._add_bandleader_images(idx, ax)
+            ax.yaxis.tick_right()
+            ax.set_ylabel(idx, fontsize=vutils.FONTSIZE, labelpad=80, rotation=0, y=0.1)
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+            ax.tick_params(
+                axis='both', bottom=True, top=True if num == 0 else False, left=True, right=True, width=vutils.TICKWIDTH
+            )
+            ax.xaxis.grid(True, **vutils.GRID_KWS)
+            ax.set(
+                xlim=(-1/32 - 0.01, 1/16 + 0.001), ylim=(0, 1.1),
+                yticks=[], yticklabels=[],
+                xticks=[-1/32, -1/64, 0, 1/64, 1/32, 1/16],
+                xticklabels=[
+                    r'–$\frac{1}{32}$', r'–$\frac{1}{64}$', r'$\pm$0',
+                    r'+$\frac{1}{64}$', r'+$\frac{1}{32}$', r'+$\frac{1}{16}$'
+                ]
+            )
+
+    def _format_fig(self):
+        self.fig.supxlabel('Relative position ($\pm0=$ drums, mean beat 1)', fontsize=vutils.FONTSIZE + 5)
+        self.fig.subplots_adjust(top=0.95, bottom=0.06, left=0.125, right=0.95, hspace=0, wspace=0)
+
+
+class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
+    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    PLOT_KWS = dict(lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=10)
+    FILL_KWS = dict(alpha=0.1, zorder=5)
+    VLINE_KWS = dict(linestyle='dashed', alpha=1, zorder=1, linewidth=vutils.LINEWIDTH * 1.5)
+
+    def __init__(self, async_df: pd.DataFrame, **kwargs):
+        """Called when initialising the class"""
+        self.corpus_title = 'corpus_chronology'
+        # Initialise the base plot with our given kwargs
+        super().__init__(figure_title=fr'asynchrony_plots\histplot_asynchronytriospiano_{self.corpus_title}', **kwargs)
+        self.df = async_df.copy(deep=True)
+        order = reversed(
+            self.df.groupby('bandleader', as_index=False)
+            ['asynchrony']
+            .mean()
+            .sort_values(by='asynchrony')
+            ['bandleader']
+            .values
+        )
+        self.df = self.df.set_index('bandleader').loc[order].reset_index(drop=False)
+        self.fig, self.ax = plt.subplots(
+            async_df['bandleader'].nunique(), 2, figsize=(vutils.WIDTH, vutils.WIDTH / 2), sharex=True, sharey=False,
+            gridspec_kw=dict(height_ratios=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        )
+
+    @staticmethod
+    def _kde(vals):
+        # Fit the actual KDE to the data, using the default parameters
+        kde = stats.gaussian_kde(vals.T)
+        # Create a linear space of integers ranging from our lowest to our highest BUR
+        x = np.linspace(vals.min(), vals.max(), 100)[:, np.newaxis].T[0]
+        # Evaluate the KDE on our linear space of integers
+        y = kde.evaluate(x)
+        y = np.array([(y_ - min(y)) / (max(y) - min(y)) for y_ in y])
+        return x, y
+
+    @staticmethod
+    def _bootstrap(vals):
+        means = [vals.sample(frac=1, replace=True, random_state=i).mean() for i in range(10)]
+        return np.mean(vals) - np.percentile(means, 2.5), np.percentile(means, 97.5) - np.mean(vals)
+
+    def _create_plot(self):
+        for (idx, grp), ax_row in zip(self.df.groupby('bandleader', sort=False), self.ax):
+            zi = zip(grp.groupby('instr', sort=False), [vutils.GREEN, vutils.BLUE], ax_row, ['s', 'D'])
+            for (i, g), col, a, mark in zi:
+                vals = g['asynchrony'].values
+                x, y = self._kde(vals)
+                a.plot(x, y, color=col, **self.PLOT_KWS, label=i.title())
+                a.fill_between(x, y, color=col, **self.FILL_KWS)
+                me = np.mean(vals)
+                a.scatter(
+                    me, 0, color=col, marker=mark, lw=vutils.LINEWIDTH / 2, edgecolor=vutils.BLACK, s=50, zorder=15
+                )
+                xlow, xhi = self._bootstrap(g['asynchrony'])
+                a.errorbar(
+                    x=[me, me], y=[0, 0], xerr=[xlow, xhi], zorder=10, linewidth=vutils.LINEWIDTH * 1.5,
+                    color=col, capsize=5, capthick=vutils.LINEWIDTH * 1.5
+                )
+
+    def _add_bandleader_images(self, bl: str, ax, y: float = 0.5, ):
+        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        img = mpl.offsetbox.OffsetImage(
+            plt.imread(fpath), clip_on=False, transform=ax.transAxes, zoom=0.5
+        )
+        ab = mpl.offsetbox.AnnotationBbox(
+            img, (-1/16 - 0.015, y), xycoords='data', clip_on=False, transform=ax.transAxes,
+            annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
+        )
+        ax.add_artist(ab)
+
+    def _add_images(self, y=5.7):
+        # ax = self.ax[1]
+        for ax in self.ax[1]:
+            ax.text(0, y - .25, r'$\pm$0', ha='center', va='center', clip_on=False, zorder=1000)
+            for val in [-16, -32, -64, 32, 64, 16]:
+                try:
+                    img = plt.imread(fr'{utils.get_project_root()}\references\images\notation\notation_{abs(val)}.png')
+                except FileNotFoundError:
+                    pass
+                # If we can get the image, then yield it to add to our plot
+                else:
+                    ax.text(
+                        1/val - 0.001, y, '–' if val < 0 else '+', ha='right', va='center', clip_on=False, zorder=1000
+                    )
+                    ax.add_artist(mpl.offsetbox.AnnotationBbox(
+                        mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.75), (1/val, y+.25),
+                        frameon=False, xycoords='data', clip_on=False, annotation_clip=False, zorder=0
+                     ))
+
+    def _format_ax(self):
+        self._add_images()
+        for num, ((i, g), ax_row) in enumerate(zip(self.df.groupby('bandleader', sort=False), self.ax)):
+            for (idx, grp), ax, col in zip(g.groupby('instr', sort=False), ax_row, [vutils.GREEN, vutils.BLUE]):
+                if num == 0:
+                    spines = ['bottom']
+                    ax.set_title(idx.title(), y=2.3, zorder=10000)
+                    yl = (-0.35, 2)
+                elif num == 9:
+                    spines = ['top']
+                    yl = (-0.7, 1.65)
+                else:
+                    spines = ['bottom', 'top']
+                    yl = (-0.35, 2)
+                ax.text(-1/16 + 0.001, yl[1] - 0.2, '$N$ = ', va='top')
+                ax.text(-1/16 + 0.012, yl[1] - 0.2, len(grp), va='top', ha='left', color=col)
+                ax.spines[spines].set_visible(False)
+                ax.axvline(0, 0, 1, color=vutils.BLACK, linewidth=vutils.LINEWIDTH, linestyle=vutils.LINESTYLE)
+                ax.axhline(
+                    0, 0, 1, color=vutils.BLACK, linewidth=vutils.LINEWIDTH, linestyle=vutils.LINESTYLE, zorder=0
+                )
+                plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+                ax.tick_params(
+                    axis='both', bottom=True, right=True, width=vutils.TICKWIDTH,
+                    top=True if num == 0 else False, left=True,
+                )
+                ax.xaxis.grid(True, color=vutils.BLACK, alpha=1, lw=2, ls='dashed', zorder=1)
+                ax.tick_params(axis='y', which='major', pad=60)
+                lab = ''
+                if idx == 'bass':
+                    y = 0.5 if num != 9 else 0
+                    self._add_bandleader_images(i, ax, y)
+                    lab = i
+                ax.set(
+                    xlim=(-1/16 - 0.005, 1/16 + 0.005), ylim=yl,
+                    yticks=[0], yticklabels=[lab],
+                    xticks=[-1/16, -1/32, -1/64, 0, 1/64, 1/32, 1/16],
+                    xticklabels=[
+                        r'–$\frac{1}{16}$', r'–$\frac{1}{32}$', r'–$\frac{1}{64}$',
+                        r'$\pm$0',
+                        r'+$\frac{1}{64}$', r'+$\frac{1}{32}$', r'+$\frac{1}{16}$'
+                    ]
+                )
+                if num != 9:
+                    plt.setp(ax.yaxis.get_majorticklabels(), va="bottom")
+
+    def _format_fig(self):
+        self.fig.supxlabel('Relative position of piano', x=0.55)
+        self.fig.supylabel('Pianist')
+        # self.fig.subplots_adjust(top=0.95, bottom=0.1, left=0.175, right=0.95, hspace=0, wspace=0)
+        # Adjust subplot positioning
+        self.fig.subplots_adjust(left=0.2, right=0.95, top=0.85, bottom=0.1, hspace=0, wspace=0.05)
 
 
 if __name__ == '__main__':
