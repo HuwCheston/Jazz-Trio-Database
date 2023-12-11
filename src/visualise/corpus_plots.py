@@ -149,7 +149,7 @@ class TimelinePlotBandleaders(vutils.BasePlot):
     SCATTER_KWS = dict(s=50, marker='x', color=vutils.BLACK, alpha=1, zorder=1, label='Recording')
     TEXT_KWS = dict(va='center', ha='left', zorder=2, fontsize=vutils.FONTSIZE / 1.2)
     BAR_KWS = dict(edgecolor=vutils.BLACK, zorder=0, label=None)
-    PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=2, n_colors=10, as_cmap=False)
+    PAL = reversed(sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=0, n_colors=10, as_cmap=False))
 
     def __init__(self, bandleaders_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
@@ -195,10 +195,10 @@ class TimelinePlotBandleaders(vutils.BasePlot):
     def _add_pianist_image(self, bandleader_name, x, y):
         fpath = fr'{self.img_loc}\{bandleader_name.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
-            plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.35
+            plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
         )
         ab = mpl.offsetbox.AnnotationBbox(
-            img, (x - 1.5, y - 0.05), xycoords='data', clip_on=False, transform=self.ax.transAxes,
+            img, (x - 2, y - 0.05), xycoords='data', clip_on=False, transform=self.ax.transAxes,
             annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
         )
         self.ax.add_artist(ab)

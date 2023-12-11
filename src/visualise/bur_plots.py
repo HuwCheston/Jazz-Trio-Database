@@ -51,14 +51,26 @@ class ViolinPlotBURs(vutils.BasePlot):
     """Plots the distribution of BUR values obtained for each musician on a specific instrument"""
     BURS_WITH_IMAGES = [0.5, 1, 2, 3]
     img_loc = fr'{utils.get_project_root()}\references\images\musicians'
-    PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=2, n_colors=20, as_cmap=False)
+    PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=0, n_colors=20, as_cmap=False)
     VP_KWS = dict(vert=False, showmeans=False, showextrema=False)
+    EBAR_KWS = dict(
+        ls='none', color=vutils.RED, linewidth=vutils.LINEWIDTH * 1.5, capsize=5,
+        capthick=vutils.LINEWIDTH * 1.5, ecolor=vutils.RED, zorder=10
+    )
+    SCAT_KWS = dict(facecolor=vutils.RED, lw=vutils.LINEWIDTH / 2, edgecolor=vutils.BLACK, s=100, zorder=15)
 
     def __init__(self, bur_df: pd.DataFrame, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus')
         super().__init__(figure_title=fr'bur_plots\violinplot_burs_{self.corpus_title}', **kwargs)
         self.df = bur_df[bur_df['instrument'] == 'piano'].copy()
-        order = reversed(self.df.groupby('bandleader', as_index=False)['bur'].mean().sort_values(by='bur')['bandleader'].values)
+        order = reversed(
+            self.df.groupby('bandleader', as_index=False)
+            ['bur']
+            .mean()
+            .sort_values(by='bur')
+            ['bandleader']
+            .values
+        )
         self.df = self.df.set_index('bandleader').loc[order].reset_index(drop=False)
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
@@ -99,39 +111,40 @@ class ViolinPlotBURs(vutils.BasePlot):
         )
         for patch, col in zip(self.ax.collections, self.PAL):
             patch.set_facecolor(col)
-        med = self.df.groupby('bandleader', as_index=False, sort=False)['bur'].mean()
-        sns.scatterplot(data=med, x='bur', y='bandleader', ax=self.ax)
+        med = self.df.groupby('bandleader', as_index=False, sort=False).agg({'bur': ['mean', 'std']})
+        med.columns = [col[0] if col[1] == '' else col[1] for col in med.columns]
+        for line in self.ax.lines:
+            line.set_linestyle(vutils.LINESTYLE)
+            line.set_color(vutils.BLACK)
+            line.set_alpha(0.8)
+        for collect in self.ax.collections:
+            collect.set_edgecolor(vutils.BLACK)
+            collect.set_linewidth(vutils.LINEWIDTH)
+        self.ax.scatter(med['mean'], med['bandleader'], **self.SCAT_KWS)
+        for idx, row in med.iterrows():
+            self.ax.errorbar(x=[row['mean'], row['mean']], y=[idx, idx], xerr=[row['std'], row['std']], **self.EBAR_KWS)
 
     def _add_nburs_to_tick(self):
         """Add the total number of BURs gathered for each musician next to their name"""
-        for tick in self.ax.get_yticklabels():
-            tick = tick.get_text()
-            yield f'{tick}\n({len(self.df[self.df["bandleader"] == tick]["bur"].dropna())})'
+        for num, (idx, grp) in enumerate(self.df.groupby('bandleader', sort=False)):
+            self.ax.text(-1.95, num - 0.15, f'$N$ = ')
+            self.ax.text(-1.805, num - 0.15, len(grp['bur'].dropna()), color=vutils.RED)
 
     def _format_ax(self) -> None:
         """Format axis-level properties"""
         # Here we set the line styles
         self.ax.get_legend().remove()
-        # TODO: is this redundant given the iteration over self.ax.lines?
-        for collect in self.ax.collections:
-            collect.set_edgecolor(vutils.BLACK)
-            collect.set_linewidth(vutils.LINEWIDTH)
         # Add in a horizontal line for each performer on the y-axis
         for tick in self.ax.get_yticks():
             self.ax.axhline(tick, 0, 3.25, color=vutils.BLACK, alpha=vutils.ALPHA, lw=vutils.LINEWIDTH)
-        # Set the line styles again, possibly redundant
-        for line in self.ax.lines:
-            line.set_linestyle(vutils.LINESTYLE)
-            line.set_color(vutils.BLACK)
-            line.set_alpha(0.8)
         # Add in notation images for each of the BUR values we want to the top of the plot
         for artist in self.add_bur_images(y=-1.3):
             self.ax.add_artist(artist)
         # Set final properties
+        self._add_nburs_to_tick()
         self.ax.set(
-            yticklabels=list(self._add_nburs_to_tick()), xticks=[np.log2(b) for b in self.BURS_WITH_IMAGES],
-            xticklabels=[-1, 0, 1, 1.585], xlim=(-2, 2), ylim=(9.5, -0.5), xlabel='${Log_2}$ beat-upbeat ratio',
-            ylabel='Pianist\n($N$ beat-upbeat ratios)'
+            xticks=[np.log2(b) for b in self.BURS_WITH_IMAGES], xlabel='', ylabel='',
+            xticklabels=[-1, 0, 1, 1.585], xlim=(-2, 2), ylim=(9.5, -0.5),
         )
         self.ax.tick_params(axis='y', which='major', pad=70)
         for num, pi in enumerate(self.df['bandleader'].unique()):
@@ -139,11 +152,13 @@ class ViolinPlotBURs(vutils.BasePlot):
 
     def _format_fig(self) -> None:
         """Format figure-level properties"""
+        self.fig.supxlabel('${Log_2}$ beat-upbeat ratio', x=0.55)
+        self.fig.supylabel('Pianist')
         # Adjust line and tick width
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, labeltop=True)
         # Adjust subplot positioning
-        self.fig.subplots_adjust(left=0.215, right=0.95, top=0.85, bottom=0.1)
+        self.fig.subplots_adjust(left=0.205, right=0.95, top=0.875, bottom=0.08)
 
 
 class HistPlotBURByInstrument(vutils.BasePlot):
