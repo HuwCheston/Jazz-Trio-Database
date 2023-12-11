@@ -9,6 +9,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import scipy.stats as stats
 import seaborn as sns
 from scipy.cluster.hierarchy import dendrogram
 from sklearn.cluster import AgglomerativeClustering
@@ -19,7 +20,8 @@ import src.visualise.visualise_utils as vutils
 
 __all__ = [
     'BarPlotCategoryImportances', 'BarPlotFeatureImportances', 'HeatMapFeatureCorrelation', 'CountPlotMissingValues',
-    'HeatMapPredictionProbDendro', 'RocPlotLogRegression', 'StripPlotLogitCoeffs',
+    'HeatMapPredictionProbDendro', 'RocPlotLogRegression', 'StripPlotLogitCoeffs', 'HistPlotFirstLastP',
+    'RegPlotPredictorsCareerProgress'
 ]
 
 PREDICTORS_CATEGORIES = {
@@ -484,23 +486,25 @@ class RocPlotLogRegression(vutils.BasePlot):
 
 
 class StripPlotLogitCoeffs(vutils.BasePlot):
-    STRIP_KWS = dict(edgecolor=vutils.BLACK, linewidth=vutils.LINEWIDTH, zorder=5, )
+    STRIP_KWS = dict(
+        edgecolor=vutils.BLACK, linewidth=vutils.LINEWIDTH, zorder=5,
+        hue_order=['Feel', 'Tempo', 'Swing', 'Complexity', 'Interaction']
+    )
     ERROR_KWS = dict(
-        lw=vutils.LINEWIDTH, color=vutils.BLACK, linestyle='none',
-        capsize=5, elinewidth=2, markeredgewidth=2
+        lw=vutils.LINEWIDTH, color=vutils.BLACK, linestyle='none', capsize=5, elinewidth=2, markeredgewidth=2
     )
     LEGEND_KWS = dict(frameon=True, framealpha=1, edgecolor=vutils.BLACK)
     palette = sns.color_palette('tab10')
-    palette = [palette[1], palette[0], palette[4], palette[2]]
+    palette = [palette[2], palette[4], palette[0], palette[1],   palette[3]]
 
     def __init__(self, logit_md, category_mapping, **kwargs):
         self.corpus_title = 'corpus_chronology'
         super().__init__(
             figure_title=fr'random_forest_plots\stripplot_logitcoeffs_{self.corpus_title}', **kwargs
         )
-        self.df = self._format_df(logit_md)
         self.cat_map = category_mapping
-        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 3))
+        self.df = self._format_df(logit_md)
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
     @staticmethod
     def _format_p(pval):
@@ -524,17 +528,13 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
         params['low'] = params['coeff'] - params['low']
         params['high'] -= params['coeff']
         params['category'] = params['index'].map(self.cat_map)
-        return params
+        return params.iloc[::-1]
 
     def _create_plot(self):
         sns.stripplot(
-            data=self.df, x='coeff', y='index', s=10, hue='category',
-            ax=self.ax, palette=self.palette, **self.STRIP_KWS
+            data=self.df, x='coeff', y='index', s=10, hue='category', ax=self.ax, palette=self.palette, **self.STRIP_KWS
         )
-        self.ax.errorbar(
-            self.df['coeff'], self.df['index'], **self.ERROR_KWS,
-            xerr=(self.df['low'], self.df['high']),
-        )
+        self.ax.errorbar(self.df['coeff'], self.df['index'], **self.ERROR_KWS, xerr=(self.df['low'], self.df['high']))
         for idx, row in self.df.iterrows():
             self._add_pvals(row)
 
@@ -547,8 +547,8 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
         self.ax.set(
-            ylim=(-0.5, 12.5), xlabel='Odds ratio (95% CI, log scale)', xticks=[0.1, 1, 10],
-            xlim=(0.099, 15.5), ylabel='Variable', xticklabels=[0.1, 1, 10],
+            ylim=(17.5, -0.5), xlabel='Odds ratio (95% CI, log scale)', xticks=[0.1, 1, 10],
+            xlim=(0.099, 20.5), ylabel='Predictor', xticklabels=[0.1, 1, 10],
             yticklabels=[COL_MAPPING[i.get_text()] for i in self.ax.get_yticklabels()],
         )
         self._format_legend()
@@ -564,16 +564,127 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
             ha.set_edgecolor(vutils.BLACK)
             ha.set_linewidth(vutils.LINEWIDTH)
             ha.set_sizes([100])
-        self.ax.legend(reversed(handles), reversed(labels), loc='upper right', title='Category', **self.LEGEND_KWS)
+        self.ax.legend(handles, labels, loc='upper right', title='Category', **self.LEGEND_KWS)
 
     def _format_yticks(self):
-        new_pal = [[self.palette[i1] for _ in range(i2)] for i1, i2 in zip(range(4), [4, 2, 3, 4])]
+        new_pal = [[self.palette[i1] for _ in range(i2)] for i1, i2 in zip(range(5), [4, 3, 2, 4, 5])]
         for tl, tc in zip(self.ax.get_yticklabels(), [item for sublist in new_pal for item in sublist]):
             tl.set_color(tc)
 
     def _format_fig(self):
-        # self.fig.suptitle('Reference: "impressionist" cluster, treatment: "blues" cluster')
         self.fig.tight_layout()
+
+
+class HistPlotFirstLastP(vutils.BasePlot):
+    KDE_BW = 0.3
+    KDE_KWS = dict(lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=5, color=vutils.BLACK)
+    FILL_KWS = dict(alpha=vutils.ALPHA, edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE)
+    TEXT_KWS = dict(bbox=dict(
+        facecolor='wheat', boxstyle='round', edgecolor='black', linewidth=vutils.LINEWIDTH)
+    )
+
+    def __init__(self, acc_scores, first_acc, last_acc, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        self.acc_scores = acc_scores
+        self.first_acc, self.last_acc = first_acc, last_acc
+        super().__init__(
+            figure_title=fr'random_forest_plots\histplot_firstlastp_{self.corpus_title}', **kwargs
+        )
+        self.fig, self.ax = plt.subplots(
+            nrows=1, ncols=2, sharex=True, sharey=True, figsize=(vutils.WIDTH, vutils.WIDTH / 4)
+        )
+
+    def _get_kde(self):
+        kde = stats.gaussian_kde(self.acc_scores, bw_method=self.KDE_BW)
+        x = np.linspace(np.min(self.acc_scores), np.max(self.acc_scores), 1000)
+        y = kde.evaluate(x)
+        return x, np.array([(y_ - min(y)) / (max(y) - min(y)) for y_ in y])
+
+    @staticmethod
+    def _slice_kde(x, y, acc):
+        x0 = x[x < acc]
+        x1 = x[len(x0):]
+        y0, y1 = y[:len(x0)], y[len(x0):]
+        return x0, x1, y0, y1
+
+    def _get_pval(self, acc):
+        return stats.percentileofscore(self.acc_scores, acc, kind='weak') / 100
+
+    def _create_plot(self):
+        x, y = self._get_kde()
+        for ax, acc in zip(self.ax.flatten(), [self.first_acc, self.last_acc]):
+            ax.plot(x, y, **self.KDE_KWS)
+            # Slice the arrays
+            x0, x1, y0, y1 = self._slice_kde(x, y, acc)
+            # Fill the areas in the KDE
+            ax.fill_between(x=x0, y1=y0, hatch='X', color=vutils.RED, **self.FILL_KWS)
+            ax.fill_between(x=x1, y1=y1, color=vutils.BLUE, **self.FILL_KWS)
+            # Add the p-value
+            txt = rf'$p$ = {str(round(self._get_pval(acc), 2))[1:]}'
+            ax.annotate(txt, (np.mean(x0) - 0.1, np.mean(y0) + 0.1), **self.TEXT_KWS)
+
+    def _format_ax(self):
+        for a, tit in zip(self.ax.flatten(), ['earliest', 'final']):
+            a.grid(axis='x', which='major', **vutils.GRID_KWS)
+            a.set(
+                xlim=(0, 1), ylim=(0, 1.01), yticks=(0, 0.5, 1), xticklabels=[int(i*100) for i in a.get_xticks()],
+                title=f'Predicting {tit} recordings'
+            )
+            plt.setp(a.spines.values(), linewidth=vutils.LINEWIDTH)
+            a.tick_params(axis='both', bottom=True, width=vutils.TICKWIDTH)
+
+    def _format_fig(self):
+        self.fig.supxlabel('Accuracy (%)')
+        self.fig.supylabel('Density')
+        self.fig.subplots_adjust(left=0.065, right=0.965, top=0.9, bottom=0.15, wspace=0.05)
+
+
+class RegPlotPredictorsCareerProgress(vutils.BasePlot):
+    palette = sns.color_palette('tab10')
+    palette = [palette[2], palette[4], palette[0], palette[1],   palette[3]]
+    predictors = ['drums_prop_async_nanmean', 'tempo', 'bur_log_mean', 'n_onsets_mean', 'coupling_piano_drums']
+    markers = ['o', 's', 'D', '^', 'p']
+    categories = ['Feel', 'Tempo', 'Swing', 'Complexity', 'Interaction']
+    REG_KWS = dict(
+        scatter=False, color=vutils.BLACK, n_boot=vutils.N_BOOT, ci=95,
+        line_kws=dict(linewidth=vutils.LINEWIDTH * 2, ls=vutils.LINESTYLE)
+    )
+    TEXT_KWS = dict(bbox=dict(
+        facecolor='wheat', boxstyle='round', edgecolor='black', linewidth=vutils.LINEWIDTH)
+    )
+
+    def __init__(self, model_df, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        self.df = model_df
+        super().__init__(
+            figure_title=fr'random_forest_plots\regplot_careerprogress_{self.corpus_title}', **kwargs
+        )
+        self.fig, self.ax = plt.subplots(
+            nrows=1, ncols=len(self.predictors), figsize=(vutils.WIDTH, vutils.WIDTH / 4), sharex=True, sharey=False
+        )
+
+    def _create_plot(self):
+        for a, predict, col, mark in zip(self.ax.flatten(), self.predictors, self.palette, self.markers):
+            data = self.df[['career_progress', predict]].fillna(self.df[['career_progress', predict]].mean())
+            sns.scatterplot(data=data, x='career_progress', y=predict, ax=a, color=col, marker=mark, alpha=vutils.ALPHA)
+            sns.regplot(data=data, x='career_progress', y=predict, ax=a, **self.REG_KWS)
+            r = stats.pearsonr(data['career_progress'], data[predict])[0]
+            txt = str(round(r, 2)).replace('0.', '.')
+            a.text(0.605, 0.905, f'$r$ = {txt}', transform=a.transAxes, **self.TEXT_KWS)
+
+    def _format_ax(self):
+        for a, tit, col in zip(self.ax.flatten(), self.categories, self.palette):
+            x = -15 if tit in ['Swing', 'Interaction'] else 0
+            a.grid(axis='x', which='major', **vutils.GRID_KWS)
+            a.set_title(tit, color=col)
+            a.set_ylabel(COL_MAPPING[a.get_ylabel()], color=col, labelpad=x)
+            a.set(xlabel='', xlim=(-0.05, 1.05))
+            plt.setp(a.spines.values(), linewidth=vutils.LINEWIDTH)
+            a.tick_params(axis='both', bottom=True, width=vutils.TICKWIDTH)
+
+    def _format_fig(self):
+        self.fig.supxlabel('Career progress (0 = earliest recording, 1 = final recording)')
+        self.fig.subplots_adjust(left=0.05, right=0.99, bottom=0.15, top=0.9, wspace=0.32)
 
 
 if __name__ == '__main__':
