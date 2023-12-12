@@ -303,7 +303,7 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
 
 
 class BarPlotLastFMStreams(vutils.BasePlot):
-    PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=2, n_colors=20, as_cmap=False)
+    PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=0, n_colors=20, as_cmap=False)
     BAR_KWS = dict(edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=5, palette=reversed(PAL))
 
     def __init__(self, streams_df: pd.DataFrame, **kwargs):

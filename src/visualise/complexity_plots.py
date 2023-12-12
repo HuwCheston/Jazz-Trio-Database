@@ -72,9 +72,12 @@ class HistPlotBins(vutils.BasePlot):
 
 class BarPlotComplexityDensity(vutils.BasePlot):
     BAR_KWS = dict(
-        dodge=False, edgecolor=vutils.BLACK, errorbar=('ci', 95), lw=vutils.LINEWIDTH, seed=42, capsize=0.1, width=0.8,
-        ls=vutils.LINESTYLE, estimator=np.mean, errcolor=vutils.BLACK, zorder=3, palette=vutils.RGB, alpha=0.8,
-        hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(), n_boot=vutils.N_BOOT
+        dodge=False, edgecolor=vutils.BLACK, errorbar=('ci', 95),
+        lw=vutils.LINEWIDTH, seed=42, capsize=0.1, width=0.8,
+        ls=vutils.LINESTYLE, estimator=np.mean,
+        errcolor=vutils.BLACK, zorder=3,
+        hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
+        palette=vutils.RGB, alpha=0.8, n_boot=vutils.N_BOOT
     )
 
     def __init__(self, complex_df, **kwargs):

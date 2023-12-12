@@ -320,6 +320,7 @@ class BarPlotCategoryImportances(vutils.BasePlot):
 
 class HeatMapPredictionProbDendro(vutils.BasePlot):
     img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=0, n_colors=20, as_cmap=False)
     MODEL_KWS = dict(n_clusters=None, distance_threshold=0, metric='precomputed', linkage='average')
     DENDRO_KWS = dict(truncate_mode=None, no_labels=False, color_threshold=0, above_threshold_color=vutils.BLACK)
 
@@ -372,11 +373,11 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
         self.labs = [int(i.get_text()) for i in self.dax.get_xticklabels()]
         reord = self.hm[self.labs].reindex(reversed(self.labs))
         sns.heatmap(
-            reord * 100, ax=self.ax, cmap="Purples", linecolor=vutils.WHITE, square=True, annot=True,
-            fmt='.0f', linewidths=vutils.LINEWIDTH/2, vmin=0, vmax=100, norm=mpl.colors.LogNorm(0.1, 100),
+            reord * 100, ax=self.ax, cmap="Reds", linecolor=vutils.WHITE, square=True, annot=True,
+            fmt='.0f', linewidths=vutils.LINEWIDTH/2, vmin=0, vmax=100,
             cbar_kws=dict(
                 label='Probability (%)', use_gridspec=False, location="right", pad=0.2, shrink=0.725,
-                ticks=[0.1, 1, 5, 10, 50, 100],
+                ticks=[0, 25, 50, 75, 100],
             )
         )
 
@@ -449,8 +450,8 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
         cax = self.ax.figure.axes[-1]
         cax.set_position([0.915, 0.17, 0.2, 0.575])
         cax.get_yaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
-        cax.set_ylim(0.1, 100)
-        cax.set_yticklabels(['0.1', '1', '5', '10', '50', '100'])
+        cax.set_ylim(0, 100)
+        cax.set_yticklabels(['0', '25', '50', '75', '100'])
         cax.tick_params(axis='y', which='minor', width=None, right=False)
         pos = self.dax.get_position()
         self.dax.set_position([pos.x0, pos.y0 + 0.055, pos.width, pos.height - 0.06])
