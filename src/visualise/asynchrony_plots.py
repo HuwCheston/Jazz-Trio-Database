@@ -651,11 +651,6 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
         y = np.array([(y_ - min(y)) / (max(y) - min(y)) for y_ in y])
         return x, y
 
-    @staticmethod
-    def _bootstrap(vals):
-        means = [vals.sample(frac=1, replace=True, random_state=i).mean() for i in range(10)]
-        return np.mean(vals) - np.percentile(means, 2.5), np.percentile(means, 97.5) - np.mean(vals)
-
     def _create_plot(self):
         for (idx, grp), ax_row in zip(self.df.groupby('bandleader', sort=False), self.ax):
             zi = zip(grp.groupby('instr', sort=False), [vutils.GREEN, vutils.BLUE], ax_row, ['s', 'D'])
@@ -665,12 +660,12 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
                 a.plot(x, y, color=col, **self.PLOT_KWS, label=i.title())
                 a.fill_between(x, y, color=col, **self.FILL_KWS)
                 me = np.mean(vals)
+                std = np.std(vals)
                 a.scatter(
                     me, 0, color=col, marker=mark, lw=vutils.LINEWIDTH / 2, edgecolor=vutils.BLACK, s=50, zorder=15
                 )
-                xlow, xhi = self._bootstrap(g['asynchrony'])
                 a.errorbar(
-                    x=[me, me], y=[0, 0], xerr=[xlow, xhi], zorder=10, linewidth=vutils.LINEWIDTH * 1.5,
+                    x=[me, me], y=[0, 0], xerr=std, zorder=10, linewidth=vutils.LINEWIDTH * 1.5,
                     color=col, capsize=5, capthick=vutils.LINEWIDTH * 1.5
                 )
 
@@ -710,7 +705,7 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
             for (idx, grp), ax, col in zip(g.groupby('instr', sort=False), ax_row, [vutils.GREEN, vutils.BLUE]):
                 if num == 0:
                     spines = ['bottom']
-                    ax.set_title(idx.title(), y=2.3, zorder=10000)
+                    ax.set_title(f'Piano→{idx.title()}', y=2.3, zorder=10000)
                     yl = (-0.35, 2)
                 elif num == 9:
                     spines = ['top']
