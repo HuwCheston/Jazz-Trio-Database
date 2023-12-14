@@ -38,10 +38,10 @@ CATEGORY_CMAP = {
 COL_MAPPING = {
     'bur_log_mean': 'Beat-upbeat ratio, mean',
     'bur_log_std': 'Beat-upbeat ratio, std.',
-    'lz77_mean': 'Window LZ77, mean',
-    'lz77_std': 'Window LZ77, std',
-    'n_onsets_mean': 'Window density, mean',
-    'n_onsets_std': 'Window density, std',
+    'lz77_mean': 'Compression score, mean',
+    'lz77_std': 'Compression score, std',
+    'n_onsets_mean': 'Onset density, mean',
+    'n_onsets_std': 'Onset density, std',
     'bass_prop_async_nanmean': 'Piano→Bass, async mean',
     'bass_prop_async_nanstd': 'Piano→Bass, async std.',
     'drums_prop_async_nanmean': 'Piano→Drums, async mean',
@@ -209,13 +209,14 @@ class BarPlotFeatureImportances(vutils.BasePlot):
 
     def _create_plot(self) -> plt.Axes:
         """Creates all plots in seaborn with given arguments"""
+        self.importances['mean'] *= 100
         sns.barplot(
             data=self.importances, x='mean', y='feature', hue='category',
             ax=self.ax, **self.BAR_KWS
         )
         self.ax.errorbar(
             self.importances['mean'], self.importances['feature'],
-            xerr=self.importances['std'], **self.ERROR_KWS
+            xerr=self.importances['std'] * 100, **self.ERROR_KWS
         )
 
     def _format_ticks(self):
@@ -229,7 +230,7 @@ class BarPlotFeatureImportances(vutils.BasePlot):
     def _format_ax(self) -> None:
         """Formats axis-level properties"""
         # Set variable labelling
-        self.ax.set(ylabel='Variable', xlabel='Variable Importance Score')
+        self.ax.set(ylabel='Variable', xlabel='Variable Importance Score (%)')
         self._format_ticks()
         # Remove the legend
         self.ax.get_legend().remove()
@@ -286,13 +287,14 @@ class BarPlotCategoryImportances(vutils.BasePlot):
 
     def _create_plot(self) -> plt.Axes:
         """Creates all plots in seaborn with given arguments"""
+        self.grouped_importances['mean'] *= 100
         sns.barplot(
             data=self.grouped_importances, x='mean', y='category',
             hue='category', ax=self.ax, **self.BAR_KWS
         )
         self.ax.errorbar(
             self.grouped_importances['mean'], self.grouped_importances['category'],
-            xerr=(self.grouped_importances['low'], self.grouped_importances['high']),
+            xerr=(self.grouped_importances['low'] * 100, self.grouped_importances['high'] * 100),
             **self.ERROR_KWS
         )
 
@@ -303,7 +305,7 @@ class BarPlotCategoryImportances(vutils.BasePlot):
     def _format_ax(self) -> None:
         """Formats axis-level properties"""
         # Set variable labelling
-        self.ax.set(ylabel='Variable Category', xlabel='Mean Variable Importance Score')
+        self.ax.set(ylabel='Variable Category', xlabel='Mean Variable Importance Score (%)')
         self._format_ticks()
         # Remove the legend
         self.ax.get_legend().remove()
@@ -533,7 +535,8 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
 
     def _create_plot(self):
         sns.stripplot(
-            data=self.df, x='coeff', y='index', s=10, hue='category', ax=self.ax, palette=self.palette, **self.STRIP_KWS
+            data=self.df, x='coeff', y='index', s=10, hue='category', ax=self.ax,
+            palette=self.palette, **self.STRIP_KWS
         )
         self.ax.errorbar(self.df['coeff'], self.df['index'], **self.ERROR_KWS, xerr=(self.df['low'], self.df['high']))
         for idx, row in self.df.iterrows():
@@ -573,6 +576,8 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
             tl.set_color(tc)
 
     def _format_fig(self):
+        self.ax.text(0.15, -1, '← More likely to be "Impressionist"', fontsize=vutils.FONTSIZE * 1.1)
+        self.ax.text(1.15, -1, 'More likely to be "Blues" →', fontsize=vutils.FONTSIZE * 1.1)
         self.fig.tight_layout()
 
 
@@ -654,38 +659,51 @@ class RegPlotPredictorsCareerProgress(vutils.BasePlot):
         facecolor='wheat', boxstyle='round', edgecolor='black', linewidth=vutils.LINEWIDTH)
     )
 
-    def __init__(self, model_df, **kwargs):
+    def __init__(self, model_df, cat_mapping, **kwargs):
         self.corpus_title = 'corpus_chronology'
+        self.cat_mapping = cat_mapping
         self.df = model_df
         super().__init__(
             figure_title=fr'random_forest_plots\regplot_careerprogress_{self.corpus_title}', **kwargs
         )
         self.fig, self.ax = plt.subplots(
-            nrows=1, ncols=len(self.predictors), figsize=(vutils.WIDTH, vutils.WIDTH / 4), sharex=True, sharey=False
+            nrows=2, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 2), sharex=True, sharey=False
         )
+        self.ax.flatten()[-1].axis('off')
 
     def _create_plot(self):
         for a, predict, col, mark in zip(self.ax.flatten(), self.predictors, self.palette, self.markers):
             data = self.df[['career_progress', predict]].fillna(self.df[['career_progress', predict]].mean())
-            sns.scatterplot(data=data, x='career_progress', y=predict, ax=a, color=col, marker=mark, alpha=vutils.ALPHA)
+            sns.scatterplot(
+                data=data, x='career_progress', y=predict, label=self.cat_mapping[predict],
+                ax=a, color=col, marker=mark, s=100, alpha=vutils.ALPHA
+            )
             sns.regplot(data=data, x='career_progress', y=predict, ax=a, **self.REG_KWS)
             r = stats.pearsonr(data['career_progress'], data[predict])[0]
             txt = str(round(r, 2)).replace('0.', '.')
-            a.text(0.605, 0.905, f'$r$ = {txt}', transform=a.transAxes, **self.TEXT_KWS)
+            a.text(0.75, 0.905, f'$r$ = {txt}', transform=a.transAxes, **self.TEXT_KWS)
 
     def _format_ax(self):
+        leg, hand = [], []
         for a, tit, col in zip(self.ax.flatten(), self.categories, self.palette):
-            x = -15 if tit in ['Swing', 'Interaction'] else 0
+            l, h = a.get_legend_handles_labels()
+            leg.extend(l)
+            hand.extend(h)
+            a.get_legend().remove()
             a.grid(axis='x', which='major', **vutils.GRID_KWS)
             a.set_title(tit, color=col)
-            a.set_ylabel(COL_MAPPING[a.get_ylabel()], color=col, labelpad=x)
+            a.set_ylabel(COL_MAPPING[a.get_ylabel()], color=col)
             a.set(xlabel='', xlim=(-0.05, 1.05))
             plt.setp(a.spines.values(), linewidth=vutils.LINEWIDTH)
             a.tick_params(axis='both', bottom=True, width=vutils.TICKWIDTH)
+        self.fig.legend(
+            leg, hand, loc='lower right', title='Category', frameon=True,
+            framealpha=1, edgecolor=vutils.BLACK, bbox_to_anchor=(0.9, 0.15)
+        )
 
     def _format_fig(self):
         self.fig.supxlabel('Career progress (0 = earliest recording, 1 = final recording)')
-        self.fig.subplots_adjust(left=0.05, right=0.99, bottom=0.15, top=0.9, wspace=0.32)
+        self.fig.subplots_adjust(left=0.07, right=0.99, bottom=0.1, top=0.95, wspace=0.25)
 
 
 if __name__ == '__main__':
