@@ -92,7 +92,8 @@ class ViolinPlotBURs(vutils.BasePlot):
                     frameon=False, xycoords='data', clip_on=False, annotation_clip=False
                 )
 
-    def _add_bandleader_images(self, bl, y):
+    def _add_bandleader_images(self, bl: str, y: float) -> None:
+        """Adds images corresponding to a given bandleader `bl` at position `y`"""
         fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
             plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
@@ -124,7 +125,7 @@ class ViolinPlotBURs(vutils.BasePlot):
         for idx, row in med.iterrows():
             self.ax.errorbar(x=[row['mean'], row['mean']], y=[idx, idx], xerr=[row['std'], row['std']], **self.EBAR_KWS)
 
-    def _add_nburs_to_tick(self):
+    def _add_nburs_to_tick(self) -> None:
         """Add the total number of BURs gathered for each musician next to their name"""
         for num, (idx, grp) in enumerate(self.df.groupby('bandleader', sort=False)):
             self.ax.text(-1.95, num - 0.15, f'$N$ = ')
@@ -162,11 +163,11 @@ class ViolinPlotBURs(vutils.BasePlot):
 
 
 class HistPlotBURByInstrument(vutils.BasePlot):
+    """Creates density plots of BUR values obtained for each instrument"""
     BURS_WITH_IMAGES = [0.5, 1, 2, 3]
     HIST_KWS = dict(lw=vutils.LINEWIDTH / 2, ls=vutils.LINESTYLE, zorder=2, align='edge')
     KDE_KWS = dict(linestyle=vutils.LINESTYLE, alpha=1, zorder=3, linewidth=vutils.LINEWIDTH)
     VLINE_KWS = dict(color=vutils.BLACK, linestyle='dashed', alpha=1, zorder=4, linewidth=vutils.LINEWIDTH * 1.5)
-    mpl.rcParams.update(mpl.rcParamsDefault)
 
     def __init__(self, bur: pd.DataFrame, peaks: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
@@ -177,7 +178,7 @@ class HistPlotBURByInstrument(vutils.BasePlot):
             nrows=1, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 3), sharex=True, sharey=True
         )
 
-    def add_bur_images(self, y):
+    def add_bur_images(self, y: float) -> list:
         """Adds images for required BUR values"""
         # Iterate through all of our BUR values
         for x in self.BURS_WITH_IMAGES:
@@ -194,7 +195,8 @@ class HistPlotBURByInstrument(vutils.BasePlot):
                  )
 
     @staticmethod
-    def _kde(data, len_data: int = 1000):
+    def _kde(data, len_data: int = 1000) -> tuple:
+        """Fit the KDE to the data and evaluate on a list of y-values, then scale"""
         # Fit the actual KDE to the data, using the default parameters
         kde = stats.gaussian_kde(data.T)
         # Create a linear space of integers ranging from our lowest to our highest BUR
@@ -219,7 +221,8 @@ class HistPlotBURByInstrument(vutils.BasePlot):
             ax.plot(x, y, color=col, label=f'{idx.title()}\n({len(grp)})', **self.KDE_KWS)
             self._add_peaks(ax, idx)
 
-    def _add_peaks(self, ax, ins):
+    def _add_peaks(self, ax: plt.Axes, ins: str) -> None:
+        """Adds peaks onto the given axis object `ax`, for the given instrument `ins`"""
         ps = self.peak_df[self.peak_df['instrument'] == ins]
         for _, peak in ps.iterrows():
             ax.axvline(peak['peak'], 0, 1, **self.VLINE_KWS)
@@ -252,6 +255,7 @@ class HistPlotBURByInstrument(vutils.BasePlot):
 
 
 class BarPlotBUR(vutils.BasePlot):
+    """Create a bar chart showing average beat-upbeat ratio values"""
     BURS_WITH_IMAGES = [1, 2]
     BAR_KWS = dict(
         dodge=False, edgecolor=vutils.BLACK, errorbar=('ci', 95),
@@ -268,11 +272,12 @@ class BarPlotBUR(vutils.BasePlot):
         self.df = bur_df
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Create the plot in seaborn"""
         sns.barplot(data=self.df, x='instrument', y='bur', **self.BAR_KWS)
 
-    def add_bur_images(self, y):
-        """Adds images for required BUR values"""
+    def add_bur_images(self, y: float) -> list:
+        """Adds images for required BUR values at given position `y`"""
         # Iterate through all of our BUR values
         for x in self.BURS_WITH_IMAGES:
             # Try and get the image of the notation type for this BUR value
@@ -287,7 +292,8 @@ class BarPlotBUR(vutils.BasePlot):
                     frameon=False, xycoords='data', clip_on=False, annotation_clip=False
                  )
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Set axis-level parameters"""
         # Set the width of the edges and ticks
         for artist in self.add_bur_images(y=2.65):
             self.ax.add_artist(artist)
@@ -368,8 +374,8 @@ class RegPlotBURTempo(vutils.BasePlot):
         clean['tempo_standard'] = (clean['tempo_median'] - clean['tempo_median'].mean()) / clean['tempo_median'].std()
         return clean
 
-    def add_bur_images(self, y):
-        """Adds images for required BUR values"""
+    def add_bur_images(self, y: float):
+        """Adds images for required BUR values at given position `y`"""
         # Iterate through all of our BUR values
         for x in self.BURS_WITH_IMAGES:
             # Try and get the image of the notation type for this BUR value
@@ -390,7 +396,7 @@ class RegPlotBURTempo(vutils.BasePlot):
             self.MODEL, data=model_data, groups=model_data['bandleader_first'], re_formula=self.RE_FORMULA
         ).fit()
 
-    def _get_line(self, model):
+    def _get_line(self, model) -> list:
         """Creates data for a straight line by predicting values from a mixed effects model"""
         # Get our intercept and tempo parameters from the model
         intercept = model.params['Intercept']
@@ -424,7 +430,7 @@ class RegPlotBURTempo(vutils.BasePlot):
                 # Yield a dictionary of the results
                 yield dict(tempo=bpm, tempo_std=bpm_z, instr=instr_, bur=bur_)
 
-    def _format_bootstrap_lines(self, boot_models: list):
+    def _format_bootstrap_lines(self, boot_models: list) -> list:
         """Formats data from a series of bootstrapped models into one dataframe of errors"""
         # Get a straight line for each bootstrapped model and combine into one dataframe
         big = pd.concat([pd.DataFrame(self._get_line(boot)) for boot in boot_models], axis=1)
@@ -441,7 +447,7 @@ class RegPlotBURTempo(vutils.BasePlot):
                 high_ci=np.percentile(row['bur'], 97.5)
             )
 
-    def _get_bootstrapped_sample(self):
+    def _get_bootstrapped_sample(self) -> list:
         """Returns bootstrapped samples of the full dataset"""
         def bootstrap(state: int):
             """Bootstrapping function"""
@@ -458,7 +464,7 @@ class RegPlotBURTempo(vutils.BasePlot):
             # Return each bootstrapped sample as a single dataframe
             yield pd.concat(bootstrap(i), axis=0)
 
-    def _create_main_plot(self):
+    def _create_main_plot(self) -> None:
         """Plots regression and scatter plot onto the main axis, with bootstrapped errorbars"""
         # Get the line for the actual data
         line_df = pd.DataFrame(self._get_line(self.md))
@@ -486,7 +492,7 @@ class RegPlotBURTempo(vutils.BasePlot):
             ax=self.main_ax, hue='instrument_', **self.SCATTER_KWS
         )
 
-    def _create_marginal_plots(self):
+    def _create_marginal_plots(self) -> None:
         """Plots histograms and density estimates onto the marginal axis"""
         # Top marginal plot
         sns.histplot(
@@ -499,12 +505,12 @@ class RegPlotBURTempo(vutils.BasePlot):
             bins=int(vutils.N_BINS / self.BIN_MULTIPLER),  **self.HIST_KWS
         )
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
         """Creates the main and marginal plots"""
         self._create_main_plot()
         self._create_marginal_plots()
 
-    def _format_marginal_ax(self):
+    def _format_marginal_ax(self) -> None:
         """Formats axis-level properties for marginal axis"""
         # Remove correct spines from marginal axis
         for spine, ax in zip(['left', "bottom"], self.marginal_ax.flatten()):
@@ -519,7 +525,7 @@ class RegPlotBURTempo(vutils.BasePlot):
             yticks=[-1, 0, 1]
         )
 
-    def _format_main_ax(self):
+    def _format_main_ax(self) -> None:
         """Formats axis-level properties for the main axis"""
         # Add BUR images onto the right-hand side of the main plot
         for artist in self.add_bur_images(y=315):
@@ -543,7 +549,7 @@ class RegPlotBURTempo(vutils.BasePlot):
             xlabel='Mean Tempo (BPM)', ylabel='Mean ${Log_2}$ beat-upbeat ratio', ylim=(-1.35, 1.7)
         )
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
         """Formats axis-level properties"""
         # Run code for formatting main and marginal ax separately
         self._format_main_ax()

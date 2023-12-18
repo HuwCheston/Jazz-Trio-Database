@@ -51,6 +51,7 @@ class TriangleAxis:
         self.head_width = kwargs.get('head_width', 20)
         self.piano_only = kwargs.get('piano_only', True)
         self.performer_picture_zoom = kwargs.get('performer_picture_zoom', 1)
+        self.text_override = kwargs.get('text_override', None)
         self.grp = grp
         self.ax = ax
         self.ax.axis('off')
@@ -60,7 +61,6 @@ class TriangleAxis:
             self
     ) -> plt.Axes:
         """Called from outside the class to generate the required plot elements, show them, and save"""
-
         self._add_musicians_images()
         if self.add_text:
             self._add_center_text()
@@ -70,7 +70,9 @@ class TriangleAxis:
     def _add_center_text(self):
         """Adds in text to the center of the plot"""
         # Add in the name of the musician
-        txt = str(self.grp['pianist'].iloc[0]).replace(' ', '\n')
+        txt = self.text_override
+        if txt is None:
+            txt = str(self.grp['pianist'].iloc[0]).replace(' ', '\n')
         self.ax.text(0.5, 0.5, txt, ha='center', va='center', fontsize=vutils.FONTSIZE * 2)
 
     def _create_plot(self,) -> None:
@@ -130,8 +132,7 @@ class TriangleAxis:
     def _add_coupling_coefficient_text(
             self, constant, x, x2, y, y2, mod: float = 0.03, rotation: float = 0
     ) -> None:
-        """Adds coupling coefficient"""
-
+        """Adds coupling coefficient text into the plot"""
         # Get the default annotation position, the midpoint of our arrow
         x_pos = (x + x2) / 2
         y_pos = (y + y2) / 2
@@ -200,7 +201,6 @@ class TriangleAxis:
                 )
 
 
-
 class TrianglePlotChronology(vutils.BasePlot):
     """Creates a triangle plot for each trio combination in the chronology corpus"""
 
@@ -222,6 +222,7 @@ class TrianglePlotChronology(vutils.BasePlot):
 
 
 class BarPlotCouplingCoefficients(vutils.BasePlot):
+    """Creates bar plot showing coupling coefficients for each instrument"""
     nobs_cutoff = 30
     # TODO: fix this so that it'll work with the Bill Evans corpus, not just the chronology corpus
 
@@ -229,19 +230,20 @@ class BarPlotCouplingCoefficients(vutils.BasePlot):
         self.corpus_title = kwargs.get('corpus_title', 'corpus')
         super().__init__(figure_title=fr'{FOLDER_PATH}\barplot_couplingcoefficients_{self.corpus_title}',
                          **kwargs)
-        self.df = self._format_df(data)
+        self.df = (
+            data.melt(
+                id_vars=['instrument', 'performer', 'nobs', 'pianist'],
+                value_vars=['coupling_bass', 'coupling_piano', 'coupling_drums'])
+            .reset_index(drop=True)
+        )
         self.fig, self.ax = plt.subplots(nrows=2, ncols=5, sharex=True, sharey=True, figsize=(vutils.WIDTH, 8))
         self.hand, self.lab = None, None
         if self.df['pianist'].nunique() < len(self.ax.flatten()):
             for band_num in range(len(self.ax.flatten()) - self.df['pianist'].nunique()):
                 self.ax.flatten()[len(self.ax.flatten()) - band_num].axis('off')
 
-    @staticmethod
-    def _format_df(data):
-        return data.melt(id_vars=['instrument', 'performer', 'nobs', 'pianist'],
-                         value_vars=['coupling_bass', 'coupling_piano', 'coupling_drums']).reset_index(drop=True)
-
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates main plotting object"""
         for ax, (idx, grp) in zip(self.ax.flatten(), self.df.groupby('pianist')):
             grp = grp[grp['nobs'] > self.nobs_cutoff]
             g = sns.barplot(
@@ -254,13 +256,15 @@ class BarPlotCouplingCoefficients(vutils.BasePlot):
             g.get_legend().remove()
             g.set(title=idx)
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Formats axis-level parameters"""
         for ax in self.ax.flatten():
             ax.set(ylabel='', xlabel='', xticklabels=['Bass', 'Piano', 'Drums'], ylim=(0, 1))
             plt.setp(ax.spines.values(), linewidth=2)
             ax.tick_params(axis='both', width=3)
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Formats figure-level parameters"""
         self.fig.legend(
             self.hand, [i.title() for i in self.lab], title='Influenced\ninstrument', frameon=False,
             bbox_to_anchor=(1, 0.625), ncol=1, markerscale=1.6, fontsize=vutils.FONTSIZE
@@ -271,6 +275,7 @@ class BarPlotCouplingCoefficients(vutils.BasePlot):
 
 
 class RegPlotCouplingHalves(vutils.BasePlot):
+    """Create a regression plot showing relationship between coupling in two halves of a piece"""
     # These are keywords that we pass into our given plot types
     REG_KWS = dict(
         scatter=False, ci=95, n_boot=vutils.N_BOOT
@@ -311,13 +316,15 @@ class RegPlotCouplingHalves(vutils.BasePlot):
         # Top right corner ax, which we can go ahead and disable
         self.ax[0, 1].axis('off')
 
-    def _create_main_plot(self):
+    def _create_main_plot(self) -> None:
+        """Creates the main plot: scatter and regression plots"""
         sns.scatterplot(
             data=self.df, x='half_1', y='half_2', hue='variable', style='variable', ax=self.main_ax, **self.SCATTER_KWS
         )
         sns.regplot(data=self.df, x='half_1', y='half_2',  ax=self.main_ax, line_kws=self.LINE_KWS, **self.REG_KWS)
 
-    def _create_marginal_plot(self):
+    def _create_marginal_plot(self) -> None:
+        """Creates the marginal plot: density plots"""
         # Top marginal plot
         sns.histplot(
             data=self.df, x='half_1', ax=self.marginal_ax[0],
@@ -329,11 +336,13 @@ class RegPlotCouplingHalves(vutils.BasePlot):
             bins=vutils.N_BINS,  **self.HIST_KWS
         )
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates both main and marginal plots"""
         self._create_main_plot()
         self._create_marginal_plot()
 
-    def _format_main_ax(self):
+    def _format_main_ax(self) -> None:
+        """Formats axis-level paramters on main plot"""
         # Add a grid onto the plot
         self.main_ax.grid(visible=True, axis='both', which='major', zorder=0, **vutils.GRID_KWS)
         # Get our legend handles, and set their edge color to black
@@ -360,7 +369,8 @@ class RegPlotCouplingHalves(vutils.BasePlot):
         )
         self.main_ax.tick_params(axis='both', bottom=True, right=True, width=vutils.TICKWIDTH)
 
-    def _format_marginal_ax(self):
+    def _format_marginal_ax(self) -> None:
+        """Formats axis-level paramters on marginal plot"""
         # Remove correct spines from marginal axis
         for spine, ax in zip(['left', "bottom"], self.marginal_ax.flatten()):
             ax.spines[[spine, 'right', 'top']].set_visible(False)
@@ -376,22 +386,26 @@ class RegPlotCouplingHalves(vutils.BasePlot):
             ylim=self.main_ax.get_ylim(), yticks=self.main_ax.get_yticks()
         )
 
-    def _add_regression_text(self):
+    def _add_regression_text(self) -> None:
+        """Adds regression text to main axis"""
         r = self.df[['half_1', 'half_2']].corr().iloc[1].iloc[0]
         self.main_ax.text(
             -0.35, 1.4, rf'$r=${round(r, 2)}', bbox=self.TEXT_BBOX
         )
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Formats axis-level paramters for both main and marginal plot"""
         self._format_marginal_ax()
         self._format_main_ax()
         self._add_regression_text()
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Formats figure-level parameters"""
         self.fig.tight_layout()
 
 
 class RegPlotCouplingGrangerCross(vutils.BasePlot):
+    """Create a regression plot showing associations between phase correction, Granger causality and cross-corr"""
     COUPLING_COLS = ['coupling_piano', 'coupling_bass', 'coupling_drums']
     GRANGER_COLS = ['granger_causality_piano_i', 'granger_causality_bass_i', 'granger_causality_drums_i']
     CROSS_COLS = ['cross_corr_piano_r', 'cross_corr_bass_r', 'cross_corr_drums_r']
@@ -437,7 +451,8 @@ class RegPlotCouplingGrangerCross(vutils.BasePlot):
         self.ax[0, 2].axis('off')
         self.hand = None
 
-    def _format_df(self, model_df):
+    def _format_df(self, model_df: pd.DataFrame) -> pd.DataFrame:
+        """Coerces provided `model_df` dataframe into correct format"""
         pc = model_df[self.COUPLING_COLS].melt(var_name='instrument', value_name='coupling').dropna()
         gc = model_df[self.GRANGER_COLS].melt(var_name='instrument', value_name='causality').dropna()['causality']
         cc = model_df[self.CROSS_COLS].melt(var_name='instrument', value_name='corr').dropna()['corr']
@@ -445,7 +460,8 @@ class RegPlotCouplingGrangerCross(vutils.BasePlot):
         conc['instrument'] = conc['instrument'].str.replace('coupling_', '')
         return conc
 
-    def _create_main_plot(self):
+    def _create_main_plot(self) -> None:
+        """Creates main plotting object: regression and scatter plot between Granger, phase correction, cross-corr"""
         for a, var, xp in zip(self.main_ax.flatten(), ['causality', 'corr'], [-0.3, -0.0]):
             sns.scatterplot(
                 data=self.df, x=var, y='coupling', hue='instrument', style='instrument', ax=a, **self.SCATTER_KWS
@@ -453,11 +469,13 @@ class RegPlotCouplingGrangerCross(vutils.BasePlot):
             sns.regplot(data=self.df, x=var, y='coupling', ax=a, line_kws=self.LINE_KWS, **self.REG_KWS)
             self._add_regression_coeff(var, a, xp)
 
-    def _add_regression_coeff(self, var, ax, xpos):
+    def _add_regression_coeff(self, var: str, ax: plt.Axes, xpos: float) -> None:
+        """Adds regression coefficient between coupling and given variable `var` to axis `ax` at position `xpos`"""
         r = self.df[['coupling', var]].corr().iloc[1].iloc[0]
         ax.text(xpos, 1.4, rf'$r=${round(r, 2)}', bbox=self.TEXT_BBOX)
 
     def _create_marginal_plot(self):
+        """Creates marginal plot: density of all variables"""
         # Top marginal plots
         for num, var in enumerate(['causality', 'corr']):
             sns.histplot(
@@ -470,11 +488,13 @@ class RegPlotCouplingGrangerCross(vutils.BasePlot):
             bins=vutils.N_BINS,  **self.HIST_KWS
         )
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates both main and marginal plotting objects"""
         self._create_main_plot()
         self._create_marginal_plot()
 
-    def _format_main_ax(self):
+    def _format_main_ax(self) -> None:
+        """Sets axis-level parameters for main plots (scatter/regression line)"""
         for ax, xl, xlab, ylab in zip(
                 self.main_ax.flatten(), [(-0.4, 1.3), (-0.1, 0.9)],
                 ['Granger index', 'Cross-correlation ($r$)'], ['Coupling', '']
@@ -496,7 +516,8 @@ class RegPlotCouplingGrangerCross(vutils.BasePlot):
                 ls='dashed', color=vutils.BLACK, alpha=vutils.ALPHA
             )
 
-    def _format_marginal_ax(self):
+    def _format_marginal_ax(self) -> None:
+        """Sets axis-level parameters for marginal plots (histogram/density)"""
         # Remove correct spines from marginal axis
         for spine, ax in zip(['left', 'left', "bottom"], self.marginal_ax.flatten()):
             ax.spines[[spine, 'right', 'top']].set_visible(False)
@@ -508,11 +529,13 @@ class RegPlotCouplingGrangerCross(vutils.BasePlot):
             else:
                 ax.set(xticks=[0], xticklabels=[''])
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Sets axis-level parameters for both main and marginal plots"""
         self._format_main_ax()
         self._format_marginal_ax()
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters for plot"""
         self.fig.tight_layout()
         self.fig.legend(
             self.hand, [i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()],
@@ -522,6 +545,7 @@ class RegPlotCouplingGrangerCross(vutils.BasePlot):
 
 
 class BarPlotCouplingCoefficients(vutils.BasePlot):
+    """Creates bar plot of all coupling coefficients"""
     BAR_KWS = dict(
         dodge=True, errorbar=None, width=0.8, estimator=np.mean,
         zorder=3, hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
@@ -546,13 +570,15 @@ class BarPlotCouplingCoefficients(vutils.BasePlot):
         self.df['variable'] = self.df['instrument'].str.title() + '→' + instr
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 4))
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates main plot: bar and scatter plot"""
         sns.barplot(data=self.df, x='variable', y='value', **self.BAR_KWS)
         sns.stripplot(data=self.df, x='variable', y='value', s=2, color=vutils.BLACK, zorder=5)
         marker_df = self.df.groupby('variable').mean().reset_index(drop=False)
         sns.stripplot(data=marker_df, x='variable', y='value', s=10, color='#8ffbfd', marker='s', zorder=10)
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Set axis-level parameters"""
         repeater = lambda x: [val for val in x for _ in (0, 1)]
         for patch, col, hatch in zip(self.ax.patches, repeater(vutils.RGB), repeater(vutils.HATCHES)):
             patch.set_facecolor(col)
@@ -564,11 +590,13 @@ class BarPlotCouplingCoefficients(vutils.BasePlot):
         self.ax.tick_params(axis='both', bottom=True, right=True, width=vutils.TICKWIDTH)
         self.ax.set(xlabel='', ylabel='Coupling constant')
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
         self.fig.tight_layout()
 
 
 class BarPlotSimulationComparison(vutils.BasePlot):
+    """Creates barplot comparing between different simulation parameters"""
     BAR_KWS = dict(
         dodge=False, edgecolor=vutils.BLACK, errorbar=('ci', 95),
         lw=vutils.LINEWIDTH, seed=42, capsize=0.1, width=0.8,
@@ -592,7 +620,8 @@ class BarPlotSimulationComparison(vutils.BasePlot):
         self.small_axs = np.array([self.fig.add_subplot(gs[1, i]) for i in range(len(all_sims))])
 
     @staticmethod
-    def _format_df(all_sims):
+    def _format_df(all_sims: list) -> pd.DataFrame:
+        """Coerces provided list of `Simulation` objects `all_sims` into a dataframe of RMS asynchrony values"""
         names = ['original', 'piano_leader', 'bass_leader', 'drums_leader', 'democracy', 'anarchy']
         all_rms = (
             pd.DataFrame([s.get_rms_values() for s in all_sims])
@@ -606,7 +635,8 @@ class BarPlotSimulationComparison(vutils.BasePlot):
         return all_rms
 
     @staticmethod
-    def _format_params(param_dict):
+    def _format_params(param_dict: dict) -> pd.DataFrame:
+        """Format the parameters for a given `TriangleAxis` plot"""
         small = (
             pd.DataFrame(param_dict)
             .transpose()
@@ -617,12 +647,14 @@ class BarPlotSimulationComparison(vutils.BasePlot):
         small['performer'] = ''
         return small
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates main plot: a combination of bar plot and custom `TriangleAxis`"""
         sns.barplot(data=self.df, x='variable', y='value', ax=self.main_ax, **self.BAR_KWS)
         for ax, param_dict in zip(self.small_axs, self.params):
             TriangleAxis(self._format_params(param_dict), ax, **self.TRIANGLE_KWS).create_plot()
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Sets axis-level parameters for all axis objects"""
         self.main_ax.set(
             ylim=(0, 7), xlabel='', yticks=[1, 2, 3, 4, 5, 6, 7], yticklabels=['1', '2', '3', '4', '5', '6', '>6'],
             xticklabels=[
@@ -641,11 +673,13 @@ class BarPlotSimulationComparison(vutils.BasePlot):
         for line in self.main_ax.lines:
             line.set_zorder(5)
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
         self.fig.subplots_adjust(wspace=0.1, hspace=0.3, left=0.095, right=0.975, top=0.95, bottom=0.05)
 
 
 class HistPlotCouplingTerms(vutils.BasePlot):
+    """Creates histogram plot showing differences in coupling coefficients extracted from models"""
     HIST_KWS = dict(lw=vutils.LINEWIDTH / 2, ls=vutils.LINESTYLE, zorder=2, align='edge')
     KDE_KWS = dict(linestyle=vutils.LINESTYLE, alpha=1, zorder=3, linewidth=vutils.LINEWIDTH)
     TITLES = [r'Self coupling ($\alpha_{i,i}$)', r'Partner coupling ($\alpha_{i,j}$)',
@@ -659,10 +693,13 @@ class HistPlotCouplingTerms(vutils.BasePlot):
             .loc[utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
             .reset_index(drop=False)
         )
-        self.fig, self.ax = plt.subplots(nrows=3, ncols=3, sharex='col', sharey=True, figsize=(vutils.WIDTH, vutils.WIDTH))
+        self.fig, self.ax = plt.subplots(
+            nrows=3, ncols=3, sharex='col', sharey=True, figsize=(vutils.WIDTH, vutils.WIDTH)
+        )
 
     @staticmethod
-    def _kde(dat, len_data: int = 1000):
+    def _kde(dat, len_data: int = 1000) -> tuple:
+        """Creates KDE and fits to linear space of values, then scales between 0 and 1"""
         # Fit the actual KDE to the data, using the default parameters
         kde = stats.gaussian_kde(dat.T)
         # Create a linear space of integers ranging from our lowest to our highest BUR
@@ -672,27 +709,36 @@ class HistPlotCouplingTerms(vutils.BasePlot):
         return data_plot, np.array([(y_ - min(y)) / (max(y) - min(y)) for y_ in y])
 
     @staticmethod
-    def _hist(dat, n_bins: int = 30):
+    def _hist(dat: np.array, n_bins: int = 30) -> tuple:
+        """Creates histogram for given data, returns histogram edges, heights, and widths"""
         heights, edges = np.histogram(dat, bins=n_bins)
         heights = heights / max(heights)
         return edges[:-1], heights, np.diff(edges)
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates main plotting object"""
         num = 0
         ax_flat = self.ax.flatten()
         for (idx, grp), col in zip(self.df.clean.groupby('instrument', sort=False), vutils.RGB):
             self_coupling = grp['self_coupling'].values
             intercept = grp['intercept'].values
-            partner_coupling = grp[[f'coupling_{i}' for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys() if i != idx]].values.flatten()
+            partner_coupling = grp[
+                [f'coupling_{i}' for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys() if i != idx]
+            ].values.flatten()
             for variable in [self_coupling, partner_coupling, intercept]:
                 x, height, width = self._hist(variable)
-                ax_flat[num].bar(x=x, height=height, width=width, fc=col, edgecolor='None', alpha=vutils.ALPHA, **self.HIST_KWS)
-                ax_flat[num].bar(x=x, height=height, width=width, fc='None', edgecolor=vutils.BLACK, alpha=1, **self.HIST_KWS)
+                ax_flat[num].bar(
+                    x=x, height=height, width=width, fc=col, edgecolor='None', alpha=vutils.ALPHA, **self.HIST_KWS
+                )
+                ax_flat[num].bar(
+                    x=x, height=height, width=width, fc='None', edgecolor=vutils.BLACK, alpha=1, **self.HIST_KWS
+                )
                 x, y = self._kde(variable)
                 ax_flat[num].plot(x, y, color=col, **self.KDE_KWS)
                 num += 1
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Format axis-level parameters"""
         ax_flat = self.ax.flatten()
         for num, inst in zip([0, 3, 6], utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()):
             ax_flat[num].set_ylabel(inst.title())
@@ -706,15 +752,12 @@ class HistPlotCouplingTerms(vutils.BasePlot):
             ax.grid(axis='x', which='major', **vutils.GRID_KWS)
             ax.axvline(0, 0, 1, color=vutils.BLACK, linewidth=vutils.LINEWIDTH * 2, linestyle='dashed')
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Formats figure-level parameters"""
         self.fig.supylabel('Density')
         self.fig.supxlabel('Model coefficient')
         self.fig.tight_layout()
 
 
 if __name__ == '__main__':
-    extracted = utils.unserialise_object(
-        fr'{utils.get_project_root()}\models\extracted_features_corpus_chronology', use_pickle=True
-    )
-    combined = utils.combine_features(extracted, 'metadata', 'phase_correction')
-    df = combined[combined['phase_correction_order'] == 1]
+    pass

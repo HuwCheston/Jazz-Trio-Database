@@ -29,6 +29,7 @@ __all__ = [
 
 
 class BarPlotFScores(vutils.BasePlot):
+    """Creates bar plot showing F-scores for all reference tracks and instruments"""
     def __init__(self, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus_chronology')
         super().__init__(figure_title=fr'corpus_plots\barplot_fscores_{self.corpus_title}',
@@ -42,7 +43,8 @@ class BarPlotFScores(vutils.BasePlot):
         )
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 3))
 
-    def _format_df(self):
+    def _format_df(self) -> list:
+        """Coerces f-scores into correct formats"""
         fpath = rf'{utils.get_project_root()}\references\parameter_optimisation\{self.corpus_title}'
         cols = ['mbz_id', 'instrument', 'f_score']
         for f in os.listdir(fpath):
@@ -52,7 +54,8 @@ class BarPlotFScores(vutils.BasePlot):
             df = df[df['iterations'] == df['iterations'].max()][cols]
             yield df
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates plotting objects: bar and scatter plot"""
         sns.barplot(
             data=self.df, x='instrument', hue='instrument', alpha=vutils.ALPHA, dodge=False, y='f_score', ax=self.ax,
             palette=[vutils.WHITE, *vutils.RGB], edgecolor=None, lw=0, n_boot=vutils.N_BOOT, errorbar=('ci', 95),
@@ -68,18 +71,21 @@ class BarPlotFScores(vutils.BasePlot):
             edgecolor=vutils.BLACK, color=vutils.BLACK, ax=self.ax
         )
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Sets axis-level parameters"""
         self.ax.get_legend().remove()
         self.ax.set(xticklabels=['Mixture', 'Piano', 'Bass', 'Drums'], xlabel='Instrument', ylabel='$F$-Measure',
                     ylim=(0, 1.02))
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH)
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
         self.fig.tight_layout()
 
 
 class BarPlotSubjectiveRatings(vutils.BasePlot):
+    """Creates bar plot showing subjective ratings for all reference tracks and instruments"""
     BAR_KWS = dict(
         zorder=1, edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE,
         n_boot=vutils.N_BOOT, errorbar=('ci', 95), seed=1, capsize=0.1, width=0.8,
@@ -95,7 +101,8 @@ class BarPlotSubjectiveRatings(vutils.BasePlot):
         self.df = self._format_df()
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 3))
 
-    def _format_df(self):
+    def _format_df(self) -> pd.DataFrame:
+        """Formats data into correct format and returns a dataframe"""
         corp = utils.CorpusMaker.from_excel(self.corpus_title)
         df = pd.DataFrame([track for track in corp.tracks if not np.isnan(track['rating_bass_audio'])])
         columns = [c for c in df.columns if 'rating' in c and 'comments' not in c]
@@ -113,20 +120,24 @@ class BarPlotSubjectiveRatings(vutils.BasePlot):
             .reset_index(drop=False)
         )
 
-    def _create_plot(self):
+    def _create_plot(self) -> plt.Axes:
+        """Creates barplot of subjective track ratings"""
         return sns.barplot(data=self.df, x='variable', y='rating', hue='is_audio', ax=self.ax, **self.BAR_KWS)
 
     @staticmethod
-    def _get_color(hex_code: str):
+    def _get_color(hex_code: str) -> list:
+        """Returns colors for given str `hex_code`"""
         return [*[round(i / 255, 2) for i in [int(hex_code.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)]], vutils.ALPHA]
 
     @staticmethod
-    def _get_legend_handles():
+    def _get_legend_handles() -> list:
+        """Gets handles for legend object"""
         p1 = mpl.patches.Patch(facecolor=vutils.BLACK, alpha=vutils.ALPHA, hatch='', label='Audio')
         p2 = mpl.patches.Patch(facecolor=vutils.BLACK, alpha=vutils.ALPHA, hatch='/', label='Detection')
         return [p1, p2]
 
     def _format_ax(self):
+        """Sets axis-level parameters"""
         for col, patch, hatch in zip(self.COLS, self.ax.patches, self.HATCHES):
             patch.set_facecolor(self._get_color(col))
             patch.set_hatch(hatch)
@@ -141,10 +152,12 @@ class BarPlotSubjectiveRatings(vutils.BasePlot):
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH)
 
     def _format_fig(self):
+        """Sets figure-level parameters"""
         self.fig.tight_layout()
 
 
 class TimelinePlotBandleaders(vutils.BasePlot):
+    """Creates plots showing timeline for included bandleaders and recording dates"""
     img_loc = fr'{utils.get_project_root()}\references\images\musicians'
     SCATTER_KWS = dict(s=50, marker='x', color=vutils.BLACK, alpha=1, zorder=1, label='Recording')
     TEXT_KWS = dict(va='center', ha='left', zorder=2, fontsize=vutils.FONTSIZE / 1.2)
@@ -159,16 +172,20 @@ class TimelinePlotBandleaders(vutils.BasePlot):
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
     @staticmethod
-    def _format_timeline_df(bandleaders_df):
-        bandleaders_df['date_fmt'] = bandleaders_df['recording_date_estimate'].dt.year + \
-                                     (bandleaders_df['recording_date_estimate'].dt.month / 12)
+    def _format_timeline_df(bandleaders_df: pd.DataFrame) -> pd.DataFrame:
+        """Coerces data into correct format for plotting timeline"""
+        bandleaders_df['date_fmt'] = (
+                bandleaders_df['recording_date_estimate'].dt.year +
+                (bandleaders_df['recording_date_estimate'].dt.month / 12)
+        )
         timeline = bandleaders_df.groupby('bandleader').agg(dict(date_fmt=['min', 'max'], birth='mean', death='median'))
         timeline.columns = timeline.columns.droplevel()
         timeline['alive'] = timeline['median'].apply(lambda x: x.year < 2023)
         timeline['diff'] = timeline['max'] - timeline['min']
         return timeline.sort_values(by='min', ascending=False).reset_index(drop=False)
 
-    def _format_corpus_df(self, bandleaders_df):
+    def _format_corpus_df(self, bandleaders_df: pd.DataFrame) -> pd.DataFrame:
+        """Coerces data into correct format for plotting recording dates"""
         in_corpus = bandleaders_df[bandleaders_df['in_corpus']]
         mapping = {b: i for b, i in zip(self.timeline_df['bandleader'].to_list(), self.timeline_df.index.to_list())}
         in_corpus['mapping'] = in_corpus['bandleader'].map(mapping) - 0.25
@@ -176,13 +193,15 @@ class TimelinePlotBandleaders(vutils.BasePlot):
         return in_corpus
 
     @staticmethod
-    def _get_birth_death_range(birth, death, alive):
+    def _get_birth_death_range(birth: int, death: int, alive: bool) -> str:
+        """Coerces birth and death years into string format"""
         if not alive:
             return f'(b. {birth})'
         else:
             return f'({birth}–{death})'
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates main plot: scatter and (broken) bar chart"""
         for (idx, row), col in zip(self.timeline_df.iterrows(), self.PAL):
             self.ax.broken_barh([(row['min'], row['max'] - row['min'])], (idx - 0.5, 0.5), color=col, **self.BAR_KWS)
             dates = self._get_birth_death_range(
@@ -192,7 +211,8 @@ class TimelinePlotBandleaders(vutils.BasePlot):
             self._add_pianist_image(row['bandleader'], row['min'], idx)
         sns.scatterplot(data=self.corpus_df, x='date_fmt', y='mapping', ax=self.ax, **self.SCATTER_KWS)
 
-    def _add_pianist_image(self, bandleader_name, x, y):
+    def _add_pianist_image(self, bandleader_name: str, x: float, y: float) -> None:
+        """Adds image of given pianist `bandleader_name` to positions `x` and `y`"""
         fpath = fr'{self.img_loc}\{bandleader_name.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
             plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
@@ -203,7 +223,8 @@ class TimelinePlotBandleaders(vutils.BasePlot):
         )
         self.ax.add_artist(ab)
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Formats axis-level parameters"""
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
         sns.move_legend(self.ax, loc='upper right', frameon=True, framealpha=1, edgecolor=vutils.BLACK)
@@ -212,11 +233,13 @@ class TimelinePlotBandleaders(vutils.BasePlot):
         self.ax.set(yticks=[], ylabel="", xlabel='Date')
         sns.despine(ax=self.ax, left=True, top=True, right=True, bottom=False)
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Formats figure-level parameters"""
         self.fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.1)
 
 
 class BarPlotBandleaderDuration(vutils.BasePlot):
+    """Creates barplot showing duration of recordings by bandleaders included in the corpus"""
     BAR_KWS = dict(
         edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=5, dodge=False,
         palette=[vutils.RED, vutils.GREEN], estimator=np.sum, orient='h'
@@ -231,17 +254,18 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
 
     @staticmethod
-    def initials(a):
+    def initials(a) -> str:
         """Converts a list of strings of arbitrary length to their first initial"""
         if len(a) == 0:
             return ''
         return ''.join(map(lambda li: li[0] + '.', [a[0]]))
 
-    def abbreviate(self, s):
+    def abbreviate(self, s) -> str:
         """Abbreviates a name to surname, first initial"""
         return f'{s.split()[-1]}, {self.initials(s.split()[0:-1])}'
 
-    def _format_df(self, cleaned_df):
+    def _format_df(self, cleaned_df: pd.DataFrame) -> pd.DataFrame:
+        """Coerces dataframe into correct format for plotting"""
         cleaned_df['recording_length_'] = (
             cleaned_df['recording_length']
             .astype(int)
@@ -263,7 +287,8 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
         small_df['recording_length_'] /= 3600
         return small_df.sort_values(by='recording_length_', ascending=False)
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates main plot: bar chart of bandleader recording length"""
         g = sns.barplot(
             data=self.df, y='bandleader_', x='recording_length_', ax=self.ax, hue='in_corpus', **self.BAR_KWS
         )
@@ -271,7 +296,8 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
             if not row_['in_corpus']:
                 patch.set_hatch(vutils.HATCHES[0])
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Sets axis-level parameters"""
         self.ax.set_yticks(
             self.ax.get_yticks(), self.ax.get_yticklabels(), rotation=0, ha='right',
             fontsize=vutils.FONTSIZE / 1.5, rotation_mode="anchor"
@@ -298,11 +324,13 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
         )
         self.ax.get_legend().get_frame().set_linewidth(vutils.LINEWIDTH)
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
         self.fig.subplots_adjust(right=0.95, left=0.175, bottom=0.1, top=0.95)
 
 
 class BarPlotLastFMStreams(vutils.BasePlot):
+    """Creates plot of total LastFM streams for top-20 most-tagged bandleaders"""
     PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=0, n_colors=20, as_cmap=False)
     BAR_KWS = dict(edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=5, palette=reversed(PAL))
 
@@ -312,10 +340,12 @@ class BarPlotLastFMStreams(vutils.BasePlot):
         self.df = streams_df.copy(deep=True).iloc[:20]
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates bar plot in seaborn"""
         sns.barplot(data=self.df, x='playcount', y='name', ax=self.ax, **self.BAR_KWS)
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Formats axis-level parameters"""
         self.ax.grid(visible=True, which='major', axis='x', zorder=0, **vutils.GRID_KWS)
         self.ax.set(
             xlabel='Streams (millions)', ylabel='', xticks=[1000000, 5000000, 10000000, ],
@@ -328,22 +358,19 @@ class BarPlotLastFMStreams(vutils.BasePlot):
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Formats figure-level parameters"""
         self.fig.tight_layout()
 
 
 class CountPlotPanning(vutils.BasePlot):
+    """Creates plot showing number of tracks with left-right stereo panning"""
     LEGEND_KWS = dict(frameon=True, framealpha=1, edgecolor=vutils.BLACK)
 
     def __init__(self, track_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
         super().__init__(figure_title=fr'corpus_plots\countplot_panning_{self.corpus_title}', **kwargs)
-        self.df = self._format_df(track_df)
-        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
-
-    @staticmethod
-    def _format_df(track_df):
-        return (
+        self.df = (
             track_df['channel_overrides']
             .apply(pd.Series, dtype=object)
             .apply(lambda x: x.fillna('c').value_counts())
@@ -353,21 +380,25 @@ class CountPlotPanning(vutils.BasePlot):
             .reindex(columns=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(), level=1)
             .reindex(index=['l', 'c', 'r'])
         )
-
-    def _create_plot(self):
         self.df.index = self.df.index.str.title()
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
+
+    def _create_plot(self) -> plt.Axes:
+        """Creates plot: stacked bar chart of panning directions"""
         return self.df.plot(
             kind='bar', stacked=True, ax=self.ax, xlabel='Audio channel', ylabel='Number of tracks', color=vutils.RGB,
             zorder=10, lw=vutils.LINEWIDTH, edgecolor=vutils.BLACK
         )
 
-    def _add_track_numbers(self):
+    def _add_track_numbers(self) -> None:
+        """Adds numbers to top of each bar"""
         patches = np.array(self.ax.patches)[[6, 7, 8]]
         for bar, (idx, row) in zip(patches, self.df.iterrows()):
             x, y = bar.get_xy()
             self.ax.text(x + (bar.get_width() / 2), y + bar.get_height(), f'N = {row.sum()}', ha='center', va='bottom')
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Sets axis-level parameters"""
         hand, _ = self.ax.get_legend_handles_labels()
         self.ax.set_xticklabels(self.ax.get_xticklabels(), rotation=0)
         self.ax.legend(hand, ['Piano', 'Bass', 'Drums'], title='Instrument', loc='upper right', **self.LEGEND_KWS)
@@ -376,41 +407,46 @@ class CountPlotPanning(vutils.BasePlot):
         self.ax.grid(zorder=0, axis='y', **vutils.GRID_KWS)
         self._add_track_numbers()
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
         self.fig.tight_layout()
 
 
 class SpecPlotBands(vutils.BasePlot):
+    """Plots a spectrogram for a given track"""
     TRACK_LEN = 5
 
     def __init__(self, track: str, **kwargs):
         self.corpus_title = 'corpus_chronology'
         self.track = track
-
         self.fname = track['fname']
         super().__init__(figure_title=fr'corpus_plots\specplot_bands_{self.corpus_title}', **kwargs)
         self.df = self._format_df()
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
 
-    def _format_df(self):
+    def _format_df(self) -> np.array:
+        """Returns an array containing the spectrogram output"""
         y, _ = librosa.load(fr"{utils.get_project_root()}\data\raw\audio\{self.fname}.wav", sr=utils.SAMPLE_RATE)
         y = y[:utils.SAMPLE_RATE * self.TRACK_LEN]
         return librosa.amplitude_to_db(np.abs(librosa.stft(y)), ref=np.max)
 
-    def _create_plot(self):
+    def _create_plot(self) -> plt.Axes:
+        """Creates the spectrogram in Librosa"""
         return librosa.display.specshow(
             self.df, y_axis='log', sr=utils.SAMPLE_RATE, x_axis='s', ax=self.ax,
             auto_aspect=False, cmap=sns.color_palette('Greys', as_cmap=True)
         )
 
-    def _add_bands(self):
+    def _add_bands(self) -> None:
+        """Adds bands showing the span of frequencies considered for each instrument"""
         for (instr, bands), col in zip(FREQUENCY_BANDS.items(), vutils.RGB):
             self.ax.axhspan(
                 ymin=bands['fmin'], ymax=bands['fmax'], xmin=0, xmax=self.TRACK_LEN,
                 alpha=vutils.ALPHA, color=col, label=instr.title()
             )
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Sets axis-level parameters"""
         self._add_bands()
         self.ax.legend(loc='upper right', title='Instrument', frameon=True, framealpha=1, edgecolor=vutils.BLACK)
         self.ax.set(ylim=(0, FREQUENCY_BANDS['drums']['fmax']), xticks=range(self.TRACK_LEN + 1),
@@ -419,11 +455,13 @@ class SpecPlotBands(vutils.BasePlot):
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
         self.fig.tight_layout()
 
 
 class BoxPlotRecordingLength(vutils.BasePlot):
+    """Creates box plot showing distribution of recording durations for each bandleader"""
     img_loc = fr'{utils.get_project_root()}\references\images\musicians'
     PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=2, n_colors=10, as_cmap=False)
     TICKS = np.linspace(0, 2100, 8)
@@ -434,7 +472,8 @@ class BoxPlotRecordingLength(vutils.BasePlot):
         self.df = cleaned_df.sort_values(by='birth')
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates main plot: box and scatter plot of recording durations per bandleader"""
         sns.boxplot(
             self.df.sort_values(by='birth'), x="duration", y="piano",
             whis=[0, 100], width=.6, palette=self.PAL, ax=self.ax,
@@ -444,17 +483,20 @@ class BoxPlotRecordingLength(vutils.BasePlot):
         sns.stripplot(self.df, x="duration", y="piano", size=4, color=vutils.BLACK)
 
     @staticmethod
-    def _format_time(nos, fmt: str = '%M:%S'):
+    def _format_time(nos: int, fmt: str = '%M:%S') -> str:
+        """Formats the number of seconds `nos` into a string representation, in format `fmt`"""
         return time.strftime(fmt, time.gmtime(nos))
 
-    def _format_bandleader(self, bl):
+    def _format_bandleader(self, bl: str) -> str:
+        """Formats the name of a given bandleader `bl` for use in axis ticks"""
         d = self.df[self.df['piano'] == bl].iloc[0]
         if bl == 'Ahmad Jamal' or d['death'].year < 2023:
             return f"{bl}\n({d['birth'].year}–{d['death'].year})"
         else:
             return f"{bl}\n(b. {d['birth'].year})"
 
-    def _add_bandleader_images(self, bl, y):
+    def _add_bandleader_images(self, bl: str, y: int) -> None:
+        """Adds images of pianist `bl` at given position `y` to main axis"""
         fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
             plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
@@ -465,14 +507,15 @@ class BoxPlotRecordingLength(vutils.BasePlot):
         )
         self.ax.add_artist(ab)
 
-    def _add_number_of_tracks(self, bl, y):
+    def _add_number_of_tracks(self, bl: str, y: int) -> None:
+        """Adds text showing the number of tracks recorded by a bandleader `bl`, at position `y`"""
         tracks = self.df[self.df['piano'] == bl]
         ti = round(tracks['duration'].sum() / 3600, 2)
         x = (tracks['duration'].max() - tracks['duration'].min()) * 0.85
         self.ax.text(x, y - 0.35, f'Total hours: {ti}', va='center')
 
-    def _format_ax(self):
-        # Tweak the visual presentation
+    def _format_ax(self) -> None:
+        """Sets axis-level parameters"""
         self.ax.xaxis.grid(True)
         self.ax.set(
             ylabel="Pianist", xlabel='Track duration (MM:SS)', xlim=(0, 2200), xticks=self.TICKS,
@@ -487,11 +530,13 @@ class BoxPlotRecordingLength(vutils.BasePlot):
         self.ax.tick_params(width=vutils.TICKWIDTH, which='both')
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
         self.fig.subplots_adjust(top=0.95, bottom=0.1, left=0.2, right=1)
 
 
 class RainPlotAlgoHumanOnset(vutils.BasePlot):
+    """Creates raincloud plot, showing distribution (box, kde, scatter) of difference between algorithm/human onsets"""
     BP_KWS = dict(
         patch_artist=True, vert=False, sym='', widths=0.25, manage_ticks=False,
         zorder=5, boxprops=dict(facecolor=vutils.WHITE, alpha=vutils.ALPHA)
@@ -509,7 +554,8 @@ class RainPlotAlgoHumanOnset(vutils.BasePlot):
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
     @staticmethod
-    def _format_df(ons):
+    def _format_df(ons: list) -> list:
+        """Coerces a list of `OnsetMaker` instances into a generator of dictionaries for conversion into a dataframe"""
         for an in [o for o in ons if o.item['has_annotations']]:
             for instr in ['mix', *utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]:
                 estimate = an.ons[instr]
@@ -519,7 +565,8 @@ class RainPlotAlgoHumanOnset(vutils.BasePlot):
                 for asy in np.array([estimate[e] - ref[r] for r, e in matched]):
                     yield {'instr': instr, 'async': asy}
 
-    def _create_boxplot(self):
+    def _create_boxplot(self) -> None:
+        """Creates the box plot of algorithm-human onset differences"""
         bp = self.ax.boxplot(self.vals, positions=[5.75, 3.75, 1.75, -0.25], **self.BP_KWS)
         # Change to the desired color and add transparency
         for item in ['boxes', 'whiskers', 'fliers', 'medians', 'caps']:
@@ -530,7 +577,8 @@ class RainPlotAlgoHumanOnset(vutils.BasePlot):
         for median, col in zip(bp['medians'], [vutils.BLACK, *vutils.RGB]):
             median.set_color(col)
 
-    def _create_violinplot(self):
+    def _create_violinplot(self) -> None:
+        """Creates the violin plot of algorithm-human onset differences"""
         vp = self.ax.violinplot(self.vals, positions=[6, 4, 2, 0], **self.VP_KWS)
         for b, col, idx in zip(vp['bodies'], [vutils.WHITE, *vutils.RGB], reversed(range(0, 7, 2))):
             # Modify it so we only see the upper half of the violin plot
@@ -541,7 +589,8 @@ class RainPlotAlgoHumanOnset(vutils.BasePlot):
             b.set_linewidth(vutils.LINEWIDTH)
             b.set_zorder(5)
 
-    def _create_scatterplot(self):
+    def _create_scatterplot(self) -> None:
+        """Creates the scatter plot of algorithm-human onset differences"""
         # Scatterplot data
         for features, col, idx in zip(self.vals, [vutils.BLACK, *vutils.RGB], reversed(range(0, 7, 2))):
             # Add jitter effect so the features do not overlap on the y-axis
@@ -552,12 +601,14 @@ class RainPlotAlgoHumanOnset(vutils.BasePlot):
             y = out
             self.ax.scatter(features, y, color=col, **self.SP_KWS)
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates all three plot types: box, violin, and scatter"""
         self._create_boxplot()
         self._create_violinplot()
         self._create_scatterplot()
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Sets axis-level parameters"""
         wlab = r'Window boundaries ($\pm$ 50 ms)'
         for x, ls, lab in zip((-50, 0, 50), (vutils.LINESTYLE, 'dashed', 'dashed'), (None, wlab, None)):
             self.ax.axvline(x, 0, 1, color=vutils.BLACK, lw=vutils.LINEWIDTH, ls=ls, zorder=0, label=lab)
@@ -574,11 +625,13 @@ class RainPlotAlgoHumanOnset(vutils.BasePlot):
         self.ax.text(25, 7.25, 'Algorithm detects LATER than human →', ha='center', va='center')
         self.ax.text(-25, 7.25, '← Algorithm detects EARLIER than human', ha='center', va='center')
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
         self.fig.tight_layout()
 
 
 class LinePlotOptimizationIterations(vutils.BasePlot):
+    """Creates a line plot showing the results of the optimization procedure at all iterations of the algorithm"""
     ORDER = ['mix', *utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
     LINE_KWS = dict(
         palette=[vutils.BLACK, *vutils.RGB], hue_order=ORDER,
@@ -607,13 +660,15 @@ class LinePlotOptimizationIterations(vutils.BasePlot):
         self.fig, self.ax = plt.subplots(1, 2, sharey=False, sharex=True, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
     @staticmethod
-    def _format_df(opt_fpath):
+    def _format_df(opt_fpath: str) -> list:
+        """Opens up optimization results and coerces into a single dataframe for plotting"""
         for f in os.listdir(opt_fpath):
             if '.csv' in f and 'forest' not in f:
                 d = pd.DataFrame(utils.load_csv(opt_fpath, f.replace('.csv', '')))
                 yield d[['mbz_id', 'instrument', 'f_score', 'iterations']]
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """Creates main plot: line plot, with marker at final iteration"""
         for ax, est, grp in zip(self.ax.flatten(), [np.mean, np.std], [self.grp_mean, self.grp_std]):
             sns.lineplot(
                 data=self.df, x='iterations', y='f_score', hue='instrument', estimator=est, ax=ax, **self.LINE_KWS
@@ -623,7 +678,8 @@ class LinePlotOptimizationIterations(vutils.BasePlot):
             )
 
     @staticmethod
-    def _format_legend(ax, loc):
+    def _format_legend(ax: plt.Axes, loc: str) -> None:
+        """Formats legend for a given axis object `ax`, placed at location `loc`"""
         hand, lab = ax.get_legend_handles_labels()
         # copy the handles
         hand = [copy.copy(ha) for ha in hand]
@@ -634,7 +690,8 @@ class LinePlotOptimizationIterations(vutils.BasePlot):
             frameon=True, framealpha=1, edgecolor=vutils.BLACK,
         )
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Sets axis-level parameters"""
         xt = np.linspace(0, 400, 5)
         yt = np.linspace(0, 1, 5)
         n = self.df['mbz_id'].nunique()
@@ -652,11 +709,13 @@ class LinePlotOptimizationIterations(vutils.BasePlot):
             a.tick_params(axis='both', width=vutils.TICKWIDTH)
             plt.setp(a.spines.values(), linewidth=vutils.LINEWIDTH)
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
         self.fig.tight_layout()
 
 
 class BarPlotCorpusDuration(vutils.BasePlot):
+    """Creates bar plot showing duration of recordings by each bandleader"""
     img_loc = fr'{utils.get_project_root()}\references\images\musicians'
     BAR_KWS = dict(
         stacked=True, color=[vutils.RED, vutils.GREEN],
@@ -672,7 +731,8 @@ class BarPlotCorpusDuration(vutils.BasePlot):
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
     @staticmethod
-    def _format_df(corp_df_):
+    def _format_df(corp_df_: pd.DataFrame) -> pd.DataFrame:
+        """Coerces corpus into correct format for plotting"""
         small_ = (
             corp_df_.copy(deep=True)
             .sort_values(by='birth')
@@ -684,13 +744,15 @@ class BarPlotCorpusDuration(vutils.BasePlot):
         small_['sum'] = small_.sum(axis=1)
         return small_.sort_values(by='sum').drop(columns=['sum'])
 
-    def _create_plot(self):
+    def _create_plot(self) -> plt.Axes:
+        """Creates main plot object"""
         return self.df.plot(
             kind='barh', ax=self.ax, ylabel='Pianist', **self.BAR_KWS,
             xlabel='Total duration of all recordings (hours)',
         )
 
-    def _add_bandleader_images(self, bl, y):
+    def _add_bandleader_images(self, bl: str, y: float) -> None:
+        """Adds image for a given pianist `bl` at position `y`"""
         fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
             plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
@@ -701,14 +763,16 @@ class BarPlotCorpusDuration(vutils.BasePlot):
         )
         self.ax.add_artist(ab)
 
-    def _add_percentage(self):
+    def _add_percentage(self) -> None:
+        """Adds percentage of recording duration for each pianist included in corpus"""
         for (idx, row), rect in zip(self.df.iterrows(), self.ax.patches[10:]):
             perc = str(round((row.values[-1] / row.values.sum()) * 100)) + '%'
             x, y = rect.xy
             height, width = rect.get_height(), rect.get_width()
             self.ax.text(x + (width / 2), y + (height / 2), perc, **self.PERC_KWS)
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """Set axis-level parameters"""
         for num, pi in enumerate(self.df.index):
             self._add_bandleader_images(pi, num)
         self._add_percentage()
@@ -724,5 +788,10 @@ class BarPlotCorpusDuration(vutils.BasePlot):
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH)
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """Set figure-level parameters"""
         self.fig.subplots_adjust(top=0.95, bottom=0.1, left=0.2, right=0.95)
+
+
+if __name__ == '__main__':
+    pass

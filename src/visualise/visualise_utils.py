@@ -42,11 +42,8 @@ N_BOOT = 10000
 N_BINS = 50
 
 
-def plot_decorator(plotter: callable):
-    """
-    Decorator applied to any plotting function.
-    Used to create a folder, save plot into this, then close it cleanly and exit.
-    """
+def plot_decorator(plotter: callable) -> callable:
+    """Decorator applied to any plotting function: creates a folder, saves plot, closes the folder cleanly, and exits"""
     @functools.wraps(plotter)
     def wrapper(*args, **kwargs):
         # Define the filetypes we want to save the plot as
@@ -69,21 +66,18 @@ def plot_decorator(plotter: callable):
     return wrapper
 
 
-def create_output_folder(out):
-    """
-    Create a folder to store the plots, with optional subdirectory. Out should be a full system path.
-    """
+def create_output_folder(out: str) -> str:
+    """Create a folder to store the plots, with optional subdirectory. Out should be a full system path"""
     Path(out).mkdir(parents=True, exist_ok=True)
     return out
 
 
 class BasePlot:
-    """
-    Base plotting class from which others inherit
-    """
+    """Base plotting class from which all others inherit"""
     mpl.rcParams.update(mpl.rcParamsDefault)
 
     output_dir = fr'{utils.get_project_root()}\reports\figures'
+    # These variables should all be overridden at will in child classes
     df = None
     fig, ax = None, None
     g = None
@@ -94,18 +88,22 @@ class BasePlot:
         self.figure_title = kwargs.get('figure_title', 'baseplot')
 
     @plot_decorator
-    def create_plot(self):
+    def create_plot(self) -> tuple:
+        """Calls plot creation, axis formatting, and figure formatting classes, then saves in the decorator"""
         self._create_plot()
         self._format_ax()
         self._format_fig()
         fname = rf'{self.output_dir}\{self.figure_title}'
         return self.fig, fname
 
-    def _create_plot(self):
+    def _create_plot(self) -> None:
+        """This function should contain the code for plotting the graph"""
         return
 
-    def _format_ax(self):
+    def _format_ax(self) -> None:
+        """This function should contain the code for formatting the `self.ax` objects"""
         return
 
-    def _format_fig(self):
+    def _format_fig(self) -> None:
+        """This function should contain the code for formatting the `self.fig` objects"""
         return
