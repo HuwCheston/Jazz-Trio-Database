@@ -37,7 +37,9 @@ class HidePrints:
     def __enter__(
             self
     ) -> None:
+        """Overrides default context manager `__enter__` function to disable prints to `stdout`"""
         self._original_stdout = sys.stdout
+        # Supress prints
         sys.stdout = open(os.devnull, 'w')
 
     def __exit__(
@@ -46,16 +48,20 @@ class HidePrints:
             exc_val,
             exc_tb
     ) -> None:
+        """Overrides default context manager `__exit__` function to reenable prints to `stdout`"""
         sys.stdout.close()
+        # Reset prints back to normal
         sys.stdout = self._original_stdout
 
 
 class ItemMaker:
     """Makes a single item in the corpus by downloading from YouTube, splitting audio channels, and separating"""
 
+    # Audio file format
+    fmt = utils.AUDIO_FILE_FMT
     # Options JSON to pass to yt_dlp when downloading from YouTube
     ydl_opts = {
-        "format": f"{utils.AUDIO_FILE_FMT}/bestaudio[ext={utils.AUDIO_FILE_FMT}]/best",
+        "format": f"{fmt}/bestaudio[ext={fmt}]/best",
         "quiet": True,
         "extract_audio": True,
         "overwrites": True,
@@ -86,7 +92,7 @@ class ItemMaker:
         # The filename for this item, constructed from the parameters of the JSON
         self.fname: str = self.item['fname']
         # The complete filepath for this item
-        self.in_file: str = rf"{self.raw_audio_loc}\{self.fname}.{utils.AUDIO_FILE_FMT}"
+        self.in_file: str = rf"{self.raw_audio_loc}\{self.fname}.{self.fmt}"
         # Source-separation models to use
         self.use_spleeter: bool = kwargs.get('use_spleeter', True)
         self.use_demucs: bool = kwargs.get('use_demucs', True)
@@ -94,15 +100,15 @@ class ItemMaker:
         self.get_lr_audio: bool = kwargs.get('get_lr_audio', True)
         # Paths to all the source-separated audio files that we'll create (or load)
         self.out_spleeter = [
-            rf"{self.spleeter_audio_loc}\{self.fname}_{i}.{utils.AUDIO_FILE_FMT}"
+            rf"{self.spleeter_audio_loc}\{self.fname}_{i}.{self.fmt}"
             if i not in self.item['channel_overrides'].keys()
-            else rf"{self.spleeter_audio_loc}\{self.fname}-{self.item['channel_overrides'][i]}chan_{i}.{utils.AUDIO_FILE_FMT}"
+            else rf"{self.spleeter_audio_loc}\{self.fname}-{self.item['channel_overrides'][i]}chan_{i}.{self.fmt}"
             for i in self.instrs
         ]
         self.out_demucs = [
-            rf"{self.demucs_audio_loc}\{self.fname}_{i}.{utils.AUDIO_FILE_FMT}"
+            rf"{self.demucs_audio_loc}\{self.fname}_{i}.{self.fmt}"
             if i not in self.item['channel_overrides'].keys()
-            else rf"{self.demucs_audio_loc}\{self.fname}-{self.item['channel_overrides'][i]}chan_{i}.{utils.AUDIO_FILE_FMT}"
+            else rf"{self.demucs_audio_loc}\{self.fname}-{self.item['channel_overrides'][i]}chan_{i}.{self.fmt}"
             for i in self.instrs
         ]
         # Logger object and empty list to hold messages (for saving)
@@ -147,8 +153,8 @@ class ItemMaker:
 
         # Log start of processing
         self._logger_wrapper(
-            f'processing "{self.item["track_name"]}" from {self.item["recording_year"]} album {self.item["album_name"]}, '
-            f'leader {self.item["musicians"][self.item["musicians"]["leader"]]} ...'
+            f'processing "{self.item["track_name"]}" from {self.item["recording_year"]} '
+            f'album {self.item["album_name"]}, leader {self.item["musicians"][self.item["musicians"]["leader"]]} ...'
         )
         # Define our list of checks for whether we need to rebuild the item
         checks = [
@@ -186,7 +192,7 @@ class ItemMaker:
                 # Specify required channel mapping
                 '-map_channel', mappings[name],
                 # Specify output location
-                rf'{self.raw_audio_loc}\{self.fname}-{name}chan.{utils.AUDIO_FILE_FMT}'
+                rf'{self.raw_audio_loc}\{self.fname}-{name}chan.{self.fmt}'
             ]
             # Open the subprocess and kill if it hasn't completed after a given time
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True,)
@@ -217,7 +223,7 @@ class ItemMaker:
             else:
                 # Silently try and rename the file, if we've accidentally appended the file format twice
                 try:
-                    os.replace(self.in_file + f'.{utils.AUDIO_FILE_FMT}', self.in_file)
+                    os.replace(self.in_file + f'.{self.fmt}', self.in_file)
                 except FileNotFoundError:
                     pass
                 self._logger_wrapper(f"... downloaded successfully from {link_url}")
@@ -245,7 +251,7 @@ class ItemMaker:
             ]
 
         def separation_handler(separation_class: type, separator_name: str) -> None:
-            """Handler function for running separation & cleanup using a given separation class"""
+            """Handling function for running separation & cleanup using a given separation class"""
             # Raise an error if we no longer have the input file, for whatever reason
             if not utils.check_item_present_locally(self.in_file):
                 raise FileNotFoundError(f"Input file {self.in_file} not present, can't proceed to separation")
@@ -256,7 +262,7 @@ class ItemMaker:
             # These commands call for separation on the individual right and left channels, as desired
             if self.get_lr_audio and 'channel_overrides' in self.item.keys():
                 for ch in set(self.item['channel_overrides'].values()):
-                    fname = rf'{self.raw_audio_loc}\{self.fname}-{ch}chan.{utils.AUDIO_FILE_FMT}'
+                    fname = rf'{self.raw_audio_loc}\{self.fname}-{ch}chan.{self.fmt}'
                     cmds.append(cls.get_cmd(fname))
             # Run each of our separation commands in parallel, using joblib (set n_jobs to number of commands)
             self._logger_wrapper(f"separating {len(cmds)} tracks with {separator_name} ...")
@@ -320,8 +326,8 @@ class _SpleeterMaker(ItemMaker):
             "-o", f"{os.path.abspath(self.spleeter_audio_loc)}",
             # Specifies the input filepath for this item
             f"{os.path.abspath(in_file)}",
-            # Specifies the output codec, default to m4a
-            "-c", f"{utils.AUDIO_FILE_FMT}",
+            # Specifies the output codec
+            "-c", f"{self.fmt}",
             # This sets the output filename format
             "-f", "{filename}_{instrument}.{codec}",
         ]

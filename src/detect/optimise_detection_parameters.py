@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Optimises the parameters used in detect_onsets.py by running a large-scale search over multiple items in
-the corpus and comparing the accuracy of the detected onsets to ground truth onsets (annotated manually)
-"""
+"""Optimises the parameters used in onset detection by running a large-scale search using ground truth files"""
 
 import logging
 from datetime import datetime
@@ -360,6 +357,7 @@ def main(
         n_jobs: int,
         corpus_fname: str
 ):
+    """Run the onset detection procedure for the given corpus, using the given parameters"""
     # Configure the logger here
     logger = logging.getLogger(__name__)
     # Load in the results for tracks which have already been optimized

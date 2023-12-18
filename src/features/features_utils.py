@@ -6,9 +6,8 @@
 import json
 import string
 import warnings
-from collections import OrderedDict
 from functools import reduce
-from itertools import pairwise, combinations
+from itertools import pairwise
 from typing import Generator
 
 import numpy as np
@@ -1177,7 +1176,10 @@ class CrossCorrelation(BaseExtractor):
 
 
 class IOIComplexity(BaseExtractor):
+    """Extracts features relating to the complexity and density of inter-onset intervals."""
     col_names = ['bar_range', 'lz77', 'n_onsets']
+    fracs = [1, 1 / 2, 5 / 12, 3 / 8, 1 / 3, 1 / 4, 1 / 6, 1 / 8, 1 / 12, 0]
+    alphabet = [list(string.ascii_lowercase)[i] for i in range(len(fracs))]
 
     def __init__(
             self,
@@ -1192,29 +1194,32 @@ class IOIComplexity(BaseExtractor):
         self.bar_period = bar_period
         self.quarter_note = 60 / tempo
         self.time_signature = time_signature
-        self.fracs = [1, 1/2, 5/12, 3/8, 1/3, 1/4, 1/6, 1/8, 1/12, 0]
         # Extract event density
-        binned_iois = pd.DataFrame(self.bin_iois(my_onsets, downbeats))
-        self.complexity_df = pd.DataFrame(self.extract_complexity(binned_iois), columns=self.col_names)
+        self.binned_iois = pd.DataFrame(self.bin_iois(my_onsets, downbeats))
+        self.complexity_df = pd.DataFrame(self.extract_complexity(self.binned_iois), columns=self.col_names)
         # Update our summary dictionary
         self.summary_dict['bar_period'] = bar_period
+        self.summary_dict['window_count'] = len(self.complexity_df)
+        self.summary_dict['ioi_count'] = len(np.diff(my_onsets))
         self.summary_dict.update(**self._get_summary_dict())
 
-    def _get_summary_dict(self):
+    def _get_summary_dict(self) -> dict:
+        """Gets summary variables for this feature"""
         return utils.flatten_dict(self.complexity_df[['lz77', 'n_onsets']].agg(['mean', 'std']).to_dict())
 
     def _bin_ioi(self, ioi: float) -> float:
+        """Bins an IOI as a proportion of a quarter note at the given time signature"""
         proportional_ioi = (ioi / self.quarter_note) / self.time_signature
+        # If somehow the IOI is greater than one measure, return missing value
         if proportional_ioi > 1:
             return np.nan
+        # Otherwise, return the nearest binned IOI
         else:
             return min(self.fracs, key=lambda x: abs(x - proportional_ioi))
 
-    def _bin_to_ascii(self, bin_) -> str:
-        alphabet = [list(string.ascii_lowercase)[i] for i in range(len(self.fracs))]
-        return alphabet[self.fracs.index(bin_)]
-
-    def bin_iois(self, my_onsets, downbeats) -> list:
+    def bin_iois(self, my_onsets: np.array, downbeats: np.array) -> list:
+        """Bins all IOIs within `my_onsets` according to the beats in `downbeats`"""
+        # Iterate over
         for i in range(len(downbeats) - self.bar_period):
             first_bar = downbeats[i]
             last_bar = downbeats[i + self.bar_period]
@@ -1225,11 +1230,12 @@ class IOIComplexity(BaseExtractor):
                 yield dict(
                     bar_range=f'{i + 1}_{i + self.bar_period + 1}',
                     binned_ioi=binned_ioi,
-                    binned_ascii=self._bin_to_ascii(binned_ioi)
+                    binned_ascii=self.alphabet[self.fracs.index(binned_ioi)]
                 )
 
     @staticmethod
-    def lz77_compress(data, window_size: int = 4096) -> list:
+    def lz77_compress(data: np.array, window_size: int = 4096) -> list:
+        """Runs the LZ77 compression algorithm over the input `data`, with given `window_size`"""
         compressed = []
         index = 0
         while index < len(data):
@@ -1254,20 +1260,14 @@ class IOIComplexity(BaseExtractor):
                 index += 1
         return compressed
 
-    @staticmethod
-    def rle(inp):
-        dic = OrderedDict.fromkeys(inp, 0)
-        for ch in inp:
-            dic[ch] += 1
-        output = ''
-        for key, value in dic.items():
-            output = output + key + str(value)
-        return output
-
-    def extract_complexity(self, binned_iois):
+    def extract_complexity(self, binned_iois: np.array) -> Generator:
+        """Extracts complexity scores for all inter-onset intervals in `binned_iois`"""
+        # If we don't have any inter-onset intervals, return empty lists
         if len(binned_iois) == 0:
             return [], [], [], []
+        # Otherwise, calculate the LZ77 and density scores for each of our windows
         for idx, grp in binned_iois.groupby('bar_range', sort=False):
+            # This converts all the ascii representations to a single string
             ascii_ = ''.join(grp['binned_ascii'].to_list())
             # lz77 compression
             compressed = self.lz77_compress(ascii_)
@@ -1275,25 +1275,26 @@ class IOIComplexity(BaseExtractor):
 
 
 class ProportionalAsynchrony(BaseExtractor):
+    """Extracts features relating to the proportional asynchrony between performers."""
     UPPER_BOUND = 1/16
     LOWER_BOUND = 1/32
     REF_INSTR = 'drums'
-    # TODO: this whole class is cursed, jesus christ
 
-    def __init__(self, summary_df, my_instr_name):
+    def __init__(self, summary_df: pd.DataFrame, my_instr_name: str):
         super().__init__()
-        asy = pd.DataFrame(self._extract_asynchronies(summary_df))
+        asy = pd.DataFrame(self._extract_proportional_durations(summary_df))
         self.asynchronies = self._format_async_df(asy)
         mean_async = self.asynchronies.groupby('instr')['asynchrony_adjusted_offset'].agg([np.nanmean, np.nanstd])
         async_count = len(self.asynchronies[self.asynchronies['instr'] == my_instr_name].dropna())
         self.summary_dict = {
             f'prop_async_count': len(self.asynchronies[self.asynchronies['instr'] == my_instr_name]),
             f'prop_async_count_nonzero': async_count,
-            **self._get_mean_asyncs(mean_async, my_instr_name)
+            **self._extract_async_stats(mean_async, my_instr_name)
         }
 
     @staticmethod
-    def _get_mean_asyncs(mean_async, my_instr_name) -> dict:
+    def _extract_async_stats(mean_async: np.array, my_instr_name: str) -> dict:
+        """Extracts asynchrony stats from all pairwise combinations of instruments and returns a dictionary"""
         loc = lambda name, c: mean_async[c].loc[name]
         res = {}
         for col in mean_async.columns:
@@ -1306,7 +1307,8 @@ class ProportionalAsynchrony(BaseExtractor):
             #     res[f'{i1}_{i2}_prop_async_{col}'] = loc(i1, col) - loc(i2, col)
         return res
 
-    def _format_async_df(self, async_df):
+    def _format_async_df(self, async_df: pd.DataFrame) -> pd.DataFrame:
+        """Coerces asynchrony dataframe into correct format"""
         mean_reference = async_df[(async_df['instr'] == self.REF_INSTR) & (async_df['beat'] == 1)]['asynchrony'].mean()
         # Offset the asynchrony column so that drums average beat 1 is shifted to 0
         async_df['asynchrony_offset'] = async_df['asynchrony'] - mean_reference
@@ -1316,7 +1318,8 @@ class ProportionalAsynchrony(BaseExtractor):
         async_df['asynchrony_adjusted_offset'] = (async_df['asynchrony_offset'] / 360) - ((async_df['beat'] - 1) * 1/4)
         return async_df
 
-    def _extract_asynchronies(self, summary_df):
+    def _extract_proportional_durations(self, summary_df: pd.DataFrame) -> Generator:
+        """Extracts proportional beat values for all instruments"""
         idx = summary_df[summary_df['metre_manual'] == 1].index
         for downbeat1, downbeat2 in pairwise(idx):
             # Get all the beats marked between our two downbeats (beat 1 bar 1, beat 1 bar 2)

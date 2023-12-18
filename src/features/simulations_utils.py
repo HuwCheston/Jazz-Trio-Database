@@ -116,6 +116,7 @@ class Simulation:
         return np.sqrt(mean)
 
     def _get_bpm_values(self):
+        """Gets beats-per-minute values from the simulation dataframe"""
         bpms = (60 / self.sim_df.diff())
         idxs = pd.to_timedelta([timedelta(seconds=val) for val in self.sim_df.mean(axis=1)])
         offset = -timedelta(seconds=idxs[0].total_seconds() - 1)
@@ -204,6 +205,8 @@ class Simulation:
 
 class SimulationManager:
     """Manager for creating and handling multiple `Simulation` instances."""
+    backend = 'threads'
+    verbosity = 5
 
     def __init__(
             self,
@@ -220,15 +223,19 @@ class SimulationManager:
         self.simulations = [Simulation(self.params, **args) for _ in range(self.n_sims)]
 
     def get_mean_bpm(self) -> pd.Series:
+        """Returns average BPM value of all simulations in this simulation manager"""
         return pd.concat([sim.bpm for sim in self.simulations], axis=1).mean(axis=1)
 
     def get_mean_rms(self) -> float:
+        """Returns average RMS asynchrony value from all simulations in this simulation manager"""
         return np.nanmean([sim.async_rms for sim in self.simulations])
 
     def get_rms_values(self) -> np.array:
+        """Returns all RMS asynchrony values from all simulations in this simulation manager"""
         return np.array([sim.async_rms for sim in self.simulations if not np.isnan(sim.async_rms)])
 
     def run_simulations(self):
-        with Parallel(n_jobs=self.n_jobs, prefer='threads', verbose=5) as parallel:
+        """Runs all simulations and returns the `SimulationManager` instance"""
+        with Parallel(n_jobs=self.n_jobs, prefer=self.backend, verbose=self.verbosity) as parallel:
             self.simulations = parallel(delayed(sim.run_simulation)() for sim in self.simulations)
         return self
