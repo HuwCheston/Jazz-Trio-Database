@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Test suite for corpus in references/corpus.json
-"""
+
+"""Test suite for corpus in references/corpus.json"""
 
 import json
 import math
@@ -20,7 +19,8 @@ from src import utils
 
 
 class CorpusTest(unittest.TestCase):
-    corpus = utils.CorpusMaker.from_excel(rf'{utils.get_project_root()}\references\corpus_bill_evans')
+    # TODO: fix these tests
+    corpus = utils.CorpusMaker.from_excel('corpus_bill_evans').tracks
     dotenv.load_dotenv(rf"{utils.get_project_root()}\.env")
     df = pd.DataFrame(corpus)
     links = [link for track in corpus for link in track["links"]["external"]]

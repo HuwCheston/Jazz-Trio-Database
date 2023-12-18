@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-Test suite for ItemMaker class in src/clean/make_dataset.py
-"""
+
+"""Test suite for ItemMaker class in src/clean/make_dataset.py"""
 
 import json
 import os
@@ -17,6 +16,7 @@ from src.clean.clean_utils import ItemMaker
 
 
 class ItemMakerTest(unittest.TestCase):
+    # TODO: fix these tests
     # A simple test corpus item with most fields filled out
     test_item = """
         {
@@ -48,6 +48,7 @@ class ItemMakerTest(unittest.TestCase):
         item["links"] = {}
         item["links"]["external"] = ["https://www.youtube.com/watch?v=qHK09uMsXt4"]
         # Create the item maker instance
+        print(item)
         im = ItemMaker(item, index=1, output_filepath=None)
         # Set the duration so we'll download 10 seconds of audio
         im.start = 0
