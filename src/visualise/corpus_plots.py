@@ -793,5 +793,68 @@ class BarPlotCorpusDuration(vutils.BasePlot):
         self.fig.subplots_adjust(top=0.95, bottom=0.1, left=0.2, right=0.95)
 
 
+class WavePlotOnsets(vutils.BasePlot):
+    """Plots waveforms for every instrument, with vertical lines corresponding to onset annotations"""
+    def __init__(self, onsetmaker, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        self.ons = onsetmaker
+        super().__init__(
+            figure_title=fr'corpus_plots\waveplot_onsets{self.ons.item["fname"]}_{self.corpus_title}',
+            **kwargs
+        )
+        self.fig, self.ax = plt.subplots(nrows=4, ncols=1, sharex=True, sharey=True,
+                                         figsize=(vutils.WIDTH, vutils.WIDTH / 2))
+        self.duration = kwargs.get('duration', 5)
+        self.offset = kwargs.get('offset', 45)
+        self.fpaths = {
+            'mix': fr'{utils.get_project_root()}\data\raw\audio\{self.ons.item["fname"]}.wav',
+            'piano': fr'{utils.get_project_root()}\data\processed\spleeter_audio\{self.ons.item["fname"]}_piano.wav',
+            'bass': fr'{utils.get_project_root()}\data\processed\demucs_audio\{self.ons.item["fname"]}_bass.wav',
+            'drums': fr'{utils.get_project_root()}\data\processed\demucs_audio\{self.ons.item["fname"]}_drums.wav',
+        }
+
+    def _create_plot(self) -> None:
+        """Create the plot: waveforms, with vertical lines corresponding to onset annotations"""
+        for (instr, fpath), a, col in zip(self.fpaths.items(), self.ax.flatten(), [vutils.BLACK, *vutils.RGB]):
+            y, sr = librosa.load(fpath, duration=self.duration, offset=self.offset, sr=utils.SAMPLE_RATE)
+            y = librosa.util.normalize(y)
+            librosa.display.waveshow(y, sr=utils.SAMPLE_RATE, ax=a, color=col, alpha=vutils.ALPHA)
+            onsets = self.ons.ons[instr]
+            onsets = onsets[np.where((onsets > self.offset) & (onsets < self.duration + self.offset))] - self.offset
+            sd = onsets if instr == 'mix' else self.ons.summary_dict[instr] - self.offset
+            for onset in onsets:
+                co = vutils.BLACK if onset in sd else col
+                scal = 2 if onset in sd else 1
+                ls = vutils.LINESTYLE if onset in sd else 'dashed'
+                lab = 'Onset' if onset not in sd else 'Beat'
+                a.axvline(onset, 0, 1, color=co, lw=vutils.LINEWIDTH * scal, ls=ls, label=lab)
+            a.axhline(0, 0, 1, color=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, alpha=vutils.ALPHA)
+            a.set(ylabel=instr.title())
+
+    def _format_ax(self) -> None:
+        """Set axis-level parameters"""
+        for num, ax in enumerate(self.ax.flatten()):
+            ax.tick_params(width=vutils.TICKWIDTH, which='both')
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+            ax.set(
+                xlabel='', yticks=[0], yticklabels=[], xlim=(0, 5), xticks=[i for i in range(0, self.duration + 1)],
+                xticklabels=[i for i in range(self.offset, self.offset + self.duration + 1)]
+            )
+
+    def _format_fig(self) -> None:
+        """Set figure-level parameters"""
+        allhands = [ax.get_legend_handles_labels()[0] for ax in self.ax.flatten()]
+        hands = [x for xs in allhands for x in xs]
+        alllabs = [ax.get_legend_handles_labels()[1] for ax in self.ax.flatten()]
+        labs = [x for xs in alllabs for x in xs]
+        unique = [(h, l) for i, (h, l) in enumerate(zip(hands, labs)) if l not in labs[:i]]
+        self.fig.legend(*zip(*unique), loc='upper right', frameon=True, framealpha=1, edgecolor=vutils.BLACK)
+        self.fig.supxlabel('Time (s)')
+        self.fig.supylabel('Instrument', x=0.01)
+        self.fig.suptitle(
+            f'{self.ons.item["pianist"]}, {self.ons.item["track_name"]} ({self.ons.item["recording_year"]})')
+        self.fig.subplots_adjust(left=0.05, right=0.975, top=0.935, bottom=0.075, hspace=0, wspace=0)
+
+
 if __name__ == '__main__':
     pass
