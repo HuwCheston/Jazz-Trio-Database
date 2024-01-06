@@ -3,7 +3,6 @@
 
 # external requirements
 click~=7.1.2
-Sphinx==6.2.1
 coverage==7.2.3
 flake8==6.0.0
 python-dotenv>=0.5.1

@@ -52,7 +52,7 @@ coverage.xml
 *.log
 
 # Sphinx documentation
-docs/_build/
+_docssrc/_build/
 
 # PyBuilder
 target/
@@ -96,7 +96,7 @@ target/
 /src/clean/pretrained_models/
 
 # exclude docs from source control, until I've written them
-/docs/
+
 
 # exclude deprecated folder from source control
 /_deprecated/
@@ -108,6 +108,8 @@ target/
 *.wav
 *.flac
 *.mp3
+*.mp4
+*.pds
 *.p
 *.reapeaks
 *.csv

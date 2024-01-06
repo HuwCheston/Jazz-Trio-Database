@@ -28,6 +28,8 @@ Below is an example of what the data looks like:
 
 The Cambridge Jazz Database is provided as a zip file containing the onset annotations in CSV format, with metadata in XLSX format. The source code for building these onsets is also available publicly. The metadata files contain the following fields for every recording:
 
+**Download link coming soon!**
+
 | Field               | Description                                                                                   |
 |---------------------|-----------------------------------------------------------------------------------------------|
 | `track_name`        | Title of the recording                                                                        |
@@ -53,19 +55,7 @@ The dataset is made available under the [MIT License](https://spdx.org/licenses/
 
 If you use the Cambridge Jazz Database in your work, please cite the paper where it was introduced:
 
-```
-@preprint{cheston_rhythmic-qualities_2023,
-	title = {Rhythmic Qualities of Jazz Improvisation Predict Performer Identity and Style in Source-Separated Audio Recordings},
-	url = {None},
-	language = {en},
-	urldate = {None},
-	institution = {PsyArXiv},
-	author = {Cheston, Huw and Cross, Ian and Harrison, Peter M. C.},
-	month = None,
-	year = {2024},
-	doi = {None},
-}
-```
+**Full citation coming soon!**
 
 ## Outputs
 
@@ -73,4 +63,3 @@ Creation of the database has resulted in the following published research output
 
 - Cheston, H., Cross, I., & Harrison, P. M. C. (2024). Rhythmic Qualities of Jazz Improvisation Predict Performer Identity and Style in Source-Separated Audio Recordings [Preprint]. PsyArXiv. LINK UPCOMING.
 - Cheston, H., Cross, I., & Harrison, P. M. C. (2023). An Automated Pipeline for Characterizing Timing in Jazz Trios. Proceedings of the DMRN+18 Digital Music Research Network. Digital Music Research Network, Queen Mary University of London, London, United Kingdom.
-
