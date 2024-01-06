@@ -856,5 +856,170 @@ class WavePlotOnsets(vutils.BasePlot):
         self.fig.subplots_adjust(left=0.05, right=0.975, top=0.935, bottom=0.075, hspace=0, wspace=0)
 
 
+# from src import utils
+# import math
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# import librosa
+# import librosa.display
+# import src.visualise.visualise_utils as vutils
+# import numpy as np
+# from joblib import Parallel, delayed
+# from matplotlib.lines import Line2D
+# import subprocess
+#
+# ons = utils.unserialise_object(fr'{utils.get_project_root()}\models\matched_onsets_corpus_bill_evans')
+# ons = [o for o in ons if o.item['mbz_id'] == '608bf73e-4161-4ca8-9802-5a95ffb71abf'][0]
+#
+#
+# class WavePlotOnsets(vutils.BasePlot):
+#     """Plots waveforms for every instrument, with vertical lines corresponding to onset annotations"""
+#
+#     def __init__(self, onsetmaker, **kwargs):
+#         self.corpus_title = 'corpus_chronology'
+#         self.for_movie = kwargs.get('for_movie', False)
+#         self.ons = onsetmaker
+#         fig_title = kwargs.get('fig_title',
+#                                fr'corpus_plots\waveplot_onsets{self.ons.item["fname"]}_{self.corpus_title}')
+#         super().__init__(figure_title=fig_title, **kwargs)
+#         px = 1 / plt.rcParams['figure.dpi']
+#         self.fig, self.ax = plt.subplots(nrows=2, ncols=1, sharex=True, sharey=True,
+#                                          figsize=((488 * px) * 3, (120 * px) * 3))
+#         self.duration = kwargs.get('duration', 5)
+#         self.offset = kwargs.get('offset', 45)
+#         self.fpaths = {
+#             'mix': fr'{utils.get_project_root()}\data\raw\audio\{self.ons.item["fname"]}.wav',
+#             'piano': fr'{utils.get_project_root()}\data\processed\spleeter_audio\{self.ons.item["fname"]}_piano.wav',
+#         }
+#
+#     def _create_plot(self) -> None:
+#         """Create the plot: waveforms, with vertical lines corresponding to onset annotations"""
+#         for (instr, fpath), a, col in zip(self.fpaths.items(), self.ax.flatten(), [vutils.BLACK, *vutils.RGB]):
+#             y, sr = librosa.load(fpath, duration=self.duration, offset=self.offset, sr=utils.SAMPLE_RATE)
+#             y = librosa.util.normalize(y)
+#             librosa.display.waveshow(y, sr=utils.SAMPLE_RATE, ax=a, color=col, alpha=vutils.ALPHA)
+#             onsets = self.ons.ons[instr]
+#             onsets = onsets[np.where((onsets > self.offset) & (onsets < self.duration + self.offset))] - self.offset
+#             if instr == 'mix':
+#                 sd = self.ons.ons['downbeats_manual']
+#                 for onset in onsets:
+#                     co = vutils.GREEN if onset not in sd else vutils.BLACK
+#                     scal = 4 if onset in sd else 2
+#                     a.axvline(onset, 0, 1, color=co, lw=vutils.LINEWIDTH * scal)
+#             else:
+#                 sd = self.ons.summary_dict[instr] - self.offset
+#                 for onset in onsets:
+#                     co = vutils.BLACK if onset in sd else col
+#                     scal = 2 if onset in sd else 1
+#                     ls = vutils.LINESTYLE if onset in sd else 'dashed'
+#                     a.axvline(onset, 0, 1, color=co, lw=vutils.LINEWIDTH * scal, ls=ls)
+#
+#             a.axhline(0, 0, 1, color=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, alpha=vutils.ALPHA)
+#             a.set_ylabel(instr.title(), x=0.5)
+#
+#     def _format_ax(self) -> None:
+#         """Set axis-level parameters"""
+#         for num, ax in enumerate(self.ax.flatten()):
+#             ax.tick_params(width=vutils.TICKWIDTH, which='both')
+#             plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+#             ax.set(
+#                 xlabel='', yticks=[0], yticklabels=[], xlim=(-0.05, self.duration),
+#             )
+#             if self.for_movie:
+#                 ax.axvline(0, 0, 1, color=vutils.RED, lw=vutils.LINEWIDTH)
+#                 ax.set(xticks=[], xticklabels=[])
+#             else:
+#                 ax.set(
+#                     xticks=[i for i in range(0, self.duration + 1)],
+#                     xticklabels=[i for i in range(self.offset, self.offset + self.duration + 1)]
+#                 )
+#
+#     def _format_fig(self) -> None:
+#         """Set figure-level parameters"""
+#         # self.fig.supxlabel('Time (s)')
+#         # self.fig.supylabel('Instrument', x=0.01)
+#         allhands = [ax.get_legend_handles_labels()[0] for ax in self.ax.flatten()]
+#         hands = [x for xs in allhands for x in xs]
+#         alllabs = [ax.get_legend_handles_labels()[1] for ax in self.ax.flatten()]
+#         labs = [x for xs in alllabs for x in xs]
+#         unique = [(h, l) for i, (h, l) in enumerate(zip(hands, labs)) if l not in labs[:i]]
+#         self.fig.legend(*zip(*unique), loc='upper right', frameon=True, framealpha=1, edgecolor=vutils.BLACK)
+#         self.fig.subplots_adjust(left=0.05, right=0.975, top=0.95, bottom=0.1, hspace=0, wspace=0)
+#
+#
+# class WavePlotOnsetsMovie(WavePlotOnsets):
+#     def __init__(self, onsetmaker, audio_dict, **kwargs):
+#         self.fig_title = fr'corpus_plots\waveplot_video\{kwargs.get("ft", "")}'
+#         super().__init__(onsetmaker, fig_title=self.fig_title, **kwargs)
+#         self.audio_dict = audio_dict
+#
+#     def _create_plot(self):
+#         downbeats = self.ons.ons['downbeats_manual']
+#         pulses = pd.DataFrame(self.ons.summary_dict)['beats']
+#         for (instr, aud), a, col in zip(self.audio_dict.items(), self.ax.flatten(), [vutils.BLACK, *vutils.RGB]):
+#             y = aud[int(self.offset * utils.SAMPLE_RATE):]
+#             librosa.display.waveshow(y, sr=utils.SAMPLE_RATE, ax=a, color=col, alpha=vutils.ALPHA)
+#             onsets = self.ons.ons[instr]
+#             onsets = onsets[np.where((onsets > self.offset) & (onsets < self.duration + self.offset))] - self.offset
+#             if instr == 'mix':
+#                 for onset in onsets:
+#                     co = vutils.BLACK
+#                     ons_ = onset + self.offset
+#                     ymi, yma = (0.1, 0.9) if ons_ not in downbeats else (0, 1)
+#                     scal = 2 if ons_ in downbeats else 1.5
+#                     alp = 1 if ons_ in downbeats else 0.8
+#                     a.axvline(onset, ymi, yma, color=co, alpha=alp, lw=vutils.LINEWIDTH * scal)
+#             else:
+#                 beats = self.ons.summary_dict[instr]
+#                 for onset in onsets:
+#                     if onset in beats - self.offset:
+#                         idx = np.where(beats - self.offset == onset)
+#                         pulse = pulses.iloc[idx].values[0]
+#                         ymi, yma = (0, 1) if pulse in downbeats else (0.1, 0.9)
+#                         alp = 1 if pulse in downbeats else 0.8
+#                         scal = 2 if pulse in downbeats else 1.5
+#                     else:
+#                         ymi, yma = (0.2, 0.8)
+#                         scal = 1
+#                         alp = 0.6
+#                     a.axvline(onset, ymi, yma, color=vutils.BLACK, alpha=alp, lw=vutils.LINEWIDTH * scal)
+#             a.axhline(0, 0, 1, color=vutils.BLACK, lw=vutils.LINEWIDTH, alpha=vutils.ALPHA)
+#             a.set_ylabel(instr.title(), labelpad=1)
+#             a.set_ylim([self.audio_dict[instr].min(), self.audio_dict[instr].max()])
+#
+#     def _format_fig(self) -> None:
+#         """Set figure-level parameters"""
+#         db = Line2D([0], [0], label='Downbeat', color=vutils.BLACK, lw=vutils.LINEWIDTH * 2, alpha=1)
+#         be = Line2D([0], [0], label='Beat', color=vutils.BLACK, lw=vutils.LINEWIDTH * 1.5, alpha=0.8)
+#         on = Line2D([0], [0], label='Onset', color=vutils.BLACK, lw=vutils.LINEWIDTH * 1, alpha=0.6)
+#         self.fig.legend(leg.values(), leg.keys(), loc='right', frameon=True, framealpha=1, edgecolor=vutils.BLACK)
+#         self.fig.subplots_adjust(left=0.035, right=0.83, top=0.95, bottom=0.05, hspace=0, wspace=0)
+#
+#
+# def process_video(num, offset):
+#     wp = WavePlotOnsetsMovie(ons, offset=offset, duration=5, ft=f"img{str(num).zfill(3)}", for_movie=True,
+#                              audio_dict=ad)
+#     wp.create_plot()
+#     return rf'{utils.get_project_root()}\{wp.fig_title}.png'
+#
+#
+# ad = {
+#     'mix': fr'{utils.get_project_root()}\data\raw\audio\{ons.item["fname"]}.wav',
+#     'piano': fr'{utils.get_project_root()}\data\processed\spleeter_audio\{ons.item["fname"]}_piano.wav',
+# }
+# ad = {k: librosa.util.normalize(librosa.load(v, sr=utils.SAMPLE_RATE)[0]) for k, v in ad.items()}
+# with Parallel(n_jobs=-1, verbose=5) as parallel:
+#     fnames = parallel(delayed(process_video)(num, i) for num, i in enumerate(np.linspace(0, 5, (30 * 5) + 1)))
+#
+#
+# import subprocess
+# proc = ["ffmpeg", "-y", "-framerate", "30",
+#         "-i", r"C:\Python Projects\jazz-corpus-analysis\reports\figures\corpus_plots\waveplot_video\img%03d.png",
+#         "-c:v", "libx264", "-vf", '"pad=ceil(iw/2)*2:ceil(ih/2)*2"', "-pix_fmt", "yuv420p",
+#         "out.mp4"]
+# p = subprocess.Popen(proc)
+# p.communicate()
+
+
 if __name__ == '__main__':
     pass

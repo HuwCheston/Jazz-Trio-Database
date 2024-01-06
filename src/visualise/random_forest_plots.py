@@ -11,9 +11,11 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 import seaborn as sns
+import statsmodels.formula.api as smf
 from scipy.cluster.hierarchy import dendrogram
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import confusion_matrix, RocCurveDisplay
+from joblib import Parallel, delayed
 
 from src import utils
 import src.visualise.visualise_utils as vutils
@@ -21,7 +23,7 @@ import src.visualise.visualise_utils as vutils
 __all__ = [
     'BarPlotCategoryImportances', 'BarPlotFeatureImportances', 'HeatMapFeatureCorrelation', 'CountPlotMissingValues',
     'HeatMapPredictionProbDendro', 'RocPlotLogRegression', 'StripPlotLogitCoeffs', 'HistPlotFirstLastP',
-    'RegPlotPredictorsCareerProgress'
+    'RegPlotPredictorsCareerProgress', "RegPlotCareerJazzProgress"
 ]
 
 PREDICTORS_CATEGORIES = {
@@ -208,9 +210,9 @@ class BarPlotFeatureImportances(vutils.BasePlot):
             .melt(id_vars=['feature', 'category'], var_name='fold')
             .groupby('feature')
             [['value', 'category']]
-            .agg({'value': [np.mean, np.std], 'category': 'first'})
+            .agg({'value': [np.mean, stats.sem], 'category': 'first'})
             .droplevel(0, axis=1)
-            .rename(columns={'first': 'category'})
+            .rename(columns={'first': 'category', 'sem': 'std'})
             .reset_index(drop=False)
             .sort_values(by='mean')
         )
@@ -227,10 +229,6 @@ class BarPlotFeatureImportances(vutils.BasePlot):
             data=self.importances, x='mean', y='feature', hue='category',
             ax=self.ax, **self.BAR_KWS
         )
-        self.ax.errorbar(
-            self.importances['mean'], self.importances['feature'],
-            xerr=self.importances['std'] * 100, **self.ERROR_KWS
-        )
 
     def _format_ticks(self) -> None:
         """Sets colors for predictor ticks to their category"""
@@ -244,7 +242,7 @@ class BarPlotFeatureImportances(vutils.BasePlot):
     def _format_ax(self) -> None:
         """Formats axis-level properties"""
         # Set variable labelling
-        self.ax.set(ylabel='Variable', xlabel='Variable Importance Score (%)')
+        self.ax.set(ylabel='Variable', xlabel='Feature Importance (%)')
         self._format_ticks()
         # Remove the legend
         self.ax.get_legend().remove()
@@ -278,27 +276,15 @@ class BarPlotCategoryImportances(vutils.BasePlot):
         # Create both dataframes
         self.grouped_importances = (
             importances.copy(deep=True)
-            .melt(id_vars=['feature', 'category'], var_name='fold')
-            .groupby('category', as_index=False)
-            ['value']
-            .apply(self._bootstrap)
-            .sort_values(by='mean')
+            .mean(axis=1)
+            .sort_values(ascending=True)
+            .reset_index(drop=False)
+            .rename(columns={'index': 'category', 0: 'mean'})
         )
         # Create subplot matrix
         self.fig, self.ax = plt.subplots(
             nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 3)
         )
-
-    @staticmethod
-    def _bootstrap(vals: pd.Series, n_boot: int = vutils.N_BOOT) -> pd.Series:
-        """Bootstrap the mean for a given series `vals` using number of replicates `n_boot`"""
-        boots = [vals.sample(frac=1, replace=True, random_state=i).mean() for i in range(n_boot)]
-        true_mean = np.mean(vals)
-        return pd.Series({
-            'low': true_mean - np.percentile(boots, 2.5),
-            'mean': true_mean,
-            'high': np.percentile(boots, 97.5) - true_mean
-        })
 
     def _create_plot(self) -> plt.Axes:
         """Creates all plots in seaborn with given arguments"""
@@ -306,11 +292,6 @@ class BarPlotCategoryImportances(vutils.BasePlot):
         sns.barplot(
             data=self.grouped_importances, x='mean', y='category',
             hue='category', ax=self.ax, **self.BAR_KWS
-        )
-        self.ax.errorbar(
-            self.grouped_importances['mean'], self.grouped_importances['category'],
-            xerr=(self.grouped_importances['low'] * 100, self.grouped_importances['high'] * 100),
-            **self.ERROR_KWS
         )
 
     def _format_ticks(self) -> None:
@@ -321,7 +302,7 @@ class BarPlotCategoryImportances(vutils.BasePlot):
     def _format_ax(self) -> None:
         """Formats axis-level properties"""
         # Set variable labelling
-        self.ax.set(ylabel='Variable Category', xlabel='Mean Variable Importance Score (%)')
+        self.ax.set(ylabel='Category', xlabel='Feature Importance (%)')
         self._format_ticks()
         # Remove the legend
         self.ax.get_legend().remove()
@@ -485,7 +466,7 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
 
 class RocPlotLogRegression(vutils.BasePlot):
     """Creates a plot showing the receiver-operator curve from true and predicted values from a logistic regression"""
-    def __init__(self, y_true: np.arrray, y_predict: np.array, **kwargs):
+    def __init__(self, y_true: np.array, y_predict: np.array, **kwargs):
         self.corpus_title = 'corpus_chronology'
         super().__init__(figure_title=fr'random_forest_plots\rainplot_algohuman_onsets_{self.corpus_title}', **kwargs)
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
@@ -749,6 +730,95 @@ class RegPlotPredictorsCareerProgress(vutils.BasePlot):
 
     def _format_fig(self) -> None:
         """Sets figure-level parameters"""
+        self.fig.supxlabel('Career progress (0 = earliest recording, 1 = final recording)')
+        self.fig.subplots_adjust(left=0.07, right=0.99, bottom=0.1, top=0.95, wspace=0.25)
+
+
+class RegPlotCareerJazzProgress(vutils.BasePlot):
+    predictors = ['drums_prop_async_nanmean', 'tempo_slope', 'bur_log_mean', 'n_onsets_mean', 'coupling_piano_drums']
+    palette = sns.color_palette('tab10')
+    palette = [palette[2], palette[4], palette[0], palette[1],   palette[3]]
+    markers = ['o', 's', 'D', '^', 'p']
+    categories = ['Feel', 'Tempo', 'Swing', 'Complexity', 'Interaction']
+    REG_KWS = dict(color=vutils.BLACK, linewidth=vutils.LINEWIDTH * 2, ls=vutils.LINESTYLE)
+    xspace = np.linspace(0, 1, 100)
+    N_JOBS = -1
+
+    def __init__(self, model_df, cat_mapping, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        self.cat_mapping = cat_mapping
+        self.df = model_df.copy(deep=True)
+        super().__init__(
+            figure_title=fr'random_forest_plots\regplot_careerjazzprogress_{self.corpus_title}', **kwargs
+        )
+        self.fig, self.ax = plt.subplots(
+            nrows=2, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 2), sharex=True, sharey=False
+        )
+        self.ax.flatten()[-1].axis('off')
+
+    def get_line(self, model, mean):
+        params = model.params
+        intercept = params['Intercept']
+        jp = params['jazz_progress'] * mean
+        return [intercept + jp + (i * params['career_progress']) for i in self.xspace]
+
+    @staticmethod
+    def fit_model(data_, predict_):
+        return (
+            smf.mixedlm(
+                f'{predict_}~career_progress+jazz_progress',
+                groups=data_['pianist'],
+                data=data_,
+                re_formula='~jazz_progress'
+            ).fit(method=['lbfgs'])
+        )
+
+    def bootstrap(self, data_, predict_) -> pd.DataFrame:
+        def shuffle_data_and_fit(state):
+            samp = data_.sample(frac=1, replace=True, random_state=state)
+            mode = self.fit_model(samp, predict_)
+            return pd.Series(self.get_line(mode, np.mean(samp['jazz_progress'])))
+
+        with Parallel(n_jobs=self.N_JOBS, verbose=3) as par:
+            boots = par(delayed(shuffle_data_and_fit)(num) for num in range(vutils.N_BOOT))
+        boot_ys = pd.concat(boots, axis=1)
+        low = boot_ys.apply(lambda r: np.percentile(r, 2.5), axis=1)
+        high = boot_ys.apply(lambda r: np.percentile(r, 97.5), axis=1)
+        return pd.DataFrame(dict(x=self.xspace, low=low, high=high))
+
+    def _create_plot(self):
+        for ax, predict, col, mark in zip(self.ax.flatten(), self.predictors, self.palette, self.markers):
+            data = self.df.copy(deep=True)
+            data[predict] = data[predict].fillna(data[predict].mean())
+            md = self.fit_model(data, predict)
+            sns.scatterplot(
+                data=data, x='career_progress', y=predict, label=self.cat_mapping[predict],
+                ax=ax, color=col, marker=mark, s=100, alpha=vutils.ALPHA
+            )
+            results_y = pd.DataFrame(self.get_line(md, np.mean(data['jazz_progress'])))
+            ax.plot(self.xspace, results_y, **self.REG_KWS)
+            boot_df = self.bootstrap(data, predict)
+            ax.fill_between(boot_df['x'], boot_df['low'], boot_df['high'], color=vutils.BLACK, alpha=vutils.ALPHA)
+
+    def _format_ax(self):
+        leg, hand = [], []
+        for a, tit, col in zip(self.ax.flatten(), self.categories, self.palette):
+            l, h = a.get_legend_handles_labels()
+            leg.extend(l)
+            hand.extend(h)
+            a.get_legend().remove()
+            a.grid(axis='x', which='major', **vutils.GRID_KWS)
+            a.set_title(tit, color=col)
+            a.set_ylabel(COL_MAPPING[a.get_ylabel()], color=col)
+            a.set(xlabel='', xlim=(-0.05, 1.05))
+            plt.setp(a.spines.values(), linewidth=vutils.LINEWIDTH)
+            a.tick_params(axis='both', bottom=True, width=vutils.TICKWIDTH)
+        self.fig.legend(
+            leg, hand, loc='lower right', title='Category', frameon=True,
+            framealpha=1, edgecolor=vutils.BLACK, bbox_to_anchor=(0.9, 0.15)
+        )
+
+    def _format_fig(self):
         self.fig.supxlabel('Career progress (0 = earliest recording, 1 = final recording)')
         self.fig.subplots_adjust(left=0.07, right=0.99, bottom=0.1, top=0.95, wspace=0.25)
 
