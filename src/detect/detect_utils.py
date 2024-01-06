@@ -1009,16 +1009,16 @@ class OnsetMaker:
 
 
 class _ClickTrackMaker:
-    width = 200
-    start_freq = 750
-    volume_threshold = 1/3
     order = 20    # Lower than the value used for the stems as less precise filtering is needed here
 
-    def __init__(self, audio: np.array):
+    def __init__(self, audio: np.array, **kwargs):
         # Convert the input audio to mono, if we haven't done this already
         if len(audio.shape) == 2:
             audio = audio.mean(axis=1)
         self.audio = audio
+        self.width = kwargs.get('width', 200)
+        self.start_freq = kwargs.get('start_freq', 750)
+        self.volume_threshold = kwargs.get('volume_threshold', 1 / 3)
 
     def generate_audio(
             self,

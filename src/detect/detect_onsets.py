@@ -44,7 +44,7 @@ def process_item(
 @click.command()
 @click.option("-corpus", "corpus_filename", type=str, default="corpus_chronology", help='Name of the corpus to use')
 @click.option("-n_jobs", "n_jobs", type=click.IntRange(-1, clamp=True), default=-1, help='Number of CPU cores to use')
-@click.option("-click", "generate_click", is_flag=True, default=True, help='Generate click tracks')
+@click.option("-no_click", "generate_click", is_flag=True, default=False, help='Suppress click track generation')
 @click.option("-annotated-only", "annotated_only", is_flag=True, default=False, help='Only use items with annotations')
 @click.option("-one-track-only", "one_track_only", is_flag=True, default=False, help='Only process one item')
 @click.option("-ignore-cache", "ignore_cache", is_flag=True, default=False, help='Ignore any cached items')
@@ -80,13 +80,13 @@ def main(
     logger.info(f"detecting onsets in {len(corpus.tracks)} tracks ({from_cache} from disc) using {n_jobs} CPUs ...")
     p, q = utils.initialise_queue(utils.serialise_from_queue, fname)    # worker process for saving tracks
     res = Parallel(n_jobs=n_jobs, backend='loky')(delayed(process_item)(
-        corpus_filename, corpus_item, generate_click, q,
+        corpus_filename, corpus_item, not generate_click, q,
     ) for corpus_item in corpus.tracks)    # worker processes for detecting onsets
     # Kill the track saving worker by adding a NoneType object to its queue
     q.put(None)
     p.join()
     # Log the completion time and return the class instances
-    logger.info(f'onsets detected for all tracks in corpus {corpus_filename} in {round(time() - start)} secs !')
+    logger.info(f'onsets detected for all tracks in {corpus_filename} in {round(time() - start)} secs !')
     return res
 
 
