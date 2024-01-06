@@ -485,7 +485,7 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
 
 class RocPlotLogRegression(vutils.BasePlot):
     """Creates a plot showing the receiver-operator curve from true and predicted values from a logistic regression"""
-    def __init__(self, y_true: np.arrray, y_predict: np.array, **kwargs):
+    def __init__(self, y_true: np.array, y_predict: np.array, **kwargs):
         self.corpus_title = 'corpus_chronology'
         super().__init__(figure_title=fr'random_forest_plots\rainplot_algohuman_onsets_{self.corpus_title}', **kwargs)
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))

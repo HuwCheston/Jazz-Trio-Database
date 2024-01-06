@@ -3229,6 +3229,12 @@ Transactions of the Royal Society B: Biological Sciences, 376(1835), 20200331.</
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.random_forest_plots.BarPlotCategoryImportances._bootstrap">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_bootstrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_boot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="headerlink" href="#src.visualise.random_forest_plots.BarPlotCategoryImportances._bootstrap" title="Permalink to this definition">#</a></dt>
+<dd><p>Bootstrap the mean for a given series <cite>vals</cite> using number of replicates <cite>n_boot</cite></p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="src.visualise.random_forest_plots.BarPlotCategoryImportances._create_plot">
 <span class="sig-name descname"><span class="pre">_create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Axes</span></span></span><a class="headerlink" href="#src.visualise.random_forest_plots.BarPlotCategoryImportances._create_plot" title="Permalink to this definition">#</a></dt>
 <dd><p>Creates all plots in seaborn with given arguments</p>
@@ -3731,111 +3737,6 @@ Transactions of the Royal Society B: Biological Sciences, 376(1835), 20200331.</
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.visualise.random_forest_plots.HistPlotFirstLastP.output_dir">
 <span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.HistPlotFirstLastP.output_dir" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.visualise.random_forest_plots.</span></span><span class="sig-name descname"><span class="pre">RegPlotCareerJazzProgress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cat_mapping</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#src.visualise.visualise_utils.BasePlot" title="src.visualise.visualise_utils.BasePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePlot</span></code></a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.N_JOBS">
-<span class="sig-name descname"><span class="pre">N_JOBS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.N_JOBS" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.REG_KWS">
-<span class="sig-name descname"><span class="pre">REG_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'color':</span> <span class="pre">'#000000',</span> <span class="pre">'linewidth':</span> <span class="pre">4,</span> <span class="pre">'ls':</span> <span class="pre">'-'}</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.REG_KWS" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress._create_plot">
-<span class="sig-name descname"><span class="pre">_create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress._create_plot" title="Permalink to this definition">#</a></dt>
-<dd><p>This function should contain the code for plotting the graph</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress._format_ax">
-<span class="sig-name descname"><span class="pre">_format_ax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress._format_ax" title="Permalink to this definition">#</a></dt>
-<dd><p>This function should contain the code for formatting the <cite>self.ax</cite> objects</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress._format_fig">
-<span class="sig-name descname"><span class="pre">_format_fig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress._format_fig" title="Permalink to this definition">#</a></dt>
-<dd><p>This function should contain the code for formatting the <cite>self.fig</cite> objects</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.ax">
-<span class="sig-name descname"><span class="pre">ax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.ax" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.bootstrap">
-<span class="sig-name descname"><span class="pre">bootstrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predict_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.bootstrap" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.categories">
-<span class="sig-name descname"><span class="pre">categories</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Feel',</span> <span class="pre">'Tempo',</span> <span class="pre">'Swing',</span> <span class="pre">'Complexity',</span> <span class="pre">'Interaction']</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.categories" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.create_plot">
-<span class="sig-name descname"><span class="pre">create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.create_plot" title="Permalink to this definition">#</a></dt>
-<dd><p>Calls plot creation, axis formatting, and figure formatting classes, then saves in the decorator</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.df">
-<span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.df" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.fig">
-<span class="sig-name descname"><span class="pre">fig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.fig" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.fit_model">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predict_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.fit_model" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.g">
-<span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.g" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.get_line">
-<span class="sig-name descname"><span class="pre">get_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.get_line" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.markers">
-<span class="sig-name descname"><span class="pre">markers</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['o',</span> <span class="pre">'s',</span> <span class="pre">'D',</span> <span class="pre">'^',</span> <span class="pre">'p']</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.markers" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.output_dir">
-<span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.output_dir" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.palette">
-<span class="sig-name descname"><span class="pre">palette</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(0.17254901960784313,</span> <span class="pre">0.6274509803921569,</span> <span class="pre">0.17254901960784313),</span> <span class="pre">(0.5803921568627451,</span> <span class="pre">0.403921568627451,</span> <span class="pre">0.7411764705882353),</span> <span class="pre">(0.12156862745098039,</span> <span class="pre">0.4666666666666667,</span> <span class="pre">0.7058823529411765),</span> <span class="pre">(1.0,</span> <span class="pre">0.4980392156862745,</span> <span class="pre">0.054901960784313725),</span> <span class="pre">(0.8392156862745098,</span> <span class="pre">0.15294117647058825,</span> <span class="pre">0.1568627450980392)]</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.palette" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.predictors">
-<span class="sig-name descname"><span class="pre">predictors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['drums_prop_async_nanmean',</span> <span class="pre">'tempo_slope',</span> <span class="pre">'bur_log_mean',</span> <span class="pre">'n_onsets_mean',</span> <span class="pre">'coupling_piano_drums']</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.predictors" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.random_forest_plots.RegPlotCareerJazzProgress.xspace">
-<span class="sig-name descname"><span class="pre">xspace</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([0.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">,</span> <span class="pre">0.01010101,</span> <span class="pre">0.02020202,</span> <span class="pre">0.03030303,</span> <span class="pre">0.04040404,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.05050505,</span> <span class="pre">0.06060606,</span> <span class="pre">0.07070707,</span> <span class="pre">0.08080808,</span> <span class="pre">0.09090909,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.1010101</span> <span class="pre">,</span> <span class="pre">0.11111111,</span> <span class="pre">0.12121212,</span> <span class="pre">0.13131313,</span> <span class="pre">0.14141414,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.15151515,</span> <span class="pre">0.16161616,</span> <span class="pre">0.17171717,</span> <span class="pre">0.18181818,</span> <span class="pre">0.19191919,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.2020202</span> <span class="pre">,</span> <span class="pre">0.21212121,</span> <span class="pre">0.22222222,</span> <span class="pre">0.23232323,</span> <span class="pre">0.24242424,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.25252525,</span> <span class="pre">0.26262626,</span> <span class="pre">0.27272727,</span> <span class="pre">0.28282828,</span> <span class="pre">0.29292929,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.3030303</span> <span class="pre">,</span> <span class="pre">0.31313131,</span> <span class="pre">0.32323232,</span> <span class="pre">0.33333333,</span> <span class="pre">0.34343434,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.35353535,</span> <span class="pre">0.36363636,</span> <span class="pre">0.37373737,</span> <span class="pre">0.38383838,</span> <span class="pre">0.39393939,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.4040404</span> <span class="pre">,</span> <span class="pre">0.41414141,</span> <span class="pre">0.42424242,</span> <span class="pre">0.43434343,</span> <span class="pre">0.44444444,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.45454545,</span> <span class="pre">0.46464646,</span> <span class="pre">0.47474747,</span> <span class="pre">0.48484848,</span> <span class="pre">0.49494949,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.50505051,</span> <span class="pre">0.51515152,</span> <span class="pre">0.52525253,</span> <span class="pre">0.53535354,</span> <span class="pre">0.54545455,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.55555556,</span> <span class="pre">0.56565657,</span> <span class="pre">0.57575758,</span> <span class="pre">0.58585859,</span> <span class="pre">0.5959596</span> <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.60606061,</span> <span class="pre">0.61616162,</span> <span class="pre">0.62626263,</span> <span class="pre">0.63636364,</span> <span class="pre">0.64646465,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.65656566,</span> <span class="pre">0.66666667,</span> <span class="pre">0.67676768,</span> <span class="pre">0.68686869,</span> <span class="pre">0.6969697</span> <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.70707071,</span> <span class="pre">0.71717172,</span> <span class="pre">0.72727273,</span> <span class="pre">0.73737374,</span> <span class="pre">0.74747475,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.75757576,</span> <span class="pre">0.76767677,</span> <span class="pre">0.77777778,</span> <span class="pre">0.78787879,</span> <span class="pre">0.7979798</span> <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.80808081,</span> <span class="pre">0.81818182,</span> <span class="pre">0.82828283,</span> <span class="pre">0.83838384,</span> <span class="pre">0.84848485,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.85858586,</span> <span class="pre">0.86868687,</span> <span class="pre">0.87878788,</span> <span class="pre">0.88888889,</span> <span class="pre">0.8989899</span> <span class="pre">,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.90909091,</span> <span class="pre">0.91919192,</span> <span class="pre">0.92929293,</span> <span class="pre">0.93939394,</span> <span class="pre">0.94949495,</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0.95959596,</span> <span class="pre">0.96969697,</span> <span class="pre">0.97979798,</span> <span class="pre">0.98989899,</span> <span class="pre">1.</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">])</span></em><a class="headerlink" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.xspace" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4789,6 +4690,7 @@ Transactions of the Royal Society B: Biological Sciences, 376(1835), 20200331.</
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.BarPlotCategoryImportances"><code class="docutils literal notranslate"><span class="pre">BarPlotCategoryImportances</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.BarPlotCategoryImportances.BAR_KWS"><code class="docutils literal notranslate"><span class="pre">BarPlotCategoryImportances.BAR_KWS</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.BarPlotCategoryImportances.ERROR_KWS"><code class="docutils literal notranslate"><span class="pre">BarPlotCategoryImportances.ERROR_KWS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.BarPlotCategoryImportances._bootstrap"><code class="docutils literal notranslate"><span class="pre">BarPlotCategoryImportances._bootstrap()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.BarPlotCategoryImportances._create_plot"><code class="docutils literal notranslate"><span class="pre">BarPlotCategoryImportances._create_plot()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.BarPlotCategoryImportances._format_ax"><code class="docutils literal notranslate"><span class="pre">BarPlotCategoryImportances._format_ax()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.BarPlotCategoryImportances._format_fig"><code class="docutils literal notranslate"><span class="pre">BarPlotCategoryImportances._format_fig()</span></code></a></li>
@@ -4890,28 +4792,6 @@ Transactions of the Royal Society B: Biological Sciences, 376(1835), 20200331.</
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.HistPlotFirstLastP.fig"><code class="docutils literal notranslate"><span class="pre">HistPlotFirstLastP.fig</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.HistPlotFirstLastP.g"><code class="docutils literal notranslate"><span class="pre">HistPlotFirstLastP.g</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.HistPlotFirstLastP.output_dir"><code class="docutils literal notranslate"><span class="pre">HistPlotFirstLastP.output_dir</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.N_JOBS"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.N_JOBS</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.REG_KWS"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.REG_KWS</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress._create_plot"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress._create_plot()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress._format_ax"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress._format_ax()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress._format_fig"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress._format_fig()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.ax"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.ax</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.bootstrap"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.bootstrap()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.categories"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.categories</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.create_plot"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.create_plot()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.df"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.df</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.fig"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.fig</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.fit_model"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.fit_model()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.g"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.g</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.get_line"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.get_line()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.markers"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.markers</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.output_dir"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.output_dir</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.palette"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.palette</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.predictors"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.predictors</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotCareerJazzProgress.xspace"><code class="docutils literal notranslate"><span class="pre">RegPlotCareerJazzProgress.xspace</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.random_forest_plots.RegPlotPredictorsCareerProgress"><code class="docutils literal notranslate"><span class="pre">RegPlotPredictorsCareerProgress</span></code></a><ul class="nav section-nav flex-column">
