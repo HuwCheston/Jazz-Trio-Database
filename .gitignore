@@ -78,6 +78,7 @@ target/
 
 # exclude data from source control by default
 /data
+/reports/figures
 
 # Mac OS-specific storage files
 .DS_Store
@@ -103,11 +104,12 @@ target/
 
 # Output files
 *.png
-*.svg
 *.m4a
 *.wav
 *.flac
 *.mp3
+*.mp4
+*.pds
 *.p
 *.reapeaks
 *.csv
