@@ -44,7 +44,7 @@ The :mod:`Cambridge Jazz Database` is a dataset composed of about 16 hours of ja
             :color: secondary
             :expand:
 
-            User Guide
+            User guide
 
     .. grid-item-card::
         :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Database/gh-pages/_docssrc/static/index_api_documentation.svg
