@@ -97,13 +97,11 @@ target/
 
 # exclude docs from source control, until I've written them
 
-
 # exclude deprecated folder from source control
 /_deprecated/
 
 # Output files
 *.png
-*.svg
 *.m4a
 *.wav
 *.flac
@@ -113,6 +111,11 @@ target/
 *.p
 *.reapeaks
 *.csv
+
+# Ignore .svg image files in all but the documentation folders
+*.svg
+!docs/*.svg
+!_docssrc/*.svg
 
 /venv_old/
 /pretrained_models/

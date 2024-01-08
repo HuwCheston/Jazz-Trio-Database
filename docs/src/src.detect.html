@@ -1,0 +1,1373 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>src.detect package &#8212; Cambridge Jazz Database</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'src/src.detect';</script>
+    <link rel="icon" href="../_static/html_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="src.features package" href="src.features.html" />
+    <link rel="prev" title="src.clean package" href="src.clean.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Cambridge Jazz Database</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../installation/getting-started.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../resources/online-resources.html">
+                        Resources
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/huwcheston" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../installation/getting-started.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../resources/online-resources.html">
+                        Resources
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/huwcheston" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="src.html">src package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="src.clean.html">src.clean package</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">src.detect package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.features.html">src.features package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.visualise.html">src.visualise package</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">src</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="src.html" class="nav-link">src package</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">src.detect package</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="src-detect-package">
+<h1>src.detect package<a class="headerlink" href="#src-detect-package" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="module-src.detect.detect_onsets">
+<span id="src-detect-detect-onsets-module"></span><h2>src.detect.detect_onsets module<a class="headerlink" href="#module-src.detect.detect_onsets" title="Permalink to this heading">#</a></h2>
+<p>Automatically detects note and beat onsets in the source separated tracks for each item in the corpus</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.detect.detect_onsets.process_item">
+<span class="sig-prename descclassname"><span class="pre">src.detect.detect_onsets.</span></span><span class="sig-name descname"><span class="pre">process_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus_json_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corpus_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generate_click</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_queue</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.detect_onsets.process_item" title="Permalink to this definition">#</a></dt>
+<dd><p>Process one item from the corpus, used in parallel contexts (i.e. called with joblib.Parallel)</p>
+</dd></dl>
+
+</section>
+<section id="module-src.detect.detect_utils">
+<span id="src-detect-detect-utils-module"></span><h2>src.detect.detect_utils module<a class="headerlink" href="#module-src.detect.detect_utils" title="Permalink to this heading">#</a></h2>
+<p>Utility classes, functions, and variables used in the onset detection process.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.detect.detect_utils.</span></span><span class="sig-name descname"><span class="pre">OnsetMaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'corpus_bill_evans'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Automatically detect onset and beat positions for each instrument in a single item in the corpus.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker._get_channel_override_fpath">
+<span class="sig-name descname"><span class="pre">_get_channel_override_fpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker._get_channel_override_fpath" title="Permalink to this definition">#</a></dt>
+<dd><p>Gets the filepath for an item, with any channel overrides specified.</p>
+<p>For instance, if we wish to use only the left channel for the double bass (and have specified “bass”: “l” in the
+“channel_overrides” dictionary for this item in the corpus), this function will return the correct filepath
+pointing to the source-separated left channel file.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>name (str): the name of the instrument
+fpath (str): the default filepath for the item (i.e. stereo audio)</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: the overriden filepath if this is required and present locally, or the default (stereo) filepath if not</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker._load_audio">
+<span class="sig-name descname"><span class="pre">_load_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker._load_audio" title="Permalink to this definition">#</a></dt>
+<dd><p>Loads audio as a time-series array for all instruments + the raw mix.</p>
+<p>Wrapper around <cite>librosa.load_audio</cite>, called when class instance is constructed in order to generate audio for
+all instruments in required format. Keyword arguments are passed on to .load_audio</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: passed to <cite>librosa.load_audio</cite></p>
+</dd>
+<dt>Return:</dt><dd><p>dict: each key-value pair corresponds to the loaded audio for one instrument, as an array</p>
+</dd>
+<dt>Raises:</dt><dd><p>UserWarning: when a greater portion of a track than given in OnsetMaker.silence_threshold is silent</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.beat_track_rnn">
+<span class="sig-name descname"><span class="pre">beat_track_rnn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starting_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_nonoptimised_defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.beat_track_rnn" title="Permalink to this definition">#</a></dt>
+<dd><p>Tracks the position of crotchet beats in the full mix of a track using recurrent neural networks.</p>
+<p>Wrapper around <cite>RNNDownBeatProcessor’ and ‘DBNDownBeatTrackingProcessor</cite> from <cite>madmom.features.downbeat</cite> that
+allows for per-instrument defaults and multiple passes. A ‘pass’ refers to taking the detected crotchets from
+one run of the network, cleaning the results, extracting features from the cleaned array (e.g. minimum and
+maximum tempi), then creating a new network using these features and repeating the estimation process. This
+narrows down the range of tempo values that can be detected and increases the accuracy of detected crotchets
+substantially over a period of several passes.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>starting_min (int, optional): the minimum possible tempo (in BPM) to use for the first pass, defaults to 100
+starting_max (int, optional): the maximum possible tempo (in BPM) to use for the first pass, defaults to 300
+use_nonoptimised_defaults (bool, optional): use default parameters over optimised, defaults to False
+audio_start (int, optional): start reading audio from this point (in total seconds)
+audio_cutoff (int, optional): stop reading audio after this point (in total seconds)
+passes (int, optional): the number of passes of the processer to use, defaults to 1
+<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: passed to <cite>madmom.features.downbeat.DBNDownBeatTrackingProcessor</cite></p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: an array of detected crotchet beat positions from the final pass</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.compare_onset_detection_accuracy">
+<span class="sig-name descname"><span class="pre">compare_onset_detection_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onsets_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.compare_onset_detection_accuracy" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluates onset detection algorithm against reference onsets.</p>
+<p>For every onset detected by an algorithm, attempt to match these to the nearest onset in a reference set
+(usually obtained from manual annotation). Then, construct a summary dictionary, containing summary statistics
+relating to the precision, recall, and accuracy of the detection. For more information on the evaluation
+procedure, see <cite>mir_eval.onset.f_measure</cite>.</p>
+<p>At least one of ref or fname must be passed: ref must be an array of onset times, in seconds; fname must be a
+path to a text file containing onset times, with one onset per line. If both ref and fname are passed (don’t do
+this), ref will take priority.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>ref (np.array): an array of reference onsets (in seconds) to use for evaluation
+fname (str): the file path to a reference set of onsets, one onset per line
+instr (str): the name of an instrument or track
+onsets (list[np.array]): a list of arrays, each array should be the results from one algorithm
+onsets_name (list[str]): a list of names that should match with the algorithm results in onsets
+window (float): the size of the window used for matching each onset to a reference
+audio_cutoff (int, optional): stop reading audio after this point (in total seconds)
+<a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs: additional key-value pairs passed to the returned summary dictionary</p>
+</dd>
+<dt>Yields:</dt><dd><p>dict: each dictionary contains summary statistics for one evaluation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.data_dir">
+<span class="sig-name descname"><span class="pre">data_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\data'</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.data_dir" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.detection_note_values">
+<span class="sig-name descname"><span class="pre">detection_note_values</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'left':</span> <span class="pre">0.03125,</span> <span class="pre">'right':</span> <span class="pre">0.0625}</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.detection_note_values" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.extract_downbeats">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_downbeats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beat_timestamps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beat_positions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.extract_downbeats" title="Permalink to this definition">#</a></dt>
+<dd><p>Takes in arrays of beat onsets and bar positions and returns the downbeats of each bar</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.finalize_output">
+<span class="sig-name descname"><span class="pre">finalize_output</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.finalize_output" title="Permalink to this definition">#</a></dt>
+<dd><p>Finalizes the output by cleaning up leftover files and setting any final attributes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.generate_click_track">
+<span class="sig-name descname"><span class="pre">generate_click_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.generate_click_track" title="Permalink to this definition">#</a></dt>
+<dd><p>Renders detected onsets to a click sound and outputs, combined with the original audio.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>instr (str): the name of the instrument to render audio from
+<a href="#id7"><span class="problematic" id="id8">*</span></a>args (np.array): arrays of detected onsets to render to audio</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.generate_matched_onsets_dictionary">
+<span class="sig-name descname"><span class="pre">generate_matched_onsets_dictionary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onsets_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instrs_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.generate_matched_onsets_dictionary" title="Permalink to this definition">#</a></dt>
+<dd><p>Matches onsets from multiple instruments with crotchet beat positions and returns a dictionary.</p>
+<p>Wrapper function for <cite>OnsetMaker.match_onsets_and_beats</cite>. <cite>onsets_list</cite> should be a list of arrays corresponding
+to onset positions tracked from multiple source-separated instruments. These will then be sent individually to
+<cite>OnsetMaker.match_onsets_and_beats</cite> and matched with the provided <cite>beats</cite> array, then returned as the values in
+a dictionary, where the keys are identifiers passed in <cite>instrs_list</cite> (or numerical values, if this iterable is
+not passed). Any <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> will be passed to <cite>OnsetMaker.match_onsets_and_beats</cite>.</p>
+<dl>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">om</span> <span class="o">=</span> <span class="n">OnsetMaker</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ons</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">,</span> <span class="mf">1.55</span><span class="p">]),</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mf">1.45</span><span class="p">]),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;instr1&#39;</span><span class="p">,</span> <span class="s1">&#39;instr2&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">generate_matched_onsets_dictionary</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">beats</span><span class="o">=</span><span class="n">bea</span><span class="p">,</span> <span class="n">onsets_list</span><span class="o">=</span><span class="n">ons</span><span class="p">,</span> <span class="n">instrs_list</span><span class="o">=</span><span class="n">instrs</span><span class="p">,</span> <span class="n">use_hard_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+<span class="go">{</span>
+<span class="go">    &#39;beats&#39;: array([0. , 0.5, 1. , 1.5]),</span>
+<span class="go">    &#39;instr1&#39;: array([0.1 , 0.6 ,  nan, 1.55]),</span>
+<span class="go">    &#39;instr2&#39;: array([0.05, 0.45, 0.95, 1.45])</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+</dd>
+<dt>Arguments:</dt><dd><p>beats (np.array): iterable containing crotchet beat positions, typically tracked from the full mix
+onsets_list (list[np.array]): iterable containing arrays of onset positions
+instrs_list (list[str]): iterable containing names of instruments
+<a href="#id9"><span class="problematic" id="id10">**</span></a>kwargs: arbitrary keyword arguments, passed to <cite>OnsetMaker.match_onsets_and_beats</cite></p>
+</dd>
+<dt>Returns:</dt><dd><p>dict: keys are instrument names, values are matched arrays</p>
+</dd>
+<dt>Raises:</dt><dd><p>AttributeError: if neither onsets_list or instrs_list are passed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.get_nonsilent_sections">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_nonsilent_sections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.get_nonsilent_sections" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the sections of a track which are not silent.</p>
+<p>Wrapper function for <cite>librosa.effects.split</cite> that returns slices of a given audio track that are not silent.
+Slices are only considered not silent if their duration is above a reference threshold, given in seconds: this
+is to prevent the parsing of many small slices of audio.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>aud (np.array): array of audio, read in during construction of the OnsetMaker class
+thresh (float): value in seconds used when parsing slices
+<a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs: arbitrary keyword arguments, passed to <cite>librosa.effects.split</cite></p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: rows corresponding to sections of non-silent audio</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.get_signal_to_noise_ratio">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_signal_to_noise_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.get_signal_to_noise_ratio" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.get_silent_track_percent">
+<span class="sig-name descname"><span class="pre">get_silent_track_percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.get_silent_track_percent" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the fraction of a track which is silent.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>aud (np.array): array of audio, read in during construction of the OnsetMaker class
+silent (np.array): array of non-silent audio slices, returned from OnsetMaker.get_nonsilent_sections
+<a href="#id13"><span class="problematic" id="id14">**</span></a>kwargs: arbitrary keyword arguments, passed to <cite>OnsetMaker.get_nonsilent_sections</cite></p>
+</dd>
+<dt>Returns:</dt><dd><p>float: the fraction of a track which is silent, e.g. 1 == a completely silent track</p>
+</dd>
+<dt>Raises:</dt><dd><p>AttributeError: if neither aud or silent are passed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.get_spectral_flatness">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_spectral_flatness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.get_spectral_flatness" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.match_onsets_and_beats">
+<span class="sig-name descname"><span class="pre">match_onsets_and_beats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_hard_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detection_note_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.match_onsets_and_beats" title="Permalink to this definition">#</a></dt>
+<dd><p>Matches event onsets with crotchet beat locations.</p>
+<p>For every beat in the iterable <cite>beats</cite>, find the closest proximate onset in the iterable <cite>onsets</cite>, within a
+given window. If no onset can be found within this window, set the matched onset to NaN. Window type can either
+be a hard, fixed value by setting <cite>use_hard_threshold</cite>, or flexible and dependant on a particular rhythmic value
+within the underlying tempo (set using the <cite>detection_note_value</cite> class attribute). The latter option is
+recommended and used as a default, given that hard thresholds for matching onsets at one tempo may not be
+appropriate for other tempi.</p>
+<dl>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">om</span> <span class="o">=</span> <span class="n">OnsetMaker</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">,</span> <span class="mf">1.55</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">match_onsets_and_beats</span><span class="p">(</span><span class="n">beats</span><span class="o">=</span><span class="n">bea</span><span class="p">,</span> <span class="n">onsets</span><span class="o">=</span><span class="n">ons</span><span class="p">,</span> <span class="n">use_hard_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span>
+<span class="go">np.array([0.1 0.6 nan 1.55])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">om</span> <span class="o">=</span> <span class="n">OnsetMaker</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">om</span><span class="o">.</span><span class="n">tempo</span> <span class="o">=</span> <span class="mi">160</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bea</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">,</span> <span class="mf">1.55</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">match_onsets_and_beats</span><span class="p">(</span><span class="n">beats</span><span class="o">=</span><span class="n">bea</span><span class="p">,</span> <span class="n">onsets</span><span class="o">=</span><span class="n">ons</span><span class="p">,</span> <span class="n">use_hard_threshold</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="go">np.array([nan nan nan 1.55])</span>
+</pre></div>
+</div>
+</dd>
+<dt>Arguments:</dt><dd><p>beats (np.ndarray): iterable containing crotchet beat positions, typically tracked from the full mix
+onsets (np.ndarray): iterable containing onset positions, typically tracked from a source separated file
+instr (str): the name of an instrument, to be used if onsets is not provided
+use_hard_threshold (bool): whether to use a hard or tempo-dependent (default) threshold for matching onsets
+detection_note_values (dict): dictionary of note values to use either side of crotchet beat, e.g. 1/32, 1/8</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: the matched onset array, with shape == len(beats)</p>
+</dd>
+<dt>Raises:</dt><dd><p>AttributeError: if neither onsets or instr are provided</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.metre_from_annotated_downbeat">
+<span class="sig-name descname"><span class="pre">metre_from_annotated_downbeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamps_arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.metre_from_annotated_downbeat" title="Permalink to this definition">#</a></dt>
+<dd><p>Constructs an array of metre positions from a known downbeat and time signature</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.onset_detect">
+<span class="sig-name descname"><span class="pre">onset_detect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_nonoptimised_defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.onset_detect" title="Permalink to this definition">#</a></dt>
+<dd><p>Detects onsets in an audio signal.</p>
+<p>Wrapper around <cite>librosa.onset.onset_detect</cite> that enables per-instrument defaults to be used. Arguments passed as
+kwargs should be accepted by <cite>librosa.onset.onset_detect</cite>, except for rms: set this to True to use a custom
+energy function when backtracking detected onsets to local minima. Other keyword arguments overwrite
+current per-instrument defaults.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>instr (str): the name of the instrument to detect onsets in
+aud (np.array, optional): an audio time-series to detect onsets in
+env (np.array, optional): the envelope to use when detecting onsets
+units (str, optional): the units to return detected onsets in, defaults to ‘time’,
+use_nonoptimised_defaults (bool, optional): whether to use default parameters, defaults to False
+<a href="#id15"><span class="problematic" id="id16">**</span></a>kwargs: additional keyword arguments passed to <cite>librosa.onset.onset_detect</cite></p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: the position of detected onsets</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.onset_strength">
+<span class="sig-name descname"><span class="pre">onset_strength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_nonoptimised_defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.onset_strength" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates an onset strength envelope for a given instrument</p>
+<p>Wrapper around <cite>librosa.onset.onset_strength</cite> that allows for the use of per-instrument defaults. Any **kwargs
+should be accepted by this function, and can be passed to override optimised per-instrument defaults.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>instr (str): the name of the instrument to generate an onset strength envelope for
+aud (np.array, optional): an audio time-series array to generate the envelope for
+use_nonoptimised_defaults (bool, optional): whether to use default parameters, defaults to False
+<a href="#id17"><span class="problematic" id="id18">**</span></a>kwargs: any additional keyword arguments must be accepted by <cite>librosa.onset.onset_strength</cite></p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: the onset strength envelope as an array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.process_mixed_audio">
+<span class="sig-name descname"><span class="pre">process_mixed_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generate_click</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.process_mixed_audio" title="Permalink to this definition">#</a></dt>
+<dd><p>Process the raw audio mix, i.e. with all tracks together.</p>
+<p>This is the central function for running processing on the mixed audio. It will generate an onset envelope,
+detect crotchets within it using both predominant local pulse estimation and recurrent neural networks,
+compare the detections to a reference file (if this exists), and generate a click track (if this is
+required). This function should be called before <cite>OnsetMaker.process_separated_audio</cite>, to ensure that the
+crotchet beat positions are present before matching these to onsets detected in the source-separated tracks.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>generate_click (bool): whether to generate an audio click track</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.process_separated_audio">
+<span class="sig-name descname"><span class="pre">process_separated_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generate_click</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_silence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.process_separated_audio" title="Permalink to this definition">#</a></dt>
+<dd><p>Process the separated audio for all of our individual instruments (piano, bass, drums)</p>
+<p>This is the central function for running processing on each source-separated audio file. It will generate an
+onset envelope, detect onsets within it, remove onsets from when the track was silent, compare the detections
+to a reference file (if this exists), generate a click track (if this is required), and match the detected
+onsets to the nearest crotchet beat. This function must be called AFTER <cite>OnsetMaker.process_mixed_audio</cite>, to
+ensure that the crotchet beat positions have been detected correctly in the raw audio mix.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>generate_click (bool): whether to generate an audio click track
+remove_silence (bool): whether to remove onsets from portions of a track deemed to be silent by librosa</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.references_dir">
+<span class="sig-name descname"><span class="pre">references_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\references'</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.references_dir" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.remove_onsets_in_silent_passages">
+<span class="sig-name descname"><span class="pre">remove_onsets_in_silent_passages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.remove_onsets_in_silent_passages" title="Permalink to this definition">#</a></dt>
+<dd><p>Removes onsets if they occurred during a portion of a track which was silent.</p>
+<p>For a given array of event onsets and a given array of non-silent audio slice timestamps, returns only those
+onsets which occurred during a portion of an audio track deemed not to be silent. This prevents any spurious
+onsets detected by Librosa from being included in an analysis.</p>
+<dl>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">om</span> <span class="o">=</span> <span class="n">OnsetMaker</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">non_silent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ons_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">,</span> <span class="mf">12.5</span><span class="p">,</span> <span class="mf">17.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">om</span><span class="o">.</span><span class="n">remove_onsets_in_silent_passages</span><span class="p">(</span><span class="n">onsets</span><span class="o">=</span><span class="n">ons_</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="n">non_silent</span><span class="p">))</span>
+<span class="go">array([0.1, 0.6, 12.5])</span>
+</pre></div>
+</div>
+</dd>
+<dt>Arguments:</dt><dd><p>onsets (np.array): an array of event onsets
+instr (str): the name of an instrument
+silent (np.array): an array of non-silent audio slices, returned from <cite>OnsetMaker.get_nonsilent_sections</cite>
+<a href="#id19"><span class="problematic" id="id20">**</span></a>kwargs: arbitrary keyword arguments, passed to <cite>OnsetMaker.get_nonsilent_sections</cite></p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: an array of onset timestamps with those occurring during a silent slice removed</p>
+</dd>
+<dt>Raises:</dt><dd><p>AttributeError: if neither <cite>silent</cite> or <cite>instr</cite> are passed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.reports_dir">
+<span class="sig-name descname"><span class="pre">reports_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports'</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.reports_dir" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.return_converged_paramaters">
+<span class="sig-name descname"><span class="pre">return_converged_paramaters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.return_converged_paramaters" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.silence_threshold">
+<span class="sig-name descname"><span class="pre">silence_threshold</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.3333333333333333</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.silence_threshold" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.top_db">
+<span class="sig-name descname"><span class="pre">top_db</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'bass':</span> <span class="pre">30,</span> <span class="pre">'drums':</span> <span class="pre">60,</span> <span class="pre">'piano':</span> <span class="pre">40}</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.top_db" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.window">
+<span class="sig-name descname"><span class="pre">window</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.05</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.window" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.detect.detect_utils._ClickTrackMaker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.detect.detect_utils.</span></span><span class="sig-name descname"><span class="pre">_ClickTrackMaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.detect.detect_utils._ClickTrackMaker" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils._ClickTrackMaker.clicks_from_onsets">
+<span class="sig-name descname"><span class="pre">clicks_from_onsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onsets</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils._ClickTrackMaker.clicks_from_onsets" title="Permalink to this definition">#</a></dt>
+<dd><p>Renders detected onsets to a click sound with a given frequency</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils._ClickTrackMaker.generate_audio">
+<span class="sig-name descname"><span class="pre">generate_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onsets_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils._ClickTrackMaker.generate_audio" title="Permalink to this definition">#</a></dt>
+<dd><p>Renders detected onsets to a click sound and combines with the original audio.</p>
+<p>Takes in a list of reference onset arrays, converts these to audible clicks, applies a bandpass filter (to make
+telling different onsets apart easier), filters the original audio to the frequencies considered when detecting
+onsets, then combines filtered original audio + click to a new audio track.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>onsets_list (list[np.array]): a list containing arrays of detected onsets</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: the click audio track that can be rendered to a file using soundfile, Librosa, etc.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.detect_utils._ClickTrackMaker.order">
+<span class="sig-name descname"><span class="pre">order</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#src.detect.detect_utils._ClickTrackMaker.order" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.detect.detect_utils.bandpass_filter">
+<span class="sig-prename descclassname"><span class="pre">src.detect.detect_utils.</span></span><span class="sig-name descname"><span class="pre">bandpass_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowcut</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highcut</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_dur</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.bandpass_filter" title="Permalink to this definition">#</a></dt>
+<dd><p>Applies a bandpass filter with given low and high cut frequencies to an audio signal.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>audio (np.array): the audio array to filter
+lowcut (int): the lower frequency to filter
+highcut (int): the higher frequency to filter
+order (int): the sharpness of the filter, defaults to 30
+pad_len (float): the number of seconds to pad the audio by, defaults to 1
+fade_dur (float): the length of time to fade the audio in and out by</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: the filtered audio array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.detect.detect_utils.calculate_tempo">
+<span class="sig-prename descclassname"><span class="pre">src.detect.detect_utils.</span></span><span class="sig-name descname"><span class="pre">calculate_tempo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pass_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.detect.detect_utils.calculate_tempo" title="Permalink to this definition">#</a></dt>
+<dd><p>Extract the average tempo from an array of times corresponding to crotchet beat positions</p>
+</dd></dl>
+
+</section>
+<section id="module-src.detect.optimise_detection_parameters">
+<span id="src-detect-optimise-detection-parameters-module"></span><h2>src.detect.optimise_detection_parameters module<a class="headerlink" href="#module-src.detect.optimise_detection_parameters" title="Permalink to this heading">#</a></h2>
+<p>Optimises the parameters used in onset detection by running a large-scale search using ground truth files</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.detect.optimise_detection_parameters.</span></span><span class="sig-name descname"><span class="pre">OptimizeBeatTrack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.detect.optimise_detection_parameters.Optimizer" title="src.detect.optimise_detection_parameters.Optimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></a></p>
+<p>Optimizes the <cite>OnsetMaker.beat_track_rnn</cite> function</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.analyze_track">
+<span class="sig-name descname"><span class="pre">analyze_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.analyze_track" title="Permalink to this definition">#</a></dt>
+<dd><p>Detect beats in one track using a given combination of parameters.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.args">
+<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('threshold',</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">0.05),</span> <span class="pre">('transition_lambda',</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">0,</span> <span class="pre">500,</span> <span class="pre">5),</span> <span class="pre">('passes',</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">1,</span> <span class="pre">5,</span> <span class="pre">2)]</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.args" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.audio_cutoff">
+<span class="sig-name descname"><span class="pre">audio_cutoff</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.audio_cutoff" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.csv_name">
+<span class="sig-name descname"><span class="pre">csv_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.csv_name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.enable_logger">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enable_logger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Logger</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.enable_logger" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.get_f_score">
+<span class="sig-name descname"><span class="pre">get_f_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onsetmaker</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.get_f_score" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns F-score between detected onsets and manual annotation file</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.instr">
+<span class="sig-name descname"><span class="pre">instr</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mix'</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.instr" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.joblib_backend">
+<span class="sig-name descname"><span class="pre">joblib_backend</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threading'</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.joblib_backend" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.log_iteration">
+<span class="sig-name descname"><span class="pre">log_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cached_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.log_iteration" title="Permalink to this definition">#</a></dt>
+<dd><p>Log the results from a single iteration</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.lookup_results_from_cache">
+<span class="sig-name descname"><span class="pre">lookup_results_from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.lookup_results_from_cache" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns lists of IDs and F-scores for tracks that have already been processed with this set of parameters</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.n_jobs">
+<span class="sig-name descname"><span class="pre">n_jobs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.n_jobs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.objective_function">
+<span class="sig-name descname"><span class="pre">objective_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.objective_function" title="Permalink to this definition">#</a></dt>
+<dd><p>Objective function for maximising F-score of detected onsets</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.return_kwargs">
+<span class="sig-name descname"><span class="pre">return_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.return_kwargs" title="Permalink to this definition">#</a></dt>
+<dd><p>Formats arguments from NLopt into the required keyword argument format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeBeatTrack.run_optimization">
+<span class="sig-name descname"><span class="pre">run_optimization</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.run_optimization" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs optimization in NLopt</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.detect.optimise_detection_parameters.</span></span><span class="sig-name descname"><span class="pre">OptimizeOnsetDetect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.detect.optimise_detection_parameters.Optimizer" title="src.detect.optimise_detection_parameters.Optimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></a></p>
+<p>Optimizes the <cite>OnsetMaker.onset_detect</cite> and <cite>OnsetMaker.onset_strength</cite> function for an instrument</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.analyze_track">
+<span class="sig-name descname"><span class="pre">analyze_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.analyze_track" title="Permalink to this definition">#</a></dt>
+<dd><p>Detect onsets in one track using a given combination of parameters.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.args">
+<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('max_size',</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">1,</span> <span class="pre">200,</span> <span class="pre">5),</span> <span class="pre">('wait',</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">0,</span> <span class="pre">100,</span> <span class="pre">5),</span> <span class="pre">('delta',</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">0,</span> <span class="pre">1,</span> <span class="pre">0.05),</span> <span class="pre">('pre_max',</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">0,</span> <span class="pre">100,</span> <span class="pre">5),</span> <span class="pre">('post_max',</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">1,</span> <span class="pre">100,</span> <span class="pre">5),</span> <span class="pre">('pre_avg',</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">0,</span> <span class="pre">100,</span> <span class="pre">5),</span> <span class="pre">('post_avg',</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">1,</span> <span class="pre">100,</span> <span class="pre">5)]</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.args" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.audio_cutoff">
+<span class="sig-name descname"><span class="pre">audio_cutoff</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.audio_cutoff" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.csv_name">
+<span class="sig-name descname"><span class="pre">csv_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.csv_name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.enable_logger">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enable_logger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Logger</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.enable_logger" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.get_f_score">
+<span class="sig-name descname"><span class="pre">get_f_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onsetmaker</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.get_f_score" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns F-score between detected onsets and manual annotation file</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.joblib_backend">
+<span class="sig-name descname"><span class="pre">joblib_backend</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threading'</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.joblib_backend" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.log_iteration">
+<span class="sig-name descname"><span class="pre">log_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cached_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.log_iteration" title="Permalink to this definition">#</a></dt>
+<dd><p>Log the results from a single iteration</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.lookup_results_from_cache">
+<span class="sig-name descname"><span class="pre">lookup_results_from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.lookup_results_from_cache" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns lists of IDs and F-scores for tracks that have already been processed with this set of parameters</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.n_jobs">
+<span class="sig-name descname"><span class="pre">n_jobs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.n_jobs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.objective_function">
+<span class="sig-name descname"><span class="pre">objective_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.objective_function" title="Permalink to this definition">#</a></dt>
+<dd><p>Objective function for maximising F-score of detected onsets</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.return_kwargs">
+<span class="sig-name descname"><span class="pre">return_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.return_kwargs" title="Permalink to this definition">#</a></dt>
+<dd><p>Formats arguments from NLopt into the required keyword argument format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.OptimizeOnsetDetect.run_optimization">
+<span class="sig-name descname"><span class="pre">run_optimization</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.run_optimization" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs optimization in NLopt</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.detect.optimise_detection_parameters.</span></span><span class="sig-name descname"><span class="pre">Optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for non-linear optimization of parameters</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.analyze_track">
+<span class="sig-name descname"><span class="pre">analyze_track</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.analyze_track" title="Permalink to this definition">#</a></dt>
+<dd><p>Placeholder for analysis function, run in parallel; overridden in child classes</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.audio_cutoff">
+<span class="sig-name descname"><span class="pre">audio_cutoff</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.audio_cutoff" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.csv_name">
+<span class="sig-name descname"><span class="pre">csv_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.csv_name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.enable_logger">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enable_logger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Logger</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.enable_logger" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.get_f_score">
+<span class="sig-name descname"><span class="pre">get_f_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onsetmaker</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.get_f_score" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns F-score between detected onsets and manual annotation file</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.joblib_backend">
+<span class="sig-name descname"><span class="pre">joblib_backend</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threading'</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.joblib_backend" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.log_iteration">
+<span class="sig-name descname"><span class="pre">log_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cached_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.log_iteration" title="Permalink to this definition">#</a></dt>
+<dd><p>Log the results from a single iteration; overriden in child classes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.lookup_results_from_cache">
+<span class="sig-name descname"><span class="pre">lookup_results_from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.lookup_results_from_cache" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns lists of IDs and F-scores for tracks that have already been processed with this set of parameters</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.n_jobs">
+<span class="sig-name descname"><span class="pre">n_jobs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.n_jobs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.objective_function">
+<span class="sig-name descname"><span class="pre">objective_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.objective_function" title="Permalink to this definition">#</a></dt>
+<dd><p>Objective function for maximising F-score of detected onsets</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.return_kwargs">
+<span class="sig-name descname"><span class="pre">return_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.return_kwargs" title="Permalink to this definition">#</a></dt>
+<dd><p>Formats arguments from NLopt into the required keyword argument format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.Optimizer.run_optimization">
+<span class="sig-name descname"><span class="pre">run_optimization</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.Optimizer.run_optimization" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs optimization in NLopt</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.optimize_beat_tracking">
+<span class="sig-prename descclassname"><span class="pre">src.detect.optimise_detection_parameters.</span></span><span class="sig-name descname"><span class="pre">optimize_beat_tracking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.optimize_beat_tracking" title="Permalink to this definition">#</a></dt>
+<dd><p>Central function for optimizing onset detection across all reference tracks and instrument stems</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>json_name (str): the name of the corpus we’re using
+tracks (list[dict]): the metadata for the tracks to be used in optimization
+<a href="#id21"><span class="problematic" id="id22">**</span></a>kwargs: passed onto optimization class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.detect.optimise_detection_parameters.optimize_onset_detection">
+<span class="sig-prename descclassname"><span class="pre">src.detect.optimise_detection_parameters.</span></span><span class="sig-name descname"><span class="pre">optimize_onset_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.optimise_detection_parameters.optimize_onset_detection" title="Permalink to this definition">#</a></dt>
+<dd><p>Central function for optimizing onset detection across all reference tracks and instrument stems</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>json_name (str): the name of the corpus we’re using
+tracks (list[dict]): the metadata for the tracks to be used in optimization
+<a href="#id23"><span class="problematic" id="id24">**</span></a>kwargs: passed onto optimization class</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.detect">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.detect" title="Permalink to this heading">#</a></h2>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="src.clean.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">src.clean package</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="src.features.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">src.features package</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.detect.detect_onsets">src.detect.detect_onsets module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_onsets.process_item"><code class="docutils literal notranslate"><span class="pre">process_item()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.detect.detect_utils">src.detect.detect_utils module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker"><code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker._get_channel_override_fpath"><code class="docutils literal notranslate"><span class="pre">OnsetMaker._get_channel_override_fpath()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker._load_audio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker._load_audio()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.beat_track_rnn"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.beat_track_rnn()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.compare_onset_detection_accuracy"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.compare_onset_detection_accuracy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.data_dir"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.data_dir</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.detection_note_values"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.detection_note_values</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.extract_downbeats"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.extract_downbeats()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.finalize_output"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.finalize_output()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.generate_click_track"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.generate_click_track()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.generate_matched_onsets_dictionary"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.generate_matched_onsets_dictionary()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.get_nonsilent_sections"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.get_nonsilent_sections()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.get_signal_to_noise_ratio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.get_signal_to_noise_ratio()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.get_silent_track_percent"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.get_silent_track_percent()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.get_spectral_flatness"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.get_spectral_flatness()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.match_onsets_and_beats"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.match_onsets_and_beats()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.metre_from_annotated_downbeat"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.metre_from_annotated_downbeat()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.onset_detect"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.onset_detect()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.onset_strength"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.onset_strength()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.process_mixed_audio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.process_mixed_audio()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.process_separated_audio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.process_separated_audio()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.references_dir"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.references_dir</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.remove_onsets_in_silent_passages"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.remove_onsets_in_silent_passages()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.reports_dir"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.reports_dir</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.return_converged_paramaters"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.return_converged_paramaters()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.silence_threshold"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.silence_threshold</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.top_db"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.top_db</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.window"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.window</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils._ClickTrackMaker"><code class="docutils literal notranslate"><span class="pre">_ClickTrackMaker</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils._ClickTrackMaker.clicks_from_onsets"><code class="docutils literal notranslate"><span class="pre">_ClickTrackMaker.clicks_from_onsets()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils._ClickTrackMaker.generate_audio"><code class="docutils literal notranslate"><span class="pre">_ClickTrackMaker.generate_audio()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils._ClickTrackMaker.order"><code class="docutils literal notranslate"><span class="pre">_ClickTrackMaker.order</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.bandpass_filter"><code class="docutils literal notranslate"><span class="pre">bandpass_filter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.calculate_tempo"><code class="docutils literal notranslate"><span class="pre">calculate_tempo()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.detect.optimise_detection_parameters">src.detect.optimise_detection_parameters module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.analyze_track"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.analyze_track()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.args"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.args</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.audio_cutoff"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.audio_cutoff</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.csv_name"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.csv_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.enable_logger"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.enable_logger()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.get_f_score"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.get_f_score()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.instr"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.instr</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.joblib_backend"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.joblib_backend</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.log_iteration"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.log_iteration()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.lookup_results_from_cache"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.lookup_results_from_cache()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.n_jobs"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.n_jobs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.objective_function"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.objective_function()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.return_kwargs"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.return_kwargs()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeBeatTrack.run_optimization"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.run_optimization()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.analyze_track"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.analyze_track()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.args"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.args</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.audio_cutoff"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.audio_cutoff</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.csv_name"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.csv_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.enable_logger"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.enable_logger()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.get_f_score"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.get_f_score()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.joblib_backend"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.joblib_backend</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.log_iteration"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.log_iteration()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.lookup_results_from_cache"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.lookup_results_from_cache()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.n_jobs"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.n_jobs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.objective_function"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.objective_function()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.return_kwargs"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.return_kwargs()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.run_optimization"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.run_optimization()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer"><code class="docutils literal notranslate"><span class="pre">Optimizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.analyze_track"><code class="docutils literal notranslate"><span class="pre">Optimizer.analyze_track()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.audio_cutoff"><code class="docutils literal notranslate"><span class="pre">Optimizer.audio_cutoff</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.csv_name"><code class="docutils literal notranslate"><span class="pre">Optimizer.csv_name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.enable_logger"><code class="docutils literal notranslate"><span class="pre">Optimizer.enable_logger()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.get_f_score"><code class="docutils literal notranslate"><span class="pre">Optimizer.get_f_score()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.joblib_backend"><code class="docutils literal notranslate"><span class="pre">Optimizer.joblib_backend</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.log_iteration"><code class="docutils literal notranslate"><span class="pre">Optimizer.log_iteration()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.lookup_results_from_cache"><code class="docutils literal notranslate"><span class="pre">Optimizer.lookup_results_from_cache()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.n_jobs"><code class="docutils literal notranslate"><span class="pre">Optimizer.n_jobs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.objective_function"><code class="docutils literal notranslate"><span class="pre">Optimizer.objective_function()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.return_kwargs"><code class="docutils literal notranslate"><span class="pre">Optimizer.return_kwargs()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.Optimizer.run_optimization"><code class="docutils literal notranslate"><span class="pre">Optimizer.run_optimization()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.optimize_beat_tracking"><code class="docutils literal notranslate"><span class="pre">optimize_beat_tracking()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.optimise_detection_parameters.optimize_onset_detection"><code class="docutils literal notranslate"><span class="pre">optimize_onset_detection()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.detect">Module contents</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/src/src.detect.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright Huw Cheston 2024.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

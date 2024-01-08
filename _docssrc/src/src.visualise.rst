@@ -1,0 +1,69 @@
+src.visualise package
+=====================
+
+Submodules
+----------
+
+src.visualise.asynchrony\_plots module
+--------------------------------------
+
+.. automodule:: src.visualise.asynchrony_plots
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.visualise.bur\_plots module
+-------------------------------
+
+.. automodule:: src.visualise.bur_plots
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.visualise.complexity\_plots module
+--------------------------------------
+
+.. automodule:: src.visualise.complexity_plots
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.visualise.coordination\_plots module
+----------------------------------------
+
+.. automodule:: src.visualise.coordination_plots
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.visualise.corpus\_plots module
+----------------------------------
+
+.. automodule:: src.visualise.corpus_plots
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.visualise.random\_forest\_plots module
+------------------------------------------
+
+.. automodule:: src.visualise.random_forest_plots
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.visualise.visualise\_utils module
+-------------------------------------
+
+.. automodule:: src.visualise.visualise_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: src.visualise
+   :members:
+   :undoc-members:
+   :show-inheritance:
