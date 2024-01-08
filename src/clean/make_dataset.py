@@ -15,7 +15,7 @@ from src.clean.clean_utils import ItemMaker
 
 
 @click.command()
-@click.option("-corpus", "corpus_filename", type=str, default="corpus_bill_evans",help='Name of the corpus to use')
+@click.option("-corpus", "corpus_filename", type=str, default="corpus_bill_evans", help='Name of the corpus to use')
 @click.option("-force-download", "force_download", is_flag=True, default=False, help='Force download from YouTube')
 @click.option("-force-separation", "force_separation", is_flag=True, default=False, help='Force source separation')
 @click.option("-no-spleeter", "disable_spleeter", is_flag=True, default=False, help='Disable spleeter for separation')
