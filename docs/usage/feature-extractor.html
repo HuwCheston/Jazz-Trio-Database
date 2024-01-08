@@ -1,0 +1,694 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Working with Extractor classes &#8212; Cambridge Jazz Trio Database</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/feature-extractor';</script>
+    <link rel="icon" href="../_static/html_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Combining multiple Extractors together" href="combining-extractors.html" />
+    <link rel="prev" title="Working with the database in Python" href="loading-data.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Cambridge Jazz Trio Database</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../installation/getting-started.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="user-guide.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../src/modules.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../resources/online-resources.html">
+                        Resources
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/huwcheston" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../installation/getting-started.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="user-guide.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../src/modules.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../resources/online-resources.html">
+                        Resources
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/huwcheston" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Loading data</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="loading-data.html">Working with the database in Python</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Feature extraction</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Working with `Extractor`s</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combining-extractors.html">Combining multiple `Extractor`s</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define-extractors.html">Defining new `Extractor`s</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implemented-extractors.html">Currently implemented `Extractor`s</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user-guide.html" class="nav-link">Usage</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Working...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="working-with-extractor-classes">
+<h1>Working with <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> classes<a class="headerlink" href="#working-with-extractor-classes" title="Permalink to this heading">#</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure you have access to the database before following the instructions in this tutorial, either by <a class="reference internal" href="../installation/download-database.html#download-database"><span class="std std-ref">downloading it</span></a> or <a class="reference internal" href="../installation/build-database.html#build-database"><span class="std std-ref">building it from source</span></a>.</p>
+</div>
+<p>The primary method for analyzing the tracks in the database is by using the different <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> classes defined in <code class="docutils literal notranslate"><span class="pre">.\src\features\features_utils.py</span></code>. These classes all follow the same basic principles:</p>
+<ul class="simple">
+<li><p>They inherit from <code class="docutils literal notranslate"><span class="pre">BaseExtractor</span></code>, defined in <code class="docutils literal notranslate"><span class="pre">.\src\features\features_utils.py</span></code></p></li>
+<li><p>They take in arrays of onsets and/or beats and perform analysis on them.</p>
+<ul>
+<li><p>An <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> class may take in data related to one performer (referred to in the first-person, as <code class="docutils literal notranslate"><span class="pre">my_beats</span></code>, <code class="docutils literal notranslate"><span class="pre">my_onsets</span></code>, etc.), or from one performer and several other musicians in their ensemble (<code class="docutils literal notranslate"><span class="pre">my_onsets</span></code>, <code class="docutils literal notranslate"><span class="pre">their_onsets</span></code>, for example.)</p></li>
+</ul>
+</li>
+<li><p>They define a <code class="docutils literal notranslate"><span class="pre">summary_dict</span></code> attribute, which contains key-value pairs of summary statistics.</p>
+<ul>
+<li><p>This means that multiple <code class="docutils literal notranslate"><span class="pre">summary_dicts</span></code> can be combined across <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> class instances to create a single dataframe that covers numerous features.</p></li>
+</ul>
+</li>
+<li><p>They define a <code class="docutils literal notranslate"><span class="pre">summary_funcs</span></code> attribute, which contains <code class="docutils literal notranslate"><span class="pre">callable</span></code>s that are applied to an array (or arrays) to populate <code class="docutils literal notranslate"><span class="pre">summary_dict</span></code>.</p>
+<ul>
+<li><p>This allows you to very quickly obtain numerous statistics for multiple transformations of a single feature.</p></li>
+<li><p>See <a class="reference internal" href="define-extractors.html#summary-funcs"><span class="std std-ref">More on summary_funcs</span></a> below.</p></li>
+</ul>
+</li>
+</ul>
+<section id="example-beat-upbeat-ratio">
+<span id="example-swing"></span><h2>Example: <code class="docutils literal notranslate"><span class="pre">Beat-Upbeat</span> <span class="pre">Ratio</span></code><a class="headerlink" href="#example-beat-upbeat-ratio" title="Permalink to this heading">#</a></h2>
+<p>We’re going to start by demonstrating how the <code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio</span></code> <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> class can be used to extract information relating to a performer’s level of “swing”.</p>
+<p>If you check the documentation for this class, you’ll see it requires two arrays: <code class="docutils literal notranslate"><span class="pre">my_onsets</span></code>, and <code class="docutils literal notranslate"><span class="pre">my_beats</span></code>. This nomenclature is kept consistent throughout all classes: <code class="docutils literal notranslate"><span class="pre">my_onsets</span></code> refers to every onset that a performer has played, and <code class="docutils literal notranslate"><span class="pre">my_beats</span></code> refers to those onsets that marked the quarter note pulse.</p>
+<p>Assuming that we want to extract swing for the pianist in a single track, we can apply the <code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio</span></code> <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> as below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">src.detect.detect_utils</span> <span class="kn">import</span> <span class="n">OnsetMaker</span>
+<span class="kn">from</span> <span class="nn">src.features.features_utils</span> <span class="kn">import</span> <span class="n">BaseExtractor</span><span class="p">,</span> <span class="n">BeatUpbeatRatio</span>
+
+<span class="n">track</span> <span class="o">=</span> <span class="n">OnsetMaker</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">my_beats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">summary_dict</span><span class="p">)[</span><span class="s1">&#39;piano&#39;</span><span class="p">]</span>
+<span class="n">my_onsets</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">ons</span><span class="p">[</span><span class="s1">&#39;piano&#39;</span><span class="p">]</span>
+<span class="n">bur_extract</span> <span class="o">=</span> <span class="n">BeatUpbeatRatio</span><span class="p">(</span><span class="n">my_beats</span><span class="p">,</span> <span class="n">my_onsets</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Here, we defined <code class="docutils literal notranslate"><span class="pre">track</span></code> as an <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> class instance. The same result could have been obtained by loading the corresponding onset and beat data directly from a pre-compiled build of the database, however.</p>
+</div>
+<section id="beatupbeatratio-class-attributes">
+<h3><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio</span></code> class attributes<a class="headerlink" href="#beatupbeatratio-class-attributes" title="Permalink to this heading">#</a></h3>
+<p>We can then access the individual beat-upbeat ratios for the track under the <code class="docutils literal notranslate"><span class="pre">bur_extract.bur</span></code> attribute , or the log transform of these ratios as <code class="docutils literal notranslate"><span class="pre">bur_extract.bur_log</span></code> (both of type: <code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bur_extract</span><span class="o">.</span><span class="n">bur</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span>                              <span class="n">beat</span>      <span class="n">burs</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">0</span>   <span class="mi">1970</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.177052154</span>       <span class="n">NaN</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">1</span>   <span class="mi">1970</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.565986394</span>       <span class="n">NaN</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span>   <span class="mi">1970</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.943310657</span>  <span class="mf">1.755102</span>
+</pre></div>
+</div>
+<p>See the documentation for descriptions of the attributes available to each <code class="docutils literal notranslate"><span class="pre">Extractor</span></code>.</p>
+</section>
+<section id="summary-dict">
+<h3><code class="docutils literal notranslate"><span class="pre">summary_dict</span></code><a class="headerlink" href="#summary-dict" title="Permalink to this heading">#</a></h3>
+<p>The most important attribute for any <code class="docutils literal notranslate"><span class="pre">Extractor</span></code>, however, is the <code class="docutils literal notranslate"><span class="pre">summary_dict</span></code> attribute. In the case of <code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio</span></code>, this contains the results of applying all the functions defined in <code class="docutils literal notranslate"><span class="pre">BaseExtractor.summary_funcs</span></code> to <code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.bur</span></code> and <code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.bur_log</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bur_extract</span><span class="o">.</span><span class="n">summary_dict</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="p">{</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="s1">&#39;bur_mean&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> 
+<span class="o">&gt;&gt;&gt;</span>     <span class="s1">&#39;bur_median&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> 
+<span class="o">&gt;&gt;&gt;</span>     <span class="o">...</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>By default, any <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> that inherits from <code class="docutils literal notranslate"><span class="pre">BaseExtractor</span></code> will override the default <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> function to display the <code class="docutils literal notranslate"><span class="pre">summary_dict</span></code> whenever the object itself is printed. In practice, this means that the results in the above block of code could simply have been obtained by calling <code class="docutils literal notranslate"><span class="pre">bur_extract</span></code>.</p>
+</div>
+</section>
+</section>
+<section id="example-eventdensity">
+<h2>Example: <code class="docutils literal notranslate"><span class="pre">EventDensity</span></code><a class="headerlink" href="#example-eventdensity" title="Permalink to this heading">#</a></h2>
+<p>As well as onsets and beats, some <code class="docutils literal notranslate"><span class="pre">Extractors</span></code> need to know a bit more about the metrical structure of a performance. Usually this involves passing some information about where the <code class="docutils literal notranslate"><span class="pre">downbeats</span></code> in a performance occur, i.e., the timestamps corresponding to the first beat of each bar.</p>
+<p>One example is the <code class="docutils literal notranslate"><span class="pre">EventDensity</span></code> <code class="docutils literal notranslate"><span class="pre">Extractor</span></code>. This extracts various features relating to the density of an average passage of music, for instance the average number of onsets in a measure. To use this <code class="docutils literal notranslate"><span class="pre">Extractor</span></code>, we can do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">src.detect.detect_utils</span> <span class="kn">import</span> <span class="n">OnsetMaker</span>
+<span class="kn">from</span> <span class="nn">src.features.features_utils</span> <span class="kn">import</span> <span class="n">BaseExtractor</span><span class="p">,</span> <span class="n">EventDensity</span>
+
+<span class="n">track</span> <span class="o">=</span> <span class="n">OnsetMaker</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">my_onsets</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">ons</span><span class="p">[</span><span class="s1">&#39;piano&#39;</span><span class="p">]</span>
+<span class="n">downbeats</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">ons</span><span class="p">[</span><span class="s1">&#39;downbeats_manual&#39;</span><span class="p">]</span>
+<span class="n">density_extract</span> <span class="o">=</span> <span class="n">EventDensity</span><span class="p">(</span><span class="n">my_onsets</span><span class="p">,</span> <span class="n">downbeats</span><span class="p">)</span>
+<span class="n">density_extract</span><span class="o">.</span><span class="n">summary_dict</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="p">{</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="s1">&#39;ed_per_bar_mean&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="s1">&#39;ed_per_bar_median&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>As with <code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio</span></code>, we can access the individual density scores for every measure with the <code class="docutils literal notranslate"><span class="pre">EventDensity.per_bar</span></code> attribute (type: <code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code>).</p>
+<section id="the-optional-order-argument">
+<h3>The optional <code class="docutils literal notranslate"><span class="pre">order</span></code> argument<a class="headerlink" href="#the-optional-order-argument" title="Permalink to this heading">#</a></h3>
+<p>By default, the <code class="docutils literal notranslate"><span class="pre">EventDensity</span></code> <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> calculates the density of every bar, and then applies the every function in <code class="docutils literal notranslate"><span class="pre">summary_funcs</span></code> to the resulting array. To change the window over which density is calculated, we can provide the <code class="docutils literal notranslate"><span class="pre">order</span></code> keyword argument. In the case of <code class="docutils literal notranslate"><span class="pre">EventDensity</span></code>, this parameter refers to the number of measures over which to conduct the density calculation: so, we could set <code class="docutils literal notranslate"><span class="pre">order=4</span></code> to evaluate density over a four measure period.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Check the documentation to see what the <code class="docutils literal notranslate"><span class="pre">order</span></code> parameter does in other <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> classes.</p>
+</div>
+</section>
+</section>
+<section id="example-asynchrony">
+<h2>Example: <code class="docutils literal notranslate"><span class="pre">Asynchrony</span></code><a class="headerlink" href="#example-asynchrony" title="Permalink to this heading">#</a></h2>
+<p>In the first example, the <code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio</span></code> class only required us to provide arrays relating to one performer as inputs. Other <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> classes require inputs from multiple performers, however. One example is the <code class="docutils literal notranslate"><span class="pre">Asynchrony</span></code> class, which needs the beat positions of one performer (<code class="docutils literal notranslate"><span class="pre">my_beats</span></code>, as above) and the beat positions of any number of other performers (<code class="docutils literal notranslate"><span class="pre">their_beats</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">src.detect.detect_utils</span> <span class="kn">import</span> <span class="n">OnsetMaker</span>
+<span class="kn">from</span> <span class="nn">src.features.features_utils</span> <span class="kn">import</span> <span class="n">Asynchrony</span>
+
+<span class="n">track</span> <span class="o">=</span> <span class="n">OnsetMaker</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">beats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">summary_dict</span><span class="p">)</span>
+<span class="n">my_beats</span> <span class="o">=</span> <span class="n">beats</span><span class="p">[</span><span class="s1">&#39;piano&#39;</span><span class="p">]</span>
+<span class="n">their_beats</span> <span class="o">=</span> <span class="n">beats</span><span class="p">[[</span><span class="s1">&#39;bass&#39;</span><span class="p">,</span> <span class="s1">&#39;drums&#39;</span><span class="p">]]</span>
+<span class="n">async_extract</span> <span class="o">=</span> <span class="n">Asynchrony</span><span class="p">(</span><span class="n">my_beats</span><span class="p">,</span> <span class="n">their_beats</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="p">{</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="s1">&#39;bur_mean&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> 
+<span class="o">&gt;&gt;&gt;</span>     <span class="s1">&#39;bur_median&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> 
+<span class="o">&gt;&gt;&gt;</span>     <span class="o">...</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="s1">&#39;piano_async_mean&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span>     <span class="s1">&#39;piano_async_median&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">}</span>   
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You’ll notice that there are many more key-value pairs in the <code class="docutils literal notranslate"><span class="pre">summary_dict</span></code> for <code class="docutils literal notranslate"><span class="pre">async_extract</span></code> versus that from <code class="docutils literal notranslate"><span class="pre">bur_extract</span></code>. This is because <code class="docutils literal notranslate"><span class="pre">Asynchrony</span></code> applies the functions contained in <code class="docutils literal notranslate"><span class="pre">summary_funcs</span></code> to every pairwise combination of performers: i.e., <code class="docutils literal notranslate"><span class="pre">piano</span> <span class="pre">-&gt;</span> <span class="pre">bass</span></code> and <code class="docutils literal notranslate"><span class="pre">piano</span> <span class="pre">-&gt;</span> <span class="pre">drums</span></code>.</p>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="loading-data.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Working with the database in Python</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="combining-extractors.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Combining multiple <code class="docutils literal notranslate"><span class="pre">Extractor</span></code>s together</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-beat-upbeat-ratio">Example: <code class="docutils literal notranslate"><span class="pre">Beat-Upbeat</span> <span class="pre">Ratio</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#beatupbeatratio-class-attributes"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio</span></code> class attributes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-dict"><code class="docutils literal notranslate"><span class="pre">summary_dict</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-eventdensity">Example: <code class="docutils literal notranslate"><span class="pre">EventDensity</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-optional-order-argument">The optional <code class="docutils literal notranslate"><span class="pre">order</span></code> argument</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-asynchrony">Example: <code class="docutils literal notranslate"><span class="pre">Asynchrony</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/usage/feature-extractor.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright Huw Cheston 2024.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

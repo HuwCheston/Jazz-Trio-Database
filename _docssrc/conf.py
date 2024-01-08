@@ -40,6 +40,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx_togglebutton"
 ]
 myst_enable_extensions = ["colon_fence"]
 # This will automatically build headings up to depth 3, i.e. `###` in markdown

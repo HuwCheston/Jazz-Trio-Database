@@ -86,7 +86,7 @@ The :mod:`Cambridge Jazz Trio Database` is a dataset composed of about 16 hours 
 .. toctree::
     :hidden:
 
-    Getting started <installation/getting-started>
+    Getting started <installation/getting-started.rst>
     User guide <usage/user-guide>
     API <src/modules>
     Resources <resources/online-resources>
