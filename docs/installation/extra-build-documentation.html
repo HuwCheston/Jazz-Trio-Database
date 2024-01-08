@@ -362,6 +362,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="download-database.html">Download pre-built database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="build-database.html">Build database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-create-manual-annotations.html">Extra: create manual annotations for use in parameter optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra-parameter-optimization.html">Extra: run parameter optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra-new-corpus.html">Extra: run pipeline on new corpus</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Extra: build documentation</a></li>
@@ -429,7 +430,7 @@ document.write(`
 <h2>Setting up<a class="headerlink" href="#setting-up" title="Permalink to this heading">#</a></h2>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>If you’ve already followed the instructions in <a class="reference internal" href="build-database.html#build-database-setup"><span class="std std-ref">Building the database</span></a>., you can skip this stage.</p>
+<p>If you’ve already followed the instructions in <a class="reference internal" href="build-database.html#build-database-setup"><span class="std std-ref">Building the database</span></a>, you can skip this stage.</p>
 </div>
 <p>Clone our repository to a new directory on your local machine:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">HuwCheston</span><span class="o">/</span><span class="n">Cambridge</span><span class="o">-</span><span class="n">Jazz</span><span class="o">-</span><span class="n">Trio</span><span class="o">-</span><span class="n">Database</span>
@@ -459,7 +460,16 @@ document.write(`
 </pre></div>
 </div>
 <p>You can now access the HTML files in <code class="docutils literal notranslate"><span class="pre">.\docs</span></code>. Start with <code class="docutils literal notranslate"><span class="pre">.\docs\index.html</span></code>, and navigate the rest of the site from there.</p>
-</section>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Hosting on GitHub pages<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">By default, the project documentation is set to build from the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch, under the <code class="docutils literal notranslate"><span class="pre">.\docs</span></code> folder. You may need to add a <code class="docutils literal notranslate"><span class="pre">.nojekyll</span></code> file to this folder to see the custom templating, if this is not present already.</p>
+</div>
+</details></section>
 </section>
 
 

@@ -45,7 +45,7 @@
     <link rel="icon" href="../_static/html_favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Run the parameter optimization process" href="extra-parameter-optimization.html" />
+    <link rel="next" title="Create new manual annotations" href="extra-create-manual-annotations.html" />
     <link rel="prev" title="Downloading the database" href="download-database.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -362,6 +362,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="download-database.html">Download pre-built database</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Build database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-create-manual-annotations.html">Extra: create manual annotations for use in parameter optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra-parameter-optimization.html">Extra: run parameter optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra-new-corpus.html">Extra: run pipeline on new corpus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra-build-documentation.html">Extra: build documentation</a></li>
@@ -425,7 +426,7 @@ document.write(`
   <section id="building-the-database">
 <h1>Building the database<a class="headerlink" href="#building-the-database" title="Permalink to this heading">#</a></h1>
 <section id="windows-installation">
-<h2>Windows installation<a class="headerlink" href="#windows-installation" title="Permalink to this heading">#</a></h2>
+<span id="build-database"></span><h2>Windows installation<a class="headerlink" href="#windows-installation" title="Permalink to this heading">#</a></h2>
 <section id="requirements">
 <h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
@@ -457,7 +458,7 @@ document.write(`
 </section>
 <section id="audio-download-and-separation">
 <h3>Audio download and separation<a class="headerlink" href="#audio-download-and-separation" title="Permalink to this heading">#</a></h3>
-<p>Next, you can run the following command to download and separate the audio:</p>
+<p id="build-database-separate">Next, you can run the following command to download and separate the audio:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python src\clean\make_dataset.py
 
 &gt;&gt;&gt; processing &quot;Blues for Gwen&quot; from 1962 album Inception, leader McCoy Tyner ...
@@ -466,10 +467,10 @@ document.write(`
 &gt;&gt;&gt; dataset corpus_chronology made in X secs !
 </pre></div>
 </div>
-<p>This command will begin by downloading the audio from a given track on YouTube (stored in <code class="docutils literal notranslate"><span class="pre">.\data\raw</span></code>), and then separating this into separate piano, bass, and drums stems (stored in <code class="docutils literal notranslate"><span class="pre">.\data\processed</span></code>). Spleeter <a class="reference external" href="https://doi.org/10.21105/joss.02154">(Hennequin et al., 2020)</a> is used for piano separation, and Demucs <a class="reference external" href="https://doi.org/10.48550/arXiv.2211.08553">(Rouard et al., 2022)</a> for bass and drums separation. For more information, see <code class="docutils literal notranslate"><span class="pre">Cheston</span> <span class="pre">et</span> <span class="pre">al.</span> <span class="pre">(2024)</span></code>.</p>
+<p>This command will begin by downloading the audio from a given track on YouTube (stored in <code class="docutils literal notranslate"><span class="pre">.\data\raw</span></code>), and then separating this into separate piano, bass, and drums stems (stored in <code class="docutils literal notranslate"><span class="pre">.\data\processed</span></code>). <a class="reference external" href="https://doi.org/10.21105/joss.02154">Hennequin et al., 2020</a> is used for piano separation, and <a class="reference external" href="https://doi.org/10.48550/arXiv.2211.08553">Rouard et al., 2022</a> for bass and drums separation.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>By default, if a YouTube source cannot be found, the program will try to retry downloading a set number of times before terminating prematurely. Sources that cannot be found will be printed directly to the console. If this occurs, first check your internet connection and the source itself. If a particular source has been removed from YouTube, please <a class="reference external" href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database/issues/new">open a new issue on the GitHub repository</a> or <a class="reference external" href="mailto:hwc31&#37;&#52;&#48;cam&#46;ac&#46;uk">contact us</a>.</p>
+<p>By default, if a YouTube source cannot be found, the program will try to retry downloading a set number of times before terminating prematurely. Sources that cannot be found will be printed directly to the console. If this occurs, first check your internet connection and the source itself. If a particular source has been removed from YouTube, please <a class="reference external" href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database/issues/new">open a new issue on the GitHub repository</a> or [contact us](mailto:hwc31&#64;cam.ac.uk?subject=Missing YouTube link&amp;cc=huwcheston&#64;gmail.com).</p>
 </div>
 <p>By default, this command will process audio for tracks contained in <code class="docutils literal notranslate"><span class="pre">.\references\corpus_chronology.xlsx</span></code>: this contains 300 tracks by 30 different pianists, and is the dataset used in <code class="docutils literal notranslate"><span class="pre">Cheston</span> <span class="pre">et</span> <span class="pre">al.</span> <span class="pre">(2024)</span></code>. To process audio from a different corpus, pass the <code class="docutils literal notranslate"><span class="pre">-corpus</span></code> flag to the above command, followed by the name of the corpus spreadsheet inside <code class="docutils literal notranslate"><span class="pre">.\references</span></code>. For example, to process audio from <code class="docutils literal notranslate"><span class="pre">.\references\corpus_bill_evans.xlsx</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python src\clean\make_dataset.py -corpus corpus_bill_evans
@@ -488,7 +489,7 @@ document.write(`
 </section>
 <section id="onset-detection">
 <h3>Onset detection<a class="headerlink" href="#onset-detection" title="Permalink to this heading">#</a></h3>
-<p>After the audio for a given corpus file has been separated and extracted, we can move on to extracting onset data from the recordings. To do so, run the following command:</p>
+<p id="build-database-detect">After the audio for a given corpus file has been separated and extracted, we can move on to extracting onset data from the recordings. To do so, run the following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python src\detect\detect_onsets.py
 &gt;&gt;&gt; detecting onsets in 300 tracks (0 from disc) using -1 CPUs ...
 &gt;&gt;&gt; ...
@@ -519,12 +520,12 @@ document.write(`
 <p>To run the onset detection without generating click tracks, pass in the <code class="docutils literal notranslate"><span class="pre">-no_click</span></code> argument when running the command.</p>
 </div>
 <p>The program will also output a Python <code class="docutils literal notranslate"><span class="pre">pickle</span></code> file inside the <code class="docutils literal notranslate"><span class="pre">.\models</span></code> directory. This contains the serialised <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> class instances (defined in <code class="docutils literal notranslate"><span class="pre">src\detect\detect_utils.py</span></code>).</p>
-<p>You can now run many of the analysis scripts contained inside the <code class="docutils literal notranslate"><span class="pre">.\notebooks</span></code> directory, or pass the serialised <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> instances to the feature extraction classes defined in <code class="docutils literal notranslate"><span class="pre">src\features\features_utils.py</span></code>. For more info here, check the <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">guide</span></code>.</p>
+<p>You can now run many of the analysis scripts contained inside the <code class="docutils literal notranslate"><span class="pre">.\notebooks</span></code> directory, or pass the serialised <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> instances to the feature extraction classes defined in <code class="docutils literal notranslate"><span class="pre">src\features\features_utils.py</span></code>. For more info here, check the <a class="reference internal" href="../usage/user-guide.html#user-guide"><span class="std std-ref">User guide</span></a>.</p>
 </section>
 </section>
 <section id="linux-installation">
 <h2>Linux installation<a class="headerlink" href="#linux-installation" title="Permalink to this heading">#</a></h2>
-<p><strong>Forthcoming!</strong></p>
+<p><em><strong>TODO</strong></em></p>
 </section>
 </section>
 
@@ -548,11 +549,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="extra-parameter-optimization.html"
+       href="extra-create-manual-annotations.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Run the parameter optimization process</p>
+        <p class="prev-next-title">Create new manual annotations</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

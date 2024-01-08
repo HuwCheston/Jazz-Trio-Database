@@ -5,7 +5,7 @@ This page includes instructions on how to build the documentation files you are 
 ## Setting up
 
 ```{tip}
-If you've already followed the instructions in {ref}`Building the database <build-database-setup>`., you can skip this stage.
+If you've already followed the instructions in {ref}`Building the database <build-database-setup>`, you can skip this stage.
 ```
 
 Clone our repository to a new directory on your local machine:
@@ -38,3 +38,8 @@ sphinx-build .\_docssrc .\docs
 ```
 
 You can now access the HTML files in `.\docs`. Start with `.\docs\index.html`, and navigate the rest of the site from there.
+
+:::{dropdown} Hosting on GitHub pages
+
+By default, the project documentation is set to build from the `main` branch, under the `.\docs` folder. You may need to add a `.nojekyll` file to this folder to see the custom templating, if this is not present already.
+:::

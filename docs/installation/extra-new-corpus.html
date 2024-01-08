@@ -362,6 +362,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="download-database.html">Download pre-built database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="build-database.html">Build database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-create-manual-annotations.html">Extra: create manual annotations for use in parameter optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra-parameter-optimization.html">Extra: run parameter optimization</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Extra: run pipeline on new corpus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra-build-documentation.html">Extra: build documentation</a></li>
@@ -424,6 +425,192 @@ document.write(`
                   
   <section id="run-pipeline-on-a-new-corpus">
 <h1>Run pipeline on a new corpus<a class="headerlink" href="#run-pipeline-on-a-new-corpus" title="Permalink to this heading">#</a></h1>
+<p id="new-corpus">You can set up our data extraction and analysis pipeline to run on your own corpus of musical recordings.</p>
+<section id="setting-up">
+<h2>Setting up<a class="headerlink" href="#setting-up" title="Permalink to this heading">#</a></h2>
+<p>First things first, we’d recommend that you clone our repository, so that you can see our example corpus files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">HuwCheston</span><span class="o">/</span><span class="n">Cambridge</span><span class="o">-</span><span class="n">Jazz</span><span class="o">-</span><span class="n">Trio</span><span class="o">-</span><span class="n">Database</span>
+</pre></div>
+</div>
+<p>The corpus files will then be located inside <code class="docutils literal notranslate"><span class="pre">.\references</span></code>, with the file extension <code class="docutils literal notranslate"><span class="pre">.xlsx</span></code> (i.e., they should be opened using Microsoft Excel or a similar spreadsheet package).</p>
+</section>
+<section id="corpus-structure">
+<h2>Corpus structure<a class="headerlink" href="#corpus-structure" title="Permalink to this heading">#</a></h2>
+<p>Each corpus file is a multipage spreadsheet, where one page corresponds to one musical ensemble. The structure for each page, however, is always the same. Every row should correspond to an individual recording: each column should contain some metadata about the recording, most of which was compiled by scraping the <a class="reference external" href="https://musicbrainz.org/doc/MusicBrainz_Database">MusicBrainz database</a>. See below for a description of these columns:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Column description<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Field</p></th>
+<th class="head"><p class="sd-card-text">Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">recording_title</span></code></p></td>
+<td><p class="sd-card-text">Title of the recording</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">release_title</span></code></p></td>
+<td><p class="sd-card-text">Title of the earliest album released that contains the track</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">recording_date_estimate</span></code></p></td>
+<td><p class="sd-card-text">Estimated date of recording</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">piano</span></code>, <code class="docutils literal notranslate"><span class="pre">bass</span></code>, <code class="docutils literal notranslate"><span class="pre">drums</span></code></p></td>
+<td><p class="sd-card-text">Names of the musicians playing the corresponding instruments</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">recording_position</span></code></p></td>
+<td><p class="sd-card-text">Track number of the recording on <code class="docutils literal notranslate"><span class="pre">release_title</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">recording_length</span></code></p></td>
+<td><p class="sd-card-text">Duration of the recording, in format <code class="docutils literal notranslate"><span class="pre">%M:%S</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">channel_overrides</span></code></p></td>
+<td><p class="sd-card-text">Key-value pairs relating to panning: <code class="docutils literal notranslate"><span class="pre">piano:</span> <span class="pre">l</span></code> means the piano is panned to the left channel</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">recording_id_for_lbz</span></code></p></td>
+<td><p class="sd-card-text">The estimated URL for the recording on <a class="reference external" href="https://listenbrainz.org/">ListenBrainz</a></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">link</span></code></p></td>
+<td><p class="sd-card-text">The <code class="docutils literal notranslate"><span class="pre">recording_id_for_lbz</span></code> column, as a clickable link</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">is_acceptable(Y/N)</span></code></p></td>
+<td><p class="sd-card-text">Whether or not the track meets the inclusion criteria and should be processed (see below)</p></td>
+</tr>
+</tbody>
+</table>
+<p class="sd-card-text">The following columns are only relevant when <code class="docutils literal notranslate"><span class="pre">is_acceptable(Y/N)</span> <span class="pre">==</span> <span class="pre">Y</span></code> (see below for descriptions of where this might be the case)</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Field</p></th>
+<th class="head"><p class="sd-card-text">Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">start_timestamp</span></code></p></td>
+<td><p class="sd-card-text">The beginning of the excerpt to process</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">end_timestamp</span></code></p></td>
+<td><p class="sd-card-text">The end of the excerpt to process</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">youtube_link</span></code></p></td>
+<td><p class="sd-card-text">A stable link to the performance on YouTube, to be ripped with <code class="docutils literal notranslate"><span class="pre">yt_dlp</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">channel_overrides</span></code></p></td>
+<td><p class="sd-card-text">Whether to use mono left-right outputs for individual instruments: in format <code class="docutils literal notranslate"><span class="pre">instrument:</span> <span class="pre">channel,</span> <span class="pre">instrument:</span> <span class="pre">channel</span></code>, i.e. <code class="docutils literal notranslate"><span class="pre">piano:</span> <span class="pre">l,</span> <span class="pre">bass:</span> <span class="pre">r</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">time_signature</span></code></p></td>
+<td><p class="sd-card-text">The number of quarter note beats per measure for the track</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">first_downbeat</span></code></p></td>
+<td><p class="sd-card-text">The first clear quarter note downbeat in the track</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">notes</span></code></p></td>
+<td><p class="sd-card-text">Written comments about the track</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">rating_audio_X</span></code></p></td>
+<td><p class="sd-card-text">Subjective rating (1–3, 3 = best) of source-separation quality for instrument <code class="docutils literal notranslate"><span class="pre">X</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">rating_detection_X</span></code></p></td>
+<td><p class="sd-card-text">Subjective rating of onset detection quality for instrument <code class="docutils literal notranslate"><span class="pre">X</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">rating_comments</span></code></p></td>
+<td><p class="sd-card-text">Comments given by the rater when making subjective judgements</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">has_annotations</span></code></p></td>
+<td><p class="sd-card-text">Whether the track has ground truth annotation files: see <a class="reference internal" href="extra-create-manual-annotations.html#create-annotations"><span class="std std-ref">Create new manual annotations</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details></section>
+<section id="selecting-tracks-for-inclusion">
+<h2>Selecting tracks for inclusion<a class="headerlink" href="#selecting-tracks-for-inclusion" title="Permalink to this heading">#</a></h2>
+<p>For each track (row), you’ll then need to decide whether it should be processed by listening to it and setting <code class="docutils literal notranslate"><span class="pre">is_appropriate(Y/N)</span></code> to <code class="docutils literal notranslate"><span class="pre">Y</span></code>, for appropriate tracks. Appropriate tracks should also additional metadata: see the dropdown, above.</p>
+<p>The decision for whether to include a track should be made according to the requirements of your project. When creating our corpus files, we followed the below criteria:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Inclusion criteria<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text"><em><strong>Instruments:</strong></em></p>
+<ul class="simple">
+<li><p class="sd-card-text">Piano, bass, drums (i.e., Piano trio) only</p></li>
+<li><p class="sd-card-text">Piano:</p>
+<ul>
+<li><p class="sd-card-text">No <a class="reference external" href="https://www.youtube.com/watch?v=d1GQZLEnXFs">electric/synthesiser/rhodes piano</a></p></li>
+</ul>
+</li>
+<li><p class="sd-card-text">Bass:</p>
+<ul>
+<li><p class="sd-card-text">Must be acoustic/upright bass, <a class="reference external" href="https://www.youtube.com/watch?v=N5uuC0x5JPk">not electric (listen out for sound of fingers ‘slapping’ strings)</a></p></li>
+<li><p class="sd-card-text">No <a class="reference external" href="https://www.youtube.com/watch?v=r9D7zdJFLp0">use of the bow</a></p></li>
+</ul>
+</li>
+<li><p class="sd-card-text">Drums:</p>
+<ul>
+<li><p class="sd-card-text">No <a class="reference external" href="https://www.youtube.com/watch?v=4vFSxGhV29M">auxiliary percussion (congas, shakers)</a> - whether played by the drummer or someone else</p></li>
+<li><p class="sd-card-text">No <a class="reference external" href="https://www.youtube.com/watch?v=Xl-nblp_SQs">mallets</a></p></li>
+<li><p class="sd-card-text">No <a class="reference external" href="https://www.youtube.com/watch?v=Lr5RiPvxzBQ">brushes</a></p></li>
+</ul>
+</li>
+</ul>
+<p class="sd-card-text"><em><strong>Tempo:</strong></em></p>
+<ul class="simple">
+<li><p class="sd-card-text">Medium to Up, i.e., approx 100 to 300 beats-per-minute</p></li>
+</ul>
+<p class="sd-card-text"><em><strong>Feel:</strong></em></p>
+<ul class="simple">
+<li><p class="sd-card-text">Swung quavers only</p></li>
+<li><p class="sd-card-text">No <a class="reference external" href="https://www.youtube.com/watch?v=a2LFVWB">ballads</a></p></li>
+<li><p class="sd-card-text">No <a class="reference external" href="https://www.youtube.com/watch?v=DiQagjy5INI">‘straight 8s’</a>: e.g. latin, afro-cuban, rock</p></li>
+<li><p class="sd-card-text">No <a class="reference external" href="https://www.youtube.com/watch?v=y7dpXzDR4Ug">rock-y/rnb-y style straight 8s stuff</a></p></li>
+<li><p class="sd-card-text">No <a class="reference external" href="https://www.youtube.com/watch?v=v9mV_1WSNTw">‘free’ playing</a></p></li>
+<li><p class="sd-card-text">No material that <a class="reference external" href="https://www.youtube.com/watch?v=L34b0ut8Loc">changes from non-swing to swing feels</a> (and back) during solos quickly</p></li>
+</ul>
+<p class="sd-card-text"><em><strong>Section:</strong></em></p>
+<ul class="simple">
+<li><p class="sd-card-text">Piano solo only: everybody needs to be improvising!</p>
+<ul>
+<li><p class="sd-card-text">In recordings with <a class="reference external" href="https://www.youtube.com/watch?v=jYQupyUOYpo">two pianos solos</a>, choose the first</p></li>
+</ul>
+</li>
+<li><p class="sd-card-text">Avoid material with <a class="reference external" href="https://www.youtube.com/watch?v=PrEcT2Q51lw">solo breaks interspersed</a> throughout ensemble playing</p>
+<ul>
+<li><p class="sd-card-text">Material with break leading into solo is ok, as long as this then continues uninterrupted</p></li>
+</ul>
+</li>
+</ul>
+<p class="sd-card-text"><em><strong>Quality:</strong></em></p>
+<ul class="simple">
+<li><p class="sd-card-text">Avoid <a class="reference external" href="https://www.youtube.com/watch?v=PFqhZ63PtVY">obviously bootlegged examples</a> (e.g. recorded by attendees to concerts)</p></li>
+</ul>
+</div>
+</details></section>
+<section id="reading-the-corpus-in-python">
+<h2>Reading the corpus in Python<a class="headerlink" href="#reading-the-corpus-in-python" title="Permalink to this heading">#</a></h2>
+<p>We’ve provided a helper class which will convert a <code class="docutils literal notranslate"><span class="pre">.xlsx</span></code> corpus file into the correct format needed for our pipeline. This is located inside <code class="docutils literal notranslate"><span class="pre">.\src\utils.py</span></code> as <code class="docutils literal notranslate"><span class="pre">CorpusMaker</span></code>. Call the class with the <code class="docutils literal notranslate"><span class="pre">.from_excel()</span></code> constructor, passing in the filename of the corpus, as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">src</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">corpus</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">CorpusMaker</span><span class="o">.</span><span class="n">from_excel</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="s1">&#39;...&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the above command works without errors, you should be good to go. You can access the dataframe of tracks (equivalent to the original spreadsheet) by accessing the <code class="docutils literal notranslate"><span class="pre">tracks</span></code> attribute of <code class="docutils literal notranslate"><span class="pre">utils.CorpusMaker</span></code> (type: <code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code>).</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>By default, tracks which did not pass the selection criteria (i.e., those where <code class="docutils literal notranslate"><span class="pre">is_acceptable(Y/N)</span> <span class="pre">!=</span> <span class="pre">&quot;Y&quot;</span></code>) will not be processed by <code class="docutils literal notranslate"><span class="pre">utils.CorpusMaker</span></code>. To suppress this functionality and include all tracks in the output, pass <code class="docutils literal notranslate"><span class="pre">keep_all_tracks=True</span></code> when calling <code class="docutils literal notranslate"><span class="pre">utils.CorpusMaker.from_excel()</span></code>.</p>
+</div>
+</section>
+<section id="using-the-corpus-with-our-pipeline">
+<h2>Using the corpus with our pipeline<a class="headerlink" href="#using-the-corpus-with-our-pipeline" title="Permalink to this heading">#</a></h2>
+<p>Once you’ve confirmed that the corpus can be accessed in Python, ensure that this is present inside the <code class="docutils literal notranslate"><span class="pre">.\references</span></code> directory. Then, when running either <code class="docutils literal notranslate"><span class="pre">.\src\clean\make_dataset.py</span></code> or <code class="docutils literal notranslate"><span class="pre">.\src\detect\detect_onsets.py</span></code>, pass the <code class="docutils literal notranslate"><span class="pre">-corpus</span></code> flag, followed by the filename, in order to direct the program to use your corpus file over the defaults. For more information, see <a class="reference internal" href="build-database.html#build-database"><span class="std std-ref">the respective sections on this page</span></a> and the <a class="reference internal" href="../usage/user-guide.html#user-guide"><span class="std std-ref">User guide</span></a>.</p>
+</section>
 </section>
 
 
@@ -463,6 +650,22 @@ document.write(`
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up">Setting up</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#corpus-structure">Corpus structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-tracks-for-inclusion">Selecting tracks for inclusion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-corpus-in-python">Reading the corpus in Python</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-corpus-with-our-pipeline">Using the corpus with our pipeline</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 

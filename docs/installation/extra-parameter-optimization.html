@@ -46,7 +46,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Run pipeline on a new corpus" href="extra-new-corpus.html" />
-    <link rel="prev" title="Building the database" href="build-database.html" />
+    <link rel="prev" title="Create new manual annotations" href="extra-create-manual-annotations.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -362,6 +362,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="download-database.html">Download pre-built database</a></li>
 <li class="toctree-l1"><a class="reference internal" href="build-database.html">Build database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-create-manual-annotations.html">Extra: create manual annotations for use in parameter optimization</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Extra: run parameter optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra-new-corpus.html">Extra: run pipeline on new corpus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra-build-documentation.html">Extra: build documentation</a></li>
@@ -424,6 +425,82 @@ document.write(`
                   
   <section id="run-the-parameter-optimization-process">
 <h1>Run the parameter optimization process<a class="headerlink" href="#run-the-parameter-optimization-process" title="Permalink to this heading">#</a></h1>
+<p id="parameter-optimization">Parameter optimization is the process by which the nonlinear <code class="docutils literal notranslate"><span class="pre">subplex</span></code> optimization algorithm <a class="reference external" href="https://dl.acm.org/doi/10.5555/100816">(see Rowan, 1990)</a> is used to set the parameters of the onset detection algorithms. The objective function was to maximize the mean <a class="reference internal" href="#wiki:F-score"><span class="xref myst">F-score</span></a> obtained between the algorithm results and a ground truth set of reference annotations (contained in <code class="docutils literal notranslate"><span class="pre">.\references\manual_annotations</span></code>), for a given percentage (10%) of the dataset. The optimization process sets different parameters for detecting onsets foreach instrument (piano, bass, drums), and for detecting beats in the mixed audio signal.</p>
+<div class="dropdown admonition note">
+<p class="admonition-title">Note</p>
+<p>Creating annotation files
+The reference annotations were created with the <code class="docutils literal notranslate"><span class="pre">Sonic</span> <span class="pre">Visualiser</span></code> <a class="reference external" href="https://www.sonicvisualiser.org/doc/reference/4.0.1/en/">(Cannam et al., 2010)</a> software by the lead author and two undergraduate research assistants, and all were checked by the lead author. If you’re interested in creating your own annotations to use as part of this process, see <a class="reference internal" href="extra-create-manual-annotations.html#create-annotations"><span class="std std-ref">Create new manual annotations</span></a>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>We only support the use of the optimized parameter set we created ourselves, (i.e., the <code class="docutils literal notranslate"><span class="pre">.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">.json</span></code> files contained in <code class="docutils literal notranslate"><span class="pre">.\references\parameter_optimisation</span></code> by deafult). If you choose to re-run the parameter optimization yourself or use your own ground truth annotations, we cannot guarentee that you’ll be able to reproduce our results.</p>
+</div>
+<section id="setting-up">
+<h2>Setting up<a class="headerlink" href="#setting-up" title="Permalink to this heading">#</a></h2>
+<p>First, ensure that you’ve followed the installation instructions in <a class="reference internal" href="build-database.html#build-database"><span class="std std-ref">Building the database</span></a> up to the <a class="reference internal" href="build-database.html#build-database-detect"><span class="std std-ref">Onset detection</span></a> section.</p>
+</section>
+<section id="running-the-parameter-optimization">
+<h2>Running the parameter optimization<a class="headerlink" href="#running-the-parameter-optimization" title="Permalink to this heading">#</a></h2>
+<p>Inside the virtual environment for the project you created when building the database, run the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python src\detect\optimize_detection_parameters.py
+&gt;&gt;&gt; optimizing onset detection for piano, bass, drums ...
+&gt;&gt;&gt; optimising parameters across 30 track/instrument combinations ...
+&gt;&gt;&gt; ... instrument piano, iteration 0/?, mean F: 0.6402, stdev F: 0.0977, 30 tracks (0 loaded from cache),
+</pre></div>
+</div>
+<p>This command will start the program off on optimizing the detection parameters for each instrument in turn, before optimizing the beat tracking algorithm. You’ll notice that the mean and standard deviation F-score obtained for each iteration of the algorithm is printed directly to the console.</p>
+<p>By default, the program will optimize detection for the <code class="docutils literal notranslate"><span class="pre">.\references\corpus_chronology.xlsx</span></code> corpus file. To change this, you can pass in the <code class="docutils literal notranslate"><span class="pre">-corpus_fname</span></code> flag to direct to another file in this folder, like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">src</span>\<span class="n">detect</span>\<span class="n">optimize_detection_parameters</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">corpus_fname</span> <span class="n">corpus_bill_evans</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">optimizing</span> <span class="n">onset</span> <span class="n">detection</span> <span class="k">for</span> <span class="n">piano</span><span class="p">,</span> <span class="n">bass</span><span class="p">,</span> <span class="n">drums</span> <span class="o">...</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>On any given iteration step, if the program detects that a particular combination of parameters have already been tried for an instrument, it will skip this iteration and load the corresponding F-scores directly from disk (contained in <code class="docutils literal notranslate"><span class="pre">.\references\parameter_optimisation\{corpus_fname}\*.csv</span></code> files). To suppress this functionality, delete or rename the <code class="docutils literal notranslate"><span class="pre">.csv</span></code> files inside <code class="docutils literal notranslate"><span class="pre">.\references\parameter_optimisation\{corpus_fname}</span></code>.</p>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Troubleshooting<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Expect the optimization process to take a great deal of time to complete. You can expect each iteration step for an instrument (piano, bass, drums) to take ~90-120 seconds, depending on the combination of parameters being tested. For the beat detection on the audio mixture, an iteration step may take upwards of 20 minutes, due to the greater computational demand of this algorithm.</p>
+<p class="sd-card-text">To end the optimization process early (not recommended), you can pass in the <code class="docutils literal notranslate"><span class="pre">-maxtime</span></code> flag followed by a number of seconds (<code class="docutils literal notranslate"><span class="pre">int</span></code>), or the <code class="docutils literal notranslate"><span class="pre">-maxeval</span></code> flag followed by a number of iterations (<code class="docutils literal notranslate"><span class="pre">int</span></code>), after which the algorithm will be made to converge.</p>
+<p class="sd-card-text">To disable optimization for either onset or beat detection, pass in <code class="docutils literal notranslate"><span class="pre">-optimize_stems</span> <span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">-optimize_mix</span> <span class="pre">False</span></code>, respectively.</p>
+<p class="sd-card-text">Finally, the program will (by default) make use of every available CPU core for optimization. To control this behaviour, pass in the <code class="docutils literal notranslate"><span class="pre">-n_jobs</span></code> flag, followed by the number of cores to use (<code class="docutils literal notranslate"><span class="pre">int</span></code>).</p>
+</div>
+</details></section>
+<section id="check-the-results">
+<h2>Check the results<a class="headerlink" href="#check-the-results" title="Permalink to this heading">#</a></h2>
+<p>Once the optimization process has completed, you can find the converged parameters inside <code class="docutils literal notranslate"><span class="pre">.\references\parameter_optimisation\{corpus_fname}\converged_parameters.json</span></code>. These will be then be used by the relevant algorithms when running <code class="docutils literal notranslate"><span class="pre">.\src\detect\detect_onsets.py</span></code>.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Inspect iteration results<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">You can also inspect the results at every iteration of the optimization process by checking the individual <code class="docutils literal notranslate"><span class="pre">.csv</span></code> files inside <code class="docutils literal notranslate"><span class="pre">.\references\parameter_optimisation\{corpus_fname}</span></code>. Each row of these files corresponds to the results obtained from a single track. You can load these <code class="docutils literal notranslate"><span class="pre">.csv</span></code> files into your Python session with Pandas, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">src</span> <span class="kn">import</span> <span class="n">utils</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">rf</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">utils</span><span class="o">.</span><span class="n">get_project_root</span><span class="p">()</span><span class="si">}</span><span class="s1">\references\parameter_optimisation\</span><span class="si">{</span><span class="n">corpus_fname</span><span class="si">}</span><span class="s1">\onset_detect_piano.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sd-card-text">To see the average F-score for each iteration step (i.e., the objective function the algorithm was attempting to maximize):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grp</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;iterations&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">numeric_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">grp</span><span class="p">[</span><span class="s1">&#39;f_score&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p class="sd-card-text">To see the final set of optimized parameters (i.e., the iteration step with the highest average F-score):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_idx</span> <span class="o">=</span> <span class="n">grp</span><span class="p">[</span><span class="s1">&#39;f_score&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span>
+<span class="n">grp</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_idx</span><span class="p">]</span>
+</pre></div>
+</div>
+<p class="sd-card-text">In most cases, this will be the final iteration.</p>
+</div>
+</details></section>
 </section>
 
 
@@ -437,12 +514,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="build-database.html"
+       href="extra-create-manual-annotations.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Building the database</p>
+        <p class="prev-next-title">Create new manual annotations</p>
       </div>
     </a>
     <a class="right-next"
@@ -463,6 +540,20 @@ document.write(`
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up">Setting up</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-parameter-optimization">Running the parameter optimization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-the-results">Check the results</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 

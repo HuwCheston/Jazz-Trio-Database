@@ -101,7 +101,6 @@ target/
 /_deprecated/
 
 # Output files
-*.png
 *.m4a
 *.wav
 *.flac
@@ -111,6 +110,11 @@ target/
 *.p
 *.reapeaks
 *.csv
+
+# Ignore .svg image files in all but the documentation folders
+*.png
+!docs/*.png
+!_docssrc/*.png
 
 # Ignore .svg image files in all but the documentation folders
 *.svg
