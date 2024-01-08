@@ -4,9 +4,13 @@ This page includes instructions on how to build the documentation files you are 
 
 ## Setting up
 
+```{tip}
+If you've already followed the instructions in {ref}`Building the database <build-database-setup>`., you can skip this stage.
+```
+
 Clone our repository to a new directory on your local machine:
 ```
-git clone https://github.com/HuwCheston/Cambridge-Jazz-Database
+git clone https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database
 ```
 
 In the repository root directory, create a new virtual environment, enter it, and install project dependencies (these are required for `sphinx.ext.autodoc`):
@@ -18,21 +22,19 @@ call venv\Scripts\activate.bat
 pip install -r requirements.txt
 ```
 
+## Install documentation requirements
+
 Run the following command to install the necessary packages for building the documentation (this includes `Sphinx`, the `pydata` theme, as well as a few common extensions like `myst_parser`):
 ```
-pip install -r docs\requirements.txt
+pip install -r _docssrc\requirements.txt
 ```
 
 ## Build documentation
 
-From the `.\docs` directory, run the following to build the documentation HTML files:
+From the project root directory, run the following to build the documentation HTML files:
 ```
-sphinx-apidoc -o .\src ..\src
-sphinx-build . .\_build
+sphinx-apidoc -o .\_docssrc\src .\src
+sphinx-build .\_docssrc .\docs
 ```
 
-You can now access the HTML files in `.\docs\_build`. Start with `.\docs\_build\index.html`, and navigate the rest of the site from there.
-
-## Hosting on GitHub pages
-
-In order to get the results from `sphinx-build` set up and running on GitHub pages, after building the documentation I've found it's often necessary to then copy the contents of `.\docs\_build` to `docs`, overwriting any files that are currently in that directory.
+You can now access the HTML files in `.\docs`. Start with `.\docs\index.html`, and navigate the rest of the site from there.

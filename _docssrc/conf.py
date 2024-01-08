@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Cambridge Jazz Database Documentation build configuration file, created by
+# Cambridge Jazz Trio Database Documentation build configuration file, created by
 # sphinx-quickstart.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -42,6 +42,10 @@ extensions = [
     "sphinx.ext.autosummary",
 ]
 myst_enable_extensions = ["colon_fence"]
+# This will automatically build headings up to depth 3, i.e. `###` in markdown
+myst_heading_anchors = 3
+# This is to help MyST distinguish between URL schemes and references containing a colon :.
+myst_url_schemes=["http", "https", "mailto"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -65,7 +69,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Cambridge Jazz Database'
+project = u'Cambridge Jazz Trio Database'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -124,7 +128,7 @@ html_theme = 'pydata_sphinx_theme'
 html_theme_options = {
     "navbar_align": "left",
     "navbar_end": ["theme-switcher", "navbar-icon-links"],
-    "github_url": "https://github.com/HuwCheston/Cambridge-Jazz-Database",
+    "github_url": "https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database",
     "twitter_url": "https://twitter.com/huwcheston",
 }
 
@@ -133,7 +137,7 @@ html_theme_options = {
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "Cambridge Jazz Database"
+html_title = "Cambridge Jazz Trio Database"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
@@ -195,7 +199,7 @@ copyright = "Huw Cheston 2024"
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Cambridge-Jazz-Databasedoc'
+htmlhelp_basename = 'Cambridge-Jazz-Trio-Databasedoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -215,8 +219,8 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
     ('index',
-     'Cambridge-Jazz-Database.tex',
-     u'Cambridge Jazz Database Documentation',
+     'Cambridge-Jazz-Trio-Database.tex',
+     u'Cambridge Jazz Trio Database Documentation',
      u"Huw Cheston", 'manual'),
 ]
 
@@ -246,7 +250,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'Cambridge-Jazz-Database', u'Cambridge Jazz Database Documentation',
+    ('index', 'Cambridge-Jazz-Trio-Database', u'Cambridge Jazz Trio Database Documentation',
      [u"Huw Cheston"], 1)
 ]
 
@@ -260,9 +264,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'Cambridge-Jazz-Database', u'Cambridge Jazz Database Documentation',
-     u"Huw Cheston", 'Cambridge Jazz Database Documentation',
-     'The Cambridge Jazz Database is a dataset composed of about 16 hours of jazz performances annotated by an automated signal processing pipeline.', 'Miscellaneous'),
+    ('index', 'Cambridge-Jazz-Trio-Database', u'Cambridge Jazz Trio Database Documentation',
+     u"Huw Cheston", 'Cambridge Jazz Trio Database Documentation',
+     'The Cambridge Jazz Trio Database is a dataset composed of about 16 hours of jazz performances annotated by an automated signal processing pipeline.', 'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.

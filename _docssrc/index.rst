@@ -1,9 +1,9 @@
-Cambridge Jazz Database
-=======================
+Cambridge Jazz Trio Database
+============================
 
 **Date**: |today| **Version**: |version|
 
-The :mod:`Cambridge Jazz Database` is a dataset composed of about 16 hours of jazz performances annotated by an automated signal processing pipeline.
+The :mod:`Cambridge Jazz Trio Database` is a dataset composed of about 16 hours of jazz performances annotated by an automated signal processing pipeline.
 
 
 .. grid:: 1 2 3 4
@@ -11,7 +11,7 @@ The :mod:`Cambridge Jazz Database` is a dataset composed of about 16 hours of ja
     :class-container: sd-text-center
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Database/gh-pages/_docssrc/static/index_installation.svg
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/gh-pages/_docssrc/static/index_installation.svg
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -29,7 +29,7 @@ The :mod:`Cambridge Jazz Database` is a dataset composed of about 16 hours of ja
             Getting started
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Database/gh-pages/_docssrc/static/index_user_guide.svg
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/gh-pages/_docssrc/static/index_user_guide.svg
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -47,7 +47,7 @@ The :mod:`Cambridge Jazz Database` is a dataset composed of about 16 hours of ja
             User guide
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Database/gh-pages/_docssrc/static/index_api_documentation.svg
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/gh-pages/_docssrc/static/index_api_documentation.svg
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -65,7 +65,7 @@ The :mod:`Cambridge Jazz Database` is a dataset composed of about 16 hours of ja
             API reference
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Database/gh-pages/_docssrc/static/index_resources.svg
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/gh-pages/_docssrc/static/index_resources.svg
         :width: 100%
         :class-card: intro-card
         :shadow: md

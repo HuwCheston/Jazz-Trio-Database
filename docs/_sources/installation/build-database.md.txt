@@ -10,24 +10,25 @@
 * Git
 
 ### Setting up
+(build-database-setup)=
 
-First things first, you'll need to clone the source code repository for the Cambridge Jazz Database to a new folder on your local machine by running the following command on a local terminal:
+First things first, you'll need to clone the source code repository for the Cambridge Jazz Trio Database to a new folder on your local machine by running the following command on a local terminal:
 
 ```
-git clone https://github.com/HuwCheston/Cambridge-Jazz-Database
+git clone https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database
 ```
  
-We'd now recommend that you create a new virtual environment to keep the dependencies required for the Cambridge Jazz Database separate from your main Python environment. To do so, run the following:
+We'd now recommend that you create a new virtual environment to keep the dependencies required for the Cambridge Jazz Trio Database separate from your main Python environment. To do so, run the following:
 
 ```
-cd Cambridge-Jazz-Database
+cd Cambridge-Jazz-Trio-Database
 pip install virtualenv
 python -m venv venv
 python test_environment.py
 call venv\Scripts\activate.bat
 ```
 
-Your terminal input should now have a `(venv)` preface, reading something like `(venv) C:\Cambridge-Jazz-Database`. 
+Your terminal input should now have a `(venv)` preface, reading something like `(venv) C:\Cambridge-Jazz-Trio-Database`. 
 
 Next, install the project dependencies:
 
@@ -48,10 +49,10 @@ python src\clean\make_dataset.py
 >>> dataset corpus_chronology made in X secs !
 ```
 
-This command will begin by downloading the audio from a given track on YouTube (stored in `.\data\raw`), and then separating this into separate piano, bass, and drums stems (stored in `.\data\processed`). Spleeter `(Hennequin et al., 2020)` is used for piano separation, and Demucs `(Rouard et al., 2022)` for bass and drums separation. For more information, see `Cheston et al. (2024)`.
+This command will begin by downloading the audio from a given track on YouTube (stored in `.\data\raw`), and then separating this into separate piano, bass, and drums stems (stored in `.\data\processed`). Spleeter [(Hennequin et al., 2020)](https://doi.org/10.21105/joss.02154) is used for piano separation, and Demucs [(Rouard et al., 2022)](https://doi.org/10.48550/arXiv.2211.08553) for bass and drums separation. For more information, see `Cheston et al. (2024)`.
 
 ```{warning}
-By default, if a YouTube source cannot be found, the program will try to retry downloading a set number of times before terminating prematurely. Sources that cannot be found will be printed directly to the console. If this occurs, first check your internet connection and the source itself. If a particular source has been removed from YouTube, please open a new issue on the GitHub repository.
+By default, if a YouTube source cannot be found, the program will try to retry downloading a set number of times before terminating prematurely. Sources that cannot be found will be printed directly to the console. If this occurs, first check your internet connection and the source itself. If a particular source has been removed from YouTube, please [open a new issue on the GitHub repository](https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database/issues/new) or [contact us](mailto:hwc31@cam.ac.uk).
 ```
 
 By default, this command will process audio for tracks contained in `.\references\corpus_chronology.xlsx`: this contains 300 tracks by 30 different pianists, and is the dataset used in `Cheston et al. (2024)`. To process audio from a different corpus, pass the `-corpus` flag to the above command, followed by the name of the corpus spreadsheet inside `.\references`. For example, to process audio from `.\references\corpus_bill_evans.xlsx`:

@@ -5,7 +5,7 @@ REM Command file for Sphinx documentation
 if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
-set BUILDDIR=_build
+set BUILDDIR=..\docs
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% .
 set I18NSPHINXOPTS=%SPHINXOPTS% .
 if NOT "%PAPER%" == "" (
@@ -37,6 +37,15 @@ if "%1" == "help" (
 	echo.  doctest    to run all doctests embedded in the documentation if enabled
 	goto end
 )
+
+if "%1%" == "gh-pages" (
+	%SPHINXBUILD% -b html %ALLSPHINXOPTS% %BUILDDIR%
+	if errorlevel 1 exit /b 1
+	echo.
+	echo.Build finished. The HTML pages are in %BUILDDIR%.
+	goto end
+)
+
 
 if "%1" == "clean" (
 	for /d %%i in (%BUILDDIR%\*) do rmdir /q /s %%i

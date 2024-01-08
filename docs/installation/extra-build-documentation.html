@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Building the documentation &#8212; Cambridge Jazz Database</title>
+    <title>Building the documentation &#8212; Cambridge Jazz Trio Database</title>
   
   
   
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">Cambridge Jazz Database</p>
+    <p class="title logo__title">Cambridge Jazz Trio Database</p>
   
 </a></div>
     
@@ -209,7 +209,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -333,7 +333,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -427,8 +427,12 @@ document.write(`
 <p>This page includes instructions on how to build the documentation files you are currently reading.</p>
 <section id="setting-up">
 <h2>Setting up<a class="headerlink" href="#setting-up" title="Permalink to this heading">#</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you’ve already followed the instructions in <a class="reference internal" href="build-database.html#build-database-setup"><span class="std std-ref">Building the database</span></a>., you can skip this stage.</p>
+</div>
 <p>Clone our repository to a new directory on your local machine:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">HuwCheston</span><span class="o">/</span><span class="n">Cambridge</span><span class="o">-</span><span class="n">Jazz</span><span class="o">-</span><span class="n">Database</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">HuwCheston</span><span class="o">/</span><span class="n">Cambridge</span><span class="o">-</span><span class="n">Jazz</span><span class="o">-</span><span class="n">Trio</span><span class="o">-</span><span class="n">Database</span>
 </pre></div>
 </div>
 <p>In the repository root directory, create a new virtual environment, enter it, and install project dependencies (these are required for <code class="docutils literal notranslate"><span class="pre">sphinx.ext.autodoc</span></code>):</p>
@@ -439,23 +443,22 @@ document.write(`
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
+</section>
+<section id="install-documentation-requirements">
+<h2>Install documentation requirements<a class="headerlink" href="#install-documentation-requirements" title="Permalink to this heading">#</a></h2>
 <p>Run the following command to install the necessary packages for building the documentation (this includes <code class="docutils literal notranslate"><span class="pre">Sphinx</span></code>, the <code class="docutils literal notranslate"><span class="pre">pydata</span></code> theme, as well as a few common extensions like <code class="docutils literal notranslate"><span class="pre">myst_parser</span></code>):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">docs</span>\<span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">_docssrc</span>\<span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
 </section>
 <section id="build-documentation">
 <h2>Build documentation<a class="headerlink" href="#build-documentation" title="Permalink to this heading">#</a></h2>
-<p>From the <code class="docutils literal notranslate"><span class="pre">.\docs</span></code> directory, run the following to build the documentation HTML files:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">apidoc</span> <span class="o">-</span><span class="n">o</span> <span class="o">.</span>\<span class="n">src</span> <span class="o">..</span>\<span class="n">src</span>
-<span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="o">.</span> <span class="o">.</span>\<span class="n">_build</span>
+<p>From the project root directory, run the following to build the documentation HTML files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">apidoc</span> <span class="o">-</span><span class="n">o</span> <span class="o">.</span>\<span class="n">_docssrc</span>\<span class="n">src</span> <span class="o">.</span>\<span class="n">src</span>
+<span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="o">.</span>\<span class="n">_docssrc</span> <span class="o">.</span>\<span class="n">docs</span>
 </pre></div>
 </div>
-<p>You can now access the HTML files in <code class="docutils literal notranslate"><span class="pre">.\docs\_build</span></code>. Start with <code class="docutils literal notranslate"><span class="pre">.\docs\_build\index.html</span></code>, and navigate the rest of the site from there.</p>
-</section>
-<section id="hosting-on-github-pages">
-<h2>Hosting on GitHub pages<a class="headerlink" href="#hosting-on-github-pages" title="Permalink to this heading">#</a></h2>
-<p>In order to get the results from <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code> set up and running on GitHub pages, after building the documentation I’ve found it’s often necessary to then copy the contents of <code class="docutils literal notranslate"><span class="pre">.\docs\_build</span></code> to <code class="docutils literal notranslate"><span class="pre">docs</span></code>, overwriting any files that are currently in that directory.</p>
+<p>You can now access the HTML files in <code class="docutils literal notranslate"><span class="pre">.\docs</span></code>. Start with <code class="docutils literal notranslate"><span class="pre">.\docs\index.html</span></code>, and navigate the rest of the site from there.</p>
 </section>
 </section>
 
@@ -506,8 +509,8 @@ document.write(`
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up">Setting up</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-documentation-requirements">Install documentation requirements</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-documentation">Build documentation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hosting-on-github-pages">Hosting on GitHub pages</a></li>
 </ul>
   </nav></div>
 
