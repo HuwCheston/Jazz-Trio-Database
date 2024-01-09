@@ -115,13 +115,13 @@ target/
 
 # Ignore .svg image files in all but the documentation folders
 *.png
-!docs/*.png
-!_docssrc/*.png
+!/docs/*.png
+!/_docssrc/resources/*.png
 
 # Ignore .svg image files in all but the documentation folders
 *.svg
-!docs/*.svg
-!_docssrc/*.svg
+!/docs/*.svg
+!/_docssrc/*.svg
 
 /venv_old/
 /pretrained_models/
