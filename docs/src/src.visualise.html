@@ -973,68 +973,68 @@ document.write(`
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.visualise.asynchrony_plots.</span></span><span class="sig-name descname"><span class="pre">ScatterPlotByBeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onset_maker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker" title="src.detect.detect_utils.OnsetMaker"><span class="pre">OnsetMaker</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.visualise.asynchrony_plots.</span></span><span class="sig-name descname"><span class="pre">ScatterPlotAsynchrony</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onset_maker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker" title="src.detect.detect_utils.OnsetMaker"><span class="pre">OnsetMaker</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#src.visualise.visualise_utils.BasePlot" title="src.visualise.visualise_utils.BasePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePlot</span></code></a></p>
 <p>Creates a scatter plot for all onset values within a given track, similar to those in <cite>OnsetSync</cite> R package</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat._create_plot">
-<span class="sig-name descname"><span class="pre">_create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat._create_plot" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony._create_plot">
+<span class="sig-name descname"><span class="pre">_create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._create_plot" title="Permalink to this definition">#</a></dt>
 <dd><p>Creates main plot: scatter plot of each instrument</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat._format_ax">
-<span class="sig-name descname"><span class="pre">_format_ax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat._format_ax" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_ax">
+<span class="sig-name descname"><span class="pre">_format_ax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_ax" title="Permalink to this definition">#</a></dt>
 <dd><p>Formats axis-level parameters</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat._format_fig">
-<span class="sig-name descname"><span class="pre">_format_fig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat._format_fig" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_fig">
+<span class="sig-name descname"><span class="pre">_format_fig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_fig" title="Permalink to this definition">#</a></dt>
 <dd><p>Formats figure-level parameters</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat.ax">
-<span class="sig-name descname"><span class="pre">ax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.ax" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.ax">
+<span class="sig-name descname"><span class="pre">ax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.ax" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat.create_plot">
-<span class="sig-name descname"><span class="pre">create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.create_plot" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.create_plot">
+<span class="sig-name descname"><span class="pre">create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.create_plot" title="Permalink to this definition">#</a></dt>
 <dd><p>Calls plot creation, axis formatting, and figure formatting classes, then saves in the decorator</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat.df">
-<span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.df" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.df">
+<span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.df" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat.fig">
-<span class="sig-name descname"><span class="pre">fig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.fig" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.fig">
+<span class="sig-name descname"><span class="pre">fig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.fig" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat.format_df">
-<span class="sig-name descname"><span class="pre">format_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.format_df" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.format_df">
+<span class="sig-name descname"><span class="pre">format_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.format_df" title="Permalink to this definition">#</a></dt>
 <dd><p>Formats provided onset maker into correct dataframe format for plotting</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat.g">
-<span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.g" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.g">
+<span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.g" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat.output_dir">
-<span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.output_dir" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.output_dir">
+<span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.output_dir" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotByBeat.wraparound">
-<span class="sig-name descname"><span class="pre">wraparound</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.9</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.wraparound" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.wraparound">
+<span class="sig-name descname"><span class="pre">wraparound</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.9</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.wraparound" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4326,18 +4326,18 @@ Transactions of the Royal Society B: Biological Sciences, 376(1835), 20200331.</
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.RegPlotPianistAsynchrony.output_dir"><code class="docutils literal notranslate"><span class="pre">RegPlotPianistAsynchrony.output_dir</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat._create_plot"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat._create_plot()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat._format_ax"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat._format_ax()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat._format_fig"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat._format_fig()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.ax"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat.ax</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.create_plot"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat.create_plot()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.df"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat.df</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.fig"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat.fig</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.format_df"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat.format_df()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.g"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat.g</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.output_dir"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat.output_dir</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotByBeat.wraparound"><code class="docutils literal notranslate"><span class="pre">ScatterPlotByBeat.wraparound</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._create_plot"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony._create_plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_ax"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony._format_ax()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_fig"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony._format_fig()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.ax"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.ax</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.create_plot"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.create_plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.df"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.df</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.fig"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.fig</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.format_df"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.format_df()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.g"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.g</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.output_dir"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.output_dir</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.wraparound"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.wraparound</span></code></a></li>
 </ul>
 </li>
 </ul>

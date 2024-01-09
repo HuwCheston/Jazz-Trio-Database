@@ -1,0 +1,612 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>General plotting workflow &#8212; Cambridge Jazz Trio Database</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/plotting-workflow';</script>
+    <link rel="icon" href="../_static/html_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Visualizing a single performance" href="visualise-performance.html" />
+    <link rel="prev" title="Currently implemented Extractors" href="implemented-extractors.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Cambridge Jazz Trio Database</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../installation/getting-started.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="user-guide.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../src/modules.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../resources/online-resources.html">
+                        Resources
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/huwcheston" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../installation/getting-started.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="user-guide.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../src/modules.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../resources/online-resources.html">
+                        Resources
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/huwcheston" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Loading data</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="loading-data.html">Loading the database in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="onsetmaker-classes.html">Working with `OnsetMaker` classes</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Feature extraction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="feature-extractor.html">Working with `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combining-extractors.html">Combining multiple `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define-extractors.html">Defining new `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implemented-extractors.html">Currently implemented `Extractor` classes</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Visualising results</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">General plotting workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualise-performance.html">Visualizing a single performance</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user-guide.html" class="nav-link">Usage</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">General...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="general-plotting-workflow">
+<h1>General plotting workflow<a class="headerlink" href="#general-plotting-workflow" title="Permalink to this heading">#</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Make sure you have access to the database before following the instructions in this tutorial, either by <a class="reference internal" href="../installation/download-database.html#download-database"><span class="std std-ref">downloading it</span></a> or <a class="reference internal" href="../installation/build-database.html#build-database"><span class="std std-ref">building it from source</span></a>.</p>
+<p>You’ll also need to be able to generate a list of <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> classes from the database: follow the instructions in <a class="reference internal" href="loading-data.html#loading-database-python"><span class="std std-ref">Loading the database in Python</span></a></p>
+</div>
+<p>All plotting code follows the same workflow.</p>
+<section id="class-inheritance">
+<h2>Class inheritance<a class="headerlink" href="#class-inheritance" title="Permalink to this heading">#</a></h2>
+<p>Plots are classes defined in <code class="docutils literal notranslate"><span class="pre">.\src\visualise</span></code> that all inherit from <code class="docutils literal notranslate"><span class="pre">BasePlot</span></code>, defined in <code class="docutils literal notranslate"><span class="pre">.\src\visualise\visualise_utils.py</span></code></p>
+</section>
+<section id="importing-plots">
+<h2>Importing plots<a class="headerlink" href="#importing-plots" title="Permalink to this heading">#</a></h2>
+<p>The plot class should either be imported from its parent file by name, or via the <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">*</span></code> syntax (to import all classes in the parent file): e.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Just import one plot</span>
+<span class="kn">from</span> <span class="nn">src.visualise.asynchrony_plots</span> <span class="kn">import</span> <span class="n">ScatterPlotAsynchrony</span>
+<span class="c1"># Import every plot defined in __all__ of the parent file</span>
+<span class="kn">from</span> <span class="nn">src.visualise.asynchrony_plots</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</section>
+<section id="constructing-a-plot">
+<h2>Constructing a plot<a class="headerlink" href="#constructing-a-plot" title="Permalink to this heading">#</a></h2>
+<p>Plots should be constructed by first importing the class, passing in the required inputs, and then calling the <code class="docutils literal notranslate"><span class="pre">.create_plot()</span></code> method on the object. This will coerce the inputs into the correct format, create the plot and format it, then save inside the specified directory (defaults to <code class="docutils literal notranslate"><span class="pre">.\reports\figures</span></code>): e.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">src.visualise.asynchrony_plots</span> <span class="kn">import</span> <span class="n">ScatterPlotAsynchrony</span>
+<span class="n">ScatterPlotAsynchrony</span><span class="p">(</span><span class="n">onset_maker</span><span class="o">=</span><span class="n">om</span><span class="p">)</span><span class="o">.</span><span class="n">create_plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To view the plot after creating it, use the standard <code class="docutils literal notranslate"><span class="pre">plt.show()</span></code> syntax as with any other plot, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">src.visualise.asynchrony_plots</span> <span class="kn">import</span> <span class="n">ScatterPlotAsynchrony</span>
+
+<span class="n">ScatterPlotAsynchrony</span><span class="p">(</span><span class="n">onset_maker</span><span class="o">=</span><span class="n">om</span><span class="p">)</span><span class="o">.</span><span class="n">create_plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="plotting-class-methods">
+<h2>Plotting class methods<a class="headerlink" href="#plotting-class-methods" title="Permalink to this heading">#</a></h2>
+<p>In general, plotting classes require four methods: <code class="docutils literal notranslate"><span class="pre">_format_df</span></code>, <code class="docutils literal notranslate"><span class="pre">_create_plot</span></code>, <code class="docutils literal notranslate"><span class="pre">_format_ax</span></code>, and <code class="docutils literal notranslate"><span class="pre">_format_fig</span></code>. These are inherited from <code class="docutils literal notranslate"><span class="pre">BasePlot</span></code> and are designed to be overridden in each plot class.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_format_df</span></code> is typically called when the class is initialized (i.e., before calling <code class="docutils literal notranslate"><span class="pre">.create_plot()</span></code>) and coerces the inputs into the correct format, usually via <code class="docutils literal notranslate"><span class="pre">pandas</span></code> code.</p>
+<p>Then, <code class="docutils literal notranslate"><span class="pre">_create_plot</span></code>, <code class="docutils literal notranslate"><span class="pre">_format_ax</span></code>, and <code class="docutils literal notranslate"><span class="pre">_format_fig</span></code> are all called by <code class="docutils literal notranslate"><span class="pre">.create_plot()</span></code>. <code class="docutils literal notranslate"><span class="pre">_create_plot</span></code> (note the leading underscore) creates the graph in <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code> code. <code class="docutils literal notranslate"><span class="pre">_format_ax</span></code> formats all <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.Axes</span></code> parameters, while <code class="docutils literal notranslate"><span class="pre">_format_ax</span></code> formats <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.Figure</span></code> parameters. Note that each of these methods may themselves invoke additional methods and functions that are defined in each plotting class: however, only these four methods are inherited from <code class="docutils literal notranslate"><span class="pre">BasePlot</span></code>.</p>
+<p>As suggested by the leading underscore, these methods are protected, and should not be called by themselves: the only method in a plot class called by the user should be <code class="docutils literal notranslate"><span class="pre">.create_plot()</span></code></p>
+</section>
+<section id="visualise-utils-py">
+<h2><code class="docutils literal notranslate"><span class="pre">visualise_utils.py</span></code><a class="headerlink" href="#visualise-utils-py" title="Permalink to this heading">#</a></h2>
+<p>Inside <code class="docutils literal notranslate"><span class="pre">.\src\visualise\visualise_utils.py</span></code>, you’ll find the constant variables that are referred to in many plotting classes. These are used, for instance, to ensure that the width and height of all plots are kept constant, or that the width of lines is consistent.</p>
+<p>Typically, this module should be imported using the syntax <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">src.visualise.visualise_utils</span> <span class="pre">as</span> <span class="pre">vutils</span></code>. Then, the constants can be accessed using the <code class="docutils literal notranslate"><span class="pre">vutils</span></code> alias, e.g. <code class="docutils literal notranslate"><span class="pre">vutils.WIDTH</span></code>, <code class="docutils literal notranslate"><span class="pre">vutils.ALPHA</span></code>, etc.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="implemented-extractors.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Currently implemented <code class="docutils literal notranslate"><span class="pre">Extractors</span></code></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="visualise-performance.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Visualizing a single performance</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-inheritance">Class inheritance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-plots">Importing plots</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constructing-a-plot">Constructing a plot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-class-methods">Plotting class methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualise-utils-py"><code class="docutils literal notranslate"><span class="pre">visualise_utils.py</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/usage/plotting-workflow.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright Huw Cheston 2024.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

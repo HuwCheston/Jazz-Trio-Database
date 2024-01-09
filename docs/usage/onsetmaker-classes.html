@@ -1,0 +1,665 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Working with OnsetMaker classes &#8212; Cambridge Jazz Trio Database</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'usage/onsetmaker-classes';</script>
+    <link rel="icon" href="../_static/html_favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Working with Extractor classes" href="feature-extractor.html" />
+    <link rel="prev" title="Working with the database in Python" href="loading-data.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Cambridge Jazz Trio Database</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../installation/getting-started.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="user-guide.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../src/modules.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../resources/online-resources.html">
+                        Resources
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/huwcheston" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../installation/getting-started.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="user-guide.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../src/modules.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../resources/online-resources.html">
+                        Resources
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/huwcheston" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Loading data</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="loading-data.html">Loading the database in Python</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Working with `OnsetMaker` classes</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Feature extraction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="feature-extractor.html">Working with `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combining-extractors.html">Combining multiple `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define-extractors.html">Defining new `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implemented-extractors.html">Currently implemented `Extractor` classes</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Visualising results</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="plotting-workflow.html">General plotting workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualise-performance.html">Visualizing a single performance</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user-guide.html" class="nav-link">Usage</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Working...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="working-with-onsetmaker-classes">
+<h1>Working with <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> classes<a class="headerlink" href="#working-with-onsetmaker-classes" title="Permalink to this heading">#</a></h1>
+<p id="working-with-onsetmaker">Once you’ve loaded the corpus (either by calling <code class="docutils literal notranslate"><span class="pre">src.utils.unserialise_object</span></code> on a <code class="docutils literal notranslate"><span class="pre">.p</span></code> file, or pointing <code class="docutils literal notranslate"><span class="pre">src.utils.load_corpus_from_files</span></code> on the directory containing downloaded <code class="docutils literal notranslate"><span class="pre">.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">.p</span></code> files), you’ll end up with a list of <code class="docutils literal notranslate"><span class="pre">src.detect.detect_utils.OnsetMaker</span></code> classes. Each of these classes contains onset and beat data extracted from a single track.</p>
+<p>You can work with this list as with any iterable in Python:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process individual tracks</span>
+<span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+    <span class="o">...</span>
+<span class="c1"># Get just the first track</span>
+<span class="n">first_track</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+</pre></div>
+</div>
+<p>In the sections below, we explain the most important attributes of this class.</p>
+<section id="metadata-onsetmaker-item">
+<h2>Metadata (<code class="docutils literal notranslate"><span class="pre">OnsetMaker.item</span></code>)<a class="headerlink" href="#metadata-onsetmaker-item" title="Permalink to this heading">#</a></h2>
+<p>Metadata relating to each track is contained inside the <code class="docutils literal notranslate"><span class="pre">OnsetMaker.item</span></code> attribute (<code class="docutils literal notranslate"><span class="pre">dict</span></code>). This information is taken from the corpus files, located in <code class="docutils literal notranslate"><span class="pre">.\references\{filename}.xlsx</span></code>. For more information as to what each key-value pair refers to here, see <a class="reference internal" href="../installation/extra-new-corpus.html#new-corpus"><span class="std std-ref">the page on creating a new corpus file</span></a>.</p>
+</section>
+<section id="onsets-and-beats-onsetmaker-ons">
+<h2>Onsets and beats (<code class="docutils literal notranslate"><span class="pre">OnsetMaker.ons</span></code>)<a class="headerlink" href="#onsets-and-beats-onsetmaker-ons" title="Permalink to this heading">#</a></h2>
+<p>The individual onsets for each instrumental part can be accessed undet the <code class="docutils literal notranslate"><span class="pre">OnsetMaker.ons</span></code> attribute. This is a Python dictionary, with each key (<code class="docutils literal notranslate"><span class="pre">str</span></code>) describing each individual array (<code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>) that is contained as a value. The following table summarises these key-value pairs:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mix</span></code></p></td>
+<td><p>Timestamps in seconds for detected quarter note beats in the audio mixture</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">metre_auto</span></code></p></td>
+<td><p>Beat numbers for each bar in the audio mixture, automatically generated by beat tracking algorithm</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">downbeats_auto</span></code></p></td>
+<td><p>Timestamps for automatically generated downbeats (i.e., <code class="docutils literal notranslate"><span class="pre">mix[np.where(metre_auto</span> <span class="pre">==</span> <span class="pre">1)]</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">metre_manual</span></code></p></td>
+<td><p>Beat numbers for each bar in the audio mixture, generated by extrapolating <code class="docutils literal notranslate"><span class="pre">track.item['first_downbeat']</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">downbeats_manual</span></code></p></td>
+<td><p>Timestamps for manually generated downbeats (i.e., <code class="docutils literal notranslate"><span class="pre">mix[np.where(metre_manual</span> <span class="pre">==</span> <span class="pre">1)]</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">piano</span></code></p></td>
+<td><p>Timestamps for each onset detected in the source-separated piano audio</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bass</span></code></p></td>
+<td><p>Timestamps for each onset detected in the source-separated bass audio</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">drums</span></code></p></td>
+<td><p>Timestamps for each onset detected in the source-separated drums audio</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="matched-onsets-and-beats-onsetmaker-summary-dict">
+<h2>Matched onsets and beats (<code class="docutils literal notranslate"><span class="pre">OnsetMaker.summary_dict</span></code>)<a class="headerlink" href="#matched-onsets-and-beats-onsetmaker-summary-dict" title="Permalink to this heading">#</a></h2>
+<p>As with <code class="docutils literal notranslate"><span class="pre">OnsetMaker.ons</span></code>, the <code class="docutils literal notranslate"><span class="pre">OnsetMaker.summary_dict</span></code> attribute is a dictionary of key-value pairs where keys are <code class="docutils literal notranslate"><span class="pre">str</span></code> descriptors and values are <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> types. Unlike <code class="docutils literal notranslate"><span class="pre">OnsetMaker.ons</span></code>, however, the only onsets in <code class="docutils literal notranslate"><span class="pre">OnsetMaker.summary_dict</span></code> are those that are matched to each quarter note beat, by running <code class="docutils literal notranslate"><span class="pre">OnsetMaker.match_onsets_and_beats()</span></code>.</p>
+<p>The lengths of all <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> objects in <code class="docutils literal notranslate"><span class="pre">OnsetMaker.summary_dict.values()</span></code> should be the same for a single <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> instance. In cases where a beat could not be matched with an onset for a particular instrument, a missing value (<code class="docutils literal notranslate"><span class="pre">np.nan</span></code>) is used for that beat. This means that <code class="docutils literal notranslate"><span class="pre">OnsetMaker.summary_dict</span></code> can be passed directly to <code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code>, to easily manipulate the data in <code class="docutils literal notranslate"><span class="pre">pandas</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">first_track_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">first_track</span><span class="o">.</span><span class="n">summary_dict</span><span class="p">)</span>
+<span class="n">first_track_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span>    <span class="n">beats</span>     <span class="n">piano</span>      <span class="n">bass</span>     <span class="n">drums</span>  <span class="n">metre_auto</span>  <span class="n">metre_manual</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">0</span>   <span class="mf">0.17</span>  <span class="mf">0.177052</span>  <span class="mf">0.174150</span>  <span class="mf">0.182857</span>         <span class="mf">1.0</span>           <span class="mf">1.0</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">1</span>   <span class="mf">0.55</span>  <span class="mf">0.565986</span>  <span class="mf">0.571791</span>  <span class="mf">0.568889</span>         <span class="mf">2.0</span>           <span class="mf">2.0</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span>   <span class="mf">0.92</span>  <span class="mf">0.943311</span>       <span class="n">NaN</span>  <span class="mf">0.983946</span>         <span class="mf">3.0</span>           <span class="mf">3.0</span>
+
+<span class="c1"># To access just the matched beats for the drummer:</span>
+<span class="n">first_track_df</span><span class="p">[</span><span class="s1">&#39;drums&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">0</span>    <span class="mf">0.182857</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">1</span>    <span class="mf">0.568889</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span>    <span class="mf">0.983946</span>
+</pre></div>
+</div>
+</section>
+<section id="extra-data-only-relevant-if-building-from-source">
+<h2>Extra data (only relevant if building from source)<a class="headerlink" href="#extra-data-only-relevant-if-building-from-source" title="Permalink to this heading">#</a></h2>
+<p>If you’ve built the database from source, there are a few additional attributes under each <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> class instances created during the onset detection process: see below for a description</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Additional attributes<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">Field</p></th>
+<th class="head"><p class="sd-card-text">Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">.silent_perc</span></code></p></td>
+<td><p class="sd-card-text">The percentage of each audio file deemed to be <code class="docutils literal notranslate"><span class="pre">silent</span></code> (see <code class="docutils literal notranslate"><span class="pre">OnsetMaker.get_silent_track_percent</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">.snr</span></code></p></td>
+<td><p class="sd-card-text">The signal-to-noise ratio for each audio file</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">.spectral_flatness</span></code></p></td>
+<td><p class="sd-card-text">The spectral flatness for each audio file</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details></section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="loading-data.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Working with the database in Python</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="feature-extractor.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Working with <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> classes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metadata-onsetmaker-item">Metadata (<code class="docutils literal notranslate"><span class="pre">OnsetMaker.item</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#onsets-and-beats-onsetmaker-ons">Onsets and beats (<code class="docutils literal notranslate"><span class="pre">OnsetMaker.ons</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#matched-onsets-and-beats-onsetmaker-summary-dict">Matched onsets and beats (<code class="docutils literal notranslate"><span class="pre">OnsetMaker.summary_dict</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extra-data-only-relevant-if-building-from-source">Extra data (only relevant if building from source)</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/usage/onsetmaker-classes.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright Huw Cheston 2024.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

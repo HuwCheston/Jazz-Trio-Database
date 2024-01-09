@@ -22,18 +22,7 @@ big_dict
 
 ## Combine features across several recordings
 
-Now that we know how to combine several features together for a single recording, the logical next step is to consider how we can combine features across a number of tracks. In the following blocks of code, we'll assume that `res` is a list of `OnsetMaker` classes created by running `.\src\detect\detect_onsets.py`:
-
-:::{admonition} Creating the `res` object from serialised `OnsetMaker`s
-:class: dropdown
-
-To create the `res` object, you can either use the `pickle` or `dill` modules to unserialise the objects located in `.\models` after building the database, or use our handy `unserialise_object` function in `.\src\utils.py`:
-
-```
-from src import utils
-res = utils.unserialise_object(rf'{utils.get_project_root()}\models\{filename}')
-```
-:::
+Now that we know how to combine several features together for a single recording, the logical next step is to consider how we can combine features across a number of tracks. In the following blocks of code, we'll assume that `res` is a list of `OnsetMaker` classes created by unserialising the output of `.\src\detect\detect_onsets.py`: see {ref}`loading data from source <load-from-src>`.
 
 ```
 def extract_features(track: OnsetMaker) -> dict:

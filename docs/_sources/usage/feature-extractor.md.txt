@@ -1,7 +1,10 @@
 # Working with `Extractor` classes
+(working-with-extractors)=
 
 ```{warning}
-Make sure you have access to the database before following the instructions in this tutorial, either by {ref}`downloading it <download-database>` or {ref}`building it from source <build-database>`.
+Make sure you have access to the database before following the instructions in this tutorial, either by {ref}`downloading it <download-database>` or {ref}`building it from source <build-database>`. 
+
+You'll also need to be able to generate a list of `OnsetMaker` classes from the database: follow the instructions in {ref}`Loading the database in Python <loading-database-python>`
 ```
 
 The primary method for analyzing the tracks in the database is by using the different `Extractor` classes defined in `.\src\features\features_utils.py`. These classes all follow the same basic principles:

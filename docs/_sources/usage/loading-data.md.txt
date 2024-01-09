@@ -1,1 +1,55 @@
 # Working with the database in Python
+(loading-database-python)=
+
+```{warning}
+Make sure you have access to the database before following the instructions in this tutorial, either by {ref}`downloading it <download-database>` or {ref}`building it from source <build-database>`.
+```
+
+## Loading `.csv` files (pre-built database)
+(load-from-zip)=
+
+Unarchive the downloaded `cambridge-jazz-trio-database-vXXX.zip` file to a new directory. The resulting file structure should look something like:
+
+```
+├── corpus_bill_evans                                         <- The Bill Evans Trio dataset
+│   ├── evansb-34skidoo-gomezemorellm-1972-2ff369e4           <- The first track in this corpus
+│   │   ├── bass.csv                                          <- Timestamps of detected onsets for this instrument
+│   │   ├── beats.csv                                         <- Onsets in `bass.csv`, `drums.csv`, `piano.csv` matched to nearest beat 
+│   │   ├── drums.csv
+│   │   ├── metadata.json                                     <- Track metadata
+│   │   └── piano.csv
+│   ├── evansb-34skidoo-gomezemorellm-1974-8828ee88           <- The second track in this corpus
+│   │   └── ...
+│   └── ...                                                   <- Other tracks follow in their own directories: 236 tracks in total
+├── corpus_chronology                                         <- The "chronology" trio dataset
+│   ├── barronk-andthenagain-williamsbrileyb-1982-a0ef8bbe    <- The first track in this corpus   
+│   └── ...                                                   <- 300 tracks in total
+└── README.md           
+```
+
+To load the corpus in Python, you can use any of the files for reading `.csv` and `.json` files in-built into `numpy`, `pandas`, or the standard library `json` package. 
+
+In order to maximize compatibility {ref}`with our analysis code <working-with-extractors>`, we've defined a utility function in `.\src\utils.py` to load a loose collection of `.csv` and `.json` files as a list of `OnsetMaker` classes (defined in `.\src\detect\detect_utils.py`). First, follow the instructions in {ref}`Setting up <build-database-setup>` to clone our repository and install the requirements. Then, call `utils.load_corpus_from_files` and pass in the path to the directory containing the individual track folders. 
+
+For instance, to load the files in the `corpus_bill_evans` folder:
+
+```
+from src import utils
+res = utils.load_corpus_from_files('path/to/corpus_bill_evans')
+```
+
+## Loading `.p` files (database built from source)
+(load-from-src)=
+
+:::{tip}
+By default, compiling the database from source will also build the `.csv` and `.json` files described in the {ref}`loading data from source <load-from-src>` section above, so you can also follow those instructions.
+:::
+
+If you've compiled the database from source by {ref}`following the instructions <build-database>`, after running `.\src\detect\detect_onsets.py` you should end up with a `.p` file inside `.\models`.
+
+To unserialise this file, you can either use the `pickle` (Python standard library) or `dill` (`pip install dill`) modules, or our handy `unserialise_object` function in `.\src\utils.py` (*recommended*).
+
+```
+from src import utils
+res = utils.unserialise_object(rf'{utils.get_project_root()}\models\{filename}.p')
+```

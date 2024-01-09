@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Combining multiple Extractors together" href="combining-extractors.html" />
-    <link rel="prev" title="Working with the database in Python" href="loading-data.html" />
+    <link rel="prev" title="Working with OnsetMaker classes" href="onsetmaker-classes.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -367,14 +367,20 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Loading data</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="loading-data.html">Working with the database in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loading-data.html">Loading the database in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="onsetmaker-classes.html">Working with `OnsetMaker` classes</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Feature extraction</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Working with `Extractor`s</a></li>
-<li class="toctree-l1"><a class="reference internal" href="combining-extractors.html">Combining multiple `Extractor`s</a></li>
-<li class="toctree-l1"><a class="reference internal" href="define-extractors.html">Defining new `Extractor`s</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implemented-extractors.html">Currently implemented `Extractor`s</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Working with `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combining-extractors.html">Combining multiple `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define-extractors.html">Defining new `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implemented-extractors.html">Currently implemented `Extractor` classes</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Visualising results</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="plotting-workflow.html">General plotting workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualise-performance.html">Visualizing a single performance</a></li>
 </ul>
 </div>
 </nav></div>
@@ -434,9 +440,10 @@ document.write(`
                   
   <section id="working-with-extractor-classes">
 <h1>Working with <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> classes<a class="headerlink" href="#working-with-extractor-classes" title="Permalink to this heading">#</a></h1>
-<div class="admonition warning">
+<div class="admonition warning" id="working-with-extractors">
 <p class="admonition-title">Warning</p>
 <p>Make sure you have access to the database before following the instructions in this tutorial, either by <a class="reference internal" href="../installation/download-database.html#download-database"><span class="std std-ref">downloading it</span></a> or <a class="reference internal" href="../installation/build-database.html#build-database"><span class="std std-ref">building it from source</span></a>.</p>
+<p>You’ll also need to be able to generate a list of <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> classes from the database: follow the instructions in <a class="reference internal" href="loading-data.html#loading-database-python"><span class="std std-ref">Loading the database in Python</span></a></p>
 </div>
 <p>The primary method for analyzing the tracks in the database is by using the different <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> classes defined in <code class="docutils literal notranslate"><span class="pre">.\src\features\features_utils.py</span></code>. These classes all follow the same basic principles:</p>
 <ul class="simple">
@@ -578,12 +585,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="loading-data.html"
+       href="onsetmaker-classes.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Working with the database in Python</p>
+        <p class="prev-next-title">Working with <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> classes</p>
       </div>
     </a>
     <a class="right-next"

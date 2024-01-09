@@ -51,7 +51,7 @@
     <link rel="icon" href="../_static/html_favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Working with Extractor classes" href="feature-extractor.html" />
+    <link rel="next" title="Working with OnsetMaker classes" href="onsetmaker-classes.html" />
     <link rel="prev" title="Usage" href="user-guide.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -367,14 +367,20 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Loading data</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Working with the database in Python</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Loading the database in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="onsetmaker-classes.html">Working with `OnsetMaker` classes</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Feature extraction</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="feature-extractor.html">Working with `Extractor`s</a></li>
-<li class="toctree-l1"><a class="reference internal" href="combining-extractors.html">Combining multiple `Extractor`s</a></li>
-<li class="toctree-l1"><a class="reference internal" href="define-extractors.html">Defining new `Extractor`s</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implemented-extractors.html">Currently implemented `Extractor`s</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature-extractor.html">Working with `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combining-extractors.html">Combining multiple `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="define-extractors.html">Defining new `Extractor` classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="implemented-extractors.html">Currently implemented `Extractor` classes</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Visualising results</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="plotting-workflow.html">General plotting workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualise-performance.html">Visualizing a single performance</a></li>
 </ul>
 </div>
 </nav></div>
@@ -434,6 +440,50 @@ document.write(`
                   
   <section id="working-with-the-database-in-python">
 <h1>Working with the database in Python<a class="headerlink" href="#working-with-the-database-in-python" title="Permalink to this heading">#</a></h1>
+<div class="admonition warning" id="loading-database-python">
+<p class="admonition-title">Warning</p>
+<p>Make sure you have access to the database before following the instructions in this tutorial, either by <a class="reference internal" href="../installation/download-database.html#download-database"><span class="std std-ref">downloading it</span></a> or <a class="reference internal" href="../installation/build-database.html#build-database"><span class="std std-ref">building it from source</span></a>.</p>
+</div>
+<section id="loading-csv-files-pre-built-database">
+<h2>Loading <code class="docutils literal notranslate"><span class="pre">.csv</span></code> files (pre-built database)<a class="headerlink" href="#loading-csv-files-pre-built-database" title="Permalink to this heading">#</a></h2>
+<p id="load-from-zip">Unarchive the downloaded <code class="docutils literal notranslate"><span class="pre">cambridge-jazz-trio-database-vXXX.zip</span></code> file to a new directory. The resulting file structure should look something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── corpus_bill_evans                                         &lt;- The Bill Evans Trio dataset
+│   ├── evansb-34skidoo-gomezemorellm-1972-2ff369e4           &lt;- The first track in this corpus
+│   │   ├── bass.csv                                          &lt;- Timestamps of detected onsets for this instrument
+│   │   ├── beats.csv                                         &lt;- Onsets in `bass.csv`, `drums.csv`, `piano.csv` matched to nearest beat 
+│   │   ├── drums.csv
+│   │   ├── metadata.json                                     &lt;- Track metadata
+│   │   └── piano.csv
+│   ├── evansb-34skidoo-gomezemorellm-1974-8828ee88           &lt;- The second track in this corpus
+│   │   └── ...
+│   └── ...                                                   &lt;- Other tracks follow in their own directories: 236 tracks in total
+├── corpus_chronology                                         &lt;- The &quot;chronology&quot; trio dataset
+│   ├── barronk-andthenagain-williamsbrileyb-1982-a0ef8bbe    &lt;- The first track in this corpus   
+│   └── ...                                                   &lt;- 300 tracks in total
+└── README.md           
+</pre></div>
+</div>
+<p>To load the corpus in Python, you can use any of the files for reading <code class="docutils literal notranslate"><span class="pre">.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">.json</span></code> files in-built into <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas</span></code>, or the standard library <code class="docutils literal notranslate"><span class="pre">json</span></code> package.</p>
+<p>In order to maximize compatibility <a class="reference internal" href="feature-extractor.html#working-with-extractors"><span class="std std-ref">with our analysis code</span></a>, we’ve defined a utility function in <code class="docutils literal notranslate"><span class="pre">.\src\utils.py</span></code> to load a loose collection of <code class="docutils literal notranslate"><span class="pre">.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">.json</span></code> files as a list of <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> classes (defined in <code class="docutils literal notranslate"><span class="pre">.\src\detect\detect_utils.py</span></code>). First, follow the instructions in <a class="reference internal" href="../installation/build-database.html#build-database-setup"><span class="std std-ref">Setting up</span></a> to clone our repository and install the requirements. Then, call <code class="docutils literal notranslate"><span class="pre">utils.load_corpus_from_files</span></code> and pass in the path to the directory containing the individual track folders.</p>
+<p>For instance, to load the files in the <code class="docutils literal notranslate"><span class="pre">corpus_bill_evans</span></code> folder:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">src</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_corpus_from_files</span><span class="p">(</span><span class="s1">&#39;path/to/corpus_bill_evans&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="loading-p-files-database-built-from-source">
+<h2>Loading <code class="docutils literal notranslate"><span class="pre">.p</span></code> files (database built from source)<a class="headerlink" href="#loading-p-files-database-built-from-source" title="Permalink to this heading">#</a></h2>
+<div class="admonition tip" id="load-from-src">
+<p class="admonition-title">Tip</p>
+<p>By default, compiling the database from source will also build the <code class="docutils literal notranslate"><span class="pre">.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">.json</span></code> files described in the <a class="reference internal" href="#load-from-src"><span class="std std-ref">loading data from source</span></a> section above, so you can also follow those instructions.</p>
+</div>
+<p>If you’ve compiled the database from source by <a class="reference internal" href="../installation/build-database.html#build-database"><span class="std std-ref">following the instructions</span></a>, after running <code class="docutils literal notranslate"><span class="pre">.\src\detect\detect_onsets.py</span></code> you should end up with a <code class="docutils literal notranslate"><span class="pre">.p</span></code> file inside <code class="docutils literal notranslate"><span class="pre">.\models</span></code>.</p>
+<p>To unserialise this file, you can either use the <code class="docutils literal notranslate"><span class="pre">pickle</span></code> (Python standard library) or <code class="docutils literal notranslate"><span class="pre">dill</span></code> (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">dill</span></code>) modules, or our handy <code class="docutils literal notranslate"><span class="pre">unserialise_object</span></code> function in <code class="docutils literal notranslate"><span class="pre">.\src\utils.py</span></code> (<em>recommended</em>).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">src</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">unserialise_object</span><span class="p">(</span><span class="sa">rf</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">utils</span><span class="o">.</span><span class="n">get_project_root</span><span class="p">()</span><span class="si">}</span><span class="s1">\models\</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">.p&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -456,11 +506,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="feature-extractor.html"
+       href="onsetmaker-classes.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Working with <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> classes</p>
+        <p class="prev-next-title">Working with <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> classes</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -473,6 +523,19 @@ document.write(`
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-csv-files-pre-built-database">Loading <code class="docutils literal notranslate"><span class="pre">.csv</span></code> files (pre-built database)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-p-files-database-built-from-source">Loading <code class="docutils literal notranslate"><span class="pre">.p</span></code> files (database built from source)</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 

@@ -4,20 +4,24 @@
 ```{toctree}
 :maxdepth: 1
 :caption: Loading data
-Working with the database in Python <loading-data.md>
+Loading the database in Python <loading-data.md>
+Working with `OnsetMaker` classes <onsetmaker-classes.md>
 ```
 
 ```{toctree}
 :maxdepth: 1
 :caption: Feature extraction
 
-Working with `Extractor`s <feature-extractor.md>
-Combining multiple `Extractor`s <combining-extractors.md>
-Defining new `Extractor`s <define-extractors.md>
-Currently implemented `Extractor`s <implemented-extractors.md>
+Working with `Extractor` classes <feature-extractor.md>
+Combining multiple `Extractor` classes <combining-extractors.md>
+Defining new `Extractor` classes <define-extractors.md>
+Currently implemented `Extractor` classes <implemented-extractors.md>
 ```
 
 ```{toctree}
 :maxdepth: 1
 :caption: Visualising results
+
+General plotting workflow <plotting-workflow.md>
+Visualizing a single performance <visualise-performance.md>
 ```
