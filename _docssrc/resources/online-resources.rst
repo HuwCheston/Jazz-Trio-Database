@@ -6,7 +6,7 @@ Online Resources
     :class-container: sd-text-center
 
     .. grid-item-card::
-        :img-top: visualisation-screengrab-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/_docssrc/resources/visualisation-screengrab-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -24,7 +24,7 @@ Online Resources
             Performer networks
 
     .. grid-item-card::
-        :img-top: output-screengrab-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/_docssrc/resources/output-screengrab-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md
