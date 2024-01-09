@@ -22,7 +22,7 @@ from src import utils
 
 __all__ = [
     'PolarPlotAsynchrony', 'BarPlotProportionalAsynchrony', 'HistPlotProportionalAsynchrony',
-    'RegPlotPianistAsynchrony', 'HistPlotProportionalAsynchronyTriosPiano', 'ScatterPlotByBeat'
+    'RegPlotPianistAsynchrony', 'HistPlotProportionalAsynchronyTriosPiano', 'ScatterPlotAsynchrony'
 ]
 
 
@@ -693,7 +693,7 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
         self.fig.subplots_adjust(left=0.2, right=0.95, top=0.85, bottom=0.1, hspace=0, wspace=0.05)
 
 
-class ScatterPlotByBeat(vutils.BasePlot):
+class ScatterPlotAsynchrony(vutils.BasePlot):
     """Creates a scatter plot for all onset values within a given track, similar to those in `OnsetSync` R package"""
     wraparound = 0.9
 
@@ -705,11 +705,7 @@ class ScatterPlotByBeat(vutils.BasePlot):
             **kwargs
         )
         self.df = pd.DataFrame(self.format_df())
-        self.cmap = sns.color_palette(
-            kwargs.get('cmap', 'husl'),
-            n_colors=len(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()),
-            as_cmap=False
-        )
+        self.cmap = vutils.RGB
         self.fig, self.ax = plt.subplots(
             nrows=1,
             ncols=len(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()),
@@ -735,15 +731,15 @@ class ScatterPlotByBeat(vutils.BasePlot):
 
     def _create_plot(self) -> None:
         """Creates main plot: scatter plot of each instrument"""
-        for ax, (idx, grp), col in zip(self.ax.flatten(), self.df.groupby('instrument'), self.cmap):
-            g = sns.scatterplot(data=grp, x='musical_position', y='timestamp', ax=ax, color=col, s=40, legend=None)
-            g.set_title(idx.title())
+        for ax, instr, col in zip(self.ax.flatten(), utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(), self.cmap):
+            g = sns.scatterplot(data=self.df[self.df['instrument'] == instr], x='musical_position', y='timestamp', ax=ax, color=col, s=40, legend=None)
+            g.set_title(instr.title())
 
     def _format_ax(self) -> None:
         """Formats axis-level parameters"""
         minor_ticks = [i + f for i in range(1, 5) for f in (1 / 3, 2 / 3)]
         for ax in self.ax.flatten():
-            ax.set(xlim=(0.8, 5.2), xticks=list(range(1, self.time_sig + 1)), xlabel='', ylabel='')
+            ax.set(xlim=(0.8, self.time_sig + 0.9), xticks=list(range(1, self.time_sig +1)), xlabel='', ylabel='')
             ax.set_xticks(minor_ticks, labels=[], minor=True)
             ax.grid(which='major', ls='-', lw=1)
             ax.grid(which='minor', ls='--', lw=0.3)
