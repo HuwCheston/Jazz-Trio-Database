@@ -94,7 +94,7 @@ class OnsetMaker:
         # Empty attribute to hold our evaluation with a reference
         self.onset_evaluation: list = []
         # Load our audio file in when we initialise the item: we won't be changing this much
-        if self.item is not None:
+        if self.item is not None and not kwargs.get('skip_processing', False):
             self.audio = self._load_audio(**kwargs)
 
     def __repr__(self):
