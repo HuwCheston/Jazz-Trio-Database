@@ -26,9 +26,13 @@ Below is an example of what the data looks like:
 
 ## Download
 
-The Cambridge Jazz Trio Database is provided as a zip file containing the onset annotations in CSV format, with metadata in XLSX format. The source code for building these onsets is also available publicly. The metadata files contain the following fields for every recording:
+The Cambridge Jazz Trio Database is provided as a `.zip` file containing the onset and beat annotations in `.csv` format, with metadata in `.json` format. The source code for building these onsets is also available publicly. 
 
-**Download link coming soon!**
+To download the database, navigate to [`Releases`](https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database/releases) and download the most recent `.zip` file.
+
+The metadata files contain the following fields for every recording:
+
+
 
 | Field               | Description                                                                                   |
 |---------------------|-----------------------------------------------------------------------------------------------|
