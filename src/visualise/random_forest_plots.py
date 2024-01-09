@@ -419,7 +419,7 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
     def _format_dax(self) -> None:
         """Sets axis-level parameters for the dendrogram"""
         self.dax.set(ylim=(0, 1.2), yticks=[])
-        self.dax.axhline(1.15, 0, 1, color=vutils.BLACK, lw=vutils.LINEWIDTH * 2, ls='dashed', alpha=vutils.ALPHA)
+        self.dax.axhline(1.15, 0, 1, color=vutils.BLACK, lw=vutils.LINEWIDTH, ls='dashed', alpha=vutils.ALPHA)
         plt.setp(self.dax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.dax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, bottom=True)
         for spine in ['top', 'left', 'right']:
@@ -448,19 +448,19 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
 
     def _format_fig(self) -> None:
         """Sets figure-level parameters"""
-        self.fig.supxlabel('Predicted pianist', y=0.03)
-        self.fig.supylabel('Actual pianist')
-        self.fig.subplots_adjust(top=1, bottom=0.075, left=0.1, right=0.95)
+        self.fig.supxlabel('Predicted pianist', y=0.01)
+        self.fig.supylabel('Actual pianist', y=0.45)
+        self.fig.subplots_adjust(top=1, bottom=0.01, left=0.1, right=0.95)
         pos = self.ax.get_position()
         self.ax.set_position([pos.x0, pos.y0, pos.width, pos.height])
         cax = self.ax.figure.axes[-1]
-        cax.set_position([0.915, 0.17, 0.2, 0.575])
+        cax.set_position([0.915, 0.17, 0.2, 0.51])
         cax.get_yaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
         cax.set_ylim(0, 100)
         cax.set_yticklabels(['0', '25', '50', '75', '100'])
         cax.tick_params(axis='y', which='minor', width=None, right=False)
         pos = self.dax.get_position()
-        self.dax.set_position([pos.x0, pos.y0 + 0.055, pos.width, pos.height - 0.06])
+        self.dax.set_position([pos.x0, pos.y0 + 0.03, pos.width, pos.height - 0.035])
         self.dax.set(xticklabels=[])
 
 
