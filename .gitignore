@@ -110,6 +110,8 @@ target/
 *.p
 *.reapeaks
 *.csv
+*.json
+*.zip
 
 # Ignore .svg image files in all but the documentation folders
 *.png

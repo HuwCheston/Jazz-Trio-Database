@@ -42,7 +42,7 @@ def process_item(
 
 
 @click.command()
-@click.option("-corpus", "corpus_filename", type=str, default="corpus_chronology", help='Name of the corpus to use')
+@click.option("-corpus", "corpus_filename", type=str, default="corpus_bill_evans", help='Name of the corpus to use')
 @click.option("-n_jobs", "n_jobs", type=click.IntRange(-1, clamp=True), default=-1, help='Number of CPU cores to use')
 @click.option("-no_click", "generate_click", is_flag=True, default=False, help='Suppress click track generation')
 @click.option("-annotated-only", "annotated_only", is_flag=True, default=False, help='Only use items with annotations')
@@ -85,8 +85,11 @@ def main(
     # Kill the track saving worker by adding a NoneType object to its queue
     q.put(None)
     p.join()
-    # Log the completion time and return the class instances
+    # Save the `.csv` `.json` files for this corpus in their own directory
+    utils.generate_corpus_files(corpus_filename)
+    # Log the completion time
     logger.info(f'onsets detected for all tracks in {corpus_filename} in {round(time() - start)} secs !')
+    # Return the class instances
     return res
 
 

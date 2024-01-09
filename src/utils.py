@@ -622,5 +622,35 @@ class CorpusMaker:
             yield track
 
 
+def generate_corpus_files(corpus_fname: str) -> None:
+    """Generates the `.csv` and `.json` files for a single `corpus_fname`"""
+    def mkdir(path: str):
+        try:
+            os.mkdir(path)
+        except FileExistsError:
+            pass
+
+    # Load in the corpus file
+    res = unserialise_object(rf'{get_project_root()}/models/matched_onsets_{corpus_fname}')
+    # Make a master directory for this corpus
+    dirpath = fr"{get_project_root()}/models/{corpus_fname}"
+    mkdir(dirpath)
+    # Iterate through each track in the corpus
+    for track in res:
+        # Make a folder for this track
+        trackpath = dirpath + fr'/{track.item["fname"]}'
+        mkdir(trackpath)
+        # Iterate through each instrument
+        for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+            # Save a `.csv` file of this performer's onsets
+            ons = pd.Series(track.ons[instr])
+            ons.to_csv(fr"{trackpath}/{instr}.csv", header=False, index=False)
+        # Save a `.csv` file of the matched beats and onsets
+        beats = pd.DataFrame(track.summary_dict)
+        beats.to_csv(fr"{trackpath}/beats.csv", header=True, index=True)
+        # Save a `.json` file of the track metadata
+        save_json(track.item, trackpath, "metadata")
+
+
 if __name__ == '__main__':
     pass
