@@ -426,6 +426,7 @@ document.write(`
             #cover  {
                 float: right;
                 margin: 0 0 0 5px;
+                border: 5px solid #000000;
             }
             </style>
             <meta charset="utf-8">
@@ -444,6 +445,7 @@ document.write(`
                     <option value="mance">Junior Mance: 'For Dancers Only' (1962)</option>
                     <option value="jamal">Ahmad Jamal: 'Tater Pie' (1992)</option>
                 </select>
+                <label id="nowloading"><em></em></label>
             </div>
             <p></p>
             <div>
@@ -492,6 +494,8 @@ document.write(`
                 getTrack()
 
                 function disableButtons() {
+                    let loadtext = document.getElementById("nowloading");
+                    loadtext.innerHTML = "Now loading...";
                     play.disabled = true;
                     pause.disabled = true;
                     stop.disabled = true;
@@ -499,6 +503,8 @@ document.write(`
                 }
 
                 function enableButtons() {
+                    let loadtext = document.getElementById("nowloading");
+                    loadtext.innerHTML = "";
                     play.disabled = false;
                     pause.disabled = false;
                     stop.disabled = false;
