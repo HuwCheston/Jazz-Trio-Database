@@ -65,9 +65,13 @@
                 var metronomeVol = 0;
 
                 var bass;
+                bassLoaded = false;
                 var piano;
+                pianoLoaded = false;
                 var drums;
+                drumsLoaded = false;
                 var beats;
+                beatsLoaded = false;
                 getTrack()
 
                 function disableButtons() {
@@ -94,7 +98,7 @@
                     cont.appendChild(renderjson(js));
                 }
 
-                function getStem(trackFname, instr) {
+                function getStem(trackFname, instr, isLoaded) {
                     let stemFname = `${trackFname}/${instr}.wav`;
                     let stemSlide = document.getElementById(`${instr}vol`);
                     let stemVol = stemSlide.value;
@@ -104,6 +108,9 @@
                         loop:  false,
                         preload: true,
                         onend: stopFunc,
+                        onload: function logger() {
+                            isLoaded = true;
+                        }
                     })
                 }
 
@@ -118,16 +125,33 @@
                     if (bass instanceof Howl) {
                         stopFunc()
                     }
-                    bass = getStem(trackFname, "bass");
-                    piano = getStem(trackFname, "piano");
-                    drums = getStem(trackFname, "drums");
+                    bass = getStem(trackFname, "bass", bassLoaded);
+                    piano = getStem(trackFname, "piano", pianoLoaded);
+                    drums = getStem(trackFname, "drums", drumsLoaded);
                     beats = new Howl ({
                         src: [`${trackFname}/beats.wav`],
                         volume: metronomeVol,
                         loop:  false,
                         preload: true,
-                        onload: enableButtons
+                        onload: function logger() {
+                            beatsLoaded = true;
+                        }
                     })
+                    checkAllLoaded()
+                }
+
+                function checkLoaded(howl_) {
+                    return (howl_.state() === "loaded")
+                }
+
+                function checkAllLoaded() {
+                    let allLoaded = [checkLoaded(piano), checkLoaded(bass), checkLoaded(drums), checkLoaded(beats)]
+                    console.log(allLoaded)
+                    if (!allLoaded.every(Boolean)) {
+                       window.setTimeout(checkAllLoaded, 100);
+                    } else {
+                        enableButtons()
+                    }
                 }
 
                 function playFunc() {
@@ -139,6 +163,7 @@
                     piano.play();
                     beats.play();
                 }
+
                 function pauseFunc() {
                     ff.stop()
                     play.style.backgroundColor = '';
@@ -148,6 +173,7 @@
                     piano.pause();
                     beats.pause();
                 }
+
                 function stopFunc() {
                     ff.stop()
                     play.style.backgroundColor = '';
