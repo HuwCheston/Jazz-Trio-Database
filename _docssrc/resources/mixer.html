@@ -1,0 +1,168 @@
+<!doctype html>
+    <html lang="en">
+        <head>
+            <style>
+            form label {
+              display: inline-block;
+              width: 200px;
+            }
+            #cover  {
+                float: right;
+                margin: 0 0 0 5px;
+            }
+            #id {
+                float: right;
+                margin: 0 0 0 5px;
+            }
+            </style>
+            <meta charset="utf-8">
+        </head>
+        <body>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
+            <script src="https://unpkg.com/freezeframe/dist/freezeframe.min.js"></script>
+            <script src="../_static/audio-mixer/renderjson.js"></script>
+            <img src="../_static/audio-mixer/evans/cover.jpg" alt="" width="200px" height="200px" id="cover"/>
+            <div>
+                <label>Select a track 🎵:</label>
+                <select name="select" id="select" onchange="getTrack()">
+                    <option value="evans">Bill Evans: 'Come Rain or Come Shine' (1965)</option>
+                    <option value="mance">Junior Mance: 'For Dancers Only' (1962)</option>
+                    <option value="jamal">Ahmad Jamal: 'Tater Pie' (1992)</option>
+                </select>
+            </div>
+            <p></p>
+            <div>
+                <label>Audio controls 🎛:</label>
+                <button id="play">Play ▶</button>
+                <button id="pause">Pause ⏸</button>
+                <button id="stop">Stop ⏹</button>
+                <button id="metronome">Metronome OFF</button>
+                <img class="freezeframe" src="../_static/audio-mixer/recordspin.gif" alt="Spinning record" id="recordspin" style="width:35px;height:35px;background:none;border:none" >
+            </div>
+            <p></p>
+            <form>
+                <p><label>Volume faders 🎚:</label></p>
+                <p><label>Piano 🎹</label><input id="pianovol" type="range" min="0" max="1" value="1" step="0.1" onchange="updateVol(this.value, piano)" oninput="updateVol(this.value, piano)"/></p>
+                <p><label>Bass 🎻</label><input id="bassvol" type="range" min="0" max="1" value="1" step="0.1" onchange="updateVol(this.value, bass)" oninput="updateVol(this.value, bass)"/></p>
+                <p><label>Drums 🥁</label><input id="drumsvol" type="range" min="0" max="1" value="1" step="0.1" onchange="updateVol(this.value, drums)" oninput="updateVol(this.value, drums)"/></p>
+            </form>
+            <p><label>Track metadata:</label></p>
+            <div id="jsoncontainer"></div>
+            <script>
+                renderjson.set_show_to_level(1);
+                var ff = new Freezeframe(document.getElementById("recordspin"), {responsive: false, trigger: false});
+                ff.stop();
+
+                const play = document.getElementById("play");
+                play.addEventListener("click", playFunc);
+                const pause = document.getElementById("pause");
+                pause.addEventListener("click", pauseFunc);
+                const stop = document.getElementById("stop");
+                stop.addEventListener("click", stopFunc);
+
+                const metronome = document.getElementById("metronome");
+                metronome.style.backgroundColor = '#FF0000';
+                metronome.addEventListener("click", metronomeFunc);
+                var metronomeVol = 0;
+
+                var bass;
+                var piano;
+                var drums;
+                var beats;
+                getTrack()
+
+                function addJSON(trackFname) {
+                    let request = new XMLHttpRequest();
+                    request.open("GET", `${trackFname}/metadata.json`, false);
+                    request.send(null)
+                    let js = JSON.parse(request.responseText);
+                    let cont = document.getElementById("jsoncontainer")
+                    cont.textContent = ''
+                    cont.appendChild(renderjson(js));
+                }
+
+                function getStem(trackFname, instr) {
+                    let stemFname = `${trackFname}/${instr}.wav`;
+                    let stemSlide = document.getElementById(`${instr}vol`);
+                    let stemVol = stemSlide.value;
+                    return new Howl ({
+                        src: [stemFname],
+                        volume: stemVol,
+                        loop:  false,
+                        preload: true,
+                        html5: true,
+                        onend: stopFunc,
+                    })
+                }
+
+                function getTrack() {
+                    let select = document.getElementById("select");
+                    let track = select.value;
+                    let trackFname = `../_static/audio-mixer/${track}`;
+                    addJSON(trackFname)
+                    var img = document.getElementById("cover");
+                    img.src=`${trackFname}/cover.jpg`;
+                    if (bass instanceof Howl) {
+                        stopFunc()
+                    }
+                    bass = getStem(trackFname, "bass");
+                    piano = getStem(trackFname, "piano");
+                    drums = getStem(trackFname, "drums");
+                    beats = new Howl ({
+                        src: [`${trackFname}/beats.wav`],
+                        volume: metronomeVol,
+                        loop:  false,
+                        preload: true,
+                        html5: true,
+                    })
+                }
+
+                function playFunc() {
+                    ff.start()
+                    play.style.backgroundColor = "#008000";
+                    pause.style.backgroundColor = '';
+                    bass.play();
+                    drums.play();
+                    piano.play();
+                    beats.play();
+                }
+                function pauseFunc() {
+                    ff.stop()
+                    play.style.backgroundColor = '';
+                    pause.style.backgroundColor = '#FF0000';
+                    bass.pause();
+                    drums.pause();
+                    piano.pause();
+                    beats.pause();
+                }
+                function stopFunc() {
+                    ff.stop()
+                    play.style.backgroundColor = '';
+                    pause.style.backgroundColor = '';
+                    bass.stop();
+                    drums.stop();
+                    piano.stop();
+                    beats.stop();
+                }
+
+                function metronomeFunc() {
+                    if (metronomeVol === 1) {
+                        metronomeVol = 0
+                        beats.volume(metronomeVol);
+                        metronome.style.backgroundColor = '#FF0000';
+                        metronome.innerText = 'Metronome OFF';
+                    }
+                    else {
+                        metronomeVol = 1
+                        beats.volume(metronomeVol);
+                        metronome.style.backgroundColor = "#008000";
+                        metronome.innerText = 'Metronome ON';
+                    }
+                }
+
+                function updateVol(newValue, howl) {
+                    howl.volume(newValue);
+                }
+            </script>
+        </body>
+    </html>

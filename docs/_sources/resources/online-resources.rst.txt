@@ -41,6 +41,24 @@ Online Resources
 
             Example outputs
 
+    .. grid-item-card::
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/_docssrc/resources/output-screengrab-card.png
+        :width: 100%
+        :class-card: intro-card
+        :shadow: md
+
+        Interactively mix our processed audio
+
+        +++
+
+        .. button-ref:: audio-mixer
+            :ref-type: any
+            :click-parent:
+            :color: secondary
+            :expand:
+
+            Audio mixer
+
 
 
 .. toctree::
@@ -48,3 +66,4 @@ Online Resources
 
     Performer networks <trio-network-search.rst>
     Example outputs <example-outputs.rst>
+    Audio mixer <audio-mixer.rst>

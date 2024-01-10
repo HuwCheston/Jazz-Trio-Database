@@ -1,0 +1,12 @@
+{
+    "track_name": "Come Rain or Come Shine",
+    "album_name": "Trio 65",
+    "recording_year": "1965",
+    "pianist": "Bill Evans",
+    "channel_overrides": {
+        "bass": "l",
+        "drums": "r"
+    },
+    "mbz_id": "b59b9d18-104f-4f1d-8389-bcab52ec1328",
+    "notes": ""
+}
