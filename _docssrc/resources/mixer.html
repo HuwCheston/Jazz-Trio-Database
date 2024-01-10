@@ -10,10 +10,6 @@
                 float: right;
                 margin: 0 0 0 5px;
             }
-            #id {
-                float: right;
-                margin: 0 0 0 5px;
-            }
             </style>
             <meta charset="utf-8">
         </head>
@@ -21,9 +17,11 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.js"></script>
             <script src="https://unpkg.com/freezeframe/dist/freezeframe.min.js"></script>
             <script src="../_static/audio-mixer/renderjson.js"></script>
-            <img src="../_static/audio-mixer/evans/cover.jpg" alt="" width="200px" height="200px" id="cover"/>
+            <figure>
+                <img src="../_static/audio-mixer/evans/cover.jpg" alt="" width="200px" height="200px" id="cover"/>
+            </figure>
             <div>
-                <label>Select a track 🎵:</label>
+                <label><b>Select a track 🎵:</b></label>
                 <select name="select" id="select" onchange="getTrack()">
                     <option value="evans">Bill Evans: 'Come Rain or Come Shine' (1965)</option>
                     <option value="mance">Junior Mance: 'For Dancers Only' (1962)</option>
@@ -32,7 +30,7 @@
             </div>
             <p></p>
             <div>
-                <label>Audio controls 🎛:</label>
+                <label><b>Audio controls 🎛:</b></label>
                 <button id="play">Play ▶</button>
                 <button id="pause">Pause ⏸</button>
                 <button id="stop">Stop ⏹</button>
@@ -41,12 +39,12 @@
             </div>
             <p></p>
             <form>
-                <p><label>Volume faders 🎚:</label></p>
+                <p><label><b>Volume faders 🎚:</b></label></p>
                 <p><label>Piano 🎹</label><input id="pianovol" type="range" min="0" max="1" value="1" step="0.1" onchange="updateVol(this.value, piano)" oninput="updateVol(this.value, piano)"/></p>
                 <p><label>Bass 🎻</label><input id="bassvol" type="range" min="0" max="1" value="1" step="0.1" onchange="updateVol(this.value, bass)" oninput="updateVol(this.value, bass)"/></p>
                 <p><label>Drums 🥁</label><input id="drumsvol" type="range" min="0" max="1" value="1" step="0.1" onchange="updateVol(this.value, drums)" oninput="updateVol(this.value, drums)"/></p>
             </form>
-            <p><label>Track metadata:</label></p>
+            <p><label><b>Track metadata:</b></label></p>
             <div id="jsoncontainer"></div>
             <script>
                 renderjson.set_show_to_level(1);
@@ -59,8 +57,9 @@
                 pause.addEventListener("click", pauseFunc);
                 const stop = document.getElementById("stop");
                 stop.addEventListener("click", stopFunc);
-
                 const metronome = document.getElementById("metronome");
+                disableButtons()
+
                 metronome.style.backgroundColor = '#FF0000';
                 metronome.addEventListener("click", metronomeFunc);
                 var metronomeVol = 0;
@@ -70,6 +69,20 @@
                 var drums;
                 var beats;
                 getTrack()
+
+                function disableButtons() {
+                    play.disabled = true;
+                    pause.disabled = true;
+                    stop.disabled = true;
+                    metronome.disabled = true;
+                }
+
+                function enableButtons() {
+                    play.disabled = false;
+                    pause.disabled = false;
+                    stop.disabled = false;
+                    metronome.disabled = false;
+                }
 
                 function addJSON(trackFname) {
                     let request = new XMLHttpRequest();
@@ -90,12 +103,12 @@
                         volume: stemVol,
                         loop:  false,
                         preload: true,
-                        html5: true,
                         onend: stopFunc,
                     })
                 }
 
                 function getTrack() {
+                    disableButtons()
                     let select = document.getElementById("select");
                     let track = select.value;
                     let trackFname = `../_static/audio-mixer/${track}`;
@@ -113,7 +126,7 @@
                         volume: metronomeVol,
                         loop:  false,
                         preload: true,
-                        html5: true,
+                        onload: enableButtons
                     })
                 }
 
