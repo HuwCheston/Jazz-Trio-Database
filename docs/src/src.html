@@ -570,6 +570,7 @@ document.write(`
 </li>
 <li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.bandpass_filter"><code class="docutils literal notranslate"><span class="pre">bandpass_filter()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.calculate_tempo"><code class="docutils literal notranslate"><span class="pre">calculate_tempo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.create_silent_clicktrack"><code class="docutils literal notranslate"><span class="pre">create_silent_clicktrack()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="src.detect.html#module-src.detect.optimise_detection_parameters">src.detect.optimise_detection_parameters module</a><ul>
@@ -1709,6 +1710,12 @@ document.write(`
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="src.utils.convert_to_mp3">
+<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">convert_to_mp3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.wav'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.utils.convert_to_mp3" title="Permalink to this definition">#</a></dt>
+<dd><p>Converts all files with target <cite>.wav</cite> in <cite>dirpath</cite> to low bitrate <a href="#id1"><span class="problematic" id="id2">`</span></a>.mp3`s</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="src.utils.disable_settingwithcopy_warning">
 <span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">disable_settingwithcopy_warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="headerlink" href="#src.utils.disable_settingwithcopy_warning" title="Permalink to this definition">#</a></dt>
 <dd><p>Simple decorator that disables the annoying <cite>SettingWithCopy</cite> warning in Pandas</p>
@@ -1738,7 +1745,7 @@ document.write(`
 <dd><p>Open a pickle file and get the IDs of tracks that have already been processed</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>fpath (str): filepath to load object from
-<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: passed to <cite>unserialise_object</cite></p>
+<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: passed to <cite>unserialise_object</cite></p>
 </dd>
 <dt>Yields:</dt><dd><p>str: the Musicbrainz ID of the processed track</p>
 </dd>
@@ -1765,7 +1772,7 @@ document.write(`
 <dd><p>Initialise the objects we need for caching through multiprocessing</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>target_func (Callable, optional): target function for the worker process, defaults to <cite>serialise_from_queue</cite>
-<a href="#id3"><span class="problematic" id="id4">*</span></a>target_func_args: arguments passed to <cite>target_func</cite></p>
+<a href="#id5"><span class="problematic" id="id6">*</span></a>target_func_args: arguments passed to <cite>target_func</cite></p>
 </dd>
 <dt>Returns:</dt><dd><p>tuple</p>
 </dd>
@@ -1862,7 +1869,7 @@ fpath (str): the filepath to save items to (file will be created if it does not 
 <dl class="simple">
 <dt>Arguments:</dt><dd><p>kwarg (str): the argument to attempt to get from the kwargs dictionary
 kwargs (dict): the dictionary of keyword arguments
-<a href="#id5"><span class="problematic" id="id6">default_</span></a> (bool, optional): the value to return if kwarg is not found in kwargs, defaults to None</p>
+<a href="#id7"><span class="problematic" id="id8">default_</span></a> (bool, optional): the value to return if kwarg is not found in kwargs, defaults to None</p>
 </dd>
 <dt>Returns:</dt><dd><p>Any: the value returned from kwargs, or a default</p>
 </dd>
@@ -1947,6 +1954,7 @@ kwargs (dict): the dictionary of keyword arguments
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.check_item_present_locally"><code class="docutils literal notranslate"><span class="pre">check_item_present_locally()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.convert_to_mp3"><code class="docutils literal notranslate"><span class="pre">convert_to_mp3()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.disable_settingwithcopy_warning"><code class="docutils literal notranslate"><span class="pre">disable_settingwithcopy_warning()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.flatten_dict"><code class="docutils literal notranslate"><span class="pre">flatten_dict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.generate_corpus_files"><code class="docutils literal notranslate"><span class="pre">generate_corpus_files()</span></code></a></li>

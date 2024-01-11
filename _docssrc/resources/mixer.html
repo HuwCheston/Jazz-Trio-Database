@@ -24,9 +24,16 @@
             <div>
                 <label><b>Select a track 🎵:</b></label>
                 <select name="select" id="select" onchange="getTrack()">
+                    <option value="barron">Kenny Barron: 'Guess What' (2005)</option>
                     <option value="evans">Bill Evans: 'Come Rain or Come Shine' (1965)</option>
-                    <option value="mance">Junior Mance: 'For Dancers Only' (1962)</option>
+                    <option value="flanagan">Tommy Flanagan: 'Between the Devil and the Deep Blue Sea' (1996)</option>
+                    <option value="hicks">John Hicks: 'I Didn't Know What Time It Was' (1987)</option>
                     <option value="jamal">Ahmad Jamal: 'Tater Pie' (1992)</option>
+                    <option value="jarrett">Keith Jarrett: 'Lisbon Stomp' (1968)</option>
+                    <option value="mance">Junior Mance: 'For Dancers Only' (1962)</option>
+                    <option value="peterson">Oscar Peterson: 'Take the A Train' (1974)</option>
+                    <option value="powell">Bud Powell: 'Reets and I (Alternate Take)' (1953)</option>
+                    <option value="tyner">McCoy Tyner: 'Blues for Gwen' (1962)</option>
                 </select>
                 <label id="nowloading"><em></em></label>
             </div>
@@ -49,7 +56,7 @@
             <p><label><b>Track metadata:</b></label></p>
             <div id="jsoncontainer"></div>
             <script>
-                renderjson.set_show_to_level(1);
+                renderjson.set_show_to_level(0);
                 var ff = new Freezeframe(document.getElementById("recordspin"), {responsive: false, trigger: false});
                 ff.stop();
 
@@ -105,7 +112,7 @@
                 }
 
                 function getStem(trackFname, instr, isLoaded) {
-                    let stemFname = `${trackFname}/${instr}.wav`;
+                    let stemFname = `${trackFname}/${instr}.mp3`;
                     let stemSlide = document.getElementById(`${instr}vol`);
                     let stemVol = stemSlide.value;
                     return new Howl ({
@@ -135,7 +142,7 @@
                     piano = getStem(trackFname, "piano", pianoLoaded);
                     drums = getStem(trackFname, "drums", drumsLoaded);
                     beats = new Howl ({
-                        src: [`${trackFname}/beats.wav`],
+                        src: [`${trackFname}/beats.mp3`],
                         volume: metronomeVol,
                         loop:  false,
                         preload: true,
@@ -152,9 +159,9 @@
 
                 function checkAllLoaded() {
                     let allLoaded = [checkLoaded(piano), checkLoaded(bass), checkLoaded(drums), checkLoaded(beats)]
-                    console.log(allLoaded)
+                    console.log(`tracks loaded: ${allLoaded}`)
                     if (!allLoaded.every(Boolean)) {
-                       window.setTimeout(checkAllLoaded, 100);
+                       window.setTimeout(checkAllLoaded, 500);
                     } else {
                         enableButtons()
                     }

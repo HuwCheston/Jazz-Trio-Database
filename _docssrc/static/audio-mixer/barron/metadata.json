@@ -1,0 +1,46 @@
+{
+    "track_name": "Guess What",
+    "album_name": "Prayer",
+    "recording_year": "2005",
+    "pianist": "Kenny Barron",
+    "channel_overrides": {},
+    "mbz_id": "d4313f96-1a41-41f7-86e4-42cd714fbf89",
+    "notes": "",
+    "time_signature": 4,
+    "first_downbeat": 4.74,
+    "rating_bass_audio": null,
+    "rating_bass_detection": null,
+    "rating_drums_audio": null,
+    "rating_drums_detection": null,
+    "rating_mix": null,
+    "rating_piano_audio": null,
+    "rating_piano_detection": null,
+    "rating_comments": null,
+    "has_annotations": false,
+    "links": {
+        "external": [
+            "https://www.youtube.com/watch?v=WNO8ApGP1Yk"
+        ]
+    },
+    "excerpt_duration": "01:08",
+    "timestamps": {
+        "start": "00:42",
+        "end": "01:50"
+    },
+    "log": [],
+    "musicians": {
+        "pianist": "Kenny Barron",
+        "bassist": "Kiyoshi Kitagawa",
+        "drummer": "Brian Blade",
+        "leader": "pianist"
+    },
+    "photos": {
+        "musicians": {
+            "pianist": null,
+            "bassist": null,
+            "drummer": null
+        },
+        "album_artwork": null
+    },
+    "fname": "barronk-guesswhat-kitagawakbladeb-2005-d4313f96"
+}

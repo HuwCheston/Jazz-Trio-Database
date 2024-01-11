@@ -8,5 +8,32 @@
         "drums": "r"
     },
     "mbz_id": "b59b9d18-104f-4f1d-8389-bcab52ec1328",
-    "notes": ""
+    "notes": "",
+    "has_annotations": false,
+    "links": {
+        "external": [
+            "https://www.youtube.com/watch?v=qTIPBhMIxic"
+        ]
+    },
+    "excerpt_duration": "00:25",
+    "timestamps": {
+        "start": "04:08",
+        "end": "04:33"
+    },
+    "log": [],
+    "musicians": {
+        "pianist": "Bill Evans",
+        "bassist": "Chuck Israels",
+        "drummer": "Larry Bunker",
+        "leader": "pianist"
+    },
+    "photos": {
+        "musicians": {
+            "pianist": null,
+            "bassist": null,
+            "drummer": null
+        },
+        "album_artwork": null
+    },
+    "fname": "evansb-comerainorcomeshine-israelscbunkerl-1965-b59b9d18"
 }

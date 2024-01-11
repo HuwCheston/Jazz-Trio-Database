@@ -891,6 +891,12 @@ fade_dur (float): the length of time to fade the audio in and out by</p>
 <dd><p>Extract the average tempo from an array of times corresponding to crotchet beat positions</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="src.detect.detect_utils.create_silent_clicktrack">
+<span class="sig-prename descclassname"><span class="pre">src.detect.detect_utils.</span></span><span class="sig-name descname"><span class="pre">create_silent_clicktrack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csvpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis/beats.wav'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.detect.detect_utils.create_silent_clicktrack" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates a click track containing only clicks from <cite>csvpath</cite>, no source audio</p>
+</dd></dl>
+
 </section>
 <section id="module-src.detect.optimise_detection_parameters">
 <span id="src-detect-optimise-detection-parameters-module"></span><h2>src.detect.optimise_detection_parameters module<a class="headerlink" href="#module-src.detect.optimise_detection_parameters" title="Permalink to this heading">#</a></h2>
@@ -1252,6 +1258,7 @@ tracks (list[dict]): the metadata for the tracks to be used in optimization
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.bandpass_filter"><code class="docutils literal notranslate"><span class="pre">bandpass_filter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.calculate_tempo"><code class="docutils literal notranslate"><span class="pre">calculate_tempo()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.create_silent_clicktrack"><code class="docutils literal notranslate"><span class="pre">create_silent_clicktrack()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.detect.optimise_detection_parameters">src.detect.optimise_detection_parameters module</a><ul class="nav section-nav flex-column">
