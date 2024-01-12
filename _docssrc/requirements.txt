@@ -1,4 +1,0 @@
-Sphinx==6.2.1
-myst_parser
-sphinx-design
-pydata-sphinx-theme
