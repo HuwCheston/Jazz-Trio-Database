@@ -973,68 +973,68 @@ document.write(`
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.visualise.asynchrony_plots.</span></span><span class="sig-name descname"><span class="pre">ScatterPlotAsynchrony</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onset_maker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker" title="src.detect.detect_utils.OnsetMaker"><span class="pre">OnsetMaker</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.visualise.asynchrony_plots.</span></span><span class="sig-name descname"><span class="pre">ScatterPlotAsynchronyTrack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onset_maker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker" title="src.detect.detect_utils.OnsetMaker"><span class="pre">OnsetMaker</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#src.visualise.visualise_utils.BasePlot" title="src.visualise.visualise_utils.BasePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePlot</span></code></a></p>
 <p>Creates a scatter plot for all onset values within a given track, similar to those in <cite>OnsetSync</cite> R package</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony._create_plot">
-<span class="sig-name descname"><span class="pre">_create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._create_plot" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack._create_plot">
+<span class="sig-name descname"><span class="pre">_create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack._create_plot" title="Permalink to this definition">#</a></dt>
 <dd><p>Creates main plot: scatter plot of each instrument</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_ax">
-<span class="sig-name descname"><span class="pre">_format_ax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_ax" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack._format_ax">
+<span class="sig-name descname"><span class="pre">_format_ax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack._format_ax" title="Permalink to this definition">#</a></dt>
 <dd><p>Formats axis-level parameters</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_fig">
-<span class="sig-name descname"><span class="pre">_format_fig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_fig" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack._format_fig">
+<span class="sig-name descname"><span class="pre">_format_fig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack._format_fig" title="Permalink to this definition">#</a></dt>
 <dd><p>Formats figure-level parameters</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.ax">
-<span class="sig-name descname"><span class="pre">ax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.ax" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.ax">
+<span class="sig-name descname"><span class="pre">ax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.ax" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.create_plot">
-<span class="sig-name descname"><span class="pre">create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.create_plot" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.create_plot">
+<span class="sig-name descname"><span class="pre">create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.create_plot" title="Permalink to this definition">#</a></dt>
 <dd><p>Calls plot creation, axis formatting, and figure formatting classes, then saves in the decorator</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.df">
-<span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.df" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.df">
+<span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.df" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.fig">
-<span class="sig-name descname"><span class="pre">fig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.fig" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.fig">
+<span class="sig-name descname"><span class="pre">fig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.fig" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.format_df">
-<span class="sig-name descname"><span class="pre">format_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.format_df" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.format_df">
+<span class="sig-name descname"><span class="pre">format_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.format_df" title="Permalink to this definition">#</a></dt>
 <dd><p>Formats provided onset maker into correct dataframe format for plotting</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.g">
-<span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.g" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.g">
+<span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.g" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.output_dir">
-<span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.output_dir" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.output_dir">
+<span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.output_dir" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchrony.wraparound">
-<span class="sig-name descname"><span class="pre">wraparound</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.9</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.wraparound" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.wraparound">
+<span class="sig-name descname"><span class="pre">wraparound</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.9</span></em><a class="headerlink" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.wraparound" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1205,6 +1205,104 @@ document.write(`
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURByInstrument.output_dir">
 <span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURByInstrument.output_dir" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.visualise.bur_plots.</span></span><span class="sig-name descname"><span class="pre">HistPlotBURTrack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onset_maker</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.visualise.bur_plots.HistPlotBURByInstrument" title="src.visualise.bur_plots.HistPlotBURByInstrument"><code class="xref py py-class docutils literal notranslate"><span class="pre">HistPlotBURByInstrument</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.BURS_WITH_IMAGES">
+<span class="sig-name descname"><span class="pre">BURS_WITH_IMAGES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0.5,</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">3]</span></em><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.BURS_WITH_IMAGES" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.HIST_KWS">
+<span class="sig-name descname"><span class="pre">HIST_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'align':</span> <span class="pre">'edge',</span> <span class="pre">'ls':</span> <span class="pre">'-',</span> <span class="pre">'lw':</span> <span class="pre">1.0,</span> <span class="pre">'zorder':</span> <span class="pre">2}</span></em><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.HIST_KWS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.KDE_KWS">
+<span class="sig-name descname"><span class="pre">KDE_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alpha':</span> <span class="pre">1,</span> <span class="pre">'linestyle':</span> <span class="pre">'-',</span> <span class="pre">'linewidth':</span> <span class="pre">2,</span> <span class="pre">'zorder':</span> <span class="pre">3}</span></em><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.KDE_KWS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.VLINE_KWS">
+<span class="sig-name descname"><span class="pre">VLINE_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alpha':</span> <span class="pre">1,</span> <span class="pre">'color':</span> <span class="pre">'#000000',</span> <span class="pre">'linestyle':</span> <span class="pre">'dashed',</span> <span class="pre">'linewidth':</span> <span class="pre">3.0,</span> <span class="pre">'zorder':</span> <span class="pre">4}</span></em><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.VLINE_KWS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack._add_peaks">
+<span class="sig-name descname"><span class="pre">_add_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack._add_peaks" title="Permalink to this definition">#</a></dt>
+<dd><p>Adds peaks onto the given axis object <cite>ax</cite>, for the given instrument <cite>ins</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack._create_plot">
+<span class="sig-name descname"><span class="pre">_create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack._create_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Creates the histogram and kde plots</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack._format_ax">
+<span class="sig-name descname"><span class="pre">_format_ax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack._format_ax" title="Permalink to this definition">#</a></dt>
+<dd><p>Formats axis-level properties</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack._format_fig">
+<span class="sig-name descname"><span class="pre">_format_fig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack._format_fig" title="Permalink to this definition">#</a></dt>
+<dd><p>Formats figure-level properties</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack._kde">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_kde</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">len_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack._kde" title="Permalink to this definition">#</a></dt>
+<dd><p>Fit the KDE to the data and evaluate on a list of y-values, then scale</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.add_bur_images">
+<span class="sig-name descname"><span class="pre">add_bur_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.add_bur_images" title="Permalink to this definition">#</a></dt>
+<dd><p>Adds images for required BUR values</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.ax">
+<span class="sig-name descname"><span class="pre">ax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.ax" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.create_plot">
+<span class="sig-name descname"><span class="pre">create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.create_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Calls plot creation, axis formatting, and figure formatting classes, then saves in the decorator</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.df">
+<span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.df" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.fig">
+<span class="sig-name descname"><span class="pre">fig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.fig" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.format_df">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">format_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">om</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.format_df" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.g">
+<span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.g" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.bur_plots.HistPlotBURTrack.output_dir">
+<span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.bur_plots.HistPlotBURTrack.output_dir" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1638,7 +1736,7 @@ document.write(`
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBins.VLINE_KWS">
-<span class="sig-name descname"><span class="pre">VLINE_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alpha':</span> <span class="pre">0.4,</span> <span class="pre">'color':</span> <span class="pre">'#000000',</span> <span class="pre">'linestyle':</span> <span class="pre">'dashed',</span> <span class="pre">'linewidth':</span> <span class="pre">1.3333333333333333,</span> <span class="pre">'zorder':</span> <span class="pre">4}</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBins.VLINE_KWS" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">VLINE_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alpha':</span> <span class="pre">0.4,</span> <span class="pre">'color':</span> <span class="pre">'#000000',</span> <span class="pre">'linewidth':</span> <span class="pre">1.3333333333333333,</span> <span class="pre">'zorder':</span> <span class="pre">4}</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBins.VLINE_KWS" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1688,6 +1786,92 @@ document.write(`
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBins.output_dir">
 <span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBins.output_dir" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.visualise.complexity_plots.</span></span><span class="sig-name descname"><span class="pre">HistPlotBinsTrack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onset_maker</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.visualise.complexity_plots.HistPlotBins" title="src.visualise.complexity_plots.HistPlotBins"><code class="xref py py-class docutils literal notranslate"><span class="pre">HistPlotBins</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack.HIST_KWS">
+<span class="sig-name descname"><span class="pre">HIST_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'align':</span> <span class="pre">'edge',</span> <span class="pre">'ls':</span> <span class="pre">'-',</span> <span class="pre">'lw':</span> <span class="pre">1.0,</span> <span class="pre">'zorder':</span> <span class="pre">2}</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack.HIST_KWS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack.LINE_KWS">
+<span class="sig-name descname"><span class="pre">LINE_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alpha':</span> <span class="pre">1,</span> <span class="pre">'color':</span> <span class="pre">'#000000',</span> <span class="pre">'linestyle':</span> <span class="pre">'-',</span> <span class="pre">'linewidth':</span> <span class="pre">2,</span> <span class="pre">'zorder':</span> <span class="pre">3}</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack.LINE_KWS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack.PALETTE">
+<span class="sig-name descname"><span class="pre">PALETTE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['#000000',</span> <span class="pre">(0.4980392156862745,</span> <span class="pre">0.4980392156862745,</span> <span class="pre">0.4980392156862745),</span> <span class="pre">(0.8901960784313725,</span> <span class="pre">0.4666666666666667,</span> <span class="pre">0.7607843137254902),</span> <span class="pre">(0.5490196078431373,</span> <span class="pre">0.33725490196078434,</span> <span class="pre">0.29411764705882354),</span> <span class="pre">(0.5803921568627451,</span> <span class="pre">0.403921568627451,</span> <span class="pre">0.7411764705882353),</span> <span class="pre">(0.8392156862745098,</span> <span class="pre">0.15294117647058825,</span> <span class="pre">0.1568627450980392),</span> <span class="pre">(0.17254901960784313,</span> <span class="pre">0.6274509803921569,</span> <span class="pre">0.17254901960784313),</span> <span class="pre">(1.0,</span> <span class="pre">0.4980392156862745,</span> <span class="pre">0.054901960784313725),</span> <span class="pre">(0.12156862745098039,</span> <span class="pre">0.4666666666666667,</span> <span class="pre">0.7058823529411765),</span> <span class="pre">'#000000']</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack.PALETTE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack.VLINE_KWS">
+<span class="sig-name descname"><span class="pre">VLINE_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alpha':</span> <span class="pre">0.4,</span> <span class="pre">'color':</span> <span class="pre">'#000000',</span> <span class="pre">'linewidth':</span> <span class="pre">1.3333333333333333,</span> <span class="pre">'zorder':</span> <span class="pre">4}</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack.VLINE_KWS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack._create_plot">
+<span class="sig-name descname"><span class="pre">_create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack._create_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Create the main plot</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack._format_ax">
+<span class="sig-name descname"><span class="pre">_format_ax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack._format_ax" title="Permalink to this definition">#</a></dt>
+<dd><p>Format axis-level parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack._format_df">
+<span class="sig-name descname"><span class="pre">_format_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">om</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack._format_df" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack._format_fig">
+<span class="sig-name descname"><span class="pre">_format_fig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack._format_fig" title="Permalink to this definition">#</a></dt>
+<dd><p>Formats figure-level properties</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack._kde">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_kde</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">len_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack._kde" title="Permalink to this definition">#</a></dt>
+<dd><p>Fit the KDE to the data and evaluate on a list of y-values, then scale</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack.ax">
+<span class="sig-name descname"><span class="pre">ax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack.ax" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack.create_plot">
+<span class="sig-name descname"><span class="pre">create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack.create_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Calls plot creation, axis formatting, and figure formatting classes, then saves in the decorator</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack.df">
+<span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack.df" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack.fig">
+<span class="sig-name descname"><span class="pre">fig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack.fig" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack.g">
+<span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack.g" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.complexity_plots.HistPlotBinsTrack.output_dir">
+<span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.complexity_plots.HistPlotBinsTrack.output_dir" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2394,6 +2578,76 @@ Transactions of the Royal Society B: Biological Sciences, 376(1835), 20200331.</
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotChronology.output_dir">
 <span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotChronology.output_dir" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.visualise.coordination_plots.</span></span><span class="sig-name descname"><span class="pre">TrianglePlotTrack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onset_maker</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.visualise.visualise_utils.BasePlot" title="src.visualise.visualise_utils.BasePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePlot</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack.BAR_KWS">
+<span class="sig-name descname"><span class="pre">BAR_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alpha':</span> <span class="pre">1,</span> <span class="pre">'dodge':</span> <span class="pre">True,</span> <span class="pre">'ec':</span> <span class="pre">'#000000',</span> <span class="pre">'errorbar':</span> <span class="pre">None,</span> <span class="pre">'estimator':</span> <span class="pre">&lt;function</span> <span class="pre">mean&gt;,</span> <span class="pre">'hue_order':</span> <span class="pre">dict_keys(['piano',</span> <span class="pre">'bass',</span> <span class="pre">'drums']),</span> <span class="pre">'ls':</span> <span class="pre">'-',</span> <span class="pre">'lw':</span> <span class="pre">2,</span> <span class="pre">'width':</span> <span class="pre">0.8,</span> <span class="pre">'zorder':</span> <span class="pre">3}</span></em><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack.BAR_KWS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack._create_plot">
+<span class="sig-name descname"><span class="pre">_create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack._create_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>This function should contain the code for plotting the graph</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack._format_ax">
+<span class="sig-name descname"><span class="pre">_format_ax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack._format_ax" title="Permalink to this definition">#</a></dt>
+<dd><p>Set axis-level parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack._format_bar_df">
+<span class="sig-name descname"><span class="pre">_format_bar_df</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack._format_bar_df" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack._format_df">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_format_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">om</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack._format_df" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack._format_fig">
+<span class="sig-name descname"><span class="pre">_format_fig</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack._format_fig" title="Permalink to this definition">#</a></dt>
+<dd><p>Sets figure-level parameters</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack.ax">
+<span class="sig-name descname"><span class="pre">ax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack.ax" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack.create_plot">
+<span class="sig-name descname"><span class="pre">create_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack.create_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Calls plot creation, axis formatting, and figure formatting classes, then saves in the decorator</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack.df">
+<span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack.df" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack.fig">
+<span class="sig-name descname"><span class="pre">fig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack.fig" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack.g">
+<span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack.g" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.visualise.coordination_plots.TrianglePlotTrack.output_dir">
+<span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports\\figures'</span></em><a class="headerlink" href="#src.visualise.coordination_plots.TrianglePlotTrack.output_dir" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4326,18 +4580,18 @@ Transactions of the Royal Society B: Biological Sciences, 376(1835), 20200331.</
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.RegPlotPianistAsynchrony.output_dir"><code class="docutils literal notranslate"><span class="pre">RegPlotPianistAsynchrony.output_dir</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._create_plot"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony._create_plot()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_ax"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony._format_ax()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony._format_fig"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony._format_fig()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.ax"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.ax</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.create_plot"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.create_plot()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.df"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.df</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.fig"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.fig</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.format_df"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.format_df()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.g"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.g</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.output_dir"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.output_dir</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchrony.wraparound"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchrony.wraparound</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack._create_plot"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack._create_plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack._format_ax"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack._format_ax()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack._format_fig"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack._format_fig()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.ax"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack.ax</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.create_plot"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack.create_plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.df"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack.df</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.fig"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack.fig</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.format_df"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack.format_df()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.g"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack.g</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.output_dir"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack.output_dir</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.asynchrony_plots.ScatterPlotAsynchronyTrack.wraparound"><code class="docutils literal notranslate"><span class="pre">ScatterPlotAsynchronyTrack.wraparound</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -4375,6 +4629,26 @@ Transactions of the Royal Society B: Biological Sciences, 376(1835), 20200331.</
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURByInstrument.fig"><code class="docutils literal notranslate"><span class="pre">HistPlotBURByInstrument.fig</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURByInstrument.g"><code class="docutils literal notranslate"><span class="pre">HistPlotBURByInstrument.g</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURByInstrument.output_dir"><code class="docutils literal notranslate"><span class="pre">HistPlotBURByInstrument.output_dir</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.BURS_WITH_IMAGES"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.BURS_WITH_IMAGES</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.HIST_KWS"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.HIST_KWS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.KDE_KWS"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.KDE_KWS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.VLINE_KWS"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.VLINE_KWS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack._add_peaks"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack._add_peaks()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack._create_plot"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack._create_plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack._format_ax"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack._format_ax()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack._format_fig"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack._format_fig()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack._kde"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack._kde()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.add_bur_images"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.add_bur_images()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.ax"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.ax</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.create_plot"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.create_plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.df"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.df</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.fig"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.fig</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.format_df"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.format_df()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.g"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.g</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.HistPlotBURTrack.output_dir"><code class="docutils literal notranslate"><span class="pre">HistPlotBURTrack.output_dir</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.bur_plots.RegPlotBURTempo"><code class="docutils literal notranslate"><span class="pre">RegPlotBURTempo</span></code></a><ul class="nav section-nav flex-column">
@@ -4475,6 +4749,24 @@ Transactions of the Royal Society B: Biological Sciences, 376(1835), 20200331.</
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBins.fig"><code class="docutils literal notranslate"><span class="pre">HistPlotBins.fig</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBins.g"><code class="docutils literal notranslate"><span class="pre">HistPlotBins.g</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBins.output_dir"><code class="docutils literal notranslate"><span class="pre">HistPlotBins.output_dir</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack.HIST_KWS"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack.HIST_KWS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack.LINE_KWS"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack.LINE_KWS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack.PALETTE"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack.PALETTE</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack.VLINE_KWS"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack.VLINE_KWS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack._create_plot"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack._create_plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack._format_ax"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack._format_ax()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack._format_df"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack._format_df()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack._format_fig"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack._format_fig()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack._kde"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack._kde()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack.ax"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack.ax</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack.create_plot"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack.create_plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack.df"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack.df</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack.fig"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack.fig</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack.g"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack.g</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.HistPlotBinsTrack.output_dir"><code class="docutils literal notranslate"><span class="pre">HistPlotBinsTrack.output_dir</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.complexity_plots.RegPlotTempoDensityComplexity"><code class="docutils literal notranslate"><span class="pre">RegPlotTempoDensityComplexity</span></code></a><ul class="nav section-nav flex-column">
@@ -4618,6 +4910,21 @@ Transactions of the Royal Society B: Biological Sciences, 376(1835), 20200331.</
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotChronology.fig"><code class="docutils literal notranslate"><span class="pre">TrianglePlotChronology.fig</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotChronology.g"><code class="docutils literal notranslate"><span class="pre">TrianglePlotChronology.g</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotChronology.output_dir"><code class="docutils literal notranslate"><span class="pre">TrianglePlotChronology.output_dir</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack.BAR_KWS"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack.BAR_KWS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack._create_plot"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack._create_plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack._format_ax"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack._format_ax()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack._format_bar_df"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack._format_bar_df()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack._format_df"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack._format_df()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack._format_fig"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack._format_fig()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack.ax"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack.ax</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack.create_plot"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack.create_plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack.df"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack.df</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack.fig"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack.fig</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack.g"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack.g</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.visualise.coordination_plots.TrianglePlotTrack.output_dir"><code class="docutils literal notranslate"><span class="pre">TrianglePlotTrack.output_dir</span></code></a></li>
 </ul>
 </li>
 </ul>

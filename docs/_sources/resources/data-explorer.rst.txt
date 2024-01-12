@@ -1,0 +1,7 @@
+:html_theme.sidebar_secondary.remove:
+
+Data explorer
+=============
+
+.. raw:: html
+    :file: data-explore.html
