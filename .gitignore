@@ -52,7 +52,7 @@ coverage.xml
 *.log
 
 # Sphinx documentation
-_docssrc/_build/
+_docssrc/
 
 # PyBuilder
 target/
@@ -116,12 +116,10 @@ target/
 # Ignore .svg image files in all but the documentation folders
 *.png
 !/docs/*.png
-!/_docssrc/resources/*.png
 
 # Ignore .svg image files in all but the documentation folders
 *.svg
 !/docs/*.svg
-!/_docssrc/*.svg
 
 /venv_old/
 /pretrained_models/
