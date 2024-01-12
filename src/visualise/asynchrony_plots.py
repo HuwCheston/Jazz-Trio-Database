@@ -22,7 +22,7 @@ from src import utils
 
 __all__ = [
     'PolarPlotAsynchrony', 'BarPlotProportionalAsynchrony', 'HistPlotProportionalAsynchrony',
-    'RegPlotPianistAsynchrony', 'HistPlotProportionalAsynchronyTriosPiano', 'ScatterPlotAsynchrony'
+    'RegPlotPianistAsynchrony', 'HistPlotProportionalAsynchronyTriosPiano', 'ScatterPlotAsynchronyTrack'
 ]
 
 
@@ -693,17 +693,15 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
         self.fig.subplots_adjust(left=0.2, right=0.95, top=0.85, bottom=0.1, hspace=0, wspace=0.05)
 
 
-class ScatterPlotAsynchrony(vutils.BasePlot):
+class ScatterPlotAsynchronyTrack(vutils.BasePlot):
     """Creates a scatter plot for all onset values within a given track, similar to those in `OnsetSync` R package"""
     wraparound = 0.9
 
     def __init__(self, onset_maker: OnsetMaker, **kwargs):
         self.onset_maker = onset_maker
+        self.fname = kwargs.get('figure_title', rf'onsets_plots\scatterplot_bybeat_{self.onset_maker.item["mbz_id"]}')
         self.time_sig = self.onset_maker.item['time_signature']
-        super().__init__(
-            figure_title=rf'onsets_plots\scatterplot_bybeat_{self.onset_maker.item["mbz_id"]}',
-            **kwargs
-        )
+        super().__init__(figure_title=self.fname, **kwargs)
         self.df = pd.DataFrame(self.format_df())
         self.cmap = vutils.RGB
         self.fig, self.ax = plt.subplots(
@@ -711,7 +709,7 @@ class ScatterPlotAsynchrony(vutils.BasePlot):
             ncols=len(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()),
             sharex=True,
             sharey=True,
-            figsize=(vutils.WIDTH, 7)
+            figsize=(vutils.WIDTH, vutils.WIDTH / 3)
         )
 
     def format_df(self) -> list:

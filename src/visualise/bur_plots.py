@@ -18,7 +18,7 @@ from statsmodels.tools.sm_exceptions import ConvergenceWarning
 import src.visualise.visualise_utils as vutils
 from src import utils
 
-__all__ = ['BarPlotBUR', 'HistPlotBURByInstrument', 'RegPlotBURTempo', 'ViolinPlotBURs']
+__all__ = ['BarPlotBUR', 'HistPlotBURTrack', 'HistPlotBURByInstrument', 'RegPlotBURTempo', 'ViolinPlotBURs']
 
 # We remove BURs outside this range, these values are taken from Corcoran and Frieler (2021)
 LOW_BUR_CUTOFF, HIGH_BUR_CUTOFF = 0.25, 4
@@ -171,9 +171,11 @@ class HistPlotBURByInstrument(vutils.BasePlot):
 
     def __init__(self, bur: pd.DataFrame, peaks: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'bur_plots\histplot_bursbyinstrumentgmm_{self.corpus_title}', **kwargs)
+        ftitle = kwargs.get('figure_title', fr'bur_plots\histplot_bursbyinstrumentgmm_{self.corpus_title}')
+        super().__init__(figure_title=ftitle,)
         self.bur_df = bur
         self.peak_df = peaks
+        self.n_bins = kwargs.get('n_bins', vutils.N_BINS)
         self.fig, self.ax = plt.subplots(
             nrows=1, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 3), sharex=True, sharey=True
         )
@@ -208,9 +210,12 @@ class HistPlotBURByInstrument(vutils.BasePlot):
     def _create_plot(self) -> None:
         """Creates the histogram and kde plots"""
         for ax, (idx, grp), col in zip(self.ax.flatten(), self.bur_df.groupby('instrument', sort=False), vutils.RGB):
+            grp = grp.dropna()
+            if len(grp) < 2:
+                continue
             ax.set_xscale('symlog', base=2)
             ax.grid(zorder=0, axis='x', **vutils.GRID_KWS)
-            heights, edges = np.histogram(grp['bur'], bins=vutils.N_BINS)
+            heights, edges = np.histogram(grp['bur'], bins=self.n_bins)
             heights = heights / max(heights)
             # Plot the normalized histogram
             self.HIST_KWS.update(dict(x=edges[:-1], height=heights, width=np.diff(edges)))
@@ -232,7 +237,7 @@ class HistPlotBURByInstrument(vutils.BasePlot):
         # Add images for each BUR value we want to plot
         hands, labs = [], []
         for ax, name in zip(self.ax.flatten(), utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()):
-            for artist in self.add_bur_images(y=1.15):
+            for artist in self.add_bur_images(y=1.05):
                 ax.add_artist(artist)
             ax.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
             ax.get_xaxis().set_minor_formatter(mpl.ticker.NullFormatter())
@@ -562,6 +567,56 @@ class RegPlotBURTempo(vutils.BasePlot):
     def _format_fig(self):
         """Format figure-level properties"""
         self.fig.subplots_adjust(left=0.05, right=0.99, top=0.99, bottom=0.09, hspace=0.1, wspace=0.05)
+
+
+class HistPlotBURTrack(HistPlotBURByInstrument):
+    def __init__(self, onset_maker, **kwargs):
+        bur_df, peak_df = self.format_df(onset_maker)
+        self.fname = rf'onsets_plots\histplot_bur_{onset_maker.item["mbz_id"]}'
+        self.title = onset_maker.item['fname']
+        super().__init__(bur_df, peak_df, figure_title=self.fname, n_bins=kwargs.get('n_bins', 10))
+
+    @staticmethod
+    def format_df(om):
+        from src.features.features_utils import BeatUpbeatRatio
+        res = []
+        for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+            my_beats = om.summary_dict[instr]
+            my_ons = om.ons[instr]
+            burs = BeatUpbeatRatio(my_beats=my_beats, my_onsets=my_ons).bur_log['burs'].dropna().values
+            res.append(dict(instrument=instr, bur=np.nan))
+            for bur in burs:
+                res.append(dict(instrument=instr, bur=bur))
+        bur_df = pd.DataFrame(res)
+        peak_df = bur_df.groupby('instrument', as_index=False).mean().rename(columns={'bur': 'peak'})
+        return bur_df, peak_df
+
+    def _format_ax(self):
+        # Add images for each BUR value we want to plot
+        hands, labs = [], []
+        for ax, name in zip(self.ax.flatten(), utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()):
+            for artist in self.add_bur_images(y=1.1):
+                ax.add_artist(artist)
+            ax.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
+            ax.get_xaxis().set_minor_formatter(mpl.ticker.NullFormatter())
+            ax.set(
+                xticks=[np.log2(i) for i in self.BURS_WITH_IMAGES], xticklabels=[-1, 0, 1, 1.58], xlabel='', ylabel='',
+                xlim=(np.log2(LOW_BUR_CUTOFF), np.log2(HIGH_BUR_CUTOFF)), yticks=np.linspace(0, 1, 5), ylim=(0, 1)
+            )
+            grp = self.bur_df[self.bur_df['instrument'] == name]
+            ax.set_title((f'{name.title()} ($N$ = {len(grp.dropna())})'), y=1.15)
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+            ax.tick_params(axis='both', top=True, bottom=True, labeltop=False, labelbottom=True, width=vutils.TICKWIDTH)
+            hand, lab = ax.get_legend_handles_labels()
+            hands.extend(hand)
+            labs.extend(lab)
+
+    def _format_fig(self) -> None:
+        """Formats figure-level properties"""
+        self.fig.supxlabel('${Log_2}$ beat-upbeat ratio')
+        self.fig.suptitle(self.title)
+        self.fig.supylabel('Density', x=0.01)
+        self.fig.subplots_adjust(left=0.075, bottom=0.12, right=0.95, top=0.765)
 
 
 if __name__ == '__main__':

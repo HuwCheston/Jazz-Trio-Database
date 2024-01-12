@@ -8,6 +8,7 @@ from typing import Generator
 
 import librosa
 import numpy as np
+import pandas as pd
 import soundfile as sf
 from madmom.features import DBNDownBeatTrackingProcessor, RNNDownBeatProcessor
 from mir_eval.onset import f_measure
@@ -1124,6 +1125,30 @@ def calculate_tempo(
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)
         return np.nanmean(np.array([60 / p for p in np.diff(pass_)]))
+
+
+def create_silent_clicktrack(
+        csvpath: str,
+        outputdir: str = fr'{utils.get_project_root()}/beats.wav',
+        cutoff: int = None
+) -> None:
+    """Creates a click track containing only clicks from `csvpath`, no source audio"""
+    # Load in the beats
+    beats = pd.read_csv(csvpath, index_col=0)
+    # Separate beats into downbeats and other beats
+    downbeats = beats[beats['metre_manual'] == 1]['beats'].to_numpy()
+    others = beats[beats['metre_manual'] != 1]['beats'].to_numpy()
+    # Create silent audio of equivalent length to the beats track
+    blank = np.zeros(int(beats.max().max() * utils.SAMPLE_RATE))
+    # Create the new `_ClickTrackMaker` and generate source suadio
+    ct = _ClickTrackMaker(audio=blank)
+    click_track_audio = ct.generate_audio([others, downbeats])
+    # Cut the audio, if required
+    if cutoff:
+        click_track_audio = click_track_audio[:utils.SAMPLE_RATE * cutoff]
+    # Write the file
+    with open(outputdir, 'wb') as f:
+        sf.write(f, click_track_audio, utils.SAMPLE_RATE)
 
 
 if __name__ == '__main__':

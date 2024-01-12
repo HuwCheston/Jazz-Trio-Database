@@ -8,11 +8,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import scipy.stats as stats
 
 import src.visualise.visualise_utils as vutils
 from src import utils
 
-__all__ = ['HistPlotBins', 'BarPlotComplexityDensity', 'BarPlotTotalBins', 'RegPlotTempoDensityComplexity']
+__all__ = [
+    'HistPlotBins', 'HistPlotBinsTrack', 'BarPlotComplexityDensity', 'BarPlotTotalBins', 'RegPlotTempoDensityComplexity'
+]
 
 fracs = [1, 1/2, 5/12, 3/8, 1/3, 1/4, 1/6, 1/8, 1/12, 0]
 fracs_s = [r'>$\frac{1}{2}$', r'$\frac{1}{2}$', r'$\frac{5}{12}$', r'$\frac{3}{8}$', r'$\frac{1}{3}$',
@@ -25,12 +28,14 @@ class HistPlotBins(vutils.BasePlot):
     HIST_KWS = dict(lw=vutils.LINEWIDTH / 2, ls=vutils.LINESTYLE, zorder=2, align='edge')
     LINE_KWS = dict(linestyle=vutils.LINESTYLE, alpha=1, zorder=3, linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
     VLINE_KWS = dict(
-        color=vutils.BLACK, linestyle='dashed', alpha=vutils.ALPHA, zorder=4, linewidth=vutils.LINEWIDTH / 1.5
+        color=vutils.BLACK, alpha=vutils.ALPHA, zorder=4, linewidth=vutils.LINEWIDTH / 1.5
     )
 
     def __init__(self, ioi_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'complexity_plots\histplot_ioibins_{self.corpus_title}', **kwargs)
+        fname = kwargs.get('figure_title', fr'complexity_plots\histplot_ioibins_{self.corpus_title}')
+        super().__init__(figure_title=fname)
+        self.n_bins = kwargs.get('n_bins', 300)
         self.ioi_df = ioi_df
         self.fig, self.ax = plt.subplots(
             nrows=1, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 3), sharex=True, sharey=True
@@ -40,8 +45,11 @@ class HistPlotBins(vutils.BasePlot):
         """Create the main plot"""
         mapping = {f: c for f, c in zip(fracs, self.PALETTE)}
         for ax, (idx, grp), col in zip(self.ax.flatten(), self.ioi_df.groupby('instr', sort=False), vutils.RGB):
+            grp = grp.dropna()
+            if len(grp) == 0:
+                continue
             # Normalize the histogram so that the highest bar is 1
-            heights, edges = np.histogram(grp['prop_ioi'], bins=300)
+            heights, edges = np.histogram(grp['prop_ioi'], bins=self.n_bins)
             heights = heights / max(heights)
             # Plot the normalized histogram
             self.HIST_KWS.update(dict(x=edges[:-1], height=heights, width=np.diff(edges)))
@@ -308,6 +316,83 @@ class RegPlotTempoDensityComplexity(vutils.BasePlot):
             loc='upper right', title='Instrument', frameon=True, framealpha=1,
             edgecolor=vutils.BLACK
         )
+
+
+class HistPlotBinsTrack(HistPlotBins):
+    def __init__(self, onset_maker, **kwargs):
+        self.df = self._format_df(onset_maker)
+        self.fname = rf'onsets_plots\histplot_complexity_{onset_maker.item["mbz_id"]}'
+        self.title = onset_maker.item['fname']
+        super().__init__(self.df, figure_title=self.fname, n_bins=kwargs.get('n_bins', 10))
+
+    def _format_df(self, om):
+        from src.features.features_utils import IOIComplexity
+        downbeats = om.ons['downbeats_manual']
+        time_signature = om.item['time_signature']
+        tempo = om.tempo
+        cdfs = []
+        for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+            my_onsets = om.ons[instr]
+            cdf = IOIComplexity(
+                my_onsets=my_onsets,
+                downbeats=downbeats,
+                tempo=tempo,
+                time_signature=time_signature
+            )
+            cdfs.append({'instr': instr, 'prop_ioi': np.nan})
+            for ioi in cdf.binned_iois['binned_ioi'].dropna().values:
+                cdfs.append({'instr': instr, 'prop_ioi': ioi})
+        return pd.DataFrame(cdfs)
+
+    @staticmethod
+    def _kde(data, len_data: int = 1000) -> tuple:
+        """Fit the KDE to the data and evaluate on a list of y-values, then scale"""
+        # Fit the actual KDE to the data, using the default parameters
+        kde = stats.gaussian_kde(data.T)
+        # Create a linear space of integers ranging from our lowest to our highest BUR
+        data_plot = np.linspace(0, 1, len_data)[:, np.newaxis]
+        # Evaluate the KDE on our linear space of integers
+        y = kde.evaluate(data_plot.T)
+        return data_plot, np.array([(y_ - min(y)) / (max(y) - min(y)) for y_ in y])
+
+    def _create_plot(self) -> None:
+        """Create the main plot"""
+        for ax, (idx, grp) in zip(self.ax.flatten(), self.ioi_df.groupby('instr', sort=False)):
+            grp = grp.dropna()
+            if len(grp) == 0:
+                continue
+            # Plot the kde
+            xs, ys = self._kde(grp['prop_ioi'])
+            ax.plot(xs, ys, **self.LINE_KWS)
+            xs = xs.flatten()
+            s = np.sort([(fracs[i] + fracs[i + 1]) / 2 for i in range(len(fracs) - 1)]).tolist()
+            for previous, current, col in zip(s, s[1:], list(reversed(self.PALETTE))[1:]):
+                slicer = np.where((xs <= current) & (xs >= previous))
+                xvals = xs[slicer]
+                yvals = ys[slicer]
+                ax.fill_between(xvals, yvals, color=col)
+            for frac in fracs[1:-1]:
+                ax.axvline(frac, 0, 1, **self.VLINE_KWS)
+
+    def _format_ax(self) -> None:
+        """Format axis-level parameters"""
+        for ax, (idx, grp) in zip(self.ax.flatten(), self.df.groupby('instr', sort=False)):
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+            ax.tick_params(axis='both', width=vutils.TICKWIDTH)
+            ax.set(
+                ylim=(0, 1), xlim=(0, 1), title=f'{idx.title()} ($N$ = {len(grp.dropna())})',
+                yticks=np.linspace(0, 1, 5)
+            )
+            ax_t = ax.secondary_xaxis('top')
+            ax_t.set_xticks(fracs[1:-1], labels=fracs_s[1:-1])
+            ax_t.tick_params(width=vutils.TICKWIDTH)
+
+    def _format_fig(self) -> None:
+        """Formats figure-level properties"""
+        self.fig.supxlabel('Proportional inter-onset interval')
+        self.fig.suptitle(self.title)
+        self.fig.supylabel('Density', x=0.01)
+        self.fig.subplots_adjust(left=0.075, bottom=0.12, right=0.95, top=0.765)
 
 
 if __name__ == '__main__':

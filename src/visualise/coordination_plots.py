@@ -18,7 +18,7 @@ FOLDER_PATH = 'coordination_plots'
 
 __all__ = [
     'TriangleAxis', 'TrianglePlotChronology', 'RegPlotCouplingHalves', 'BarPlotSimulationComparison',
-    'RegPlotCouplingGrangerCross', 'BarPlotCouplingCoefficients', 'HistPlotCouplingTerms'
+    'RegPlotCouplingGrangerCross', 'BarPlotCouplingCoefficients', 'HistPlotCouplingTerms', 'TrianglePlotTrack'
 ]
 
 
@@ -52,6 +52,7 @@ class TriangleAxis:
         self.piano_only = kwargs.get('piano_only', True)
         self.performer_picture_zoom = kwargs.get('performer_picture_zoom', 1)
         self.text_override = kwargs.get('text_override', None)
+        self.ci = kwargs.get('ci', True)
         self.grp = grp
         self.ax = ax
         self.ax.axis('off')
@@ -115,7 +116,9 @@ class TriangleAxis:
                     )
                 if self.add_text:
                     # Add the coupling coefficient text in
-                    txt = f'{round(abs(c), 2)} [{round(abs(q1), 2)}–{round(abs(q2), 2)}]'
+                    txt = f'{round(abs(c), 2)}'
+                    if self.ci:
+                        txt += f"[{round(abs(q1), 2)}–{round(abs(q2), 2)}]"
                     self._add_coupling_coefficient_text(txt, x, x2, y, y2, rotation=rot12[num])
 
     def _get_coupling_coefficient(
@@ -757,6 +760,80 @@ class HistPlotCouplingTerms(vutils.BasePlot):
         self.fig.supylabel('Density')
         self.fig.supxlabel('Model coefficient')
         self.fig.tight_layout()
+
+
+class TrianglePlotTrack(vutils.BasePlot):
+    BAR_KWS = dict(
+        dodge=True, errorbar=None, width=0.8, estimator=np.mean,
+        zorder=3, hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
+        ec=vutils.BLACK, ls=vutils.LINESTYLE, lw=vutils.LINEWIDTH, alpha=1,
+    )
+
+    def __init__(self, onset_maker):
+        self.df = self._format_df(onset_maker)
+        self.fname = rf'onsets_plots\triangleplot_coordination_{onset_maker.item["mbz_id"]}'
+        self.title = onset_maker.item['fname']
+        super().__init__(figure_title=self.fname)
+        self.bar_df = self._format_bar_df()
+        self.fig, self.ax = plt.subplots(nrows=1, ncols=2, figsize=(vutils.WIDTH, vutils.WIDTH / 3))
+
+    @staticmethod
+    def _format_df(om):
+        from src.features.features_utils import PhaseCorrection
+        sd = pd.DataFrame(om.summary_dict)
+        res = []
+        for my_instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+            their_instrs = [i for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys() if i != my_instr]
+            my_beats = sd[my_instr]
+            their_beats = sd[their_instrs]
+            pc = PhaseCorrection(my_beats=my_beats, their_beats=their_beats)
+            for _ in range(int(pc.summary_dict['nobs'])):
+                res.append({'instrument': my_instr, 'pianist': om.item['pianist'],
+                            'performer': om.item['musicians'][
+                                utils.INSTRUMENTS_TO_PERFORMER_ROLES[my_instr]]} | pc.summary_dict)
+        return pd.DataFrame(res)
+
+    def _format_bar_df(self):
+        model_df = (
+            self.df.melt(
+                id_vars=['instrument'],
+                value_vars=['coupling_piano', 'coupling_bass', 'coupling_drums']
+            )
+            .dropna()
+            .reset_index(drop=False)
+        )
+        instr = model_df['variable'].str.replace('coupling_', '').str.title()
+        model_df['variable'] = instr + '→' + model_df['instrument'].str.title()
+        model_df['instrument'] = instr
+        return (model_df.set_index('instrument')
+            .loc[[i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]]
+            .reset_index(drop=False))
+
+    def _create_plot(self):
+        ta = TriangleAxis(
+            self.df, self.ax[0], piano_only=False, text_mod=0.15, text_override='', ci=False
+        )
+        ta.create_plot()
+        sns.barplot(data=self.bar_df, ax=self.ax[1], x='variable', y='value', **self.BAR_KWS)
+
+    def _format_ax(self) -> None:
+        """Set axis-level parameters"""
+        repeater = lambda x: [val for val in x for _ in (0, 1)]
+        for patch, col, hatch in zip(self.ax[1].patches, repeater(vutils.RGB), repeater(vutils.HATCHES)):
+            patch.set_facecolor(col)
+            patch.set_hatch(hatch)
+        self.ax[1].axhline(0, 0, 1, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, color=vutils.BLACK)
+        self.ax[1].set_xticklabels(self.ax[1].get_xticklabels(), rotation=30, ha='right')
+        self.ax[1].yaxis.grid(True, zorder=0, **vutils.GRID_KWS)
+        plt.setp(self.ax[1].spines.values(), linewidth=vutils.LINEWIDTH)
+        self.ax[1].tick_params(axis='both', bottom=True, right=True, width=vutils.TICKWIDTH)
+        self.ax[1].set(xlabel='Direction of influence', ylabel='Coupling constant')
+
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
+        self.fig.suptitle(self.title)
+        self.fig.subplots_adjust(top=0.9, bottom=0.25, left=0., right=0.95)
+        self.ax[0].set_position([-0.15, 0.1, 0.75, 0.75])
 
 
 if __name__ == '__main__':

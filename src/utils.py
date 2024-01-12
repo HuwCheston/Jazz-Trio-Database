@@ -9,6 +9,7 @@ import json
 import os
 import pickle
 import re
+import subprocess
 import time
 import warnings
 from ast import literal_eval
@@ -683,6 +684,28 @@ def load_corpus_from_files(dirpath: str) -> list:
         oms.append(om)
     # Return the completed `OnsetMaker` instances
     return oms
+
+
+def convert_to_mp3(dirpath: str, ext: str = '.wav', delete: bool = False, cutoff: int = False) -> None:
+    """Converts all files with target `.wav` in `dirpath` to low bitrate `.mp3`s"""
+    # Iterate through all folders in target directory
+    for f in os.listdir(dirpath):
+        # If file ends with target extension
+        if f.endswith(ext):
+            # Define the ffmpeg command
+            cmd = [
+                "ffmpeg", "-y", "-i", fr"{dirpath}\{f}",
+                "-vn", "-ar", "44100", "-ac", "2", "-b:a", "120k",
+                fr"{dirpath}\{f.replace(ext, '.mp3')}"
+            ]
+            if cutoff:
+                cmd.insert(-1, '-t')
+                cmd.insert(-1, str(cutoff))
+            # Open the subprocess
+            subprocess.Popen(cmd)
+            # Delete the file if we want to do this
+            if delete:
+                os.remove(fr"{dirpath}\{f}")
 
 
 if __name__ == '__main__':

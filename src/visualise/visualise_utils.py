@@ -107,3 +107,67 @@ class BasePlot:
     def _format_fig(self) -> None:
         """This function should contain the code for formatting the `self.fig` objects"""
         return
+
+
+# from src import utils
+# import os
+# import shutil
+# import pandas as pd
+# from src.visualise.bur_plots import HistPlotBURTrack
+# from src.visualise.complexity_plots import HistPlotBinsTrack
+# from src.visualise.asynchrony_plots import ScatterPlotAsynchronyTrack
+# from src.visualise.coordination_plots import TrianglePlotTrack
+#
+#
+# def create_plots_for_track(om):
+#     root = fr'{utils.get_project_root()}\_docssrc\static\data-explorer'
+#     new_fpath = fr'{root}\{om.item["fname"]}'
+#     try:
+#         os.mkdir(new_fpath)
+#     except FileExistsError:
+#         pass
+#     shutil.copy(fr'{root}\explorer-template.html', rf'{new_fpath}\display.html')
+#     tits = ['swing', 'complexity', 'feel', 'interaction']
+#     plotters = [HistPlotBURTrack, HistPlotBinsTrack, ScatterPlotAsynchronyTrack, TrianglePlotTrack]
+#     for plotter, tit in zip(plotters, tits):
+#         p = plotter(om)
+#         p.create_plot()
+#         os.replace(fr'{utils.get_project_root()}\reports\figures\{p.fname}.svg', fr'{new_fpath}\{tit}.svg')
+#         os.remove(fr'{utils.get_project_root()}\reports\figures\{p.fname}.png')
+#     meta = pd.Series(om.item).to_json()
+#     with open(fr'{new_fpath}\metadata.json', 'w') as f:
+#         f.write(meta)
+#
+#
+# tracks = utils.unserialise_object(fr'{utils.get_project_root()}/models/matched_onsets_corpus_chronology.p')[:10]
+# for t in tracks:
+#     create_plots_for_track(t)
+
+
+
+# from src import utils
+# from src.features.features_utils import BeatUpbeatRatio
+# import pandas as pd
+#
+# # ons = utils.unserialise_object(fr'{utils.get_project_root()}\models\matched_onsets_corpus_chronology.p')
+# # res = []
+# # # Iterate through each track
+# # for num, track in enumerate(ons, 1):
+# #     print(f'{num} / {len(ons)}')
+# #     # Iterate through each instrument
+# #     for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+# #         # Subset to get my onsets and partner onsets as separate dataframes
+# #         my_onsets = track.ons[instr]
+# #         my_beats = track.summary_dict[instr]
+# #         # Extract BURs using our feature class
+# #         bm = BeatUpbeatRatio(my_onsets=my_onsets, my_beats=my_beats, clean_outliers=False)
+# #         res.append(track.item | {'instr': instr, 'musician': track.item['musicians'][utils.INSTRUMENTS_TO_PERFORMER_ROLES[instr]]} | bm.summary_dict)
+# df = pd.DataFrame(res)
+# mapper = {'track_name': 'Track name', 'fname': 'fname', 'pianist': 'Bandleader', 'musician': 'Musician', 'instr': 'Instrument', 'time_signature': 'Time signature', 'bur_mean': 'BUR (mean)', 'bur_std': 'BUR (std)', 'bur_count_nonzero': 'BUR (count)'}
+# data = df.rename(columns=mapper)[mapper.values()].round(2).values.tolist()
+# result = {"data": data}
+#
+# # # Convert the dictionary to a JSON string with an indentation of 2
+# json_string = pd.Series(result).to_json(orient="values", indent=2)
+# with open(rf'{utils.get_project_root()}/test.txt', 'w+') as fh:
+#     fh.write(json_string)
