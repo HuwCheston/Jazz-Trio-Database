@@ -17,7 +17,6 @@ import statsmodels.formula.api as smf
 from statsmodels.tools.sm_exceptions import ConvergenceWarning
 
 import src.visualise.visualise_utils as vutils
-from src.detect.detect_utils import OnsetMaker
 from src import utils
 
 __all__ = [
@@ -697,7 +696,7 @@ class ScatterPlotAsynchronyTrack(vutils.BasePlot):
     """Creates a scatter plot for all onset values within a given track, similar to those in `OnsetSync` R package"""
     wraparound = 0.9
 
-    def __init__(self, onset_maker: OnsetMaker, **kwargs):
+    def __init__(self, onset_maker, **kwargs):
         self.onset_maker = onset_maker
         self.fname = kwargs.get('figure_title', rf'onsets_plots\scatterplot_bybeat_{self.onset_maker.item["mbz_id"]}')
         self.time_sig = self.onset_maker.item['time_signature']
