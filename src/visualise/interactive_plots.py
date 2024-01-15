@@ -3,6 +3,8 @@
 
 """Classes used for creating interactive plots in `plotly`"""
 
+import os
+import shutil
 from datetime import datetime
 
 import numpy as np
@@ -15,14 +17,35 @@ from plotly.subplots import make_subplots
 
 import src.visualise.visualise_utils as vutils
 from src import utils
-
-fracs = [1, 1/2, 5/12, 3/8, 1/3, 1/4, 1/6, 1/8, 1/12, 0]
-fracs_s = [r'>$\frac{1}{2}$', r'$\frac{1}{2}$', r'$\frac{5}{12}$', r'$\frac{3}{8}$', r'$\frac{1}{3}$',
-           r'$\frac{1}{4}$', r'$\frac{1}{6}$', r'$\frac{1}{8}$', r'$\frac{1}{12}$', r'<$\frac{1}{12}$']
-BURS_WITH_IMAGES = [0.5, 1, 2, 3]
+from src.visualise.bur_plots import BURS_WITH_IMAGES
+from src.visualise.complexity_plots import FRACS, FRACS_S
 
 
-class ScatterPlotAsynchronyTrackPX:
+class BasePlotPlotly:
+    def __init__(self):
+        self.fig = make_subplots(
+            rows=1, cols=3, shared_xaxes=True, shared_yaxes=True,
+            subplot_titles=[i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
+        )
+
+    def create_plot(self):
+        self._create_plot()
+        self._format_fig()
+
+    def render_html(self, fpath, div_id):
+        self.fig.write_html(
+            fpath, include_plotlyjs='cdn', full_html=False, include_mathjax='cdn', default_width='100%',
+            div_id=div_id, auto_open=False
+        )
+
+    def _create_plot(self):
+        pass
+
+    def _format_fig(self):
+        pass
+
+
+class ScatterPlotFeelInteractive(BasePlotPlotly):
     """Creates a scatter plot for all onset values within a given track, similar to those in `OnsetSync` R package"""
     wraparound = 0.9
 
@@ -31,8 +54,7 @@ class ScatterPlotAsynchronyTrackPX:
         self.title = self.onset_maker.item['fname']
         self.time_sig = self.onset_maker.item['time_signature']
         self.df = pd.DataFrame(self.format_df())
-        self.fig = make_subplots(rows=1, cols=3, shared_xaxes=True, shared_yaxes=True,
-                                 subplot_titles=[i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()])
+        super().__init__()
 
     def format_df(self) -> list:
         """Formats provided onset maker into correct dataframe format for plotting"""
@@ -90,14 +112,13 @@ class ScatterPlotAsynchronyTrackPX:
         self.fig['layout']['xaxis2']['title'] = 'Position in bar (quarter note)'
 
 
-class HistPlotBinsTrackPX:
-    PALETTE = [vutils.BLACK, *reversed(sns.color_palette(None, len(fracs) - 2)), vutils.BLACK]
+class HistPlotComplexityInteractive(BasePlotPlotly):
+    PALETTE = [vutils.BLACK, *reversed(sns.color_palette(None, len(FRACS) - 2)), vutils.BLACK]
 
     def __init__(self, onset_maker):
         self.df = self._format_df(onset_maker)
         self.title = onset_maker.item['fname']
-        self.fig = make_subplots(rows=1, cols=3, shared_xaxes=True, shared_yaxes=True,
-                                 subplot_titles=[i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()])
+        super().__init__()
 
     @staticmethod
     def _format_df(om):
@@ -130,10 +151,6 @@ class HistPlotBinsTrackPX:
         y = kde.evaluate(data_plot.T)
         return data_plot, np.array([(y_ - min(y)) / (max(y) - min(y)) for y_ in y])
 
-    def create_plot(self):
-        self._create_plot()
-        self._format_fig()
-
     def _create_plot(self) -> None:
         """Create the main plot"""
         for ax, (idx, grp) in zip(range(1, 4), self.df.groupby('instr', sort=False)):
@@ -143,9 +160,9 @@ class HistPlotBinsTrackPX:
             # Plot the kde
             xs, ys = self._kde(grp['prop_ioi'])
             xs = xs.flatten()
-            s = np.sort([(fracs[i] + fracs[i + 1]) / 2 for i in range(len(fracs) - 1)]).tolist()
+            s = np.sort([(FRACS[i] + FRACS[i + 1]) / 2 for i in range(len(FRACS) - 1)]).tolist()
             for previous, current, col, bi in zip(s, s[1:], list(reversed(self.PALETTE))[1:],
-                                                  list(reversed(fracs))[1:]):
+                                                  list(reversed(FRACS))[1:]):
                 slicer = np.where((xs <= current) & (xs >= previous))
                 xvals = xs[slicer]
                 yvals = ys[slicer]
@@ -187,7 +204,7 @@ class HistPlotBinsTrackPX:
             showline=True, linewidth=vutils.LINEWIDTH, linecolor=vutils.BLACK, mirror=True, range=[0, 1.2],
             tickmode='array', fixedrange=True, tickvals=[0, 0.25, 0.5, 0.75, 1]
         )
-        for frac, frac_s in zip(fracs[1:-1], fracs_s[1:-1]):
+        for frac, frac_s in zip(FRACS[1:-1], FRACS_S[1:-1]):
             self.fig.add_vline(x=frac, line_width=1, line_dash='solid', line_color='grey')
             for ax in range(1, 4):
                 self.fig.add_annotation(
@@ -197,10 +214,11 @@ class HistPlotBinsTrackPX:
         self.fig['layout']['xaxis2']['title'] = 'Proportional inter-onset interval'
 
 
-class TrianglePlotTrackPX:
+class BarPlotCoordinationInteractive(BasePlotPlotly):
     def __init__(self, onset_maker):
         self.df = self._format_df(onset_maker)
         self.title = onset_maker.item['fname']
+        super().__init__()
         self.fig = make_subplots(rows=1, cols=1)
 
     @staticmethod
@@ -235,10 +253,6 @@ class TrianglePlotTrackPX:
             .reset_index(drop=False)
         )
 
-    def create_plot(self):
-        self._create_plot()
-        self._format_fig()
-
     def _create_plot(self):
         for (idx, grp), col in zip(self.df.groupby('instrument', sort=False), vutils.RGB):
             bar = go.Bar(
@@ -266,13 +280,12 @@ class TrianglePlotTrackPX:
         self.fig['layout']['xaxis']['title'] = 'Direction of influence'
 
 
-class HistPlotBURTrackPX:
+class HistPlotSwingInteractive(BasePlotPlotly):
     def __init__(self, onset_maker):
         self.bur_df, self.peak_df = self.format_df(onset_maker)
         self.fname = rf'onsets_plots\histplot_bur_{onset_maker.item["mbz_id"]}'
         self.title = onset_maker.item['fname']
-        self.fig = make_subplots(rows=1, cols=3, shared_xaxes=True, shared_yaxes=True,
-                                 subplot_titles=[i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()])
+        super().__init__()
 
     @staticmethod
     def format_df(om):
@@ -299,10 +312,6 @@ class HistPlotBURTrackPX:
         # Evaluate the KDE on our linear space of integers
         y = kde.evaluate(data_plot.T)
         return data_plot, np.array([(y_ - min(y)) / (max(y) - min(y)) for y_ in y])
-
-    def create_plot(self):
-        self._create_plot()
-        self._format_fig()
 
     def _create_plot(self):
         for ax, (idx, grp), col in zip(range(1, 4), self.bur_df.groupby('instrument', sort=False), vutils.RGB):
@@ -359,5 +368,30 @@ class HistPlotBURTrackPX:
         self.fig['layout']['xaxis2']['title'] = 'Log<sub>2</sub> beat-upbeat ratio'
 
 
+def create_interactive_plots_for_one_track(track_om):
+    plotters = [
+        ScatterPlotFeelInteractive, HistPlotSwingInteractive,
+        HistPlotComplexityInteractive, BarPlotCoordinationInteractive
+    ]
+    names = ['feel', 'swing', 'complexity', 'interaction']
+    root = fr'{utils.get_project_root()}\_docssrc\static\data-explorer'
+    new_fpath = fr'{root}\{track_om.item["fname"]}'
+    try:
+        os.mkdir(new_fpath)
+    except FileExistsError:
+        pass
+    shutil.copy(fr'{root}\explorer-template.html', rf'{new_fpath}\display.html')
+    for plotter, name in zip(plotters, names):
+        p = plotter(track_om)
+        p.create_plot()
+        p.render_html(fpath=fr'{new_fpath}\{name}.html', div_id=name)
+    meta = pd.Series(track_om.item).to_json()
+    with open(fr'{new_fpath}\metadata.json', 'w') as f:
+        f.write(meta)
+
+
 if __name__ == '__main__':
-    pass
+    tracks = utils.unserialise_object(fr'{utils.get_project_root()}\models\matched_onsets_corpus_chronology')
+    track = tracks[0]
+
+    create_interactive_plots_for_one_track(track)

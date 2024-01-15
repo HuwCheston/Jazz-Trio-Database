@@ -18,7 +18,10 @@ from statsmodels.tools.sm_exceptions import ConvergenceWarning
 import src.visualise.visualise_utils as vutils
 from src import utils
 
-__all__ = ['BarPlotBUR', 'HistPlotBURTrack', 'HistPlotBURByInstrument', 'RegPlotBURTempo', 'ViolinPlotBURs']
+__all__ = [
+    'BarPlotBUR', 'HistPlotBURTrack', 'HistPlotBURByInstrument', 'RegPlotBURTempo', 'ViolinPlotBURs',
+    'BURS_WITH_IMAGES', 'LOW_BUR_CUTOFF', 'HIGH_BUR_CUTOFF'
+]
 
 # We remove BURs outside this range, these values are taken from Corcoran and Frieler (2021)
 LOW_BUR_CUTOFF, HIGH_BUR_CUTOFF = 0.25, 4

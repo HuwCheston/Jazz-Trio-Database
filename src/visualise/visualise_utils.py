@@ -110,42 +110,6 @@ class BasePlot:
 
 
 # from src import utils
-# import os
-# import shutil
-# import pandas as pd
-# from src.visualise.bur_plots import HistPlotBURTrack
-# from src.visualise.complexity_plots import HistPlotBinsTrack
-# from src.visualise.asynchrony_plots import ScatterPlotAsynchronyTrack
-# from src.visualise.coordination_plots import TrianglePlotTrack
-#
-#
-# def create_plots_for_track(om):
-#     root = fr'{utils.get_project_root()}\_docssrc\static\data-explorer'
-#     new_fpath = fr'{root}\{om.item["fname"]}'
-#     try:
-#         os.mkdir(new_fpath)
-#     except FileExistsError:
-#         pass
-#     shutil.copy(fr'{root}\explorer-template.html', rf'{new_fpath}\display.html')
-#     tits = ['swing', 'complexity', 'feel', 'interaction']
-#     plotters = [HistPlotBURTrack, HistPlotBinsTrack, ScatterPlotAsynchronyTrack, TrianglePlotTrack]
-#     for plotter, tit in zip(plotters, tits):
-#         p = plotter(om)
-#         p.create_plot()
-#         os.replace(fr'{utils.get_project_root()}\reports\figures\{p.fname}.svg', fr'{new_fpath}\{tit}.svg')
-#         os.remove(fr'{utils.get_project_root()}\reports\figures\{p.fname}.png')
-#     meta = pd.Series(om.item).to_json()
-#     with open(fr'{new_fpath}\metadata.json', 'w') as f:
-#         f.write(meta)
-#
-#
-# tracks = utils.unserialise_object(fr'{utils.get_project_root()}/models/matched_onsets_corpus_chronology.p')[:10]
-# for t in tracks:
-#     create_plots_for_track(t)
-
-
-
-# from src import utils
 # from src.features.features_utils import BeatUpbeatRatio
 # import pandas as pd
 #

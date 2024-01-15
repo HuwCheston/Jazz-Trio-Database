@@ -14,17 +14,19 @@ import src.visualise.visualise_utils as vutils
 from src import utils
 
 __all__ = [
-    'HistPlotBins', 'HistPlotBinsTrack', 'BarPlotComplexityDensity', 'BarPlotTotalBins', 'RegPlotTempoDensityComplexity'
+    'HistPlotBins', 'HistPlotBinsTrack', 'BarPlotComplexityDensity', 'BarPlotTotalBins',
+    'RegPlotTempoDensityComplexity', 'FRACS', 'FRACS_S'
+
 ]
 
-fracs = [1, 1/2, 5/12, 3/8, 1/3, 1/4, 1/6, 1/8, 1/12, 0]
-fracs_s = [r'>$\frac{1}{2}$', r'$\frac{1}{2}$', r'$\frac{5}{12}$', r'$\frac{3}{8}$', r'$\frac{1}{3}$',
+FRACS = [1, 1 / 2, 5 / 12, 3 / 8, 1 / 3, 1 / 4, 1 / 6, 1 / 8, 1 / 12, 0]
+FRACS_S = [r'>$\frac{1}{2}$', r'$\frac{1}{2}$', r'$\frac{5}{12}$', r'$\frac{3}{8}$', r'$\frac{1}{3}$',
            r'$\frac{1}{4}$', r'$\frac{1}{6}$', r'$\frac{1}{8}$', r'$\frac{1}{12}$', r'<$\frac{1}{12}$']
 
 
 class HistPlotBins(vutils.BasePlot):
     """Creates a histogram showing the density of inter-onset intervals across each bin for all instruments"""
-    PALETTE = [vutils.BLACK, *reversed(sns.color_palette(None, len(fracs) - 2)), vutils.BLACK]
+    PALETTE = [vutils.BLACK, *reversed(sns.color_palette(None, len(FRACS) - 2)), vutils.BLACK]
     HIST_KWS = dict(lw=vutils.LINEWIDTH / 2, ls=vutils.LINESTYLE, zorder=2, align='edge')
     LINE_KWS = dict(linestyle=vutils.LINESTYLE, alpha=1, zorder=3, linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
     VLINE_KWS = dict(
@@ -43,7 +45,7 @@ class HistPlotBins(vutils.BasePlot):
 
     def _create_plot(self) -> None:
         """Create the main plot"""
-        mapping = {f: c for f, c in zip(fracs, self.PALETTE)}
+        mapping = {f: c for f, c in zip(FRACS, self.PALETTE)}
         for ax, (idx, grp), col in zip(self.ax.flatten(), self.ioi_df.groupby('instr', sort=False), vutils.RGB):
             grp = grp.dropna()
             if len(grp) == 0:
@@ -56,12 +58,12 @@ class HistPlotBins(vutils.BasePlot):
             b = ax.bar(edgecolor='None', alpha=1, **self.HIST_KWS)
             xs, ys = [], []
             for b_ in b:
-                new_color = mapping[min(fracs, key=lambda x: abs(x - b_.xy[0]))]
+                new_color = mapping[min(FRACS, key=lambda x: abs(x - b_.xy[0]))]
                 b_.set_fc(new_color)
                 xs.append(b_.xy[0])
                 ys.append(b_.get_height())
             ax.plot(xs, ys, **self.LINE_KWS)
-            for frac in fracs[1:-1]:
+            for frac in FRACS[1:-1]:
                 ax.axvline(frac, 0, 1, **self.VLINE_KWS)
             ax.set(title=idx.title())
 
@@ -72,7 +74,7 @@ class HistPlotBins(vutils.BasePlot):
             ax.tick_params(axis='both', width=vutils.TICKWIDTH)
             ax.set(ylim=(0, 1), xlim=(0, 1))
             ax_t = ax.secondary_xaxis('top')
-            ax_t.set_xticks(fracs[1:-1], labels=fracs_s[1:-1])
+            ax_t.set_xticks(FRACS[1:-1], labels=FRACS_S[1:-1])
             ax_t.tick_params(width=vutils.TICKWIDTH)
 
     def _format_fig(self) -> None:
@@ -175,7 +177,7 @@ class BarPlotTotalBins(vutils.BasePlot):
 
     def _format_ax(self) -> None:
         """Formats axis-level parameters"""
-        self.ax.set(xticklabels=reversed(fracs_s))
+        self.ax.set(xticklabels=reversed(FRACS_S))
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.ax.grid(zorder=0, axis='y', **vutils.GRID_KWS)
@@ -365,13 +367,13 @@ class HistPlotBinsTrack(HistPlotBins):
             xs, ys = self._kde(grp['prop_ioi'])
             ax.plot(xs, ys, **self.LINE_KWS)
             xs = xs.flatten()
-            s = np.sort([(fracs[i] + fracs[i + 1]) / 2 for i in range(len(fracs) - 1)]).tolist()
+            s = np.sort([(FRACS[i] + FRACS[i + 1]) / 2 for i in range(len(FRACS) - 1)]).tolist()
             for previous, current, col in zip(s, s[1:], list(reversed(self.PALETTE))[1:]):
                 slicer = np.where((xs <= current) & (xs >= previous))
                 xvals = xs[slicer]
                 yvals = ys[slicer]
                 ax.fill_between(xvals, yvals, color=col)
-            for frac in fracs[1:-1]:
+            for frac in FRACS[1:-1]:
                 ax.axvline(frac, 0, 1, **self.VLINE_KWS)
 
     def _format_ax(self) -> None:
@@ -384,7 +386,7 @@ class HistPlotBinsTrack(HistPlotBins):
                 yticks=np.linspace(0, 1, 5)
             )
             ax_t = ax.secondary_xaxis('top')
-            ax_t.set_xticks(fracs[1:-1], labels=fracs_s[1:-1])
+            ax_t.set_xticks(FRACS[1:-1], labels=FRACS_S[1:-1])
             ax_t.tick_params(width=vutils.TICKWIDTH)
 
     def _format_fig(self) -> None:
