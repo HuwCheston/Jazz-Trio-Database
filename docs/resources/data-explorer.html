@@ -425,41 +425,94 @@ document.write(`
         td:hover {
           background-color: lightgrey;
         }
+        #container {
+          margin: 0;
+          padding: 0;
+          color: #333;
+          background-color: #fff;
+        }
     </style>
 </head>
 <body>
-    <table id="example" class="display" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <th rowspan="2">Track name</th>
-                <th colspan="4">Ensemble</th>
-                <th colspan="3">Beat-upbeat ratio</th>
-            </tr>
-            <tr>
-                <th>Bandleader</th>
-                <th>Fname</th>
-                <th>Musician</th>
-                <th>Instrument</th>
-                <th>Mean</th>
-                <th>Stdev.</th>
-                <th>Count</th>
-            </tr>
-        </thead>
-    </table>
+    <div>
+        <label>Show/Hide columns: </label>
+        <button id="togensemble" onclick="hideCols('2', '5')">Ensemble</button>
+        <button id="togswing" onclick="hideCols('6', '8')">Swing</button>
+        <button id="toginteract" onclick="hideCols('9', '11')">Interaction</button>
+        <button id="togfeel" onclick="hideCols('12', '17')">Feel</button>
+        <button id="togcomplexity" onclick="hideCols('18', '21')">Complexity</button>
+        <button id="togall" onclick="hideCols('2', '21')">Hide all</button>
+    </div>
+    <div id="container">
+        <table id="data" class="dataTable" width="100%">
+            <thead>
+                <tr>
+                    <th rowspan="2">Track name</th>
+                    <th colspan="5">Ensemble</th>
+                    <th colspan="3">Swing (beat-upbeat ratio)</th>
+                    <th colspan="3">Interaction (coupling to)</th>
+                    <th colspan="6">Asynchrony (with)</th>
+                    <th colspan="4">Complexity (windowed, four measures)</th>
+                </tr>
+                <tr>
+                    <th>Bandleader</th>
+                    <th>Pianist</th>
+                    <th>Musician</th>
+                    <th>Instrument</th>
+                    <th>Time signature</th>
+                    <th>Mean</th>
+                    <th>Stdev.</th>
+                    <th>Count</th>
+                    <th>Piano</th>
+                    <th>Bass</th>
+                    <th>Drums</th>
+                    <th>Piano (mean)</th>
+                    <th>Bass (mean)</th>
+                    <th>Drums (mean)</th>
+                    <th>Piano (stdev.)</th>
+                    <th>Bass (stdev.)</th>
+                    <th>Drums (stdev.)</th>
+                    <th>LZ77 (mean)</th>
+                    <th>LZ77 (stdev.)</th>
+                    <th>Density (mean)</th>
+                    <th>Density (stdev.)</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
     <script>
-        var table = new DataTable('#example', {
-            ajax: '../_static/data-explorer/bur.txt',
+        var table = new DataTable('#data', {
+            ajax: '../_static/data-explorer/swing.txt',
             columnDefs: [
                 {
                     target: 1,
                     visible: false,
                 }
-            ]
+            ],
+            scrollX: true,
         });
         $(document).on('click','table tbody tr',function(){
             console.log(table.row(this).data()[1])
             window.open(`../_static/data-explorer/${table.row(this).data()[1]}/display.html`, '', 'fullscreen=0,menubar=0,scrollbars=0,status=0,titlebar=0,toolbar=0,')
         });
+
+        function rangeOfNumbers(a, b){
+            let arr = [];
+            for(a; a<=b; a++){
+                arr.push(a)
+            }
+            return arr;
+        }
+
+        function hideCols (firstCol, lastCol) {
+            let rang = rangeOfNumbers(Number(firstCol), lastCol)
+            for (const id_ of rang){
+                let column = table.column(id_);
+                column.visible(!column.visible());
+            }
+        }
+        hideCols(6, 21)
+
     </script>
 </body>
 </html>

@@ -104,13 +104,12 @@ target/
 *.m4a
 *.wav
 *.flac
-*.mp3
 *.mp4
 *.pds
 *.p
 *.reapeaks
 *.csv
-*.json
+
 *.zip
 
 # Ignore .svg image files in all but the documentation folders
@@ -120,6 +119,12 @@ target/
 # Ignore .svg image files in all but the documentation folders
 *.svg
 !/docs/*.svg
+
+*.mp3
+!/docs/*.mp3
+
+*.json
+!/docs/*.json
 
 /venv_old/
 /pretrained_models/
