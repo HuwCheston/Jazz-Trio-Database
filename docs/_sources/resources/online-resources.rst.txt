@@ -6,7 +6,7 @@ Online Resources
     :class-container: sd-text-center
 
     .. grid-item-card::
-        :img-top: ../_static/visualisation-screengrab-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/visualisation-screengrab-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -24,7 +24,7 @@ Online Resources
             Performer networks
 
     .. grid-item-card::
-        :img-top: ../_static/output-screengrab-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/output-screengrab-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -42,7 +42,7 @@ Online Resources
             Example outputs
 
     .. grid-item-card::
-        :img-top: ../_static/audio-mixer-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/audio-mixer-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -60,7 +60,7 @@ Online Resources
             Audio mixer
 
     .. grid-item-card::
-        :img-top: ../_static/data-explore-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/data-explore-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md
