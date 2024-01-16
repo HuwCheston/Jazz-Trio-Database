@@ -3,5 +3,7 @@
 Data explorer
 =============
 
+Use the interactive table below to search through features extracted from our database. Clicking any row will open a new pop-up window containing interactive plots, audio, and metadata for the selected track. *Make sure you allow pop-ups in your browser for this feature to work correctly!*
+
 .. raw:: html
     :file: data-explore.html

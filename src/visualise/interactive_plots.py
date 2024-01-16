@@ -5,6 +5,7 @@
 
 import os
 import shutil
+import warnings
 from datetime import datetime
 
 import numpy as np
@@ -61,6 +62,13 @@ class ScatterPlotFeelInteractive(BasePlotPlotly):
         for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
             instr_ons = self.onset_maker.ons[instr]
             z = zip(self.onset_maker.ons['mix'], self.onset_maker.ons['mix'][1:], self.onset_maker.ons['metre_manual'])
+            yield {
+                'instrument': instr,
+                'timestamp': np.nan,
+                'musical_position': np.nan,
+                'mp_floor': np.nan,
+            }
+
             for beat1, beat2, beat1pos in z:
                 vals = instr_ons[np.logical_and(beat1 <= instr_ons, instr_ons < beat2)]
                 for i in vals:
@@ -155,10 +163,25 @@ class HistPlotComplexityInteractive(BasePlotPlotly):
         """Create the main plot"""
         for ax, (idx, grp) in zip(range(1, 4), self.df.groupby('instr', sort=False)):
             grp = grp.dropna()
-            if len(grp) == 0:
+            if len(grp) < 2:
+                line = go.Scatter(
+                    x=[], y=[], marker=dict(color=vutils.BLACK),
+                    showlegend=False, hoverinfo='skip',
+                    marker_line=dict(width=vutils.LINEWIDTH, color=vutils.BLACK),
+                )
+                self.fig.add_trace(line, row=1, col=ax)
                 continue
+
             # Plot the kde
-            xs, ys = self._kde(grp['prop_ioi'])
+            try:
+                xs, ys = self._kde(grp['prop_ioi'])
+            except np.linalg.LinAlgError:
+                line = go.Scatter(
+                    x=[], y=[], marker=dict(color=vutils.BLACK),
+                    showlegend=False, hoverinfo='skip',
+                    marker_line=dict(width=vutils.LINEWIDTH, color=vutils.BLACK),
+                )
+                self.fig.add_trace(line, row=1, col=ax)
             xs = xs.flatten()
             s = np.sort([(FRACS[i] + FRACS[i + 1]) / 2 for i in range(len(FRACS) - 1)]).tolist()
             for previous, current, col, bi in zip(s, s[1:], list(reversed(self.PALETTE))[1:],
@@ -255,6 +278,15 @@ class BarPlotCoordinationInteractive(BasePlotPlotly):
 
     def _create_plot(self):
         for (idx, grp), col in zip(self.df.groupby('instrument', sort=False), vutils.RGB):
+            grp = grp.dropna()
+            if len(grp) < 2:
+                bar = go.Bar(
+                    x=[], y=[], marker=dict(color=vutils.BLACK),
+                    showlegend=False, hoverinfo='skip',
+                    marker_line=dict(width=vutils.LINEWIDTH, color=vutils.BLACK),
+                )
+                self.fig.add_trace(bar, row=1, col=1)
+                continue
             bar = go.Bar(
                 x=grp['variable'], y=grp['value'], customdata=grp['nobs'],
                 marker_color=np.repeat(col, 2), textposition="none",
@@ -382,16 +414,31 @@ def create_interactive_plots_for_one_track(track_om):
         pass
     shutil.copy(fr'{root}\explorer-template.html', rf'{new_fpath}\display.html')
     for plotter, name in zip(plotters, names):
-        p = plotter(track_om)
-        p.create_plot()
-        p.render_html(fpath=fr'{new_fpath}\{name}.html', div_id=name)
+        try:
+            p = plotter(track_om)
+        except:
+            print(f'Error: {name}, {track_om.item["fname"]}')
+            with open(fr'{new_fpath}\{name}.html', 'w') as fp:
+                fp.write(f"""
+                <div>
+                {name.title()} plot not found! There was probably not enough data found for this track 
+                ({track_om.item["fname"]}) to create the requested plot type.<br>
+                If this is urgent, please 
+                <a href="mailto:hwc31@cam.ac.uk?subject=Missing plot!&cc=huwcheston@gmail.com">contact us</a> and
+                we'll try and fix things.
+                </div>
+                """)
+        else:
+            p.create_plot()
+            p.render_html(fpath=fr'{new_fpath}\{name}.html', div_id=name)
     meta = pd.Series(track_om.item).to_json()
     with open(fr'{new_fpath}\metadata.json', 'w') as f:
         f.write(meta)
 
 
 if __name__ == '__main__':
-    tracks = utils.unserialise_object(fr'{utils.get_project_root()}\models\matched_onsets_corpus_chronology')
-    track = tracks[0]
+    from joblib import delayed, Parallel
 
-    create_interactive_plots_for_one_track(track)
+    warnings.simplefilter('ignore', FutureWarning)
+    tracks = utils.unserialise_object(fr'{utils.get_project_root()}\models\matched_onsets_corpus_chronology')
+    Parallel(n_jobs=-1)(delayed(create_interactive_plots_for_one_track)(track) for track in tracks)

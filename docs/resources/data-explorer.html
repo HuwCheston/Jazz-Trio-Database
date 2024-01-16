@@ -407,6 +407,7 @@ document.write(`
                   
   <section id="data-explorer">
 <h1>Data explorer<a class="headerlink" href="#data-explorer" title="Permalink to this heading">#</a></h1>
+<p>Use the interactive table below to search through features extracted from our database. Clicking any row will open a new pop-up window containing interactive plots, audio, and metadata for the selected track. <em>Make sure you allow pop-ups in your browser for this feature to work correctly!</em></p>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -414,45 +415,62 @@ document.write(`
     <title>Title</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/v/dt/jszip-3.10.1/dt-1.13.8/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/fc-4.3.0/sc-2.3.0/datatables.min.js"></script>
     <style>
         th {
-          background-color: white;
+            background-color: white;
         }
         th, td {
-          padding: 0.5rem;
+            padding: 0.5rem;
         }
-        td:hover {
-          background-color: lightgrey;
+        tr:nth-child(even) td {
+            background-color: white;
+        }
+        tr:nth-child(odd) td {
+            background-color: #eaeaea;
+        }
+        tbody tr:nth-child(even):hover td{
+            background-color: #ffa !important;
+        }
+        tbody tr:nth-child(odd):hover td {
+            background-color: #ffa !important;
         }
         #container {
-          margin: 0;
-          padding: 0;
-          color: #333;
-          background-color: #fff;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #fff;
+        }
+        .dataTables_wrapper .dt-buttons {
+            float:none;
+            text-align:right;
         }
     </style>
 </head>
 <body>
     <div>
-        <label>Show/Hide columns: </label>
+        <label>Show/hide columns: </label>
         <button id="togensemble" onclick="hideCols('2', '5')">Ensemble</button>
-        <button id="togswing" onclick="hideCols('6', '8')">Swing</button>
-        <button id="toginteract" onclick="hideCols('9', '11')">Interaction</button>
+        <button id="toginteract" onclick="hideCols('6', '8')">Interaction</button>
+        <button id="togswing" onclick="hideCols('9', '11')">Swing</button>
         <button id="togfeel" onclick="hideCols('12', '17')">Feel</button>
         <button id="togcomplexity" onclick="hideCols('18', '21')">Complexity</button>
-        <button id="togall" onclick="hideCols('2', '21')">Hide all</button>
+        <button id="hideall" onclick="modifyAll('2', '21', false)">Hide all</button>
+        <button id="showall" onclick="modifyAll('2', '21', true)">Show all</button>
     </div>
+    <p></p>
     <div id="container">
         <table id="data" class="dataTable" width="100%">
             <thead>
                 <tr>
                     <th rowspan="2">Track name</th>
                     <th colspan="5">Ensemble</th>
-                    <th colspan="3">Swing (beat-upbeat ratio)</th>
                     <th colspan="3">Interaction (coupling to)</th>
-                    <th colspan="6">Asynchrony (with)</th>
-                    <th colspan="4">Complexity (windowed, four measures)</th>
+                    <th colspan="3">Swing (ratio, log2)</th>
+                    <th colspan="6">Feel (asynchrony with, proportional to measure)</th>
+                    <th colspan="4">Complexity (windowed over four measures)</th>
                 </tr>
                 <tr>
                     <th>Bandleader</th>
@@ -460,34 +478,53 @@ document.write(`
                     <th>Musician</th>
                     <th>Instrument</th>
                     <th>Time signature</th>
-                    <th>Mean</th>
-                    <th>Stdev.</th>
-                    <th>Count</th>
                     <th>Piano</th>
                     <th>Bass</th>
                     <th>Drums</th>
+                    <th>Mean</th>
+                    <th>Stdev.</th>
+                    <th>Count</th>
                     <th>Piano (mean)</th>
                     <th>Bass (mean)</th>
                     <th>Drums (mean)</th>
                     <th>Piano (stdev.)</th>
                     <th>Bass (stdev.)</th>
                     <th>Drums (stdev.)</th>
-                    <th>LZ77 (mean)</th>
-                    <th>LZ77 (stdev.)</th>
+                    <th>Compression (mean)</th>
+                    <th>Compression (stdev.)</th>
                     <th>Density (mean)</th>
                     <th>Density (stdev.)</th>
                 </tr>
             </thead>
+            <tfoot>
+                <tr>
+                    <th colspan="1">Track name</th>
+                    <th colspan="5">Ensemble</th>
+                    <th colspan="3">Interaction</th>
+                    <th colspan="3">Swing</th>
+                    <th colspan="6">Asynchrony</th>
+                    <th colspan="4">Complexity</th>
+                </tr>
+            </tfoot>
         </table>
     </div>
     <script>
         var table = new DataTable('#data', {
             ajax: '../_static/data-explorer/swing.txt',
+            dom: "<'row'<'col-sm-6'l><'col-sm-6'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>B",
             columnDefs: [
                 {
                     target: 1,
                     visible: false,
                 }
+            ],
+            fixedColumns:   {
+                leftColumns: 1,
+            },
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             scrollX: true,
         });
@@ -505,13 +542,17 @@ document.write(`
         }
 
         function hideCols (firstCol, lastCol) {
-            let rang = rangeOfNumbers(Number(firstCol), lastCol)
+            let rang = rangeOfNumbers(Number(firstCol), Number(lastCol))
             for (const id_ of rang){
                 let column = table.column(id_);
                 column.visible(!column.visible());
             }
         }
-        hideCols(6, 21)
+
+        function modifyAll(firstCol, lastCol, modifier) {
+            table.columns(rangeOfNumbers(Number(firstCol), Number(lastCol))).visible(modifier);
+        }
+        modifyAll(6, 21, false)
 
     </script>
 </body>
