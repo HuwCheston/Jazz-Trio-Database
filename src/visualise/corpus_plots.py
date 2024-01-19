@@ -856,6 +856,127 @@ class WavePlotOnsets(vutils.BasePlot):
         self.fig.subplots_adjust(left=0.05, right=0.975, top=0.935, bottom=0.075, hspace=0, wspace=0)
 
 
+class BoxPlotExcerptDuration(vutils.BasePlot):
+    """Creates box plot showing distribution of recording durations for each bandleader"""
+    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    PAL = sns.cubehelix_palette(dark=1 / 3, gamma=.3, light=2 / 3, start=2, n_colors=10, as_cmap=False)
+    TICKS = np.linspace(0, 420, 8)
+
+    def __init__(self, cleaned_df: pd.DataFrame, **kwargs):
+        self.corpus_title = 'corpus_chronology'
+        super().__init__(figure_title=fr'corpus_plots\boxplot_excerpt_duration_{self.corpus_title}', **kwargs)
+        self.df = cleaned_df.copy(deep=True)
+        self.df['excerpt_duration'] = self.df['excerpt_duration'].apply(self.get_time)
+        self.df['birth'] = pd.to_datetime(self.df['birth'])
+        self.df['death'] = pd.to_datetime(self.df['death'])
+        self.df = self.df.sort_values(by='birth')
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 3))
+
+    @staticmethod
+    def get_time(x):
+        mins, secs = map(float, x.split(':'))
+        td = timedelta(minutes=mins, seconds=secs)
+        return td.total_seconds()
+
+    def _create_plot(self) -> None:
+        """Creates main plot: box and scatter plot of recording durations per bandleader"""
+        sns.boxplot(
+            self.df, x="excerpt_duration", y="pianist",
+            whis=[0, 100], width=.6, palette=self.PAL, ax=self.ax,
+            linewidth=vutils.LINEWIDTH, color=vutils.BLACK
+        )
+        # Add in points to show each observation
+        sns.stripplot(self.df, x="excerpt_duration", y="pianist", size=4, color=vutils.BLACK)
+
+    @staticmethod
+    def _format_time(nos: int, fmt: str = '%M:%S') -> str:
+        """Formats the number of seconds `nos` into a string representation, in format `fmt`"""
+        return time.strftime(fmt, time.gmtime(nos))
+
+    def _format_bandleader(self, bl: str) -> str:
+        """Formats the name of a given bandleader `bl` for use in axis ticks"""
+        d = self.df[self.df['pianist'] == bl].iloc[0]
+        birth = pd.to_datetime(d['birth']).year
+        death = pd.to_datetime(d['death']).year
+        if bl == 'Ahmad Jamal' or death < 2023:
+            return f"{bl}\n({birth}–{death})"
+        else:
+            return f"{bl}\n(b. {birth})"
+
+    def _add_bandleader_images(self, bl: str, y: int) -> None:
+        """Adds images of pianist `bl` at given position `y` to main axis"""
+        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        img = mpl.offsetbox.OffsetImage(
+            plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.4
+        )
+        ab = mpl.offsetbox.AnnotationBbox(
+            img, (-15, y - 0.05), xycoords='data', clip_on=False, transform=self.ax.transAxes,
+            annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
+        )
+        self.ax.add_artist(ab)
+
+    def _add_number_of_tracks(self, bl: str, y: int) -> None:
+        """Adds text showing the number of tracks recorded by a bandleader `bl`, at position `y`"""
+        tracks = self.df[self.df['pianist'] == bl]
+        ti = round(tracks['excerpt_duration'].sum() / 60)
+        x = (tracks['excerpt_duration'].max()) * 0.9
+        self.ax.text(x, y - 0.35, f'Total minutes: {ti}', va='center')
+
+    def _format_ax(self) -> None:
+        """Sets axis-level parameters"""
+        self.ax.xaxis.grid(True)
+        self.ax.set(
+            ylabel="Pianist", xlabel='Duration of piano solo (MM:SS)', xlim=(0, np.max(self.TICKS)),
+            xticks=self.TICKS, xticklabels=[time.strftime('%M:%S', time.gmtime(nos)) for nos in self.TICKS],
+            yticklabels=[self._format_bandleader(bl.get_text()) for bl in self.ax.get_yticklabels()]
+        )
+        for num, pi in enumerate(self.df['pianist'].unique()):
+            self._add_bandleader_images(pi, num)
+            self._add_number_of_tracks(pi, num)
+        self.ax.tick_params(axis='y', which='both', pad=65)
+        sns.despine(trim=True, left=True)
+        self.ax.tick_params(width=vutils.TICKWIDTH, which='both')
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
+
+    def _format_fig(self) -> None:
+        """Sets figure-level parameters"""
+        self.fig.subplots_adjust(top=0.95, bottom=0.125, left=0.2, right=0.95)
+
+
+class HistPlotTempo(vutils.BasePlot):
+    HIST_KWS = dict(
+        bins=15, color=vutils.RGB[0], edgecolor=vutils.BLACK,
+        linewidth=vutils.LINEWIDTH, linestyle=vutils.LINESTYLE, kde=True,
+        stat='count', binrange=[100, 300], kde_kws=dict(clip=[100, 300]),
+        zorder=10, alpha=1
+    )
+
+    def __init__(self, df, **kwargs):
+        self.df = df
+        self.corpus_title = 'corpus_chronology'
+        super().__init__(figure_title=fr'corpus_plots\histplot_tempo_{self.corpus_title}', **kwargs)
+        self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
+        self.ax.yaxis.grid(True, **vutils.GRID_KWS, zorder=0)
+        self.ax.set_axisbelow(True)
+
+    def _create_plot(self):
+        sns.histplot(data=self.df, x='tempo', ax=self.ax, **self.HIST_KWS)
+
+    def _format_ax(self):
+        self.ax.set(
+            xlim=(95, 305), xlabel='Track tempo (BPM)', ylabel='Number of tracks',
+            yticks=np.linspace(0, 40, 5), xticks=np.linspace(100, 300, 5)
+        )
+        self.ax.lines[0].set_color(vutils.BLACK)
+        self.ax.lines[0].set_linewidth(vutils.LINEWIDTH * 2)
+        self.ax.lines[0].set_zorder(100)
+        self.ax.tick_params(width=vutils.TICKWIDTH, which='both')
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
 # from src import utils
 # import math
 # import pandas as pd
