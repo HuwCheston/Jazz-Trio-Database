@@ -327,7 +327,7 @@ class RegPlotBURTempo(vutils.BasePlot):
     # Initial attributes for plotting
     BURS_WITH_IMAGES = [0.5, 1, 2]
     BUR_THRESHOLD = 15
-    N_BOOT = 10
+    N_BOOT = vutils.N_BOOT
     BIN_MULTIPLER = 1.5
     # These are keywords that we pass into our given plot types
     LINE_KWS = dict(lw=vutils.LINEWIDTH * 2, ls=vutils.LINESTYLE)
@@ -356,7 +356,7 @@ class RegPlotBURTempo(vutils.BasePlot):
         self.md = self._mixedlm(self.average)
         # Create our gridded plots
         self.fig, self.ax = plt.subplots(
-            nrows=2, ncols=2, figsize=(vutils.WIDTH, vutils.WIDTH / 2),
+            nrows=2, ncols=2, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2),
             gridspec_kw=dict(width_ratios=(11, 1), height_ratios=(1, 5)),
         )
         # The main ax for plotting the regression/scatter plot
@@ -525,7 +525,7 @@ class RegPlotBURTempo(vutils.BasePlot):
             ax.spines[[spine, 'right', 'top']].set_visible(False)
         # Set other features for the main axis
         self.marginal_ax[0].set(
-            xlabel='', ylabel='', yticks=[0], yticklabels=[''], xticklabels=[], xlim=(100, 310),
+            xlabel='', ylabel='', yticks=[0], yticklabels=[''], xticklabels=[], xlim=(100, 325),
             xticks=[100, 150, 200, 250, 300]
         )
         self.marginal_ax[1].set(
@@ -553,8 +553,8 @@ class RegPlotBURTempo(vutils.BasePlot):
         )
         # Final attributes to set here
         self.main_ax.set(
-            xticks=[100, 150, 200, 250, 300], yticks=[-1, 0, 1], xlim=(100, 320),
-            xlabel='Mean Tempo (BPM)', ylabel='Mean ${Log_2}$ beat-upbeat ratio', ylim=(-1.35, 1.7)
+            xticks=[100, 150, 200, 250, 300], yticks=[-1, 0, 1], xlim=(100, 325),
+            xlabel='Tempo (BPM)', ylabel='${Log_2}$ beat-upbeat ratio', ylim=(-1.35, 1.7)
         )
 
     def _format_ax(self) -> None:
@@ -569,7 +569,7 @@ class RegPlotBURTempo(vutils.BasePlot):
 
     def _format_fig(self):
         """Format figure-level properties"""
-        self.fig.subplots_adjust(left=0.05, right=0.99, top=0.99, bottom=0.09, hspace=0.1, wspace=0.05)
+        self.fig.subplots_adjust(left=0.1, right=0.99, top=0.99, bottom=0.09, hspace=0.1, wspace=0.05)
 
 
 class HistPlotBURTrack(HistPlotBURByInstrument):

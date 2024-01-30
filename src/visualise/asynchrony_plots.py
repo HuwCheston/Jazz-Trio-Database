@@ -327,7 +327,7 @@ class RegPlotPianistAsynchrony(vutils.BasePlot):
 
     FORMULA = "diff ~ tempo_standard * C(instr, Treatment(reference='bass'))"
     RE_STRUCT = "0 + tempo_standard + C(instr, Treatment(reference='bass'))"
-    N_BOOT = 10000
+    N_BOOT = 3
     BIN_MULTIPLER = 1.5
 
     # These are keywords that we pass into our given plot types
@@ -351,7 +351,7 @@ class RegPlotPianistAsynchrony(vutils.BasePlot):
         self.df = async_df
         self.md = self._mixedlm(self.df)
         self.fig, self.ax = plt.subplots(
-            nrows=2, ncols=2, figsize=(vutils.WIDTH, vutils.WIDTH / 2),
+            nrows=2, ncols=2, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2),
             gridspec_kw=dict(width_ratios=(11, 1), height_ratios=(1, 5)),
         )
         # The main ax for plotting the regression/scatter plot
@@ -387,7 +387,6 @@ class RegPlotPianistAsynchrony(vutils.BasePlot):
         mean_, std_ = np.array(range(low_, high_)).mean(), np.array(range(low_, high_)).std()
         # Iterate through each BPM in our range
         for bpm in range(low_, high_):
-            print(bpm)
             # Standardise the BPM (Z-score) according to the observed values
             bpm_z = (bpm - mean_) / std_
             tempo_coeff = tempo * bpm_z
@@ -491,16 +490,16 @@ class RegPlotPianistAsynchrony(vutils.BasePlot):
         )
         # Final attributes to set here
         self.main_ax.set(
-            xticks=[100, 150, 200, 250, 300], yticks=[-1/128, 0, 1/128, 1/64, 1/32], xlim=(100, 315),
+            xticks=[100, 150, 200, 250, 300], yticks=[-1/128, 0, 1/128, 1/64, 1/32], xlim=(100, 335),
             yticklabels=[r'–$\frac{1}{128}$', r'$\pm$0', r'+$\frac{1}{128}$', r'+$\frac{1}{64}$', r'+$\frac{1}{32}$'],
-            xlabel='Mean Tempo (BPM)', ylim=(-1/128 - 0.001, 1/32 + 0.0065),
-            ylabel='Mean piano asynchrony\n(relative to measure)',
+            xlabel='Tempo (BPM)', ylim=(-1/128 - 0.003, 1/32 + 0.0065),
+            ylabel='Piano asynchrony (proportion of measure)',
 
         )
         plt.setp(self.main_ax.spines.values(), linewidth=vutils.LINEWIDTH)
         self.main_ax.axhline(0, 0, 1, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, color=vutils.BLACK)
         self.main_ax.tick_params(axis='both', bottom=True, right=True, width=vutils.TICKWIDTH)
-        self.main_ax.text(322, 0, r'$\pm$0', ha='right', va='center', clip_on=False, zorder=1000)
+        self.main_ax.text(330, 0, r'$\pm$0', ha='right', va='center', clip_on=False, zorder=1000)
         for pict, v in zip(self._add_notation_vals(), ['–', '+', '+', '+']):
             self.main_ax.add_artist(pict)
             self.main_ax.text(pict.xy[0] - 1, pict.xy[1], v, ha='right', va='center', clip_on=False, zorder=1000)
@@ -514,11 +513,11 @@ class RegPlotPianistAsynchrony(vutils.BasePlot):
             plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
         # Set other features for the main axis
         self.marginal_ax[0].set(
-            xlabel='', ylabel='', yticks=[0], yticklabels=[''], xticklabels=[], xlim=(100, 315),
+            xlabel='', ylabel='', yticks=[0], yticklabels=[''], xticklabels=[], xlim=(100, 335),
             xticks=[100, 150, 200, 250, 300]
         )
         self.marginal_ax[1].set(
-            xlabel='', ylabel='', xticks=[0], xticklabels=[''], yticklabels=[], ylim=(-1/128 - 0.001, 1/32 + 0.0065),
+            xlabel='', ylabel='', xticks=[0], xticklabels=[''], yticklabels=[], ylim=(-1/128 - 0.003, 1/32 + 0.0065),
             yticks=[-1/128, 0, 1/128, 1/64, 1/32],
         )
 
@@ -538,13 +537,13 @@ class RegPlotPianistAsynchrony(vutils.BasePlot):
             # If we can get the image, then yield it to add to our plot
             else:
                 yield mpl.offsetbox.AnnotationBbox(
-                    mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.5), (320, 1/val),
+                    mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.4), (325, 1/val),
                     frameon=False, xycoords='data', clip_on=False, annotation_clip=False
                  )
 
     def _format_fig(self) -> None:
         """Format figure-level properties"""
-        self.fig.subplots_adjust(left=0.075, right=0.99, top=0.99, bottom=0.09, hspace=0.1, wspace=0.1)
+        self.fig.subplots_adjust(left=0.11, right=0.99, top=0.99, bottom=0.09, hspace=0.1, wspace=0.05)
 
 
 class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
