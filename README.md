@@ -60,7 +60,7 @@ git clone https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database.git
 cd Cambridge-Jazz-Trio-Database
 python -m venv venv
 call venv/Scripts/activate.bat
-python src/process.py -i "https://www.youtube.com/watch?v=BguWLXMARHk" -from "03:00" -to "03:30"
+python src/process.py -i "https://www.youtube.com/watch?v=BguWLXMARHk" --begin "03:00" --end "03:30"
 ```
 
 ## License

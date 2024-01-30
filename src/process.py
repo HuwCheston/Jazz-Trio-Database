@@ -120,17 +120,17 @@ def create_output_filestructure(filename: str):
 
 
 @click.command()
-@click.option("-i", "i", type=str, default=None, help='Input to process (either filepath or YouTube link)')
-@click.option('-json', 'json_fpath', type=click.Path(), default='',  help='The file to use to configure track options')
-@click.option("-from", "start", type=str, default='00:01', help='Starting timestamp (in %H:%M:%S or %M:%S format)')
-@click.option("-to", "stop", type=str, default='01:01', help='Stopping timestamp (in %H:%M:%S or %M:%S format)')
-@click.option("-instr", "exog_ins", default='piano', help='Extract features for this instrument (defaults to piano)')
-@click.option("-no_click", "generate_click", is_flag=True, default=True, help='Suppress click track generation')
+@click.option("--input", "-i", type=str, default=None, help='Input to process (either filepath or YouTube link)')
+@click.option("--json", '-j', type=click.Path(), default='',  help='The file to use to configure track options')
+@click.option("--begin", "-b", type=str, default='00:01', help='Starting timestamp (in %H:%M:%S or %M:%S format)')
+@click.option("--end", "-e", type=str, default='01:01', help='Stopping timestamp (in %H:%M:%S or %M:%S format)')
+@click.option("--instr", "exog_ins", default='piano', help='Extract features for this instrument (defaults to piano)')
+@click.option("--no_click", "generate_click", is_flag=True, default=True, help='Suppress click track generation')
 def proc(
-        i: str,
-        json_fpath: str,
-        start: str,
-        stop: str,
+        input: str,
+        json: str,
+        begin: str,
+        end: str,
         exog_ins: str,
         generate_click: bool,
 ):
@@ -138,14 +138,14 @@ def proc(
     # Set the logger
     logger = logging.getLogger(__name__)
     # Validate the input address (more checking for if the link actually works happens later)
-    if 'youtube' in i.lower() and i.lower().startswith('http'):
-        filename = i.split('&')[0].split('?v=')[-1].lower()
+    if 'youtube' in input.lower() and input.lower().startswith('http'):
+        filename = input.split('&')[0].split('?v=')[-1].lower()
     else:
         raise AttributeError('Input file must be a valid YouTube link.')
     # Set parameters for processing
     create_output_filestructure(filename)
-    item = get_track_dictionary(filename, start, stop, json_fpath)
-    item['links'] = {'external': [i]}
+    item = get_track_dictionary(filename, begin, end, json)
+    item['links'] = {'external': [input]}
     # Download and separate the audio
     logger.info(f"downloading and separating source audio ...")
     im = ItemMaker(
