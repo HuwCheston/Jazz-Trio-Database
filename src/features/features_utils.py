@@ -19,6 +19,11 @@ from statsmodels.regression.linear_model import RegressionResultsWrapper
 from src import utils
 from src.detect.detect_utils import OnsetMaker
 
+__all__ = [
+    "PhaseCorrection", "BeatUpbeatRatio", "IOIComplexity", "TempoSlope",
+    "ProportionalAsynchrony", "RollingIOISummaryStats"
+]
+
 
 class FeatureExtractor:
     """Base class for extracting all features from all instruments within one track
@@ -1280,8 +1285,9 @@ class ProportionalAsynchrony(BaseExtractor):
     LOWER_BOUND = 1/32
     REF_INSTR = 'drums'
 
-    def __init__(self, summary_df: pd.DataFrame, my_instr_name: str):
+    def __init__(self, summary_df: pd.DataFrame, my_instr_name: str, metre_col: str = 'metre_manual'):
         super().__init__()
+        self.metre_col = metre_col
         asy = pd.DataFrame(self._extract_proportional_durations(summary_df))
         self.asynchronies = self._format_async_df(asy)
         mean_async = self.asynchronies.groupby('instr')['asynchrony_adjusted_offset'].agg([np.nanmean, np.nanstd])
@@ -1320,7 +1326,7 @@ class ProportionalAsynchrony(BaseExtractor):
 
     def _extract_proportional_durations(self, summary_df: pd.DataFrame) -> Generator:
         """Extracts proportional beat values for all instruments"""
-        idx = summary_df[summary_df['metre_manual'] == 1].index
+        idx = summary_df[summary_df[self.metre_col] == 1].index
         for downbeat1, downbeat2 in pairwise(idx):
             # Get all the beats marked between our two downbeats (beat 1 bar 1, beat 1 bar 2)
             bw = summary_df[(downbeat1 <= summary_df.index) & (summary_df.index < downbeat2)]
@@ -1331,18 +1337,18 @@ class ProportionalAsynchrony(BaseExtractor):
             # Scale our onsets to be proportional with our first and last values
             prop = (sub - first) / (last - first)
             # Drop values after 1/16th note or before 1/32nd note
-            upper_bound = (((bw['metre_manual'] - 1) * 1/4) + self.UPPER_BOUND)
-            lower_bound = ((bw['metre_manual'] - 1) * 1/4) - self.LOWER_BOUND
+            upper_bound = (((bw[self.metre_col] - 1) * 1/4) + self.UPPER_BOUND)
+            lower_bound = ((bw[self.metre_col] - 1) * 1/4) - self.LOWER_BOUND
             # Set values below upper and lower bound to NaN
             for col in prop.columns:
                 prop[col][(prop[col] < lower_bound) | (prop[col] > upper_bound)] = np.nan
             # Convert values to degrees
             prop *= 360
-            prop = pd.concat([prop, bw['metre_manual']], axis=1)
+            prop = pd.concat([prop, bw[self.metre_col]], axis=1)
             # Iterate through all instruments
             for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-                for _, val in prop[[instr, 'metre_manual']].iterrows():
-                    yield dict(instr=instr, asynchrony=val[instr], beat=val['metre_manual'])
+                for _, val in prop[[instr, self.metre_col]].iterrows():
+                    yield dict(instr=instr, asynchrony=val[instr], beat=val[self.metre_col])
 
 
 if __name__ == '__main__':

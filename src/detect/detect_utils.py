@@ -46,7 +46,7 @@ class OnsetMaker:
         left=1/32,
         right=1/16
     )
-    silence_threshold = 1 / 3  # Warn when more of a track is silent than this threshold
+    silence_threshold = utils.SILENCE_THRESHOLD  # Warn when more of a track is silent than this threshold
     # The threshold to use when matching onsets
     window = 0.05
     top_db = dict(
@@ -54,10 +54,6 @@ class OnsetMaker:
         bass=30,
         drums=60,
     )
-    # Define file paths
-    references_dir: str = rf"{utils.get_project_root()}\references"
-    data_dir: str = rf"{utils.get_project_root()}\data"
-    reports_dir: str = rf"{utils.get_project_root()}\reports"
 
     def __init__(
             self,
@@ -68,6 +64,12 @@ class OnsetMaker:
         # Set inputs as class parameters
         self.item = item
         self.corpus_name = corpus_name
+        # Define file paths
+        output_dir = kwargs.get('output_filepath', utils.get_project_root())
+        self.references_dir: str = kwargs.get('references_filepath', f"{output_dir}/references")
+        self.data_dir: str = kwargs.get('data_filepath', f"{output_dir}/data")
+        self.reports_dir: str = kwargs.get('reports_filepath', f"{output_dir}/reports")
+        self.click_track_dir = kwargs.get('click_track_dir', rf'{self.reports_dir}/click_tracks/{self.corpus_name}')
         # The sharpness of the filter
         self.order = kwargs.get('order', 30)
         # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
@@ -470,10 +472,9 @@ class OnsetMaker:
         # Get our onset list
         onsets_list = [self.ons[instr], *args]
         # Construct our filename
-        fold = rf'{self.reports_dir}\click_tracks\{self.corpus_name}'
-        fname = rf'{fold}\{self.item["fname"]}_{instr}_beats.{utils.AUDIO_FILE_FMT}'
+        fname = rf'{self.click_track_dir}\{self.item["fname"]}_{instr}_beats.{utils.AUDIO_FILE_FMT}'
         # Create the click track maker class and then generate the click track using the above variables
-        click_track_cls = _ClickTrackMaker(audio=self.audio[instr])
+        click_track_cls = ClickTrackMaker(audio=self.audio[instr])
         click_track_audio = click_track_cls.generate_audio(onsets_list)
         # Create the audio file and save into the click tracks directory
         with open(fname, 'wb') as f:
@@ -931,12 +932,15 @@ class OnsetMaker:
         # Estimate the metre automatically using the neural network results
         self.ons['metre_auto'] = metre_auto
         self.ons['downbeats_auto'] = self.extract_downbeats(timestamps, metre_auto)
+        db = self.ons['downbeats_auto']    # Only used if no manual downbeats created
         # Estimate the metre using a known downbeat and time signature
-        self.ons['metre_manual'] = self.metre_from_annotated_downbeat(timestamps)
-        self.ons['downbeats_manual'] = self.extract_downbeats(timestamps, self.ons['metre_manual'])
-        # Warn if we're getting different results for automatic and manual metre detection
-        if not all(self.ons['metre_auto'] == self.ons['metre_manual']):
-            warnings.warn(f'item {self.item["fname"]}: manual and automatic metre detection diverge')
+        if self.item['first_downbeat'] is not None:
+            self.ons['metre_manual'] = self.metre_from_annotated_downbeat(timestamps)
+            self.ons['downbeats_manual'] = self.extract_downbeats(timestamps, self.ons['metre_manual'])
+            db = self.ons['downbeats_manual']    # Used in favour of 'downbeats_auto'
+            # Warn if we're getting different results for automatic and manual metre detection
+            if not all(self.ons['metre_auto'] == self.ons['metre_manual']):
+                warnings.warn(f'item {self.item["fname"]}: manual and automatic metre detection diverge')
         # Try and get manual annotations for our crotchet beats, if we have them
         try:
             eval_ = list(self.compare_onset_detection_accuracy(
@@ -951,7 +955,7 @@ class OnsetMaker:
             self.onset_evaluation.append(eval_)
         # Generate the click track for the tracked beats, including the manually-annotated downbeats
         if generate_click:
-            self.generate_click_track('mix', self.ons['downbeats_manual'])
+            self.generate_click_track('mix', db)
 
     def finalize_output(
             self
@@ -964,7 +968,9 @@ class OnsetMaker:
             instrs_list=['piano', 'bass', 'drums'],
             use_hard_threshold=False
         )
-        self.summary_dict.update(dict(metre_auto=self.ons['metre_auto'], metre_manual=self.ons['metre_manual']))
+        self.summary_dict.update(dict(metre_auto=self.ons['metre_auto']))
+        if self.item['first_downbeat'] is not None:
+            self.summary_dict.update(dict(metre_manual=self.ons['metre_manual']))
         # Delete the raw audio as it will take up a lot of space when serialised
         del self.audio
 
@@ -1009,7 +1015,7 @@ class OnsetMaker:
         return comb[mask, 0]
 
 
-class _ClickTrackMaker:
+class ClickTrackMaker:
     order = 20    # Lower than the value used for the stems as less precise filtering is needed here
 
     def __init__(self, audio: np.array, **kwargs):
@@ -1140,8 +1146,8 @@ def create_silent_clicktrack(
     others = beats[beats['metre_manual'] != 1]['beats'].to_numpy()
     # Create silent audio of equivalent length to the beats track
     blank = np.zeros(int(beats.max().max() * utils.SAMPLE_RATE))
-    # Create the new `_ClickTrackMaker` and generate source suadio
-    ct = _ClickTrackMaker(audio=blank)
+    # Create the new `ClickTrackMaker` and generate source suadio
+    ct = ClickTrackMaker(audio=blank)
     click_track_audio = ct.generate_audio([others, downbeats])
     # Cut the audio, if required
     if cutoff:

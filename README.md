@@ -51,6 +51,18 @@ The metadata files contain the following fields for every recording:
 | `musicians`         | Key-value pairs of the musicians included in the recording                                    |
 | `fname`             | Audio filename                                                                                |
 
+## Process your own tracks
+
+To process a track from YouTube using our pipeline, you can use a command line interface to run the code in `src/process.py`. For example, to process 30 seconds of audio from [Chick Corea's Akoustic Band 'Spain'](https://www.youtube.com/watch?v=BguWLXMARHk):
+
+```
+git clone https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database.git
+cd Cambridge-Jazz-Trio-Database
+python -m venv venv
+call venv/Scripts/activate.bat
+python src/process.py -i "https://www.youtube.com/watch?v=BguWLXMARHk" -from "03:00" -to "03:30"
+```
+
 ## License
 
 The dataset is made available under the [MIT License](https://spdx.org/licenses/MIT.html). Please note that your use of the audio files linked to on YouTube is not covered by the terms of this license.

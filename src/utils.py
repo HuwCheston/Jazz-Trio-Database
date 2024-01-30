@@ -41,6 +41,7 @@ INSTRUMENTS_TO_PERFORMER_ROLES = {
     'bass': 'bassist',
     'drums': 'drummer'
 }
+SILENCE_THRESHOLD = 1/3
 
 
 def get_project_root() -> Path:
@@ -623,6 +624,20 @@ class CorpusMaker:
             yield track
 
 
+def save_annotations(track, trackpath):
+    """Saves all annotations from a given `OnsetMaker` instance inside `trackpath`"""
+    # Iterate through each instrument
+    for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+        # Save a `.csv` file of this performer's onsets
+        ons = pd.Series(track.ons[instr])
+        ons.to_csv(fr"{trackpath}/{track.item['fname']}_{instr}.csv", header=False, index=False)
+    # Save a `.csv` file of the matched beats and onsets
+    beats = pd.DataFrame(track.summary_dict)
+    beats.to_csv(fr"{trackpath}/{track.item['fname']}_beats.csv", header=True, index=True)
+    # Save a `.json` file of the track metadata
+    save_json(track.item, trackpath, "metadata")
+
+
 def generate_corpus_files(corpus_fname: str) -> None:
     """Generates the `.csv` and `.json` files for a single `corpus_fname`"""
     def mkdir(path: str):
@@ -641,16 +656,7 @@ def generate_corpus_files(corpus_fname: str) -> None:
         # Make a folder for this track
         trackpath = dirpath + fr'/{track.item["fname"]}'
         mkdir(trackpath)
-        # Iterate through each instrument
-        for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-            # Save a `.csv` file of this performer's onsets
-            ons = pd.Series(track.ons[instr])
-            ons.to_csv(fr"{trackpath}/{instr}.csv", header=False, index=False)
-        # Save a `.csv` file of the matched beats and onsets
-        beats = pd.DataFrame(track.summary_dict)
-        beats.to_csv(fr"{trackpath}/beats.csv", header=True, index=True)
-        # Save a `.json` file of the track metadata
-        save_json(track.item, trackpath, "metadata")
+        save_annotations(track, trackpath)
 
 
 def load_corpus_from_files(dirpath: str) -> list:

@@ -75,13 +75,13 @@ class ItemMaker:
     abs_tol = 0.05    # i.e. 50 milliseconds
     # The instruments we'll conduct source separation on
     instrs = list(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys())
-    # Directories containing raw and processed (source-separated) audio, respectively
-    output_filepath = rf"{utils.get_project_root()}\data"
-    raw_audio_loc = rf"{output_filepath}\raw\audio"
-    spleeter_audio_loc = rf"{output_filepath}\processed\spleeter_audio"
-    demucs_audio_loc = rf"{output_filepath}\processed\demucs_audio"
 
     def __init__(self, item: dict, **kwargs):
+        # Directories containing raw and processed (source-separated) audio, respectively
+        self.output_filepath = kwargs.get('output_filepath', rf"{utils.get_project_root()}\data")
+        self.raw_audio_loc = rf"{self.output_filepath}\raw\audio"
+        self.spleeter_audio_loc = rf"{self.output_filepath}\processed\spleeter_audio"
+        self.demucs_audio_loc = rf"{self.output_filepath}\processed\demucs_audio"
         # The dictionary corresponding to one particular item in our corpus JSON
         self.item = item.copy()
         # Empty attribute to hold valid YouTube links
@@ -150,12 +150,12 @@ class ItemMaker:
 
     def get_item(self) -> None:
         """Tries to find a corpus item locally, and downloads it from the internet if not present"""
-
+        log = f'processing "{self.item["track_name"]}"'
+        if any([self.item[st] is not None for st in ['recording_year', 'album_name']]):
+            log += f' from {self.item["recording_year"]} album {self.item["album_name"]}, ' \
+                   f'leader {self.item["musicians"][self.item["musicians"]["leader"]]} ...'
         # Log start of processing
-        self._logger_wrapper(
-            f'processing "{self.item["track_name"]}" from {self.item["recording_year"]} '
-            f'album {self.item["album_name"]}, leader {self.item["musicians"][self.item["musicians"]["leader"]]} ...'
-        )
+        self._logger_wrapper(log)
         # Define our list of checks for whether we need to rebuild the item
         checks = [
             # Is the item actually present locally?
@@ -265,7 +265,7 @@ class ItemMaker:
                     fname = rf'{self.raw_audio_loc}\{self.fname}-{ch}chan.{self.fmt}'
                     cmds.append(cls.get_cmd(fname))
             # Run each of our separation commands in parallel, using joblib (set n_jobs to number of commands)
-            self._logger_wrapper(f"separating {len(cmds)} tracks with {separator_name} ...")
+            self._logger_wrapper(f"... separating {len(cmds)} tracks with {separator_name}")
             with HidePrints() as _:
                 Parallel(n_jobs=len(cmds))(delayed(cls.run_separation)(cmd) for cmd in cmds)
             # Clean up after separation by removing any unnecessary files, moving folders etc.
