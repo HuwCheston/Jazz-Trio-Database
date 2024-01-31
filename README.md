@@ -79,7 +79,7 @@ The dataset is made available under the [MIT License](https://spdx.org/licenses/
 If you use the Cambridge Jazz Trio Database in your work, please cite the paper where it was introduced:
 
 ```
-@misc{,
+@misc{
 	title = {Cambridge Jazz Trio Database: Automated Timing Annotation of Jazz Piano Trio Recordings Processed Using Audio Source Separation},
 	url = {osf.io/preprints/psyarxiv/jyqp3},
 	doi = {10.31234/osf.io/jyqp3},
