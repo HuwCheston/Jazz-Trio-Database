@@ -78,12 +78,22 @@ The dataset is made available under the [MIT License](https://spdx.org/licenses/
 
 If you use the Cambridge Jazz Trio Database in your work, please cite the paper where it was introduced:
 
-**Full citation coming soon!**
+```
+@misc{,
+	title = {Cambridge Jazz Trio Database: Automated Timing Annotation of Jazz Piano Trio Recordings Processed Using Audio Source Separation},
+	url = {osf.io/preprints/psyarxiv/jyqp3},
+	doi = {10.31234/osf.io/jyqp3},
+	publisher = {PsyArXiv},
+	author = {Cheston, Huw and Schlichting, Joshua L and Cross, Ian and Harrison, Peter M C},
+	month = jan,
+	year = {2024},
+}
+```
 
 ## Outputs
 
 Creation of the database has resulted in the following published research outputs:
 
-- Cheston, H., Cross, I., & Harrison, P. M. C. (2024a). Cambridge Jazz Trio Database: Automated Timing Annotation of Jazz Piano Trio Recordings Processed Using Audio Source Separation [Preprint]. PsyArXiv. LINK UPCOMING.
-- Cheston, H., Cross, I., & Harrison, P. M. C. (2024b). Rhythmic Qualities of Jazz Improvisation Predict Performer Identity and Style in Source-Separated Audio Recordings [Preprint]. PsyArXiv. LINK UPCOMING.
+- Cheston, H., Cross, I., & Harrison, P. M. C. (2024a). Cambridge Jazz Trio Database: Automated Timing Annotation of Jazz Piano Trio Recordings Processed Using Audio Source Separation [Preprint]. PsyArXiv. [https://doi.org/10.31234/osf.io/jyqp3](https://doi.org/10.31234/osf.io/jyqp3).
+- Cheston, H., Cross, I., & Harrison, P. M. C. (2024b). Rhythmic Qualities of Jazz Improvisation Predict Performer Identity and Style in Source-Separated Audio Recordings [Preprint]. PsyArXiv. [https://doi.org/10.31234/osf.io/txy2f](https://doi.org/10.31234/osf.io/txy2f).
 - Cheston, H., Cross, I., & Harrison, P. M. C. (2023). An Automated Pipeline for Characterizing Timing in Jazz Trios. Proceedings of the DMRN+18 Digital Music Research Network. Digital Music Research Network, Queen Mary University of London, London, United Kingdom.
