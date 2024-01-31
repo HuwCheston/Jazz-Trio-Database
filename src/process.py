@@ -7,6 +7,7 @@ import logging
 import os
 
 import click
+import numpy as np
 import pandas as pd
 from joblib import load
 
@@ -120,13 +121,21 @@ def create_output_filestructure(filename: str):
 
 
 def make_pianist_prediction(feature_dict, model_filepath: str = None):
+    logger = logging.getLogger(__name__)
     if model_filepath is None:
         model_filepath = f'{utils.get_project_root()}/models/pianist_model.joblib'
     model = load(model_filepath)
+    for feature, val in feature_dict.items():
+        if np.isnan(val):
+            avg = utils.IMPUTE_VALS[feature]
+            logger.warning(
+                f"""Feature {feature} did not extract correctly: replacing with average from dataset ({round(avg, 2)}). 
+                This may invalidate predictions made for this track!"""
+            )
+            feature_dict[feature] = avg
+
     feature_df = pd.DataFrame(feature_dict)[utils.PREDICTORS]
-    prediction = model.predict(feature_df).iloc[0]
-    predict_proba = model.predict_proba(feature_df)
-    return prediction
+    return model.predict(feature_df).iloc[0]
 
 
 @click.command()

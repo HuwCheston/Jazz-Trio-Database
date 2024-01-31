@@ -53,6 +53,28 @@ PREDICTORS_CATEGORIES = {
 }
 PREDICTORS = [it for sl in list(PREDICTORS_CATEGORIES.values()) for it in sl]
 
+# Mean values for each predictor in the dataset: use these to impute NaNs when encountering new data
+IMPUTE_VALS = {
+    "bur_log_mean": 0.3761003068024858,
+    "bur_log_std": 0.6596973212959278,
+    "lz77_mean": 10.708304075130211,
+    "lz77_std": 1.807330355424879,
+    "n_onsets_mean": 24.61031148393926,
+    "n_onsets_std": 5.269495594070607,
+    "bass_prop_async_nanmean": 0.010629296173547409,
+    "drums_prop_async_nanmean": 0.0147304515092208,
+    "bass_prop_async_nanstd": 0.004531355940149889,
+    "drums_prop_async_nanstd": 0.006640026310255122,
+    "self_coupling": -0.4955328636051492,
+    "coupling_drums": 0.6788343986626387,
+    "coupling_bass": 0.4178927218632842,
+    "coupling_piano_drums": 0.13752675794042257,
+    "coupling_piano_bass": 0.13951901448268583,
+    "rolling_std_median": 0.1934943576660537,
+    "tempo": 197.379633304093,
+    "tempo_slope": 0.026780946855082095
+}
+
 
 def get_project_root() -> Path:
     """Returns the root directory of the project"""
