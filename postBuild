@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Set the URL of the .tar.gz file you want to download
+file_url="https://github.com/deezer/spleeter/releases/download/v1.4.0/5stems.tar.gz"
+
+# Set the name of the new directory to extract the contents
+extracted_dir="pretrained_models/5stems"
+
+# Create the new directory if it doesn't exist
+mkdir -p "$extracted_dir"
+
+# Download the .tar.gz file
+wget "$file_url" -O /tmp/downloaded_file.tar.gz
+
+# Check if the download was successful
+if [ $? -eq 0 ]; then
+    # Extract the contents to the new directory
+    tar -xzf /tmp/downloaded_file.tar.gz -C "$extracted_dir"
+
+    # Clean up the downloaded .tar.gz file
+    rm /tmp/downloaded_file.tar.gz
+
+    echo "Extraction completed successfully. Files are in: $extracted_dir"
+else
+    echo "Download failed. Please check the URL and try again."
+fi

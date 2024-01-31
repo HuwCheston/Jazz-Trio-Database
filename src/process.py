@@ -135,7 +135,7 @@ def make_pianist_prediction(feature_dict: dict, model_filepath: str = None):
         if np.isnan(feature_dict[feature]):
             avg = utils.IMPUTE_VALS[feature]
             message = f"Feature {feature} did not extract from the track correctly. " \
-                      f"Replacing with average obtained from dataset ({round(avg, 2)}). " \
+                      f"Replacing with average obtained rom dataset ({round(avg, 2)}). " \
                       f"This may invalidate any predictions made for this track!"
             warnings.warn(message)
             feature_dict[feature] = avg
@@ -159,30 +159,7 @@ def format_predictions(predict_proba: np.ndarray, class_names: np.ndarray) -> st
     return f'... predicted pianist is {pred.iloc[0]["pianist"]} (top 3 predictions: {st})'
 
 
-@click.command()
-@click.option(
-    "--input", "-i", type=str, default=None, help='Input to process (either filepath or YouTube link)'
-)
-@click.option(
-    "--json", '-j', type=click.Path(), default='',  help='The file to use to configure track options'
-)
-@click.option(
-    "--params", '-p', type=click.Path(), default='corpus_chronology',
-    help='The name of a folder containing parameter settings inside `references/parameter_optimisation`'
-)
-@click.option(
-    "--begin", "-b", type=str, default='00:01', help='Starting timestamp (in %H:%M:%S or %M:%S format)'
-)
-@click.option(
-    "--end", "-e", type=str, default='01:01', help='Stopping timestamp (in %H:%M:%S or %M:%S format)'
-)
-@click.option(
-    "--instr", "exog_ins", default='piano', help='Extract features for this instrument (defaults to piano)'
-)
-@click.option(
-    "--no_click", "generate_click", is_flag=True, default=True, help='Suppress click track generation'
-)
-def proc(
+def proc_inner(
         input: str,
         json: str,
         params: str,
@@ -191,7 +168,7 @@ def proc(
         exog_ins: str,
         generate_click: bool,
 ):
-    """Main processing function, to be run from the command line using arguments parsed by `click`"""
+    """An inner function for processing that can be imported directly in Python"""
     # Set the logger
     logger = logging.getLogger(__name__)
     # Validate the input address (more checking for if the link actually works happens later)
@@ -241,6 +218,42 @@ def proc(
     logger.info(predict)
     logger.info(f"... the features can be found in {filename}/outputs")
     logger.info(f"done !")
+
+
+@click.command()
+@click.option(
+    "--input", "-i", type=str, default=None, help='Input to process (either filepath or YouTube link)'
+)
+@click.option(
+    "--json", '-j', type=click.Path(), default='',  help='The file to use to configure track options'
+)
+@click.option(
+    "--params", '-p', type=click.Path(), default='corpus_chronology',
+    help='The name of a folder containing parameter settings inside `references/parameter_optimisation`'
+)
+@click.option(
+    "--begin", "-b", type=str, default='00:01', help='Starting timestamp (in %H:%M:%S or %M:%S format)'
+)
+@click.option(
+    "--end", "-e", type=str, default='01:01', help='Stopping timestamp (in %H:%M:%S or %M:%S format)'
+)
+@click.option(
+    "--instr", "exog_ins", default='piano', help='Extract features for this instrument (defaults to piano)'
+)
+@click.option(
+    "--no_click", "generate_click", is_flag=True, default=True, help='Suppress click track generation'
+)
+def proc(
+        input: str,
+        json: str,
+        params: str,
+        begin: str,
+        end: str,
+        exog_ins: str,
+        generate_click: bool,
+):
+    """Main processing function, to be run from the command line using arguments parsed by `click`"""
+    proc_inner(input, json, params, begin, end, exog_ins, generate_click)
 
 
 if __name__ == "__main__":

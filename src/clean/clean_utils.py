@@ -120,8 +120,8 @@ class ItemMaker:
         # Starting and ending timestamps, gathered from the corpus JSON
         self.start, self.end = self._return_audio_timestamp("start"), self._return_audio_timestamp("end")
         # Amount to multiply file duration by when calculating source separation timeout value
-        self.timeout_multiplier_spleeter = kwargs.get("timeout_multiplier_spleeter", 5)
-        self.timeout_multiplier_demucs = kwargs.get("timeout_multiplier_spleeter", 10)
+        self.timeout_multiplier_spleeter = kwargs.get("timeout_multiplier_spleeter", 50)
+        self.timeout_multiplier_demucs = kwargs.get("timeout_multiplier_demucs", 100)
 
     def _logger_wrapper(self, msg) -> None:
         """Simple wrapper that logs a given message and indexes it for later access"""
@@ -266,8 +266,8 @@ class ItemMaker:
                     cmds.append(cls.get_cmd(fname))
             # Run each of our separation commands in parallel, using joblib (set n_jobs to number of commands)
             self._logger_wrapper(f"... separating {len(cmds)} tracks with {separator_name}")
-            # with HidePrints() as _:
-            Parallel(n_jobs=1)(delayed(cls.run_separation)(cmd) for cmd in cmds)
+            with HidePrints() as _:
+                Parallel(n_jobs=len(cmds))(delayed(cls.run_separation)(cmd) for cmd in cmds)
             # Clean up after separation by removing any unnecessary files, moving folders etc.
             cls.cleanup_post_separation()
 
