@@ -8,6 +8,7 @@ import os
 
 import click
 import pandas as pd
+from joblib import load
 
 from src import utils
 from src.clean.clean_utils import ItemMaker
@@ -15,14 +16,13 @@ from src.detect.detect_utils import OnsetMaker
 from src.features.features_utils import *
 
 
-def get_feature_data(feature_cls, cols, extra_str = '', **cls_kwargs):
-    """Creates a class with given kwargs and returns the desired key-value pairs from its summary dictionary"""
-    cls = feature_cls(**cls_kwargs)
-    return {k + extra_str: v for k, v in cls.summary_dict.items() if k in cols}
-
-
-def process_track(track: OnsetMaker, exog_ins) -> dict:
+def extract_track_features(track: OnsetMaker, exog_ins) -> dict:
     """Processes a single track, extracting all required features, and returns a dictionary"""
+    def get_feature_data(feature_cls, cols, extra_str='', **cls_kwargs):
+        """Creates a class with given kwargs and returns the desired key-value pairs from its summary dictionary"""
+        cls = feature_cls(**cls_kwargs)
+        return {k + extra_str: v for k, v in cls.summary_dict.items() if k in cols}
+
     # Convert the summary dictionary (dictionary of arrays) to a dataframe
     summary_dict = pd.DataFrame(track.summary_dict)
     # These are the positions of downbeats, i.e. the first beat of a measure
@@ -119,16 +119,43 @@ def create_output_filestructure(filename: str):
         os.makedirs(path, exist_ok=True)
 
 
+def make_pianist_prediction(feature_dict, model_filepath: str = None):
+    if model_filepath is None:
+        model_filepath = f'{utils.get_project_root()}/models/pianist_model.joblib'
+    model = load(model_filepath)
+    feature_df = pd.DataFrame(feature_dict)[utils.PREDICTORS]
+    prediction = model.predict(feature_df).iloc[0]
+    predict_proba = model.predict_proba(feature_df)
+    return prediction
+
+
 @click.command()
-@click.option("--input", "-i", type=str, default=None, help='Input to process (either filepath or YouTube link)')
-@click.option("--json", '-j', type=click.Path(), default='',  help='The file to use to configure track options')
-@click.option("--begin", "-b", type=str, default='00:01', help='Starting timestamp (in %H:%M:%S or %M:%S format)')
-@click.option("--end", "-e", type=str, default='01:01', help='Stopping timestamp (in %H:%M:%S or %M:%S format)')
-@click.option("--instr", "exog_ins", default='piano', help='Extract features for this instrument (defaults to piano)')
-@click.option("--no_click", "generate_click", is_flag=True, default=True, help='Suppress click track generation')
+@click.option(
+    "--input", "-i", type=str, default=None, help='Input to process (either filepath or YouTube link)'
+)
+@click.option(
+    "--json", '-j', type=click.Path(), default='',  help='The file to use to configure track options'
+)
+@click.option(
+    "--params", '-p', type=click.Path(), default='corpus_chronology',
+    help='The name of a folder containing parameter settings inside `references/parameter_optimisation`'
+)
+@click.option(
+    "--begin", "-b", type=str, default='00:01', help='Starting timestamp (in %H:%M:%S or %M:%S format)'
+)
+@click.option(
+    "--end", "-e", type=str, default='01:01', help='Stopping timestamp (in %H:%M:%S or %M:%S format)'
+)
+@click.option(
+    "--instr", "exog_ins", default='piano', help='Extract features for this instrument (defaults to piano)'
+)
+@click.option(
+    "--no_click", "generate_click", is_flag=True, default=True, help='Suppress click track generation'
+)
 def proc(
         input: str,
         json: str,
+        params: str,
         begin: str,
         end: str,
         exog_ins: str,
@@ -161,7 +188,7 @@ def proc(
     # Detect onsets and beats in the audio
     logger.info(f"running detection on separated audio ...")
     om = OnsetMaker(
-        corpus_name='corpus_chronology',
+        corpus_name=params,
         item=item,
         output_filepath=filename,
         references_filepath=f"{utils.get_project_root()}/references",
@@ -177,9 +204,12 @@ def proc(
     logger.info(f"... the annotations can be found in {filename}/annotations")
     # Extract features from the annotations
     logger.info(f"extracting features from detected annotations ...")
-    features = process_track(om, exog_ins)
+    features = extract_track_features(om, exog_ins)
     utils.save_json(features, f'{filename}/outputs', f'{filename}_features')
     logger.info(f"... the features can be found in {filename}/outputs")
+    # Make predictions
+    predict = make_pianist_prediction(features)
+    logger.info(predict)
 
 
 if __name__ == "__main__":

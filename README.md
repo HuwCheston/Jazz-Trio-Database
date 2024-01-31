@@ -32,36 +32,43 @@ To download the database, navigate to [`Releases`](https://github.com/HuwCheston
 
 The metadata files contain the following fields for every recording:
 
-
-
-| Field               | Description                                                                                   |
-|---------------------|-----------------------------------------------------------------------------------------------|
-| `track_name`        | Title of the recording                                                                        |
-| `album_name`        | Title of the earliest album released that contains the track                                  |
-| `recording_year`    | Year of recording                                                                             |
-| `channel_overrides` | Key-value pairs relating to panning: `piano: l` means the piano is panned to the left channel |
-| `mbz_id`            | Unique ID assigned to the track on MusicBrainz                                                |
-| `time_signature`    | The number of quarter note beats per measure for the track                                    |
-| `first_downbeat`    | The first clear quarter note downbeat in the track                                            |
-| `rating_audio`      | Subjective rating (1–3, 3 = best) of source-separation quality                                |
-| `rating_detection`  | Subjective rating of onset detection quality                                                  |
-| `links`             | YouTube URL for the recording                                                                 |
-| `excerpt_duration`  | Duration of recording, in `Minutes:Seconds` format                                            |
-| `timestamps`        | Start and end timestamps for the piano solo in the recording                                  |
-| `musicians`         | Key-value pairs of the musicians included in the recording                                    |
-| `fname`             | Audio filename                                                                                |
+| Field               | Type | Description                                                                                   |
+|---------------------|------|-----------------------------------------------------------------------------------------------|
+| `track_name`        | str  | Title of the recording                                                                        |
+| `album_name`        | str  | Title of the earliest album released that contains the track                                  |
+| `recording_year`    | int  | Year of recording                                                                             |
+| `channel_overrides` | dict | Key-value pairs relating to panning: `piano: l` means the piano is panned to the left channel |
+| `mbz_id`            | str  | Unique ID assigned to the track on MusicBrainz                                                |
+| `time_signature`    | int  | The number of quarter note beats per measure for the track                                    |
+| `first_downbeat`    | int  | The first clear quarter note downbeat in the track                                            |
+| `rating_audio`      | int  | Subjective rating (1–3, 3 = best) of source-separation quality                                |
+| `rating_detection`  | int  | Subjective rating of onset detection quality                                                  |
+| `links`             | dict | YouTube URL for the recording                                                                 |
+| `excerpt_duration`  | str  | Duration of recording, in `Minutes:Seconds` format                                            |
+| `timestamps`        | dict | Start and end timestamps for the piano solo in the recording                                  |
+| `musicians`         | dict | Key-value pairs of the musicians included in the recording                                    |
+| `fname`             | str  | Audio filename                                                                                |
 
 ## Process your own tracks
 
-To process a track from YouTube using our pipeline, you can use a command line interface to run the code in `src/process.py`. For example, to process 30 seconds of audio from [Chick Corea's Akoustic Band 'Spain'](https://www.youtube.com/watch?v=BguWLXMARHk):
+To process a piano trio recording using our pipeline, you can use a command line interface to run the code in `src/process.py`. For example, to process 30 seconds of audio from [Chick Corea's Akoustic Band 'Spain'](https://www.youtube.com/watch?v=BguWLXMARHk):
 
 ```
 git clone https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database.git
 cd Cambridge-Jazz-Trio-Database
 python -m venv venv
-call venv/Scripts/activate.bat
+call venv/Scripts/activate.bat    # Windows
+source venv/bin/activate    # Ubuntu/OSX
+pip install -r requirements.txt
 python src/process.py -i "https://www.youtube.com/watch?v=BguWLXMARHk" --begin "03:00" --end "03:30"
 ```
+
+This will create a new folder in the root directory of the repository: source audio is stored in `/data`, annotations in `/annotations`, and extracted features in `/outputs`. Extracted features follow the format given in `Cheston, Schlichting, Cross, & Harrison (2024b)`.
+
+By default, the script will use the parameter settings described in `Cheston, Schlichting, Cross, & Harrison (2024a)` for extracting onsets and beats. This can be changed by passing `-p`/`--params`, followed by the name of a folder (inside `references/parameter_optimisation`) containing a `converged_parameters.json` file.
+
+The script will also use a set of default parameters for the given track (e.g. time signature). To override these, pass in the `-j`/`--json` argument, followed by a path to a `.json` file following the format outlined in the `metadata` table above.
+
 
 ## License
 
@@ -77,5 +84,6 @@ If you use the Cambridge Jazz Trio Database in your work, please cite the paper 
 
 Creation of the database has resulted in the following published research outputs:
 
-- Cheston, H., Cross, I., & Harrison, P. M. C. (2024). Rhythmic Qualities of Jazz Improvisation Predict Performer Identity and Style in Source-Separated Audio Recordings [Preprint]. PsyArXiv. LINK UPCOMING.
+- Cheston, H., Cross, I., & Harrison, P. M. C. (2024a). Cambridge Jazz Trio Database: Automated Timing Annotation of Jazz Piano Trio Recordings Processed Using Audio Source Separation [Preprint]. PsyArXiv. LINK UPCOMING.
+- Cheston, H., Cross, I., & Harrison, P. M. C. (2024b). Rhythmic Qualities of Jazz Improvisation Predict Performer Identity and Style in Source-Separated Audio Recordings [Preprint]. PsyArXiv. LINK UPCOMING.
 - Cheston, H., Cross, I., & Harrison, P. M. C. (2023). An Automated Pipeline for Characterizing Timing in Jazz Trios. Proceedings of the DMRN+18 Digital Music Research Network. Digital Music Research Network, Queen Mary University of London, London, United Kingdom.

@@ -43,6 +43,16 @@ INSTRUMENTS_TO_PERFORMER_ROLES = {
 }
 SILENCE_THRESHOLD = 1/3
 
+# These are the underlying categories each predictor belongs to
+PREDICTORS_CATEGORIES = {
+    'Swing': ['bur_log_mean', 'bur_log_std'],
+    'Complexity': ['lz77_mean', 'lz77_std', 'n_onsets_mean', 'n_onsets_std'],
+    'Feel': ['bass_prop_async_nanmean', 'drums_prop_async_nanmean', 'bass_prop_async_nanstd', 'drums_prop_async_nanstd'],
+    'Interaction': ['self_coupling', 'coupling_drums', 'coupling_bass', 'coupling_piano_drums', 'coupling_piano_bass'],
+    'Tempo': ['rolling_std_median', 'tempo', 'tempo_slope',]
+}
+PREDICTORS = [it for sl in list(PREDICTORS_CATEGORIES.values()) for it in sl]
+
 
 def get_project_root() -> Path:
     """Returns the root directory of the project"""
