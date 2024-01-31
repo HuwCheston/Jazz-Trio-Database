@@ -78,10 +78,10 @@ class ItemMaker:
 
     def __init__(self, item: dict, **kwargs):
         # Directories containing raw and processed (source-separated) audio, respectively
-        self.output_filepath = kwargs.get('output_filepath', rf"{utils.get_project_root()}\data")
-        self.raw_audio_loc = rf"{self.output_filepath}\raw\audio"
-        self.spleeter_audio_loc = rf"{self.output_filepath}\processed\spleeter_audio"
-        self.demucs_audio_loc = rf"{self.output_filepath}\processed\demucs_audio"
+        self.output_filepath = kwargs.get('output_filepath', rf"{utils.get_project_root()}/data")
+        self.raw_audio_loc = rf"{self.output_filepath}/raw/audio"
+        self.spleeter_audio_loc = rf"{self.output_filepath}/processed/spleeter_audio"
+        self.demucs_audio_loc = rf"{self.output_filepath}/processed/demucs_audio"
         # The dictionary corresponding to one particular item in our corpus JSON
         self.item = item.copy()
         # Empty attribute to hold valid YouTube links
@@ -92,7 +92,7 @@ class ItemMaker:
         # The filename for this item, constructed from the parameters of the JSON
         self.fname: str = self.item['fname']
         # The complete filepath for this item
-        self.in_file: str = rf"{self.raw_audio_loc}\{self.fname}.{self.fmt}"
+        self.in_file: str = rf"{self.raw_audio_loc}/{self.fname}.{self.fmt}"
         # Source-separation models to use
         self.use_spleeter: bool = kwargs.get('use_spleeter', True)
         self.use_demucs: bool = kwargs.get('use_demucs', True)
@@ -100,15 +100,15 @@ class ItemMaker:
         self.get_lr_audio: bool = kwargs.get('get_lr_audio', True)
         # Paths to all the source-separated audio files that we'll create (or load)
         self.out_spleeter = [
-            rf"{self.spleeter_audio_loc}\{self.fname}_{i}.{self.fmt}"
+            rf"{self.spleeter_audio_loc}/{self.fname}_{i}.{self.fmt}"
             if i not in self.item['channel_overrides'].keys()
-            else rf"{self.spleeter_audio_loc}\{self.fname}-{self.item['channel_overrides'][i]}chan_{i}.{self.fmt}"
+            else rf"{self.spleeter_audio_loc}/{self.fname}-{self.item['channel_overrides'][i]}chan_{i}.{self.fmt}"
             for i in self.instrs
         ]
         self.out_demucs = [
-            rf"{self.demucs_audio_loc}\{self.fname}_{i}.{self.fmt}"
+            rf"{self.demucs_audio_loc}/{self.fname}_{i}.{self.fmt}"
             if i not in self.item['channel_overrides'].keys()
-            else rf"{self.demucs_audio_loc}\{self.fname}-{self.item['channel_overrides'][i]}chan_{i}.{self.fmt}"
+            else rf"{self.demucs_audio_loc}/{self.fname}-{self.item['channel_overrides'][i]}chan_{i}.{self.fmt}"
             for i in self.instrs
         ]
         # Logger object and empty list to hold messages (for saving)
@@ -192,7 +192,7 @@ class ItemMaker:
                 # Specify required channel mapping
                 '-map_channel', mappings[name],
                 # Specify output location
-                rf'{self.raw_audio_loc}\{self.fname}-{name}chan.{self.fmt}'
+                rf'{self.raw_audio_loc}/{self.fname}-{name}chan.{self.fmt}'
             ]
             # Open the subprocess and kill if it hasn't completed after a given time
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True,)
@@ -262,12 +262,12 @@ class ItemMaker:
             # These commands call for separation on the individual right and left channels, as desired
             if self.get_lr_audio and 'channel_overrides' in self.item.keys():
                 for ch in set(self.item['channel_overrides'].values()):
-                    fname = rf'{self.raw_audio_loc}\{self.fname}-{ch}chan.{self.fmt}'
+                    fname = rf'{self.raw_audio_loc}/{self.fname}-{ch}chan.{self.fmt}'
                     cmds.append(cls.get_cmd(fname))
             # Run each of our separation commands in parallel, using joblib (set n_jobs to number of commands)
             self._logger_wrapper(f"... separating {len(cmds)} tracks with {separator_name}")
-            with HidePrints() as _:
-                Parallel(n_jobs=len(cmds))(delayed(cls.run_separation)(cmd) for cmd in cmds)
+            # with HidePrints() as _:
+            Parallel(n_jobs=1)(delayed(cls.run_separation)(cmd) for cmd in cmds)
             # Clean up after separation by removing any unnecessary files, moving folders etc.
             cls.cleanup_post_separation()
 
@@ -293,7 +293,7 @@ class ItemMaker:
 
         # Try and remove the leftover demucs folder, if it exists
         try:
-            rmtree(os.path.abspath(rf"{self.demucs_audio_loc}\{self.demucs_model}"))
+            rmtree(os.path.abspath(rf"{self.demucs_audio_loc}/{self.demucs_model}"))
         except FileNotFoundError:
             pass
         # Set a few additional variables within the corpus item
@@ -371,7 +371,7 @@ class _SpleeterMaker(ItemMaker):
         # Iterate through all files and remove those which we don't want to keep
         for file in all_files:
             if file not in files_to_keep:
-                os.remove(os.path.abspath(rf"{self.spleeter_audio_loc}\{file}"))
+                os.remove(os.path.abspath(rf"{self.spleeter_audio_loc}/{file}"))
 
 
 class _DemucsMaker(ItemMaker):
@@ -416,13 +416,13 @@ class _DemucsMaker(ItemMaker):
         """Cleans up after demucs by removing unnecessary files and moving file locations"""
 
         # Demucs filestructure looks like: model_name/track_name/item_name.
-        demucs_fpath = rf"{self.demucs_audio_loc}\{self.demucs_model}"
+        demucs_fpath = rf"{self.demucs_audio_loc}/{self.demucs_model}"
         # Demucs creates a new folder for each track. If we're using multiple channels for this item, get all folders
-        demucs_folders = [os.path.abspath(rf'{demucs_fpath}\{f}') for f in os.listdir(demucs_fpath) if self.fname in f]
+        demucs_folders = [os.path.abspath(rf'{demucs_fpath}/{f}') for f in os.listdir(demucs_fpath) if self.fname in f]
         all_files = []
         # Now, iterate through each folder, and get the absolute path of all the tracks within them
         for fp in demucs_folders:
-            all_files.extend(os.path.abspath(rf'{fp}\{f}') for f in os.listdir(fp))
+            all_files.extend(os.path.abspath(rf'{fp}/{f}') for f in os.listdir(fp))
         files_to_keep = []
         # Iterate through the instruments in our trio and get the correct filepaths
         for instr in self.instrs:
@@ -434,7 +434,7 @@ class _DemucsMaker(ItemMaker):
         # Move and rename the files corresponding to the instruments in the trio
         for old_name in files_to_keep:
             li = os.path.normpath(old_name).split(os.path.sep)
-            new_name = rf'{self.demucs_audio_loc}\{li[-2]}_{li[-1]}'
+            new_name = rf'{self.demucs_audio_loc}/{li[-2]}_{li[-1]}'
             os.replace(old_name, new_name)
         # Remove the demucs folders and all the unwanted files remaining inside them
         for folder in demucs_folders:

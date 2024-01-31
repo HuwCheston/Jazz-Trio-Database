@@ -107,7 +107,7 @@ def serialise_object(
         dumper = pickle.dump
     else:
         dumper = dill.dump
-    with open(rf'{fpath}\{fname}.p', 'wb') as fi:
+    with open(rf'{fpath}/{fname}.p', 'wb') as fi:
         dumper(obj, fi)
 
 
@@ -135,11 +135,11 @@ def unserialise_object(
 
 @retry(json.JSONDecodeError)
 def load_json(
-        fpath: str = 'r..\..\data\processed',
+        fpath: str = 'r../../data/processed',
         fname: str = 'processing_results.json'
 ) -> dict:
     """Simple wrapper around `json.load` that catches errors when working on the same file in multiple threads"""
-    with open(rf'{fpath}\{fname}.json', "r+") as in_file:
+    with open(rf'{fpath}/{fname}.json', "r+") as in_file:
         return json.load(in_file)
 
 
@@ -155,14 +155,14 @@ def save_json(
 
     @retry(PermissionError)
     def replacer():
-        os.replace(temp_file.name, rf'{fpath}\{fname}.json')
+        os.replace(temp_file.name, rf'{fpath}/{fname}.json')
 
     replacer()
 
 
 @retry(json.JSONDecodeError)
 def load_csv(
-        fpath: str = 'r..\..\data\processed',
+        fpath: str = 'r../../data/processed',
         fname: str = 'processing_results'
 ) -> dict:
     """Simple wrapper around `json.load` that catches errors when working on the same file in multiple threads"""
@@ -172,7 +172,7 @@ def load_csv(
         except (ValueError, SyntaxError) as _:
             return str(i)
 
-    with open(rf'{fpath}\{fname}.csv', "r+") as in_file:
+    with open(rf'{fpath}/{fname}.csv', "r+") as in_file:
         return [{k: eval_(v) for k, v in row.items()} for row in csv.DictReader(in_file, skipinitialspace=True)]
 
 
@@ -218,7 +218,7 @@ def save_csv(
 
     @retry(PermissionError, tries=100, delay=5)
     def replacer():
-        os.replace(temp_file.name, rf'{fpath}\{fname}.csv')
+        os.replace(temp_file.name, rf'{fpath}/{fname}.csv')
 
     replacer()
 
@@ -401,7 +401,7 @@ class CorpusMaker:
         # These are the names of sheets that we don't want to process
         sheets_to_skip = ['notes', 'template', 'manual annotation', 'track rating']
         # Open the Excel file
-        xl = pd.read_excel(pd.ExcelFile(fr'{get_project_root()}\references\{fname}.{ext}'), None, header=1).items()
+        xl = pd.read_excel(pd.ExcelFile(fr'{get_project_root()}/references/{fname}.{ext}'), None, header=1).items()
         # Iterate through all sheets in the spreadsheet
         for sheet_name, trio in xl:
             if sheet_name.lower() not in sheets_to_skip:
@@ -667,19 +667,19 @@ def load_corpus_from_files(dirpath: str) -> list:
     oms = []
     # Iterate through each folder in our directory
     for track in os.listdir(dirpath):
-        trackpath = dirpath + '\\' + track
+        trackpath = dirpath + '/' + track
         # Load the JSON metadata file
         item = load_json(fpath=trackpath, fname='metadata')
         # Use this to create a new `OnsetMaker`, but skip processing
         om = OnsetMaker(item=item, skip_processing=True)
         # Read the summary dictionary `.csv` file
-        sd = pd.read_csv(rf'{trackpath}\beats.csv', index_col=0)
+        sd = pd.read_csv(rf'{trackpath}/beats.csv', index_col=0)
         # Append the requisite columns to our new `OnsetMaker.summary_dict`
         for col in sd.columns:
             om.summary_dict[col] = sd[col].to_numpy()
         # This starts creating the `OnsetMaker.ons` dictionary
         for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-            om.ons[instr] = np.genfromtxt(rf'{trackpath}\{instr}.csv', delimiter=',')
+            om.ons[instr] = np.genfromtxt(rf'{trackpath}/{instr}.csv', delimiter=',')
         om.ons['mix'] = sd['beats'].to_numpy()
         # Get both automatically and manually generated downbeats and coerce into correct format
         for var_ in ['auto', 'manual']:
@@ -700,9 +700,9 @@ def convert_to_mp3(dirpath: str, ext: str = '.wav', delete: bool = False, cutoff
         if f.endswith(ext):
             # Define the ffmpeg command
             cmd = [
-                "ffmpeg", "-y", "-i", fr"{dirpath}\{f}",
+                "ffmpeg", "-y", "-i", fr"{dirpath}/{f}",
                 "-vn", "-ar", "44100", "-ac", "2", "-b:a", "120k",
-                fr"{dirpath}\{f.replace(ext, '.mp3')}"
+                fr"{dirpath}/{f.replace(ext, '.mp3')}"
             ]
             if cutoff:
                 cmd.insert(-1, '-t')
@@ -711,7 +711,7 @@ def convert_to_mp3(dirpath: str, ext: str = '.wav', delete: bool = False, cutoff
             subprocess.Popen(cmd)
             # Delete the file if we want to do this
             if delete:
-                os.remove(fr"{dirpath}\{f}")
+                os.remove(fr"{dirpath}/{f}")
 
 
 if __name__ == '__main__':

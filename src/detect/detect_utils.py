@@ -77,10 +77,10 @@ class OnsetMaker:
         self.onset_strength_params, self.onset_detect_params = self.return_converged_paramaters()
         # Construct the default file paths where our audio is saved
         self.instrs = {
-            'mix': rf'{self.data_dir}\raw\audio\{self.item["fname"]}.{utils.AUDIO_FILE_FMT}',
-            'piano': rf'{self.data_dir}\processed\spleeter_audio\{self.item["fname"]}_piano.{utils.AUDIO_FILE_FMT}',
-            'bass': rf'{self.data_dir}\processed\demucs_audio\{self.item["fname"]}_bass.{utils.AUDIO_FILE_FMT}',
-            'drums': rf'{self.data_dir}\processed\demucs_audio\{self.item["fname"]}_drums.{utils.AUDIO_FILE_FMT}'
+            'mix': rf'{self.data_dir}/raw/audio/{self.item["fname"]}.{utils.AUDIO_FILE_FMT}',
+            'piano': rf'{self.data_dir}/processed/spleeter_audio/{self.item["fname"]}_piano.{utils.AUDIO_FILE_FMT}',
+            'bass': rf'{self.data_dir}/processed/demucs_audio/{self.item["fname"]}_bass.{utils.AUDIO_FILE_FMT}',
+            'drums': rf'{self.data_dir}/processed/demucs_audio/{self.item["fname"]}_drums.{utils.AUDIO_FILE_FMT}'
         }
         # Dictionary to hold arrays of onset envelopes for each instrument
         self.env = {}
@@ -122,7 +122,7 @@ class OnsetMaker:
         onset_strength_args = utils.return_function_kwargs(librosa.onset.onset_strength)
         od_fmt, os_fmt = {}, {}
         js = utils.load_json(
-            fpath=fr'{self.references_dir}\parameter_optimisation\{self.corpus_name}', fname='converged_parameters'
+            fpath=fr'{self.references_dir}/parameter_optimisation/{self.corpus_name}', fname='converged_parameters'
         )
         for item in js:
             od_fmt[item['instrument']] = {k: fmt(v) for k, v in item.items() if k in onset_detect_args}
@@ -472,7 +472,7 @@ class OnsetMaker:
         # Get our onset list
         onsets_list = [self.ons[instr], *args]
         # Construct our filename
-        fname = rf'{self.click_track_dir}\{self.item["fname"]}_{instr}_beats.{utils.AUDIO_FILE_FMT}'
+        fname = rf'{self.click_track_dir}/{self.item["fname"]}_{instr}_beats.{utils.AUDIO_FILE_FMT}'
         # Create the click track maker class and then generate the click track using the above variables
         click_track_cls = ClickTrackMaker(audio=self.audio[instr])
         click_track_audio = click_track_cls.generate_audio(onsets_list)
@@ -894,7 +894,7 @@ class OnsetMaker:
             # If we have manually annotated onsets for this item, try and evaluate the accuracy of detected onsets
             try:
                 eval_ = list(self.compare_onset_detection_accuracy(
-                    fname=rf'{self.references_dir}\manual_annotation\{self.item["fname"]}_{ins}.txt',
+                    fname=rf'{self.references_dir}/manual_annotation/{self.item["fname"]}_{ins}.txt',
                     onsets=[self.ons[ins]],
                     onsets_name=['optimised_librosa'],
                     instr=ins,
@@ -944,7 +944,7 @@ class OnsetMaker:
         # Try and get manual annotations for our crotchet beats, if we have them
         try:
             eval_ = list(self.compare_onset_detection_accuracy(
-                fname=rf'{self.references_dir}\manual_annotation\{self.item["fname"]}_mix.txt',
+                fname=rf'{self.references_dir}/manual_annotation/{self.item["fname"]}_mix.txt',
                 onsets=[self.ons['mix']],
                 onsets_name=['madmom'],
                 instr='mix',
