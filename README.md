@@ -94,6 +94,6 @@ If you use the Cambridge Jazz Trio Database in your work, please cite the paper 
 
 Creation of the database has resulted in the following published research outputs:
 
-- Cheston, H., Schlichting, J. S., Cross, I., & Harrison, P. M. C. (2024a). Cambridge Jazz Trio Database: Automated Timing Annotation of Jazz Piano Trio Recordings Processed Using Audio Source Separation [Preprint]. PsyArXiv. [https://doi.org/10.31234/osf.io/jyqp3](https://doi.org/10.31234/osf.io/jyqp3).
-- Cheston, H., Schlichting, J. S., Cross, I., & Harrison, P. M. C. (2024b). Rhythmic Qualities of Jazz Improvisation Predict Performer Identity and Style in Source-Separated Audio Recordings [Preprint]. PsyArXiv. [https://doi.org/10.31234/osf.io/txy2f](https://doi.org/10.31234/osf.io/txy2f).
+- Cheston, H., Schlichting, J. L., Cross, I., & Harrison, P. M. C. (2024a). Cambridge Jazz Trio Database: Automated Timing Annotation of Jazz Piano Trio Recordings Processed Using Audio Source Separation [Preprint]. PsyArXiv. [https://doi.org/10.31234/osf.io/jyqp3](https://doi.org/10.31234/osf.io/jyqp3).
+- Cheston, H., Schlichting, J. L., Cross, I., & Harrison, P. M. C. (2024b). Rhythmic Qualities of Jazz Improvisation Predict Performer Identity and Style in Source-Separated Audio Recordings [Preprint]. PsyArXiv. [https://doi.org/10.31234/osf.io/txy2f](https://doi.org/10.31234/osf.io/txy2f).
 - Cheston, H., Cross, I., & Harrison, P. M. C. (2023). An Automated Pipeline for Characterizing Timing in Jazz Trios. Proceedings of the DMRN+18 Digital Music Research Network. Digital Music Research Network, Queen Mary University of London, London, United Kingdom.
