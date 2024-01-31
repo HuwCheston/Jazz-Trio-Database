@@ -5,6 +5,7 @@
 
 import logging
 import os
+import warnings
 
 import click
 import numpy as np
@@ -120,22 +121,42 @@ def create_output_filestructure(filename: str):
         os.makedirs(path, exist_ok=True)
 
 
-def make_pianist_prediction(feature_dict, model_filepath: str = None):
-    logger = logging.getLogger(__name__)
+def make_pianist_prediction(feature_dict: dict, model_filepath: str = None):
+    """Predicts the pianist for an input track from extracted features using the pre-trained model"""
+    # This is the default directory for our model to be saved
     if model_filepath is None:
         model_filepath = f'{utils.get_project_root()}/models/pianist_model.joblib'
+    # Load in the pretrained model
     model = load(model_filepath)
-    for feature, val in feature_dict.items():
-        if np.isnan(val):
+    feature_dict = {k: v for k, v in feature_dict.items() if k in utils.PREDICTORS}
+    # Impute missing values using the averaged obtained for the training dataset
+    # This may invalidate predictions, but it's necessary as the random forest can't handle missing values
+    for feature in utils.PREDICTORS:
+        if np.isnan(feature_dict[feature]):
             avg = utils.IMPUTE_VALS[feature]
-            logger.warning(
-                f"""Feature {feature} did not extract correctly: replacing with average from dataset ({round(avg, 2)}). 
-                This may invalidate predictions made for this track!"""
-            )
+            message = f"Feature {feature} did not extract from the track correctly. " \
+                      f"Replacing with average obtained from dataset ({round(avg, 2)}). " \
+                      f"This may invalidate any predictions made for this track!"
+            warnings.warn(message)
             feature_dict[feature] = avg
+    # Convert the feature dictionary to a dataframe to make it easier to extract the items we want
+    feature_df = pd.DataFrame(pd.Series(feature_dict)).transpose()[utils.PREDICTORS]
+    # Return the prediction made using the input data
+    return format_predictions(model.predict_proba(feature_df), model.classes_)
 
-    feature_df = pd.DataFrame(feature_dict)[utils.PREDICTORS]
-    return model.predict(feature_df).iloc[0]
+
+def format_predictions(predict_proba: np.ndarray, class_names: np.ndarray) -> str:
+    """Formats model predictions into a nice human-readable string"""
+    # Get the pianist names and probabilities for the top 3 pianists in the dataset
+    pred = (
+        pd.concat([pd.Series(predict_proba[0]), pd.Series(class_names)], axis=1)
+        .rename(columns={0: 'probability', 1: 'pianist'})
+        .sort_values(by='probability', ascending=False)
+        .head(3)
+    )
+    # Format the predictions nicely and return the formatted string
+    st = ', '.join([f'{row["pianist"]}: {row["probability"] * 100}%' for _, row in pred.iterrows()])
+    return f'... predicted pianist is {pred.iloc[0]["pianist"]} (top 3 predictions: {st})'
 
 
 @click.command()
@@ -215,10 +236,11 @@ def proc(
     logger.info(f"extracting features from detected annotations ...")
     features = extract_track_features(om, exog_ins)
     utils.save_json(features, f'{filename}/outputs', f'{filename}_features')
-    logger.info(f"... the features can be found in {filename}/outputs")
     # Make predictions
     predict = make_pianist_prediction(features)
     logger.info(predict)
+    logger.info(f"... the features can be found in {filename}/outputs")
+    logger.info(f"done !")
 
 
 if __name__ == "__main__":
