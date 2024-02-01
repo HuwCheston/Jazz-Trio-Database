@@ -1,5 +1,9 @@
 # 🎹🎻🥁 Cambridge Jazz Trio Database 🎹🎻🥁
 
+<a target="_blank" href="https://colab.research.google.com/github/HuwCheston/Cambridge-Jazz-Trio-Database/blob/main/example.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
 The **Cambridge Jazz Trio Database** is a dataset composed of about 16 hours of jazz performances annotated by an automated signal processing pipeline.
 
 ## Contents:
@@ -50,6 +54,10 @@ The metadata files contain the following fields for every recording:
 | `fname`             | str  | Audio filename                                                                                |
 
 ## Process your own tracks
+
+*Hit the button to process tracks online!* <a target="_blank" href="https://colab.research.google.com/github/HuwCheston/Cambridge-Jazz-Trio-Database/blob/main/example.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
 
 To process a piano trio recording using our pipeline, you can use a command line interface to run the code in `src/process.py`. For example, to process 30 seconds of audio from [Chick Corea's Akoustic Band 'Spain'](https://www.youtube.com/watch?v=BguWLXMARHk):
 
