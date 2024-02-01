@@ -64,7 +64,11 @@ class ViolinPlotBURs(vutils.BasePlot):
 
     def __init__(self, bur_df: pd.DataFrame, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus')
-        super().__init__(figure_title=fr'bur_plots\violinplot_burs_{self.corpus_title}', **kwargs)
+        self.include_images = kwargs.get('include_images', True)
+        fig_title = fr'bur_plots\violinplot_burs_{self.corpus_title}'
+        if not self.include_images:
+            fig_title += '_no_images'
+        super().__init__(figure_title=fig_title, **kwargs)
         self.df = bur_df[bur_df['instrument'] == 'piano'].copy()
         order = reversed(
             self.df.groupby('bandleader', as_index=False)
@@ -151,8 +155,9 @@ class ViolinPlotBURs(vutils.BasePlot):
             xticklabels=[-1, 0, 1, 1.585], xlim=(-2, 2), ylim=(9.5, -0.5),
         )
         self.ax.tick_params(axis='y', which='major', pad=70)
-        for num, pi in enumerate(self.df['bandleader'].unique()):
-            self._add_bandleader_images(pi, num)
+        if self.include_images:
+            for num, pi in enumerate(self.df['bandleader'].unique()):
+                self._add_bandleader_images(pi, num)
 
     def _format_fig(self) -> None:
         """Format figure-level properties"""

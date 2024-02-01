@@ -327,7 +327,7 @@ class RegPlotPianistAsynchrony(vutils.BasePlot):
 
     FORMULA = "diff ~ tempo_standard * C(instr, Treatment(reference='bass'))"
     RE_STRUCT = "0 + tempo_standard + C(instr, Treatment(reference='bass'))"
-    N_BOOT = 3
+    N_BOOT = vutils.N_BOOT
     BIN_MULTIPLER = 1.5
 
     # These are keywords that we pass into our given plot types
@@ -556,8 +556,12 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
     def __init__(self, async_df: pd.DataFrame, **kwargs):
         """Called when initialising the class"""
         self.corpus_title = 'corpus_chronology'
+        self.include_images = kwargs.get('include_images', True)
+        fig_title = fr'asynchrony_plots\histplot_asynchronytriospiano_{self.corpus_title}'
+        if not self.include_images:
+            fig_title += '_no_images'
         # Initialise the base plot with our given kwargs
-        super().__init__(figure_title=fr'asynchrony_plots\histplot_asynchronytriospiano_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fig_title, **kwargs)
         self.df = async_df.copy(deep=True)
         order = reversed(
             self.df.groupby('bandleader', as_index=False)
@@ -668,7 +672,8 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
                 lab = ''
                 if idx == 'bass':
                     y = 0.5 if num != 9 else 0
-                    self._add_bandleader_images(i, ax, y)
+                    if self.include_images:
+                        self._add_bandleader_images(i, ax, y)
                     lab = i
                 ax.set(
                     xlim=(-1/16 - 0.005, 1/16 + 0.005), ylim=yl,

@@ -166,9 +166,13 @@ class TimelinePlotBandleaders(vutils.BasePlot):
 
     def __init__(self, bandleaders_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
+        self.include_images = kwargs.get('include_images', True)
         self.timeline_df = self._format_timeline_df(bandleaders_df)
         self.corpus_df = self._format_corpus_df(bandleaders_df)
-        super().__init__(figure_title=fr'corpus_plots\timeline_bandleaders_{self.corpus_title}', **kwargs)
+        fig_title = fr'corpus_plots\timeline_bandleaders_{self.corpus_title}'
+        if not self.include_images:
+            fig_title += '_no_images'
+        super().__init__(figure_title=fig_title, **kwargs)
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
     @staticmethod
@@ -208,7 +212,8 @@ class TimelinePlotBandleaders(vutils.BasePlot):
                 row['mean'].year, row['median'].year, True if row['bandleader'] == 'Ahmad Jamal' else row['alive']
             )
             self.ax.text(row['min'], idx + 0.2, f"{row['bandleader']} {dates}", **self.TEXT_KWS)
-            self._add_pianist_image(row['bandleader'], row['min'], idx)
+            if self.include_images:
+                self._add_pianist_image(row['bandleader'], row['min'], idx)
         sns.scatterplot(data=self.corpus_df, x='date_fmt', y='mapping', ax=self.ax, **self.SCATTER_KWS)
 
     def _add_pianist_image(self, bandleader_name: str, x: float, y: float) -> None:
@@ -725,8 +730,12 @@ class BarPlotCorpusDuration(vutils.BasePlot):
 
     def __init__(self, corp_df: str, **kwargs):
         self.corpus_title = 'corpus_chronology'
+        self.include_images = kwargs.get('include_images', True)
+        fig_title = fr'corpus_plots\barplot_corpusduration_{self.corpus_title}'
+        if not self.include_images:
+            fig_title += '_no_images'
         # Initialise the base plot with our given kwargs
-        super().__init__(figure_title=fr'corpus_plots\barplot_corpusduration_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fig_title, **kwargs)
         self.df = self._format_df(corp_df)
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
@@ -773,8 +782,9 @@ class BarPlotCorpusDuration(vutils.BasePlot):
 
     def _format_ax(self) -> None:
         """Set axis-level parameters"""
-        for num, pi in enumerate(self.df.index):
-            self._add_bandleader_images(pi, num)
+        if self.include_images:
+            for num, pi in enumerate(self.df.index):
+                self._add_bandleader_images(pi, num)
         self._add_percentage()
         xt = np.linspace(0, 345600, 5)
         self.ax.set(xticks=xt, xticklabels=[int(x / 60 / 60) for x in xt])

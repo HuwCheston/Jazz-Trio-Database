@@ -326,9 +326,11 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
 
     def __init__(self, prob_df, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(
-            figure_title=fr'random_forest_plots\heatmap_prediction_prob_dendro_{self.corpus_title}', **kwargs
-        )
+        self.include_images = kwargs.get('include_images', True)
+        fig_title = fr'random_forest_plots\heatmap_prediction_prob_dendro_{self.corpus_title}'
+        if not self.include_images:
+            fig_title += 'no_images'
+        super().__init__(figure_title=fig_title, **kwargs)
         self.hm = pd.DataFrame(confusion_matrix(
             y_true=prob_df['actual'], y_pred=prob_df['prediction'], normalize='true')
         )
@@ -434,7 +436,8 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
     def _format_ax(self) -> None:
         """Sets axis-level parameters for the main heatmap and the colorbar"""
         self._format_ax_ticks()
-        self._add_pianist_images()
+        if self.include_images:
+            self._add_pianist_images()
         self._format_annotations()
         self.ax.set(ylabel='', xlabel='',)
         self.ax.tick_params(axis='both', top=True, left=True, right=True, bottom=True)
