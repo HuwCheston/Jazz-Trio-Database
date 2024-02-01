@@ -5,15 +5,18 @@
 
 import logging
 import os
+import shutil
 import warnings
 
 import click
+import librosa
 import numpy as np
 import pandas as pd
+import soundfile as sf
 from joblib import load
 
 from src import utils
-from src.clean.clean_utils import ItemMaker
+from src.clean.clean_utils import ItemMaker, return_timestamp
 from src.detect.detect_utils import OnsetMaker
 from src.features.features_utils import *
 
@@ -125,9 +128,13 @@ def make_pianist_prediction(feature_dict: dict, model_filepath: str = None):
     """Predicts the pianist for an input track from extracted features using the pre-trained model"""
     # This is the default directory for our model to be saved
     if model_filepath is None:
-        model_filepath = f'{utils.get_project_root()}/models/pianist_model.joblib'
+        model_filepath = f'{utils.get_project_root()}/models/pianist_predictor.joblib'
     # Load in the pretrained model
-    model = load(model_filepath)
+    try:
+        model = load(model_filepath)
+    except FileNotFoundError:
+        warnings.warn('Could not find serialised `pianist_predictor.joblib` model in `./models` directory!')
+        return
     feature_dict = {k: v for k, v in feature_dict.items() if k in utils.PREDICTORS}
     # Impute missing values using the averaged obtained for the training dataset
     # This may invalidate predictions, but it's necessary as the random forest can't handle missing values
@@ -154,9 +161,55 @@ def format_predictions(predict_proba: np.ndarray, class_names: np.ndarray) -> st
         .sort_values(by='probability', ascending=False)
         .head(3)
     )
+    pred['probability'] = (pred['probability'] * 100).round()
     # Format the predictions nicely and return the formatted string
-    st = ', '.join([f'{row["pianist"]}: {row["probability"] * 100}%' for _, row in pred.iterrows()])
+    st = ', '.join([f'{row["pianist"]}: {row["probability"]}%' for _, row in pred.iterrows()])
     return f'... predicted pianist is {pred.iloc[0]["pianist"]} (top 3 predictions: {st})'
+
+
+def preprocess_local_audio(audio_fpath: str, start_ts: str, end_ts: str) -> np.ndarray:
+    """Loads a local audio file from `audio_fpath` and truncates to given start and end timestamp"""
+    # Calculate our offset and duration time for librosa
+    start_ts = return_timestamp(start_ts)
+    end_ts = return_timestamp(end_ts)
+    if start_ts is None:
+        start_ts = 0.0
+    try:
+        duration = end_ts - start_ts
+    except TypeError:
+        duration = None
+    # Load in the audio with our old sample rate
+    old_sr = librosa.get_samplerate(audio_fpath)
+    y, _ = librosa.load(
+        audio_fpath,
+        old_sr,
+        mono=False,
+        offset=start_ts,
+        duration=duration
+    )
+    # Resample the audio to our desired sample rate and transpose to get into the format required for soundfile
+    return librosa.resample(y, old_sr, utils.SAMPLE_RATE).transpose()
+
+
+def validate_input(input: str, begin: str, end: str) -> str:
+    """Validate input URL address or filepath"""
+    # Validate the input YouTube address (more checking for if the link actually works happens later)
+    if 'youtube' in input.lower() and input.lower().startswith('http'):
+        filename = input.split('&')[0].split('?v=')[-1].lower()
+        create_output_filestructure(filename)
+    # Validate the local file
+    elif os.path.isfile(input) and input.endswith('.wav'):
+        filename = os.path.basename(input).replace('.wav', '')
+        create_output_filestructure(filename)
+        # Resample the audio, truncate if necessary and move it into output filestructure
+        processed_audio = preprocess_local_audio(input, begin, end)
+        new_fpath = f"{filename}/data/raw/audio/{filename}.wav"
+        with open(new_fpath, 'wb') as f:
+            sf.write(f, processed_audio, utils.SAMPLE_RATE)
+    # Only raised if we haven't provided a YouTube link or local wav
+    else:
+        raise AttributeError('Input file must be a valid YouTube link or a path to a .WAV audio file.')
+    return filename
 
 
 def proc_inner(
@@ -171,13 +224,8 @@ def proc_inner(
     """An inner function for processing that can be imported directly in Python"""
     # Set the logger
     logger = logging.getLogger(__name__)
-    # Validate the input address (more checking for if the link actually works happens later)
-    if 'youtube' in input.lower() and input.lower().startswith('http'):
-        filename = input.split('&')[0].split('?v=')[-1].lower()
-    else:
-        raise AttributeError('Input file must be a valid YouTube link.')
+    filename = validate_input(input, begin, end)
     # Set parameters for processing
-    create_output_filestructure(filename)
     item = get_track_dictionary(filename, begin, end, json)
     item['links'] = {'external': [input]}
     # Download and separate the audio
@@ -191,7 +239,7 @@ def proc_inner(
     im.get_item()
     im.separate_audio()
     im.finalize_output()
-    logger.info(f"... the audio can be found in {filename}/data")
+    logger.info(f"... the audio can be found in {os.getcwd()}/{filename}/data")
     # Detect onsets and beats in the audio
     logger.info(f"running detection on separated audio ...")
     om = OnsetMaker(
@@ -208,7 +256,7 @@ def proc_inner(
     om.process_separated_audio(generate_click, remove_silence=True)
     om.finalize_output()
     utils.save_annotations(om, f"{filename}/annotations")
-    logger.info(f"... the annotations can be found in {filename}/annotations")
+    logger.info(f"... the annotations can be found in {os.getcwd()}/{filename}/annotations")
     # Extract features from the annotations
     logger.info(f"extracting features from detected annotations ...")
     features = extract_track_features(om, exog_ins)
@@ -216,7 +264,7 @@ def proc_inner(
     # Make predictions
     predict = make_pianist_prediction(features)
     logger.info(predict)
-    logger.info(f"... the features can be found in {filename}/outputs")
+    logger.info(f"... the features can be found in {os.getcwd()}/{filename}/outputs")
     logger.info(f"done !")
 
 
@@ -232,10 +280,12 @@ def proc_inner(
     help='The name of a folder containing parameter settings inside `references/parameter_optimisation`'
 )
 @click.option(
-    "--begin", "-b", type=str, default='00:01', help='Starting timestamp (in %H:%M:%S or %M:%S format)'
+    "--begin", "-b", type=str, default=None,
+    help='Starting timestamp (in %H:%M:%S or %M:%S format). Defaults to start of audio.'
 )
 @click.option(
-    "--end", "-e", type=str, default='01:01', help='Stopping timestamp (in %H:%M:%S or %M:%S format)'
+    "--end", "-e", type=str, default=None,
+    help='Stopping timestamp (in %H:%M:%S or %M:%S format). Defaults to end of audio.'
 )
 @click.option(
     "--instr", "exog_ins", default='piano', help='Extract features for this instrument (defaults to piano)'

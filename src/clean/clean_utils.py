@@ -118,7 +118,8 @@ class ItemMaker:
         self.force_download = kwargs.get("force_redownload", False)
         self.force_separation = kwargs.get("force_reseparation", False)
         # Starting and ending timestamps, gathered from the corpus JSON
-        self.start, self.end = self._return_audio_timestamp("start"), self._return_audio_timestamp("end")
+        self.start = return_timestamp(self.item['timestamps']["start"])
+        self.end = return_timestamp(self.item['timestamps']["end"])
         # Amount to multiply file duration by when calculating source separation timeout value
         self.timeout_multiplier_spleeter = kwargs.get("timeout_multiplier_spleeter", 50)
         self.timeout_multiplier_demucs = kwargs.get("timeout_multiplier_demucs", 100)
@@ -138,16 +139,6 @@ class ItemMaker:
         checker = lambda s: bad_pattern not in requests.get(s).text
         return [link for link in self.item["links"]["external"] if "youtube" in link and checker(link)]
 
-    def _return_audio_timestamp(self, timestamp: str = "start", ) -> int:
-        """Returns a formatted timestamp from a JSON element"""
-
-        fmt = '%M:%S' if len(self.item['timestamps'][timestamp]) < 6 else '%H:%M:%S'
-        try:
-            dt = datetime.strptime(self.item["timestamps"][timestamp], fmt)
-            return int(timedelta(hours=dt.hour, minutes=dt.minute, seconds=dt.second).total_seconds())
-        except (ValueError, TypeError):
-            return None
-
     def get_item(self) -> None:
         """Tries to find a corpus item locally, and downloads it from the internet if not present"""
         log = f'processing "{self.item["track_name"]}"'
@@ -163,7 +154,7 @@ class ItemMaker:
             # Are we forcing the corpus to rebuild?
             not self.force_download,
             # Have we changed the timestamps for this item since the last time we built it?
-            isclose(float(self.end - self.start), utils.get_audio_duration(self.in_file), abs_tol=self.abs_tol),
+            # isclose(float(self.end - self.start), utils.get_audio_duration(self.in_file), abs_tol=self.abs_tol),
         ]
         # If we pass all checks, then go ahead and get the item locally (skip downloading it)
         if all(checks):
@@ -208,7 +199,8 @@ class ItemMaker:
 
         # Set our options in yt_dlp
         self.ydl_opts["outtmpl"] = self.in_file
-        self.ydl_opts["download_ranges"] = download_range_func(None, [(self.start, self.end)])
+        if self.start is not None and self.end is not None:
+            self.ydl_opts["download_ranges"] = download_range_func(None, [(self.start, self.end)])
         # Iterate through all of our valid YouTube links
         for link_num, link_url in enumerate(self.links):
             # Try and download from each link
@@ -244,7 +236,7 @@ class ItemMaker:
                 # Do all the source-separated items have approximately the same duration as the original file?
                 all([dur(utils.get_audio_duration(o), utils.get_audio_duration(self.in_file)) for o in out_files]),
                 # Have we changed the timestamps for this item since the last time we built it?
-                all([dur(self.end - self.start, utils.get_audio_duration(o)) for o in out_files]),
+                # all([dur(self.end - self.start, utils.get_audio_duration(o)) for o in out_files]),
                 # Is the duration of the raw input file *identical* to the duration of our source-separated files?
                 all(
                     utils.get_audio_duration(self.in_file) == utils.get_audio_duration(out) for out in out_files)
@@ -337,7 +329,7 @@ class _SpleeterMaker(ItemMaker):
 
         # TODO: we could check for a pretrained_models folder, as if that isn't present then execution will be longer
         # Get the timeout value: the duration of the item, times the multiplier
-        timeout = int((self.end - self.start) * self.timeout_multiplier_spleeter)
+        timeout = int(utils.get_audio_duration(os.path.abspath(self.in_file))) * self.timeout_multiplier_spleeter
         # Open the subprocess. The additional arguments allow us to capture the output
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True,)
         # Open the subprocess and kill if it exceeds the timeout specified
@@ -399,7 +391,7 @@ class _DemucsMaker(ItemMaker):
         """Conducts separation in Demucs by opening a new subprocess"""
 
         # Get the timeout value: the duration of the item, times the multiplier
-        timeout = int((self.end - self.start) * self.timeout_multiplier_demucs)
+        timeout = int(utils.get_audio_duration(os.path.abspath(self.in_file))) * self.timeout_multiplier_demucs
         # Open the subprocess. The additional arguments hide the print functions from Demucs.
         p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, universal_newlines=True)
         # Keep the subprocess alive until it either finishes or the timeout is hit
@@ -439,6 +431,17 @@ class _DemucsMaker(ItemMaker):
         # Remove the demucs folders and all the unwanted files remaining inside them
         for folder in demucs_folders:
             rmtree(folder)
+
+
+def return_timestamp(timestamp: str = "start", ) -> int:
+    """Returns a formatted timestamp from a JSON element"""
+
+    try:
+        fmt = '%M:%S' if len(timestamp) < 6 else '%H:%M:%S'
+        dt = datetime.strptime(timestamp, fmt)
+        return int(timedelta(hours=dt.hour, minutes=dt.minute, seconds=dt.second).total_seconds())
+    except (ValueError, TypeError):
+        return None
 
 
 if __name__ == '__main__':
