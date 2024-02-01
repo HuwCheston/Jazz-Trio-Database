@@ -1,6 +1,11 @@
 #!/bin/bash
 
-# Set the URL of the .tar.gz file you want to download
+# Small bash script to download the required models for both Spleeter and Demucs and put them in the right place
+# This prevents having to download these models on first run, useful when running the repository remotely e.g. on Binder
+echo "Downloading pretrained models for Spleeter and Demucs..."
+
+### SPLEETER DOWNLOAD
+# Set the URL of the .tar.gz file to download
 file_url="https://github.com/deezer/spleeter/releases/download/v1.4.0/5stems.tar.gz"
 
 # Set the name of the new directory to extract the contents
@@ -16,11 +21,19 @@ wget "$file_url" -O /tmp/downloaded_file.tar.gz
 if [ $? -eq 0 ]; then
     # Extract the contents to the new directory
     tar -xzf /tmp/downloaded_file.tar.gz -C "$extracted_dir"
-
     # Clean up the downloaded .tar.gz file
     rm /tmp/downloaded_file.tar.gz
-
     echo "Extraction completed successfully. Files are in: $extracted_dir"
 else
     echo "Download failed. Please check the URL and try again."
 fi
+
+# Copy the Spleeter model to the src directory in case we're running from there
+mkdir -p src/clean/pretrained_models
+cp -r pretrained_models/5stems src/clean/pretrained_models
+
+### DEMUCS DOWNLOAD
+# Torch provides helper commands to do this all for us...
+python3 -c "import torch; torch.hub.load_state_dict_from_url('https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/5c90dfd2-34c22ccb.th', map_location='cpu', check_hash=True)"
+
+echo "... Finished downloading pretrained models !"
