@@ -58,8 +58,9 @@ git clone https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database.git
 cd Cambridge-Jazz-Trio-Database
 python -m venv venv
 call venv/Scripts/activate.bat    # Windows
-source venv/bin/activate    # Ubuntu/OSX
+source venv/bin/activate    # Linux/OSX
 pip install -r requirements.txt
+bash postBuild    # Linux/OSX only: download pretrained models to prevent having to do this on first run
 python src/process.py -i "https://www.youtube.com/watch?v=BguWLXMARHk" --begin "03:00" --end "03:30"
 ```
 

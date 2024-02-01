@@ -107,7 +107,6 @@ target/
 *.mp4
 *.pds
 *.p
-*.joblib
 *.reapeaks
 *.csv
 *.gif
