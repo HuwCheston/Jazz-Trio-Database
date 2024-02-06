@@ -129,7 +129,7 @@
 
             function createYouTubeFrame(VIDEO_ID, X, Y, START, END, FN){
                 return  '<div class="video-container" style="z-index: 1000; right:' + (X + 100) + 'px; bottom:' + (Y + 150) + 'px;">' +
-                    '<iframe style="z-index: 1000; color: white;" id="ytplayer" type="text/html" width="280" height="160" ' +
+                    '<iframe sandbox="allow-same-origin allow-scripts allow-popups allow-forms" style="z-index: 1000; color: white;" id="ytplayer" type="text/html" width="280" height="160" ' +
                     'src="https://www.youtube.com/embed/' + VIDEO_ID + '?autoplay=1&color=white&controls=0&start=' +
                     START + '&end=' + END + '">' + '</iframe><a href="https://huwcheston.github.io/Cambridge-Jazz-Trio-Database/_static/data-explorer/'
                     + FN + '/display.html" style="text-align: center" target="popup">Explore analyses of this track!</a><br>' +
