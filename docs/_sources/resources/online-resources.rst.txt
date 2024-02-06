@@ -51,7 +51,7 @@ Online Resources
 
         +++
 
-        .. button-link:: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/prediction-app.html
+        .. button-link:: https://huwcheston.github.io/Cambridge-Jazz-Trio-Database/_static/prediction-app.html
             :click-parent:
             :color: secondary
             :expand:

@@ -25,7 +25,10 @@
             }
             img {
                 border: 1px solid #aaa;
-                border-radius: 15px;
+                border-radius: 5px;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
                 overflow: hidden;
                 opacity: 0.5;
             }
@@ -152,7 +155,7 @@
                 document.getElementById("track-details").textContent = details;
                 let data = [{
                   type: 'scatterpolar',
-                  r: rs,
+                  r: rs.slice(0, 10),
                   mode: "lines",
                   theta: ['Jamal',
                          'Evans',
@@ -164,7 +167,6 @@
                          'Tyner',
                          'Peterson',
                          'Flanagan',
-                         '',
                   ],
                   fill: 'toself',
                   line: {
@@ -174,6 +176,13 @@
                   line_close: true,
                 }];
                 const layout = {
+                  title: {
+                    text:'Predicted Pianist',
+                    font: {
+                      family: 'GillSansRegular, sans-serif',
+                      size: 14
+                    },
+                  },
                   autosize: false,
                   width: 280,
                   paper_bgcolor: "#aaaaaa",
@@ -182,7 +191,7 @@
                     l: 40,
                     r: 40,
                     b: 20,
-                    t: 20,
+                    t: 30,
                     pad: 4
                   },
                   polar: {
@@ -537,7 +546,7 @@
             <div id="copyright"><p style="position: absolute; right:380px; top:600px; font-size:100%; color: white"><em>© Huw Cheston, 2024   </em><a href="https://github.com/HuwCheston">(github.com/HuwCheston)</a></p></div>
             <div><p id="track-details" style="position: absolute; left:20px; top:30px; font-size:120%; color: white"></p></div>
             <div id="info" class="help-tip" style="position: absolute; left:30px; bottom:150px;">
-                <p>Click an icon to play corresponding audio from YouTube. Disable adblock if you have any problems playing audio.<br />
+                <p>Icons represent songs. Click to play. The closer an icon is to a picture, the more confident the model is in its prediction of the pianist performing on the song.<br />
                 </p>
             </div>
             <div id='plot' style="position: absolute; right:400px; top:15px;"></div>
