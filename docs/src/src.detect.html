@@ -452,6 +452,38 @@ document.write(`
 <span id="src-detect-detect-utils-module"></span><h2>src.detect.detect_utils module<a class="headerlink" href="#module-src.detect.detect_utils" title="Permalink to this heading">#</a></h2>
 <p>Utility classes, functions, and variables used in the onset detection process.</p>
 <dl class="py class">
+<dt class="sig sig-object py" id="src.detect.detect_utils.ClickTrackMaker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.detect.detect_utils.</span></span><span class="sig-name descname"><span class="pre">ClickTrackMaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.detect.detect_utils.ClickTrackMaker" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.ClickTrackMaker.clicks_from_onsets">
+<span class="sig-name descname"><span class="pre">clicks_from_onsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onsets</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.ClickTrackMaker.clicks_from_onsets" title="Permalink to this definition">#</a></dt>
+<dd><p>Renders detected onsets to a click sound with a given frequency</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.detect.detect_utils.ClickTrackMaker.generate_audio">
+<span class="sig-name descname"><span class="pre">generate_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onsets_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.ClickTrackMaker.generate_audio" title="Permalink to this definition">#</a></dt>
+<dd><p>Renders detected onsets to a click sound and combines with the original audio.</p>
+<p>Takes in a list of reference onset arrays, converts these to audible clicks, applies a bandpass filter (to make
+telling different onsets apart easier), filters the original audio to the frequencies considered when detecting
+onsets, then combines filtered original audio + click to a new audio track.</p>
+<dl class="simple">
+<dt>Arguments:</dt><dd><p>onsets_list (list[np.array]): a list containing arrays of detected onsets</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: the click audio track that can be rendered to a file using soundfile, Librosa, etc.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.detect.detect_utils.ClickTrackMaker.order">
+<span class="sig-name descname"><span class="pre">order</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#src.detect.detect_utils.ClickTrackMaker.order" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.detect.detect_utils.</span></span><span class="sig-name descname"><span class="pre">OnsetMaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'corpus_bill_evans'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -537,11 +569,6 @@ audio_cutoff (int, optional): stop reading audio after this point (in total seco
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.data_dir">
-<span class="sig-name descname"><span class="pre">data_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\data'</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.data_dir" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.detection_note_values">
@@ -771,11 +798,6 @@ remove_silence (bool): whether to remove onsets from portions of a track deemed 
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.references_dir">
-<span class="sig-name descname"><span class="pre">references_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\references'</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.references_dir" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.remove_onsets_in_silent_passages">
 <span class="sig-name descname"><span class="pre">remove_onsets_in_silent_passages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.remove_onsets_in_silent_passages" title="Permalink to this definition">#</a></dt>
@@ -809,11 +831,6 @@ silent (np.array): an array of non-silent audio slices, returned from <cite>Onse
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.reports_dir">
-<span class="sig-name descname"><span class="pre">reports_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis\\reports'</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.reports_dir" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.return_converged_paramaters">
 <span class="sig-name descname"><span class="pre">return_converged_paramaters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.return_converged_paramaters" title="Permalink to this definition">#</a></dt>
@@ -832,38 +849,6 @@ silent (np.array): an array of non-silent audio slices, returned from <cite>Onse
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.detect.detect_utils.OnsetMaker.window">
 <span class="sig-name descname"><span class="pre">window</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.05</span></em><a class="headerlink" href="#src.detect.detect_utils.OnsetMaker.window" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="src.detect.detect_utils._ClickTrackMaker">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.detect.detect_utils.</span></span><span class="sig-name descname"><span class="pre">_ClickTrackMaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.detect.detect_utils._ClickTrackMaker" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="src.detect.detect_utils._ClickTrackMaker.clicks_from_onsets">
-<span class="sig-name descname"><span class="pre">clicks_from_onsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onsets</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils._ClickTrackMaker.clicks_from_onsets" title="Permalink to this definition">#</a></dt>
-<dd><p>Renders detected onsets to a click sound with a given frequency</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.detect.detect_utils._ClickTrackMaker.generate_audio">
-<span class="sig-name descname"><span class="pre">generate_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onsets_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.array</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.detect.detect_utils._ClickTrackMaker.generate_audio" title="Permalink to this definition">#</a></dt>
-<dd><p>Renders detected onsets to a click sound and combines with the original audio.</p>
-<p>Takes in a list of reference onset arrays, converts these to audible clicks, applies a bandpass filter (to make
-telling different onsets apart easier), filters the original audio to the frequencies considered when detecting
-onsets, then combines filtered original audio + click to a new audio track.</p>
-<dl class="simple">
-<dt>Arguments:</dt><dd><p>onsets_list (list[np.array]): a list containing arrays of detected onsets</p>
-</dd>
-<dt>Returns:</dt><dd><p>np.array: the click audio track that can be rendered to a file using soundfile, Librosa, etc.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.detect.detect_utils._ClickTrackMaker.order">
-<span class="sig-name descname"><span class="pre">order</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#src.detect.detect_utils._ClickTrackMaker.order" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1220,12 +1205,17 @@ tracks (list[dict]): the metadata for the tracks to be used in optimization
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.detect.detect_utils">src.detect.detect_utils module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.ClickTrackMaker"><code class="docutils literal notranslate"><span class="pre">ClickTrackMaker</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.ClickTrackMaker.clicks_from_onsets"><code class="docutils literal notranslate"><span class="pre">ClickTrackMaker.clicks_from_onsets()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.ClickTrackMaker.generate_audio"><code class="docutils literal notranslate"><span class="pre">ClickTrackMaker.generate_audio()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.ClickTrackMaker.order"><code class="docutils literal notranslate"><span class="pre">ClickTrackMaker.order</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker"><code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker._get_channel_override_fpath"><code class="docutils literal notranslate"><span class="pre">OnsetMaker._get_channel_override_fpath()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker._load_audio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker._load_audio()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.beat_track_rnn"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.beat_track_rnn()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.compare_onset_detection_accuracy"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.compare_onset_detection_accuracy()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.data_dir"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.data_dir</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.detection_note_values"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.detection_note_values</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.extract_downbeats"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.extract_downbeats()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.finalize_output"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.finalize_output()</span></code></a></li>
@@ -1241,19 +1231,11 @@ tracks (list[dict]): the metadata for the tracks to be used in optimization
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.onset_strength"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.onset_strength()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.process_mixed_audio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.process_mixed_audio()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.process_separated_audio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.process_separated_audio()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.references_dir"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.references_dir</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.remove_onsets_in_silent_passages"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.remove_onsets_in_silent_passages()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.reports_dir"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.reports_dir</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.return_converged_paramaters"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.return_converged_paramaters()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.silence_threshold"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.silence_threshold</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.top_db"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.top_db</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.OnsetMaker.window"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.window</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils._ClickTrackMaker"><code class="docutils literal notranslate"><span class="pre">_ClickTrackMaker</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils._ClickTrackMaker.clicks_from_onsets"><code class="docutils literal notranslate"><span class="pre">_ClickTrackMaker.clicks_from_onsets()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils._ClickTrackMaker.generate_audio"><code class="docutils literal notranslate"><span class="pre">_ClickTrackMaker.generate_audio()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils._ClickTrackMaker.order"><code class="docutils literal notranslate"><span class="pre">_ClickTrackMaker.order</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.detect.detect_utils.bandpass_filter"><code class="docutils literal notranslate"><span class="pre">bandpass_filter()</span></code></a></li>

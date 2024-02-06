@@ -42,22 +42,21 @@ Online Resources
             Example outputs
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/audio-mixer-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/prediction-app-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md
 
-        Interactively "mix" the audio for several tracks in our database
+        Explore the predictions made by our model for each track in our database
 
         +++
 
-        .. button-ref:: audio-mixer
-            :ref-type: any
+        .. button-link:: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/prediction-app.html
             :click-parent:
             :color: secondary
             :expand:
 
-            Audio mixer
+            Track predictions
 
     .. grid-item-card::
         :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/data-explore-card.png
