@@ -691,37 +691,38 @@ def generate_corpus_files(corpus_fname: str) -> None:
         save_annotations(track, trackpath)
 
 
+# TODO: think about refactoring below two functions into src.detect.detect_utils
+def load_track_from_files(trackpath: str):
+    """Loads a single track from loose files generated in `src.utils.generate_corpus_files`"""
+    from src.detect.detect_utils import OnsetMaker
+    # Load the JSON metadata file
+    item = load_json(fpath=trackpath, fname='metadata')
+    # Use this to create a new `OnsetMaker`, but skip processing
+    om = OnsetMaker(item=item, skip_processing=True)
+    # Read the summary dictionary `.csv` file
+    sd = pd.read_csv(rf'{trackpath}/beats.csv', index_col=0)
+    # Append the requisite columns to our new `OnsetMaker.summary_dict`
+    for col in sd.columns:
+        om.summary_dict[col] = sd[col].to_numpy()
+    # This starts creating the `OnsetMaker.ons` dictionary
+    for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+        om.ons[instr] = np.genfromtxt(rf'{trackpath}/{instr}.csv', delimiter=',')
+    om.ons['mix'] = sd['beats'].to_numpy()
+    # Get both automatically and manually generated downbeats and coerce into correct format
+    for var_ in ['auto', 'manual']:
+        om.ons[f'metre_{var_}'] = sd[f'metre_{var_}'].to_numpy()
+        om.ons[f'downbeats_{var_}'] = om.ons['mix'][np.where(om.ons[f'metre_{var_}'] == 1)]
+    # Update this attribute as it won't be present by default
+    om.tempo = np.mean(60 / np.diff(om.ons['mix']))
+    return om
+
+
 def load_corpus_from_files(dirpath: str) -> list:
     """Loads corpus from the loose files generated in `src.utils.generate_corpus_files`"""
-    from src.detect.detect_utils import OnsetMaker
     # Filter warnings generated when an onset file has no data in it
     warnings.simplefilter('ignore', UserWarning)
-    oms = []
-    # Iterate through each folder in our directory
-    for track in os.listdir(dirpath):
-        trackpath = dirpath + '/' + track
-        # Load the JSON metadata file
-        item = load_json(fpath=trackpath, fname='metadata')
-        # Use this to create a new `OnsetMaker`, but skip processing
-        om = OnsetMaker(item=item, skip_processing=True)
-        # Read the summary dictionary `.csv` file
-        sd = pd.read_csv(rf'{trackpath}/beats.csv', index_col=0)
-        # Append the requisite columns to our new `OnsetMaker.summary_dict`
-        for col in sd.columns:
-            om.summary_dict[col] = sd[col].to_numpy()
-        # This starts creating the `OnsetMaker.ons` dictionary
-        for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-            om.ons[instr] = np.genfromtxt(rf'{trackpath}/{instr}.csv', delimiter=',')
-        om.ons['mix'] = sd['beats'].to_numpy()
-        # Get both automatically and manually generated downbeats and coerce into correct format
-        for var_ in ['auto', 'manual']:
-            om.ons[f'metre_{var_}'] = sd[f'metre_{var_}'].to_numpy()
-            om.ons[f'downbeats_{var_}'] = om.ons['mix'][np.where(om.ons[f'metre_{var_}'] == 1)]
-        # Update this attribute as it won't be present by default
-        om.tempo = np.mean(60 / np.diff(om.ons['mix']))
-        oms.append(om)
-    # Return the completed `OnsetMaker` instances
-    return oms
+    # Iterate through each folder in our directory and return the completed `OnsetMaker` instances
+    return [load_track_from_files(dirpath + '/' + track) for track in os.listdir(dirpath)]
 
 
 def convert_to_mp3(dirpath: str, ext: str = '.wav', delete: bool = False, cutoff: int = False) -> None:
