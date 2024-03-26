@@ -12,7 +12,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 
 from src import utils
-from src.features.features_utils import Asynchrony
+from src.features.rhythm_features import Asynchrony
 
 
 __all__ = ['Simulation', 'SimulationManager']

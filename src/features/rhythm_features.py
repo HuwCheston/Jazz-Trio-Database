@@ -21,7 +21,7 @@ from src.features.features_utils import BaseExtractor
 
 __all__ = [
     "PhaseCorrection", "BeatUpbeatRatio", "IOIComplexity", "TempoSlope",
-    "ProportionalAsynchrony", "RollingIOISummaryStats"
+    "ProportionalAsynchrony", "RollingIOISummaryStats", "Asynchrony"
 ]
 
 
