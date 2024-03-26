@@ -36,3 +36,4 @@ matplotlib
 # seemed to be required to get demucs running on linux
 museval
 musdb
+pretty_midi
