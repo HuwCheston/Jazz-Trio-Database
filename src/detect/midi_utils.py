@@ -12,6 +12,9 @@ import pretty_midi
 from src.detect.detect_utils import FREQUENCY_BANDS, OnsetMaker
 
 
+__all__ = ['Note', 'MelodyMaker']
+
+
 class Note(pretty_midi.Note):
     """Overrides `pretty_midi.Note` with a few additional properties"""
 

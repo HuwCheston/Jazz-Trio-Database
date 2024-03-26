@@ -12,7 +12,6 @@ import pandas as pd
 __all__ = ["BaseExtractor"]
 
 
-# TODO: can we separate this class from the rhythm features classes?
 class BaseExtractor:
     """Base feature extraction class, with some methods that are useful for all classes"""
 

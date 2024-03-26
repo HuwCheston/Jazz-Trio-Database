@@ -36,8 +36,8 @@ class MelodyChunkManager(BaseExtractor):
     def __init__(self, extractor, mm: MelodyMaker, **kwargs):
         super().__init__()
         mel = list(mm.extract_melody())
-        chunk_list = [extractor(chunk, **kwargs).summary_dict for chunk in mm.chunk_melody(mel)]
-        chunk_dict = {k: [dic[k] for dic in chunk_list] for k in chunk_list[0]}
+        self.chunk_list = [extractor(chunk, **kwargs).summary_dict for chunk in mm.chunk_melody(mel)]
+        chunk_dict = {k: [dic[k] for dic in self.chunk_list] for k in self.chunk_list[0]}
         self.update_summary_dict(chunk_dict.keys(), chunk_dict.values())
 
     def update_summary_dict(self, array_names, arrays, *args, **kwargs):
@@ -164,10 +164,11 @@ def normalized_entropy(
 
 
 if __name__ == '__main__':
+    # Extract our melody from a random sample file
     fp = f'{utils.get_project_root()}\data\cambridge-jazz-trio-database-v01\corpus_chronology\evansb-ttttwelvetonetune-gomezemorellm-1971-360d7a67'
     track = utils.load_track_from_files(fp)
     maker = MelodyMaker(fp + '\piano_midi.mid', track)
-    features = [PitchExtractor, IntervalExtractor, TonalityExtractor, ContourExtractor]
-    mel_list = [MelodyChunkManager(feature, maker).summary_dict for feature in features]
-    mel_features = {k: v for d in mel_list for k, v in d.items()}
+    # Create our MelodyChunkManager for each feature we want to extract and convert to a single dictionary
+    mel_list = [MelodyChunkManager(feature, maker) for feature in __all__]
+    mel_features = {k: v for d in mel_list for k, v in d.summary_dict.items()}
     print(mel_features)
