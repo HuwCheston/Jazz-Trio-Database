@@ -33,6 +33,7 @@ pd.set_option('display.max_columns', None)
 np.set_printoptions(suppress=True)
 
 # Define variables used across many files
+ALL_PITCHES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 SAMPLE_RATE = 44100
 HOP_LENGTH = 128
 AUDIO_FILE_FMT = 'wav'

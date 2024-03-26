@@ -21,10 +21,11 @@ from src.detect.detect_utils import OnsetMaker
 
 __all__ = [
     "PhaseCorrection", "BeatUpbeatRatio", "IOIComplexity", "TempoSlope",
-    "ProportionalAsynchrony", "RollingIOISummaryStats"
+    "ProportionalAsynchrony", "RollingIOISummaryStats", "BaseExtractor"
 ]
 
-
+# TODO: refactor into src.features.rhythm_utils
+# TODO: this class can almost certainly be deprecated
 class FeatureExtractor:
     """Base class for extracting all features from all instruments within one track
 
@@ -249,6 +250,7 @@ class FeatureExtractor:
         }
 
 
+# TODO: can we separate this class from the rhythm features classes?
 class BaseExtractor:
     """Base feature extraction class, with some methods that are useful for all classes"""
 
