@@ -36,4 +36,13 @@ cp -r pretrained_models/5stems src/clean/pretrained_models
 # Torch provides helper commands to do this all for us...
 python3 -c "import torch; torch.hub.load_state_dict_from_url('https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/5c90dfd2-34c22ccb.th', map_location='cpu', check_hash=True)"
 
+### MVSEP DOWNLOAD
+# Clone the repository
+git clone https://github.com/ZFTurbo/MVSEP-MDX23-music-separation-model
+
+# In Python, run the commands in torch to download the models to the required directory
+python3 -c "import torch; torch.hub.download_url_to_file('https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/04573f0d-f3cf25b2.th', 'MVSEP-MDX23-music-separation-model/models/04573f0d-f3cf25b2.th')"
+python3 -c "import torch; torch.hub.download_url_to_file('https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/Kim_Inst.onnx', 'MVSEP-MDX23-music-separation-model/models/Kim_Inst.onnx')"
+python3 -c "import torch; torch.hub.download_url_to_file('https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/Kim_Vocal_2.onnx', 'MVSEP-MDX23-music-separation-model/models/Kim_Vocal_2.onnx')"
+
 echo "... Finished downloading pretrained models !"
