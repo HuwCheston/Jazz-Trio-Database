@@ -20,7 +20,7 @@ from src.clean.clean_utils import ItemMaker
 @click.option("-force-separation", "force_separation", is_flag=True, default=False, help='Force source separation')
 @click.option("-no-spleeter", "disable_spleeter", is_flag=True, default=True, help='Disable spleeter for separation')
 @click.option("-no-demucs", "disable_demucs", is_flag=True, default=True, help='Disable demucs for separation')
-@click.option("--no-sep", "disable_demucs", is_flag=True, default=False, help='Disable separation')
+@click.option("--no-sep", "no_sep", is_flag=True, default=False, help='Disable separation')
 def main(
         corpus_filename: str,
         force_download: bool,
