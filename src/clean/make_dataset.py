@@ -20,12 +20,14 @@ from src.clean.clean_utils import ItemMaker
 @click.option("-force-separation", "force_separation", is_flag=True, default=False, help='Force source separation')
 @click.option("-no-spleeter", "disable_spleeter", is_flag=True, default=True, help='Disable spleeter for separation')
 @click.option("-no-demucs", "disable_demucs", is_flag=True, default=True, help='Disable demucs for separation')
+@click.option("--no-sep", "no_sep", is_flag=True, default=False, help='Disable separation')
 def main(
         corpus_filename: str,
         force_download: bool,
         force_separation: bool,
         disable_spleeter: bool,
-        disable_demucs: bool
+        disable_demucs: bool,
+        no_sep: bool
 ) -> None:
     """Runs processing scripts to turn corpus from (./references) into audio, ready to be analyzed"""
     # Set the logger
@@ -46,12 +48,13 @@ def main(
             use_demucs=not disable_demucs
         )
         im.get_item()
-        try:
-            im.separate_audio()
-        except:
-            logger.warning(f'failed to separate {corpus_item["track_name"]}, skipping')
-        else:
-            im.finalize_output()
+        if not no_sep:
+            try:
+                im.separate_audio()
+            except:
+                logger.warning(f'failed to separate {corpus_item["track_name"]}, skipping')
+            else:
+                im.finalize_output()
     # Log the total completion time
     logger.info(f"dataset {corpus_filename} made in {round(time() - start)} secs !")
 
