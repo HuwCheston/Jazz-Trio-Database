@@ -129,3 +129,4 @@ target/
 
 /venv_old/
 /pretrained_models/
+MVSEP-MDX23-music-separation-model/*

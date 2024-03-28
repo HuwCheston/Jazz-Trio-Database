@@ -6,6 +6,7 @@
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timedelta
 from math import isclose
 from shutil import rmtree
@@ -82,6 +83,7 @@ class ItemMaker:
         self.raw_audio_loc = rf"{self.output_filepath}/raw/audio"
         self.spleeter_audio_loc = rf"{self.output_filepath}/processed/spleeter_audio"
         self.demucs_audio_loc = rf"{self.output_filepath}/processed/demucs_audio"
+        self.mvsep_audio_loc = rf"{self.output_filepath}/processed/mvsep_audio"
         # The dictionary corresponding to one particular item in our corpus JSON
         self.item = item.copy()
         # Empty attribute to hold valid YouTube links
@@ -89,6 +91,7 @@ class ItemMaker:
         # Model to use in Spleeter
         self.spleeter_model = "spleeter:5stems-16kHz"
         self.demucs_model = "htdemucs_6s"
+        self.mvsep_model = "MVSEP"
         # The filename for this item, constructed from the parameters of the JSON
         self.fname: str = self.item['fname']
         # The complete filepath for this item
@@ -96,6 +99,7 @@ class ItemMaker:
         # Source-separation models to use
         self.use_spleeter: bool = kwargs.get('use_spleeter', True)
         self.use_demucs: bool = kwargs.get('use_demucs', True)
+        self.use_mvsep: bool = kwargs.get('use_mvsep', True)
         # Whether to get the left and right channels as separate files (helps with bass separation in some recordings)
         self.get_lr_audio: bool = kwargs.get('get_lr_audio', True)
         # Paths to all the source-separated audio files that we'll create (or load)
@@ -111,6 +115,12 @@ class ItemMaker:
             else rf"{self.demucs_audio_loc}/{self.fname}-{self.item['channel_overrides'][i]}chan_{i}.{self.fmt}"
             for i in self.instrs
         ]
+        self.out_mvsep = [
+            rf"{self.mvsep_audio_loc}/{self.fname}_{i}.{self.fmt}"
+            if i not in self.item['channel_overrides'].keys()
+            else rf"{self.mvsep_audio_loc}/{self.fname}-{self.item['channel_overrides'][i]}chan_{i}.{self.fmt}"
+            for i in self.instrs
+        ]
         # Logger object and empty list to hold messages (for saving)
         self.logger = kwargs.get("logger", None)
         self.logging_messages = []
@@ -123,6 +133,7 @@ class ItemMaker:
         # Amount to multiply file duration by when calculating source separation timeout value
         self.timeout_multiplier_spleeter = kwargs.get("timeout_multiplier_spleeter", 50)
         self.timeout_multiplier_demucs = kwargs.get("timeout_multiplier_demucs", 100)
+        self.timeout_multiplier_mvsep = kwargs.get("timeout_multiplier_mvsep", 100)
 
     def _logger_wrapper(self, msg) -> None:
         """Simple wrapper that logs a given message and indexes it for later access"""
@@ -227,9 +238,11 @@ class ItemMaker:
     def separate_audio(self) -> None:
         """Checks whether to separate audio, gets requred commands, opens subprocessses, then cleans up"""
 
-        def get_preseparation_checks(out_files: list[str]) -> list[bool]:
+        def get_preseparation_checks(out_files: list[str], abs_tol: float = None) -> list[bool]:
             """Conducts checks using given list of filenames for whether an item has already been processed"""
-            dur = lambda dur1, dur2: isclose(dur1, dur2, abs_tol=self.abs_tol)
+            if abs_tol is None:
+                abs_tol = self.abs_tol
+            dur = lambda dur1, dur2: isclose(dur1, dur2, abs_tol=abs_tol)
             return [
                 # Are all the source separated items present locally?
                 all(utils.check_item_present_locally(fn) for fn in out_files),
@@ -238,11 +251,10 @@ class ItemMaker:
                 # Have we changed the timestamps for this item since the last time we built it?
                 # all([dur(self.end - self.start, utils.get_audio_duration(o)) for o in out_files]),
                 # Is the duration of the raw input file *identical* to the duration of our source-separated files?
-                all(
-                    utils.get_audio_duration(self.in_file) == utils.get_audio_duration(out) for out in out_files)
+                # all(utils.get_audio_duration(self.in_file) == utils.get_audio_duration(out) for out in out_files)
             ]
 
-        def separation_handler(separation_class: type, separator_name: str) -> None:
+        def separation_handler(separation_class: type, separator_name: str, parallel: bool = True) -> None:
             """Handling function for running separation & cleanup using a given separation class"""
             # Raise an error if we no longer have the input file, for whatever reason
             if not utils.check_item_present_locally(self.in_file):
@@ -258,8 +270,12 @@ class ItemMaker:
                     cmds.append(cls.get_cmd(fname))
             # Run each of our separation commands in parallel, using joblib (set n_jobs to number of commands)
             self._logger_wrapper(f"... separating {len(cmds)} tracks with {separator_name}")
-            with HidePrints() as _:
+            # with HidePrints() as _:
+            if parallel:
                 Parallel(n_jobs=len(cmds))(delayed(cls.run_separation)(cmd) for cmd in cmds)
+            else:
+                for cmd in cmds:
+                    cls.run_separation(cmd)
             # Clean up after separation by removing any unnecessary files, moving folders etc.
             cls.cleanup_post_separation()
 
@@ -269,6 +285,9 @@ class ItemMaker:
             checks.extend(get_preseparation_checks(self.out_spleeter))
         if self.use_demucs:
             checks.extend(get_preseparation_checks(self.out_demucs))
+        if self.use_mvsep:
+            # Use a slightly higher absolute tolerance for mvsep, doesn't seem as time-aligned as spleeter and deezer
+            checks.extend(get_preseparation_checks(self.out_mvsep, abs_tol=0.1))
         # If we pass all the checks, then we can skip rebuilding the source-separated tracks
         if all(checks):
             self._logger_wrapper(f"... skipping separation, items present locally")
@@ -279,6 +298,9 @@ class ItemMaker:
                 separation_handler(_SpleeterMaker, self.spleeter_model)
             if self.use_demucs:
                 separation_handler(_DemucsMaker, self.demucs_model)
+            if self.use_mvsep:
+                # We don't want to process tracks using MVSEP in parallel, as we'll quickly run out of memory
+                separation_handler(_MVSEPMaker, self.mvsep_model, parallel=False)
 
     def finalize_output(self, include_log: bool = False) -> None:
         """Finalizes the output by cleaning up leftover files and setting any final attributes"""
@@ -431,6 +453,53 @@ class _DemucsMaker(ItemMaker):
         # Remove the demucs folders and all the unwanted files remaining inside them
         for folder in demucs_folders:
             rmtree(folder)
+
+
+class _MVSEPMaker(ItemMaker):
+    MVSEP_LOCATION = f'{utils.get_project_root()}/MVSEP-MDX23-music-separation-model'
+    MVSEP_KWARGS = {
+        'cpu': False,
+        'overlap_large': 0.4,
+        'overlap_small': 0.3,
+        'chunk_size': 10000,
+        'single_onnx': False,
+        'large_gpu': False,
+        'use_kim_model_1': False,
+        'only_vocals': False
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def get_cmd(self, in_file: str = None) -> list:
+        """Gets the required command for running MVSEP as a subprocess"""
+
+        if in_file is None:
+            in_file = self.in_file
+        if in_file is not None:
+            self.in_file = in_file
+        return {
+            'input_audio': [os.path.abspath(in_file)],
+            'output_folder': os.path.abspath(self.mvsep_audio_loc),
+            **self.MVSEP_KWARGS
+        }
+
+    def run_separation(self, cmd: list):
+        sys.path.insert(1, self.MVSEP_LOCATION)
+        # noinspection PyUnresolvedReferences
+        # noinspection PyPackageRequirements
+        from inference import predict_with_model
+        predict_with_model(cmd)
+        time.sleep(10)
+        self._logger_wrapper(f"... item separated successfully")
+
+    def cleanup_post_separation(self):
+        mvsep_fpath = os.path.join(
+            self.mvsep_audio_loc, os.path.split(self.in_file)[-1].replace('.' + utils.AUDIO_FILE_FMT, '')
+        )
+        os.rename(f'{mvsep_fpath}_other.{utils.AUDIO_FILE_FMT}', f'{mvsep_fpath}_piano.{utils.AUDIO_FILE_FMT}')
+        for discard in ['_vocals', '_instrum', '_instrum2']:
+            os.remove(mvsep_fpath + discard + f'.{utils.AUDIO_FILE_FMT}')
 
 
 def return_timestamp(timestamp: str = "start", ) -> int:

@@ -15,11 +15,11 @@ from src.clean.clean_utils import ItemMaker
 
 
 @click.command()
-@click.option("-corpus", "corpus_filename", type=str, default="corpus_bill_evans", help='Name of the corpus to use')
+@click.option("-corpus", "corpus_filename", type=str, default="corpus_chronology", help='Name of the corpus to use')
 @click.option("-force-download", "force_download", is_flag=True, default=False, help='Force download from YouTube')
 @click.option("-force-separation", "force_separation", is_flag=True, default=False, help='Force source separation')
-@click.option("-no-spleeter", "disable_spleeter", is_flag=True, default=False, help='Disable spleeter for separation')
-@click.option("-no-demucs", "disable_demucs", is_flag=True, default=False, help='Disable demucs for separation')
+@click.option("-no-spleeter", "disable_spleeter", is_flag=True, default=True, help='Disable spleeter for separation')
+@click.option("-no-demucs", "disable_demucs", is_flag=True, default=True, help='Disable demucs for separation')
 def main(
         corpus_filename: str,
         force_download: bool,
@@ -46,8 +46,12 @@ def main(
             use_demucs=not disable_demucs
         )
         im.get_item()
-        im.separate_audio()
-        im.finalize_output()
+        try:
+            im.separate_audio()
+        except:
+            logger.warning(f'failed to separate {corpus_item["track_name"]}, skipping')
+        else:
+            im.finalize_output()
     # Log the total completion time
     logger.info(f"dataset {corpus_filename} made in {round(time() - start)} secs !")
 
