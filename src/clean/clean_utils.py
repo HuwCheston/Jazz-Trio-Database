@@ -461,7 +461,7 @@ class _MVSEPMaker(ItemMaker):
         'cpu': False,
         'overlap_large': 0.4,
         'overlap_small': 0.3,
-        'chunk_size': 10000,
+        'chunk_size': 1000000,
         'single_onnx': False,
         'large_gpu': False,
         'use_kim_model_1': False,
