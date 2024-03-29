@@ -3,19 +3,23 @@
 
 """Utility classes, functions, and variables when working with MIDI files."""
 
+import os
 from itertools import groupby
 from typing import Generator
+from math import isclose
 
 import numpy as np
 import pretty_midi
 import librosa
-from piano_transcription_inference import PianoTranscription, load_audio
+from piano_transcription_inference import PianoTranscription, load_audio, sample_rate
+from piano_transcription_inference.utilities import write_events_to_midi
 
 from src import utils
-from src.detect.detect_utils import FREQUENCY_BANDS, OnsetMaker
+from src.detect.detect_utils import FREQUENCY_BANDS, OnsetMaker, bandpass_filter
+from src.clean.clean_utils import HidePrints
 
 
-__all__ = ['Note', 'Interval', 'MelodyMaker']
+__all__ = ['Note', 'Interval', 'MelodyMaker', 'MIDIMaker']
 
 
 class Note(pretty_midi.Note):
@@ -135,29 +139,80 @@ class MelodyMaker:
 
 
 class MIDIMaker:
-    def __init__(self, separated_audio_fpath: str):
-        # TODO: we may need to use sr=16000 as in the documentation
-        self.audio, _ = load_audio(separated_audio_fpath, sr=utils.SAMPLE_RATE, mono=False)
+    INSTR = 'piano'
+
+    def __init__(self, item: dict):
+        self.item = item
+        desired_channel = self.item['channel_overrides'][self.INSTR] if (
+                self.INSTR in self.item['channel_overrides'].keys()
+        ) else None
+        raw_fpath = os.path.join(
+            utils.get_project_root(),
+            'data/raw/audio',
+            utils.construct_audio_fpath_with_channel_overrides(
+                self.item['fname'], instr=None, channel=desired_channel
+            )
+        )
+        proc_fpath = os.path.join(
+            utils.get_project_root(),
+            'data/processed/mvsep_audio',
+            utils.construct_audio_fpath_with_channel_overrides(
+                self.item['fname'], instr=self.INSTR, channel=desired_channel
+            )
+        )
+        self.raw_audio = load_audio(raw_fpath, sr=sample_rate, mono=True)[0]
+        self.proc_audio = load_audio(proc_fpath, sr=sample_rate, mono=True)[0]
+        self.midi = None
+
+    def pad_audio(self, proc: np.array) -> np.array:
+        raw_samples, proc_samples = max(self.raw_audio.shape), max(proc.shape)
+        pad = np.zeros(raw_samples - proc_samples)
+        conc = np.concatenate([pad, proc])
+        conc_samples = max(conc.shape)
+        assert conc_samples == raw_samples
+        return conc
 
     @staticmethod
-    def _pad_audio():
-        # TODO: make this work
-        raw, stereo = np.array([]), np.array([])
-        pad = np.zeros((2, raw.shape[0] - stereo.shape[1]))
-        return np.concatenate([pad, stereo], axis=1)
+    def pitch_correction(audio: np.array) -> np.array:
+        original_tuning = librosa.estimate_tuning(audio, sr=sample_rate)
+        # Shift by -semitones to return to A=440
+        y_shifted = librosa.effects.pitch_shift(audio, sr=sample_rate, n_steps=-original_tuning)
+        shifted_tuning = librosa.estimate_tuning(y_shifted, sr=sample_rate)
+        assert isclose(shifted_tuning, 0, abs_tol=0.1)
+        return y_shifted if abs(shifted_tuning) < original_tuning else audio
 
-    @staticmethod
-    def _pitch_shift_audio():
-        # TODO: make this work
-        audio = np.array([])
-        tuning = librosa.estimate_tuning(audio, sr=utils.SAMPLE_RATE)
-        semitones = tuning / 100
-        return librosa.effects.pitch_shift(audio, sr=utils.SAMPLE_RATE, n_steps=-semitones)
+    def preprocess_audio(self, audio: np.array) -> np.array:
+        padded_audio = self.pad_audio(audio)
+        shifted_audio = self.pitch_correction(padded_audio)
+        filtered_audio = bandpass_filter(
+            shifted_audio,
+            # Cut at ~170 Hz to remove bass
+            lowcut=FREQUENCY_BANDS[self.INSTR]['fmin'],
+            # Use the whole upper frequency range
+            highcut=(sample_rate / 2) - 1,
+            pad_len=0,
+            sample_rate=sample_rate
+        )
+        return filtered_audio
 
-    def preprocess_audio(self):
-        pass
+    def convert_to_midi(self, output_fpath: str = None) -> dict:
+        processed_audio = self.preprocess_audio(self.proc_audio)
+        with HidePrints():
+            transcriptor = PianoTranscription(device='cuda', checkpoint_path=None)
+            self.midi = transcriptor.transcribe(processed_audio, output_fpath)
+        return self.midi
 
-    def audio_to_midi(self):
-        # TODO: make this work
-        transcriptor = PianoTranscription(device='cuda', checkpoint_path=None)
-        transcribed_dict = transcriptor.transcribe(self.audio, None)
+
+if __name__ == '__main__':
+    corpus_fname = 'corpus_chronology'
+    corpus = utils.CorpusMaker.from_excel(corpus_fname)
+    track = corpus.tracks[0]
+    mm = MIDIMaker(track)
+    midi = mm.convert_to_midi()
+    os.makedirs(f'{utils.get_project_root()}/models/{corpus_fname}/{track["fname"]}', exist_ok=True)
+    write_events_to_midi(
+        start_time=0,
+        note_events=midi['est_note_events'],
+        pedal_events=midi['est_pedal_events'],
+        midi_path=f'{utils.get_project_root()}/models/{corpus_fname}/{track["fname"]}/piano_midi.mid'
+    )

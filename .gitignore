@@ -113,6 +113,11 @@ target/
 
 *.zip
 
+# Ignore model files used by MVSEP
+*.th
+*.onnx
+*.mid
+
 # Ignore .svg image files in all but the documentation folders
 *.png
 !/docs/*.png
