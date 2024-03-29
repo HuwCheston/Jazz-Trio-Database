@@ -8,11 +8,14 @@ from typing import Generator
 
 import numpy as np
 import pretty_midi
+import librosa
+from piano_transcription_inference import PianoTranscription, load_audio
 
+from src import utils
 from src.detect.detect_utils import FREQUENCY_BANDS, OnsetMaker
 
 
-__all__ = ['Note', 'MelodyMaker']
+__all__ = ['Note', 'Interval', 'MelodyMaker']
 
 
 class Note(pretty_midi.Note):
@@ -28,6 +31,22 @@ class Note(pretty_midi.Note):
     def __repr__(self):
         return 'Note(start={:f}, end={:f}, ioi={:f}, pitch={}, velocity={}, note={}, octave={}, pitch_class={})'.format(
             self.start, self.end, self.ioi, self.pitch, self.velocity, self.note, self.octave, self.pitch_class
+        )
+
+
+class Interval:
+    """Used to extract info from two `Note` objects occurring separately"""
+
+    def __init__(self, firstnote: Note, secondnote: Note):
+        self.start = firstnote.start
+        self.interval = firstnote.pitch - secondnote.pitch
+        self.interval_class = firstnote.pitch_class - secondnote.pitch_class
+        self.ioi = secondnote.start - firstnote.start
+        self.velocity_change = firstnote.velocity - secondnote.velocity
+
+    def __repr__(self):
+        return 'Interval(interval={}, interval_class={}, ioi={:f}, velocity_change={})'.format(
+            self.interval, self.interval_class, self.ioi, self.velocity_change
         )
 
 
@@ -95,17 +114,50 @@ class MelodyMaker:
             quantized_notes = self._quantize_notes_in_beat(beat1, beat2, [n for n in notes if beat1 <= n.start < beat2])
             yield from self._extract_highest_note(quantized_notes)
 
+    def extract_intervals(self) -> Generator[Interval, None, None]:
+        # Extract the melody and convert it to a list: we can't subscript a generator object
+        melody = list(self.extract_melody())
+        # Yield an interval object from consecutive notes in the extracted melody
+        yield from (Interval(fn, sn) for fn, sn in zip(melody, melody[1:]))
+
     def chunk_melody(
             self,
-            melody_notes: list[Note],
+            melody_notes: list[Note | Interval],
             chunk_measures: int = 4,
-            overlapping_chunks: bool = True
-    ) -> Generator[tuple[Note], None, None]:
+            overlapping_chunks: bool = True,
+    ) -> list[tuple[Note]]:
         if overlapping_chunks:
             z = zip(self.downbeats, self.downbeats[chunk_measures:])
         else:
             z = zip(self.downbeats[::chunk_measures], self.downbeats[chunk_measures::chunk_measures])
-        chunks = []
-        for db1, db2 in z:
-            chunks.append(tuple(m for m in melody_notes if db1 <= m.start < db2))
-        return chunks
+        # TODO: check if this can return Interval objects as well as Note
+        return [tuple(m for m in melody_notes if db1 <= m.start < db2) for db1, db2 in z]
+
+
+class MIDIMaker:
+    def __init__(self, separated_audio_fpath: str):
+        # TODO: we may need to use sr=16000 as in the documentation
+        self.audio, _ = load_audio(separated_audio_fpath, sr=utils.SAMPLE_RATE, mono=False)
+
+    @staticmethod
+    def _pad_audio():
+        # TODO: make this work
+        raw, stereo = np.array([]), np.array([])
+        pad = np.zeros((2, raw.shape[0] - stereo.shape[1]))
+        return np.concatenate([pad, stereo], axis=1)
+
+    @staticmethod
+    def _pitch_shift_audio():
+        # TODO: make this work
+        audio = np.array([])
+        tuning = librosa.estimate_tuning(audio, sr=utils.SAMPLE_RATE)
+        semitones = tuning / 100
+        return librosa.effects.pitch_shift(audio, sr=utils.SAMPLE_RATE, n_steps=-semitones)
+
+    def preprocess_audio(self):
+        pass
+
+    def audio_to_midi(self):
+        # TODO: make this work
+        transcriptor = PianoTranscription(device='cuda', checkpoint_path=None)
+        transcribed_dict = transcriptor.transcribe(self.audio, None)

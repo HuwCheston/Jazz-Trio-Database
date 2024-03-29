@@ -32,13 +32,18 @@ HURON_CONTOURS = dict(
 
 class MelodyChunkManager(BaseExtractor):
     """For a given `MelodyMaker` instance, applies the given `extractor` to all chunks and averages the results"""
+    # A chunk requires at least two `Note` instances in order to be evaluated
+    NOTE_LB = 2
 
     def __init__(self, extractor, mm: MelodyMaker, **kwargs):
         super().__init__()
         mel = list(mm.extract_melody())
-        self.chunk_list = [extractor(chunk, **kwargs).summary_dict for chunk in mm.chunk_melody(mel)]
-        chunk_dict = {k: [dic[k] for dic in self.chunk_list] for k in self.chunk_list[0]}
-        self.update_summary_dict(chunk_dict.keys(), chunk_dict.values())
+        self.chunk_list = [
+            extractor(chunk, **kwargs).summary_dict for chunk in mm.chunk_melody(mel) if len(chunk) > self.NOTE_LB
+        ]
+        if len(self.chunk_list) > 0:
+            chunk_dict = {k: [dic[k] for dic in self.chunk_list] for k in self.chunk_list[0]}
+            self.update_summary_dict(chunk_dict.keys(), chunk_dict.values())
 
     def update_summary_dict(self, array_names, arrays, *args, **kwargs):
         """Applies all the functions in `summary_funcs` to each array of values from the base `extractor`"""
