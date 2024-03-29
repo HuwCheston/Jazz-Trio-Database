@@ -1080,6 +1080,7 @@ def bandpass_filter(
         order: int = 30,
         pad_len: float = 1.0,
         fade_dur: float = 0.5,
+        sample_rate: float = utils.SAMPLE_RATE
 ) -> np.array:
     """Applies a bandpass filter with given low and high cut frequencies to an audio signal.
 
@@ -1102,20 +1103,20 @@ def bandpass_filter(
         output='sos',
         btype='bandpass',
         analog=False,
-        fs=utils.SAMPLE_RATE,
+        fs=sample_rate,
     )
     # Apply the filter to the audio (with padding)
     filtered = signal.sosfiltfilt(
         filt,
         audio,
         padtype='constant',
-        padlen=int(utils.SAMPLE_RATE * pad_len)
+        padlen=int(sample_rate * pad_len)
     )
     # If we don't want to apply any fading to the audio, return it straight away
     if fade_dur == 0:
         return filtered
     # Else, create the fade curve: we use a log curve so that the earliest events fade quickest
-    dur = int(fade_dur * utils.SAMPLE_RATE)
+    dur = int(fade_dur * sample_rate)
     fade_curve = 1.0 - np.logspace(0, -2, num=dur)
     # Apply the fade to the start and end of the audio using the fade curve (fliped for a fade out)
     filtered[:dur] *= fade_curve
