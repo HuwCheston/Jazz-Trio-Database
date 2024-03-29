@@ -748,5 +748,20 @@ def convert_to_mp3(dirpath: str, ext: str = '.wav', delete: bool = False, cutoff
                 os.remove(fr"{dirpath}/{f}")
 
 
+def construct_audio_fpath_with_channel_overrides(
+        root_fname: str,
+        channel: str = None,
+        instr: str = None
+) -> str:
+    """From a root file name, optional channel (`"l"` or `"r"`) and instrument, constructs the complete file name"""
+    ext = ''
+    # Full format is root-{channel}chan_{instr}.{AUDIO_FILE_FMT}
+    if channel is not None:
+        ext += f'-{channel}chan'
+    if instr is not None:
+        ext += f'_{instr}'
+    return root_fname + ext + f'.{AUDIO_FILE_FMT}'
+
+
 if __name__ == '__main__':
     pass
