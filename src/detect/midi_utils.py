@@ -118,24 +118,30 @@ class MelodyMaker:
             quantized_notes = self._quantize_notes_in_beat(beat1, beat2, [n for n in notes if beat1 <= n.start < beat2])
             yield from self._extract_highest_note(quantized_notes)
 
-    def extract_intervals(self) -> Generator[Interval, None, None]:
-        # Extract the melody and convert it to a list: we can't subscript a generator object
-        melody = list(self.extract_melody())
+    def extract_intervals(
+            self,
+            melody_notes: list[Note]
+    ) -> Generator[Interval, None, None]:
+        if melody_notes is None:
+            # Extract the melody and convert it to a list: we can't subscript a generator object
+            melody_notes = list(self.extract_melody())
         # Yield an interval object from consecutive notes in the extracted melody
-        yield from (Interval(fn, sn) for fn, sn in zip(melody, melody[1:]))
+        yield from (Interval(fn, sn) for fn, sn in zip(melody_notes, melody_notes[1:]))
 
     def chunk_melody(
             self,
-            melody_notes: list[Note | Interval],
+            notes: list[Note | Interval] = None,
             chunk_measures: int = 4,
             overlapping_chunks: bool = True,
     ) -> list[tuple[Note]]:
+        if notes is None:
+            notes = self.extract_melody()
         if overlapping_chunks:
             z = zip(self.downbeats, self.downbeats[chunk_measures:])
         else:
             z = zip(self.downbeats[::chunk_measures], self.downbeats[chunk_measures::chunk_measures])
         # TODO: check if this can return Interval objects as well as Note
-        return [tuple(m for m in melody_notes if db1 <= m.start < db2) for db1, db2 in z]
+        return [tuple(m for m in notes if db1 <= m.start < db2) for db1, db2 in z]
 
 
 class MIDIMaker:
