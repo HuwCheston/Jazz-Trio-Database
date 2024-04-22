@@ -462,7 +462,6 @@ class CorpusMaker:
             **kwargs
     ) -> list[dict]:
         """Formats the spreadsheet for an individual trio and returns a list of dictionaries"""
-
         # We remove these columns from the dataframe
         to_drop = ['recording_id_for_lbz', 'recording_date_estimate', 'is_acceptable(Y/N)', 'link']
         # We rename these columns
@@ -480,6 +479,8 @@ class CorpusMaker:
             'track_name',
             'album_name',
             'recording_year',
+            'in_30_corpus',
+            'bandleader',
             'pianist',
             'bassist',
             'drummer',
@@ -518,6 +519,11 @@ class CorpusMaker:
         sheet['recording_year'] = pd.to_datetime(sheet['recording_date_estimate']).dt.year.astype(str)
         # Convert has annotation column to boolean
         sheet['has_annotations'] = sheet['has_annotations'].map({'Y': True, np.nan: False})
+        # Convert in_30_corpus column to boolean
+        sheet['in_30_corpus'] = sheet['in_30_corpus'].map({'Y': True, np.nan: False})
+        # If we only want to keep
+        if kwargs.get('only_30_corpus', True):
+            sheet = sheet[sheet['in_30_corpus'] == True]
         # Return the formatted dataframe, as a list of dictionaries
         return (
             sheet.rename(columns=to_rename)
@@ -575,15 +581,15 @@ class CorpusMaker:
             except IndexError:
                 return 'musicianm'
 
-        # Get the names of our musicians in the correct format
-        pianist = musician_name_formatter(item["musicians"]["pianist"])
-        bassist = musician_name_formatter(item["musicians"]["bassist"])
-        drummer = musician_name_formatter(item["musicians"]["drummer"])
+        bandleader = musician_name_formatter(item['musicians']['bandleader'])
+        sidemen = [
+            musician_name_formatter(m) for m in item['musicians'].values() if m != item['musicians']['bandleader']
+        ]
         # Get the required number of words of the track title, nicely formatted
         track = name_formatter("track_name")
         # Return our track name formatted nicely
         try:
-            return rf"{pianist}-{track}-{bassist}{drummer}-{item['recording_year']}-{item['mbz_id'][:id_chars]}"
+            return rf"{bandleader}-{track}-{''.join(sidemen)}-{item['recording_year']}-{item['mbz_id'][:id_chars]}"
         except TypeError:
             return ''
 
@@ -596,10 +602,9 @@ class CorpusMaker:
         start = self.format_timestamp(start_ts, as_string=False)
         try:
             start_td = timedelta(hours=start.hour, minutes=start.minute, seconds=start.second)
+            return (timedelta(seconds=first_downbeat) - start_td).total_seconds()
         except ValueError:
             return np.nan
-        else:
-            return (timedelta(seconds=first_downbeat) - start_td).total_seconds()
 
     def format_track_dict(
             self,
@@ -633,7 +638,7 @@ class CorpusMaker:
                 'pianist': track['pianist'],
                 'bassist': track['bassist'],
                 'drummer': track['drummer'],
-                'leader': INSTRUMENTS_TO_PERFORMER_ROLES[self.bandleader_instr]
+                'bandleader': track['bandleader']
             }
             # Format our musician photos correctly
             track['photos'] = {
