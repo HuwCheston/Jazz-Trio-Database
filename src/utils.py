@@ -581,9 +581,9 @@ class CorpusMaker:
             except IndexError:
                 return 'musicianm'
 
-        bandleader = musician_name_formatter(item['musicians']['bandleader'])
+        bandleader = musician_name_formatter(item['musicians']['leader'])
         sidemen = [
-            musician_name_formatter(m) for m in item['musicians'].values() if m != item['musicians']['bandleader']
+            musician_name_formatter(m) for m in item['musicians'].values() if m != item['musicians']['leader']
         ]
         # Get the required number of words of the track title, nicely formatted
         track = name_formatter("track_name")
@@ -638,7 +638,7 @@ class CorpusMaker:
                 'pianist': track['pianist'],
                 'bassist': track['bassist'],
                 'drummer': track['drummer'],
-                'bandleader': track['bandleader']
+                'leader': track['bandleader']
             }
             # Format our musician photos correctly
             track['photos'] = {
