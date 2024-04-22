@@ -42,6 +42,7 @@ INSTRUMENTS_TO_PERFORMER_ROLES = {
     'bass': 'bassist',
     'drums': 'drummer'
 }
+PERFORMER_ROLES_TO_INSTRUMENTS = {v: k for k, v in INSTRUMENTS_TO_PERFORMER_ROLES.items()}
 SILENCE_THRESHOLD = 1/3
 
 # These are the underlying categories each predictor belongs to
@@ -581,9 +582,11 @@ class CorpusMaker:
             except IndexError:
                 return 'musicianm'
 
-        bandleader = musician_name_formatter(item['musicians']['leader'])
+        bandleader = musician_name_formatter(item['musicians'][item['musicians']['leader']])
         sidemen = [
-            musician_name_formatter(m) for m in item['musicians'].values() if m != item['musicians']['leader']
+            musician_name_formatter(m) for m in item['musicians'].values()
+            if m != item['musicians'][item['musicians']['leader']]
+            and m not in PERFORMER_ROLES_TO_INSTRUMENTS.keys()
         ]
         # Get the required number of words of the track title, nicely formatted
         track = name_formatter("track_name")
@@ -634,12 +637,13 @@ class CorpusMaker:
             # Add an empty list for our log
             track['log'] = []
             # Format our musician names correctly
-            track['musicians'] = {
+            musos = {
                 'pianist': track['pianist'],
                 'bassist': track['bassist'],
                 'drummer': track['drummer'],
-                'leader': track['bandleader']
             }
+            musos['leader'] = {v: k for k, v in musos.items()}[track['bandleader']]
+            track['musicians'] = musos
             # Format our musician photos correctly
             track['photos'] = {
                 "musicians": {
