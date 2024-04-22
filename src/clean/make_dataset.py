@@ -35,7 +35,7 @@ def main(
     # Start the timer
     start = time()
     # Open the corpus Excel file using our custom class
-    corpus = utils.CorpusMaker.from_excel(corpus_filename)
+    corpus = utils.CorpusMaker.from_excel(corpus_filename, only_30_corpus=False)
     # Iterate through each item in the corpus and make it
     for corpus_item in corpus.tracks:
         im = ItemMaker(
