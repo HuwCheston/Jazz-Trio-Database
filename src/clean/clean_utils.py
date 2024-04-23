@@ -12,8 +12,11 @@ from math import isclose
 from pathlib import Path
 from shutil import rmtree
 
+import librosa
+import numpy as np
 import requests
 import yt_dlp
+import soundfile as sf
 from joblib import Parallel, delayed
 from yt_dlp.utils import download_range_func, DownloadError
 
@@ -520,6 +523,20 @@ class _MVSEPMaker(ItemMaker):
                 fp = Path(f'{root_fpath}_{instr}.{utils.AUDIO_FILE_FMT}')
             yield fp
 
+    def pad_audio_signal(self, file_to_pad):
+        load_kws = dict(
+            sr=utils.SAMPLE_RATE,
+            mono=False,
+            dtype=np.float64,
+            offset=0,
+            res_type='soxr_vhq'
+        )
+        raw, _ = librosa.load(self.in_file, **load_kws)
+        proc, _ = librosa.load(file_to_pad, **load_kws)
+        diff = raw.shape[1] - proc.shape[1]
+        padding = np.zeros((2, diff))
+        return np.hstack([padding, proc]).transpose()
+
     def cleanup_post_separation(self) -> None:
         """Cleans up after running MVSEP by renaming files and removing any unnecessary files"""
         # Get the root name of our all our separated files
@@ -538,6 +555,11 @@ class _MVSEPMaker(ItemMaker):
             # Remove the file if we don't need it
             if Path(f) not in to_keep:
                 os.remove(f)
+            # Otherwise, pad the audio signal to be the same length as the input audio and save
+            else:
+                padded_audio = self.pad_audio_signal(f)
+                with open(f, 'wb') as fp:
+                    sf.write(fp, padded_audio, utils.SAMPLE_RATE)
 
 
 def return_timestamp(timestamp: str = "start", ) -> int:
