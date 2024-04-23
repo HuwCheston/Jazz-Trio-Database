@@ -477,8 +477,8 @@ class _MVSEPMaker(ItemMaker):
         """Gets the required command for running MVSEP as a subprocess"""
         if in_file is None:
             in_file = self.in_file
-        if in_file is not None:
-            self.in_file = in_file
+        # if in_file is not None:
+        #     self.in_file = in_file
         return {
             'input_audio': [os.path.abspath(in_file)],
             'output_folder': os.path.abspath(self.mvsep_audio_loc),
@@ -552,4 +552,14 @@ def return_timestamp(timestamp: str = "start", ) -> int:
 
 
 if __name__ == '__main__':
-    pass
+    import logging
+    logger = logging.getLogger(__name__)
+    # Create the `CorpusMaker` object
+    cm = utils.CorpusMaker.from_excel('corpus_updated', only_30_corpus=False)
+    # Subset to get a random track
+    rb = [i for i in cm.tracks if '2d30e91b' in i['mbz_id']][0]
+    # Create the `ItemMaker` object and process the item
+    im = ItemMaker(item=rb, use_spleeter=False, use_demucs=False, logger=logger)
+    im.get_item()
+    im.separate_audio()
+    im.finalize_output()
