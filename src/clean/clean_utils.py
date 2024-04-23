@@ -9,6 +9,7 @@ import sys
 import time
 from datetime import datetime, timedelta
 from math import isclose
+from pathlib import Path
 from shutil import rmtree
 
 import requests
@@ -457,13 +458,14 @@ class _DemucsMaker(ItemMaker):
 
 class _MVSEPMaker(ItemMaker):
     MVSEP_LOCATION = f'{utils.get_project_root()}/MVSEP-MDX23-music-separation-model'
+    # These are the commands we pass into MVSEP
     MVSEP_KWARGS = {
-        'cpu': False,
-        'overlap_large': 0.4,
-        'overlap_small': 0.3,
+        'cpu': False,    # Force CUDA
+        'overlap_large': 0.4,    # This seems to be required to run on the server
+        'overlap_small': 0.3,    # This seems to be required to run on the server
         'chunk_size': 500000,
         'single_onnx': False,
-        'large_gpu': False,
+        'large_gpu': False,    # If only...!
         'use_kim_model_1': False,
         'only_vocals': False
     }
@@ -473,7 +475,6 @@ class _MVSEPMaker(ItemMaker):
 
     def get_cmd(self, in_file: str = None) -> list:
         """Gets the required command for running MVSEP as a subprocess"""
-
         if in_file is None:
             in_file = self.in_file
         if in_file is not None:
@@ -484,22 +485,59 @@ class _MVSEPMaker(ItemMaker):
             **self.MVSEP_KWARGS
         }
 
-    def run_separation(self, cmd: list):
+    def run_separation(self, cmd: list) -> None:
+        """Runs separation in MVSEP"""
+        # Having to do this is bad practice, but I'm not sure of any other way
         sys.path.insert(1, self.MVSEP_LOCATION)
         # noinspection PyUnresolvedReferences
         # noinspection PyPackageRequirements
         from inference import predict_with_model
         predict_with_model(cmd)
-        time.sleep(10)
+        # We have to add a short delay in here so that the files have time to save in the correct location
+        time.sleep(2)
         self._logger_wrapper(f"... item separated successfully")
 
-    def cleanup_post_separation(self):
+    def rename_piano_file(self, root_fpath: str) -> None:
+        """Tries to rename the `other` file to `piano`, if it can be found"""
+        # Assemble the filepath for the piano, with any channel overrides
+        piano_channel = ''
+        if 'piano' in self.item['channel_overrides']:
+            piano_channel += f"-{self.item['channel_overrides']['piano']}chan"
+        piano_src = Path(f'{root_fpath}{piano_channel}_other.{utils.AUDIO_FILE_FMT}')
+        # If the piano separated file exists, rename it
+        if os.path.isfile(piano_src):
+            piano_dst = Path(f'{root_fpath}{piano_channel}_piano.{utils.AUDIO_FILE_FMT}')
+            os.rename(piano_src, piano_dst)
+
+    def get_files_to_keep(self, root_fpath: str):
+        """Returns a generator of files to keep from the separation"""
+        for instr in self.instrs:
+            # If we have a channel override for this instrument, get the correct filename
+            if instr in self.item['channel_overrides']:
+                fp = Path(f'{root_fpath}-{self.item["channel_overrides"][instr]}chan_{instr}.{utils.AUDIO_FILE_FMT}')
+            # Otherwise, use the base file name
+            else:
+                fp = Path(f'{root_fpath}_{instr}.{utils.AUDIO_FILE_FMT}')
+            yield fp
+
+    def cleanup_post_separation(self) -> None:
+        """Cleans up after running MVSEP by renaming files and removing any unnecessary files"""
+        # Get the root name of our all our separated files
         mvsep_fpath = os.path.join(
             self.mvsep_audio_loc, os.path.split(self.in_file)[-1].replace('.' + utils.AUDIO_FILE_FMT, '')
         )
-        os.rename(f'{mvsep_fpath}_other.{utils.AUDIO_FILE_FMT}', f'{mvsep_fpath}_piano.{utils.AUDIO_FILE_FMT}')
-        for discard in ['_vocals', '_instrum', '_instrum2']:
-            os.remove(mvsep_fpath + discard + f'.{utils.AUDIO_FILE_FMT}')
+        # Rename the `other` file to `piano`, if we have it
+        self.rename_piano_file(mvsep_fpath)
+        # Get the names of the files we want to keep
+        to_keep = list(self.get_files_to_keep(mvsep_fpath))
+        # Iterate through each file
+        for f in os.listdir(self.mvsep_audio_loc):
+            f = os.path.join(self.mvsep_audio_loc, f)
+            if mvsep_fpath not in f:
+                continue
+            # Remove the file if we don't need it
+            if Path(f) not in to_keep:
+                os.remove(f)
 
 
 def return_timestamp(timestamp: str = "start", ) -> int:
