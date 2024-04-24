@@ -36,6 +36,7 @@ np.set_printoptions(suppress=True)
 ALL_PITCHES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 SAMPLE_RATE = 44100
 HOP_LENGTH = 128
+FPS = 100
 AUDIO_FILE_FMT = 'wav'
 INSTRUMENTS_TO_PERFORMER_ROLES = {
     'piano': 'pianist',
@@ -520,9 +521,12 @@ class CorpusMaker:
         sheet['recording_year'] = pd.to_datetime(sheet['recording_date_estimate']).dt.year.astype(str)
         # Convert has annotation column to boolean
         sheet['has_annotations'] = sheet['has_annotations'].map({'Y': True, np.nan: False})
+        # If we only want to keep tracks with annotations
+        if kwargs.get('only_annotated', False):
+            sheet = sheet[sheet['has_annotations'] == True]
         # Convert in_30_corpus column to boolean
         sheet['in_30_corpus'] = sheet['in_30_corpus'].map({'Y': True, np.nan: False})
-        # If we only want to keep
+        # If we only want to keep tracks in our 30 corpus
         if kwargs.get('only_30_corpus', True):
             sheet = sheet[sheet['in_30_corpus'] == True]
         # Return the formatted dataframe, as a list of dictionaries
