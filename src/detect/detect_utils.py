@@ -10,7 +10,9 @@ import librosa
 import numpy as np
 import pandas as pd
 import soundfile as sf
-from madmom.features import DBNDownBeatTrackingProcessor, RNNDownBeatProcessor
+from madmom.features import (
+    DBNDownBeatTrackingProcessor, RNNDownBeatProcessor, CNNOnsetProcessor, OnsetPeakPickingProcessor
+)
 from mir_eval.onset import f_measure
 from mir_eval.util import match_events
 from scipy import signal as signal
@@ -155,6 +157,7 @@ class OnsetMaker:
         res_type = kwargs.get('res_type', 'soxr_vhq')
         mono = kwargs.get('mono', True)
         dtype = kwargs.get('dtype', np.float64)
+        filter_audio = kwargs.get('filter_audio', True)
         # Empty dictionary to hold audio
         audio = {}
         # Iterate through all the source separated tracks
@@ -172,12 +175,13 @@ class OnsetMaker:
                     res_type=res_type,
                 )
             # We apply the bandpass filter to the audio here in order to be sure that it's applied when detecting
-            y = bandpass_filter(
-                audio=y,
-                lowcut=FREQUENCY_BANDS[name]['fmin'],
-                highcut=FREQUENCY_BANDS[name]['fmax'],
-                order=self.order
-            )
+            if filter_audio:
+                y = bandpass_filter(
+                    audio=y,
+                    lowcut=FREQUENCY_BANDS[name]['fmin'],
+                    highcut=FREQUENCY_BANDS[name]['fmax'],
+                    order=self.order
+                )
             # Warn if our track exceeds silence threshold
             if name in self.top_db.keys():
                 self.silent_perc[name] = self.get_silent_track_percent(y.T, top_db=self.top_db[name])
@@ -453,6 +457,32 @@ class OnsetMaker:
                 onset_envelope=env,
                 **kws
             )
+
+    def onset_detect_cnn(
+            self,
+            instr: str,
+            use_nonoptimised_defaults: bool = False,
+            **kwargs
+    ):
+        """Wrapper around `CNNOnsetProcessor` from `madmom` package that allows custom peak picking parameters.
+
+        Arguments:
+            instr (str): the name of the instrument to detect onsets in
+            use_nonoptimised_defaults (bool, optional): whether to use default parameters, defaults to False
+            **kwargs: additional keyword arguments passed to `librosa.onset.onset_detect`
+
+        Returns:
+            np.array: the position of detected onsets, in seconds
+
+        """
+        # Get parameters for onset detection
+        fps = utils.try_get_kwarg_and_remove('fps', kwargs, default_=utils.FPS)
+        audio = self.audio[instr]
+        # Initialise the activation function
+        act = CNNOnsetProcessor()(audio)
+        # Process the activation function using the processor and given parameters
+        proc = OnsetPeakPickingProcessor(fps=fps, **kwargs)
+        return proc(act)
 
     def generate_click_track(
             self,

@@ -122,7 +122,66 @@ class Optimizer:
         return logger
 
 
-class OptimizeOnsetDetect(Optimizer):
+class OptimizeOnsetDetectCNN(Optimizer):
+    """Optimizes the `OnsetMaker.onset_detect_cnn` function for a single instrument"""
+    # These are the arguments we're passing into the optimizer
+    fps = 100
+    args = [
+        ('threshold', float, 0, 10, 0.54),
+        ('smooth', float, 0, 2, 0.05),
+        ('pre_avg', float, 0, 2, 0),    # we may want to set this to 0 as the activation function comes from a nn
+        ('post_avg', float, 0, 2, 0),    # see above
+        ('pre_max', float, 0, 2, 1 / fps),
+        ('post_max', float, 0, 2, 1 / fps)
+    ]
+
+    def __init__(self, json_name: str, items: dict, instr: str, **kwargs):
+        super().__init__(json_name, items, instr, self.args, **kwargs)
+        self.filter_audio = kwargs.get('filter_audio', True)
+        self.csv_name: str = f'onset_detect_cnn_{instr}'
+        self.logger = self.enable_logger()
+        try:
+            self.cached_results = utils.load_csv(self.results_fpath, self.csv_name)
+        except FileNotFoundError:
+            pass
+
+    def log_iteration(self, cached_ids: list, f_scores: list) -> None:
+        """Log the results from a single iteration"""
+        self.logger.info(
+            f'... '
+            f'instrument {self.instr}, '
+            f'filtering: {self.filter_audio}, '
+            f'iteration {self.opt.get_numevals()}/{"?" if self.opt.get_maxeval() < 0 else self.opt.get_maxeval()}, '
+            f'mean F: {round(np.nanmean(f_scores), 4)}, '
+            f'stdev F: {round(np.nanstd(f_scores), 4)}, '
+            f'{len(f_scores)} tracks ({len(cached_ids)} loaded from cache),'
+        )
+
+    def analyze_track(self, item: dict, **kwargs) -> dict:
+        """Detect onsets in one track using a given combination of parameters."""
+        # Create the onset detection maker class for this track
+        made = OnsetMaker(item=item, filter_audio=self.filter_audio)
+        # Create the onset envelope
+        made.ons[self.instr] = made.onset_detect_cnn(
+            self.instr,
+            fps=self.fps,
+            **kwargs    # We pass in all the arguments from our optimizer here,
+        )
+        # Return the results from this iteration, formatted as a dictionary
+        return dict(
+            track_name=item['track_name'],
+            mbz_id=item['mbz_id'],
+            fname=item['fname'],
+            instrument=self.instr,
+            filter_audio=self.filter_audio,
+            f_score=self.get_f_score(onsetmaker=made),
+            iterations=self.opt.get_numevals(),
+            time=datetime.now().strftime("%d-%m-%y_%H-%M-%S"),
+            **kwargs
+        )
+
+
+class OptimizeOnsetDetectSF(Optimizer):
     """Optimizes the `OnsetMaker.onset_detect` and `OnsetMaker.onset_strength` function for an instrument"""
     # These are the arguments we're passing into the optimizer
     args = [
@@ -194,7 +253,7 @@ class OptimizeOnsetDetect(Optimizer):
         )
 
 
-class OptimizeBeatTrack(Optimizer):
+class OptimizeBeatTrackRNN(Optimizer):
     """Optimizes the `OnsetMaker.beat_track_rnn` function"""
     args = [
         ('threshold', float, 0, 1, 0.05),
@@ -203,6 +262,7 @@ class OptimizeBeatTrack(Optimizer):
     ]
     instr = 'mix'
     # If the track is longer than 1 minute, only use the first 60 seconds (reduces processing time)
+    # TODO: we can probably remove this when running on the server
     audio_cutoff = 60
     # We can't use multithreading with MadMom, so this line ensures that joblib will process tracks linearly
     n_jobs = 1
@@ -253,7 +313,7 @@ class OptimizeBeatTrack(Optimizer):
         )
 
 
-def optimize_onset_detection(json_name: str, tracks: list[dict], **kwargs) -> None:
+def optimize_onset_detection_sf(json_name: str, tracks: list[dict], **kwargs) -> None:
     """Central function for optimizing onset detection across all reference tracks and instrument stems
 
     Arguments:
@@ -263,7 +323,7 @@ def optimize_onset_detection(json_name: str, tracks: list[dict], **kwargs) -> No
 
     """
     def optimize_(instr_: str, center_: bool = True, backtrack_: bool = False) -> None:
-        o = OptimizeOnsetDetect(
+        o = OptimizeOnsetDetectSF(
             json_name=json_name, items=tracks, instr=instr_, center=center_, backtrack=backtrack_, **kwargs
         )
         optimized_args, optimized_f_score = o.run_optimization()
@@ -291,6 +351,44 @@ def optimize_onset_detection(json_name: str, tracks: list[dict], **kwargs) -> No
     Parallel(n_jobs=1)(delayed(optimize_)(*args) for args in all_args)
 
 
+def optimize_onset_detection_cnn(json_name: str, tracks: list[dict], **kwargs) -> None:
+    """Central function for optimizing onset detection across all reference tracks and instrument stems
+
+    Arguments:
+        json_name (str): the name of the corpus we're using
+        tracks (list[dict]): the metadata for the tracks to be used in optimization
+        **kwargs: passed onto optimization class
+
+    """
+
+    def optimize_(instr_: str, filter_audio: bool) -> None:
+        o = OptimizeOnsetDetectCNN(
+            json_name=json_name, items=tracks, instr=instr_, filter_audio=filter_audio, **kwargs
+        )
+        optimized_args, optimized_f_score = o.run_optimization()
+        d = dict(
+            instrument=o.instr,
+            filter_audio=filter_audio,
+            f_score=optimized_f_score,
+            iterations=o.opt.get_numevals(),
+            time=datetime.now().strftime("%d-%m-%y_%H-%M-%S"),
+            **optimized_args
+        )
+        utils.save_csv(d, o.results_fpath, 'converged_parameters', )
+
+    # Log the number of tracks we're optimizing
+    logger = logging.getLogger(__name__)
+    logger.info(f"optimising parameters across {len(tracks)} track/instrument combinations ...")
+    # Get our combinations of instruments and filter parameters
+    all_args = list(product(*[
+        utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),   # instruments
+        [False, True],    # filter
+    ]))
+    # Optimize all combinations of parameters in series
+    for args in all_args:
+        optimize_(*args)
+
+
 def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None:
     """Central function for optimizing onset detection across all reference tracks and instrument stems
 
@@ -301,7 +399,7 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
 
     """
     def optimize_(correct_: bool = True,) -> None:
-        o = OptimizeBeatTrack(json_name=json_name, items=tracks, correct=correct_, **kwargs)
+        o = OptimizeBeatTrackRNN(json_name=json_name, items=tracks, correct=correct_, **kwargs)
         optimized_args, optimized_f_score = o.run_optimization()
         d = dict(
             instrument=o.instr,
@@ -346,8 +444,8 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
     help='Number of CPU cores to use in parallel processing, defaults to maximum available'
 )
 @click.option(
-    "-corpus", "corpus_fname", type=str, default='corpus_chronology',
-    help='The filename of the corpus to use when optimizing, defaults to the chronology corpus'
+    "-corpus", "corpus_fname", type=str, default='corpus_updated',
+    help='The filename of the corpus to use when optimizing'
 )
 def main(
         optimize_stems: bool,
@@ -361,16 +459,17 @@ def main(
     # Configure the logger here
     logger = logging.getLogger(__name__)
     # Load in the results for tracks which have already been optimized
-    corpus = utils.CorpusMaker.from_excel(fname=corpus_fname).tracks
+    corpus = utils.CorpusMaker.from_excel(fname=corpus_fname, only_30_corpus=True).tracks
     # Remove any tracks we don't want to use in the optimization process at this point
     to_optimise = [track for track in corpus if track['has_annotations']]
     # Optimize stems
     if optimize_stems:
         stems = ", ".join(i for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys())
         logger.info(f'optimizing onset detection for {stems} ...')
-        optimize_onset_detection(
-            json_name=corpus_fname, n_jobs=n_jobs, maxtime=maxtime, maxeval=maxeval, tracks=to_optimise
-        )
+        optimize_onset_detection_cnn(corpus_fname, tracks=to_optimise[:4])
+        # optimize_onset_detection_sf(
+        #     json_name=corpus_fname, n_jobs=n_jobs, maxtime=maxtime, maxeval=maxeval, tracks=to_optimise
+        # )
         logger.info(f"... finished optimizing onset detection !")
     # Optimize beat tracking
     if optimize_mix:
