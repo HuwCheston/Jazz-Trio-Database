@@ -18,6 +18,8 @@ import requests
 import yt_dlp
 import soundfile as sf
 from joblib import Parallel, delayed
+from scipy.signal import hilbert
+from scipy.ndimage import shift
 from yt_dlp.utils import download_range_func, DownloadError
 
 from src import utils
@@ -472,6 +474,13 @@ class _MVSEPMaker(ItemMaker):
         'use_kim_model_1': False,
         'only_vocals': False
     }
+    # Passed in to librosa.load
+    LOAD_KWS = dict(
+        sr=utils.SAMPLE_RATE,
+        dtype=np.float64,
+        offset=0,
+        res_type='soxr_vhq'
+    )
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -523,21 +532,74 @@ class _MVSEPMaker(ItemMaker):
                 fp = Path(f'{root_fpath}_{instr}.{utils.AUDIO_FILE_FMT}')
             yield fp
 
-    def pad_audio_signal(self, file_to_pad):
-        load_kws = dict(
-            sr=utils.SAMPLE_RATE,
-            mono=False,
-            dtype=np.float64,
-            offset=0,
-            res_type='soxr_vhq'
-        )
-        raw, _ = librosa.load(self.in_file, **load_kws)
-        proc, _ = librosa.load(file_to_pad, **load_kws)
-        diff = raw.shape[1] - proc.shape[1]
-        padding = np.zeros((2, diff))
-        return np.hstack([padding, proc]).transpose()
+    @staticmethod
+    def calculate_best_shift(
+            raw_env: np.array,
+            proc_env: np.array,
+            start: float = 5.,
+            duration: float = 10.,
+            max_shift: float = 2.,
+            step: int = 10
+    ) -> int:
+        """Calculate the number of samples required to shift `proc_env` to maximise `r` vs `proc_env`"""
+        def shift_signals(shift_samples: int) -> tuple[int, float]:
+            # Shift the demixed audio signal by the correct number of samples
+            y = proc_env[int(utils.SAMPLE_RATE * start) + shift_samples: int(utils.SAMPLE_RATE * end) + shift_samples]
+            # Return the number of samples and the correlation coefficient
+            return shift_samples, np.corrcoef(x, y)[0, 1]
 
-    def cleanup_post_separation(self) -> None:
+        # Calculate the end timestamp for use in correlation
+        end = start + duration
+        # Truncate the raw audio envelope between our start and end timestamps
+        x = raw_env[int(utils.SAMPLE_RATE * start): int(utils.SAMPLE_RATE * end)]
+        # Get the array of sample values to shift the demixed audio by
+        shifter = range(int(-utils.SAMPLE_RATE * max_shift), int(utils.SAMPLE_RATE * max_shift), step)
+        # In parallel, shift the demixed signal by each sample value
+        with Parallel(n_jobs=-1, verbose=5, backend='threading') as par:
+            res = par(delayed(shift_signals)(i) for i in shifter)
+        # Get the number of samples that resulted in the best positive `r` score
+        bigr = max(i[1] for i in res)
+        return [i[0] for i in res if i[1] == bigr][0]
+
+    @staticmethod
+    def shift_audio_signal(
+            audio: np.array,
+            n_samples: int,
+            shape_to_match: int
+    ) -> np.array:
+        """Shift a signal `audio` by samples `n_samples` and pad to the same shape as `shape_to_match`"""
+        # Shift the audio signal and fill any empty samples with 0 (i.e. silence)
+        shifted = shift(audio, (0, -n_samples), cval=0)
+        # Add some padding to the end of the signal if it's shorter than the desired size
+        if shifted.shape[1] < shape_to_match:
+            padding = np.zeros((2, shape_to_match - shifted.shape[1]))
+            shifted = np.hstack((shifted, padding))
+        # Truncate the end of the signal if it's longer than the desired size
+        elif shifted.shape[1] > shape_to_match:
+            shifted = shifted[:, :shape_to_match]
+        return shifted
+
+    def align_audio_signals(self, files_to_pad: list[str]):
+        """For a list of demixes stems `files_to_pad`, align these with their raw audio file"""
+        # Load in the raw audio, in mono
+        raw, _ = librosa.load(self.in_file, mono=True, **self.LOAD_KWS)
+        # Load in the source separated files, in stereo
+        audio_to_pad = [librosa.load(f, mono=False, **self.LOAD_KWS)[0] for f in files_to_pad]
+        # Sum all the source separated files and convert to mono
+        proc = sum(audio_to_pad).mean(axis=0)
+        # Compute the audio envelopes for the raw audio and the summed demixed audio
+        raw_env = np.abs(hilbert(raw))
+        proc_env = np.abs(hilbert(proc))
+        # Calculate the number of samples needed to pad the signal by
+        self._logger_wrapper(f'... calculating number of seconds to shift separated audio by')
+        pad_samples = self.calculate_best_shift(raw_env, proc_env)
+        pad_seconds = round(pad_samples / utils.SAMPLE_RATE, 2)
+        self._logger_wrapper(f'... shifting by {pad_seconds} secs to align separated audio with raw audio')
+        # For each of our source separated stems, pad the audio and return
+        for audio in audio_to_pad:
+            yield self.shift_audio_signal(audio, pad_samples, raw.shape[0])
+
+    def cleanup_post_separation(self, new_dirpath: str = None) -> None:
         """Cleans up after running MVSEP by renaming files and removing any unnecessary files"""
         # Get the root name of our all our separated files
         mvsep_fpath = os.path.join(
@@ -555,16 +617,18 @@ class _MVSEPMaker(ItemMaker):
             # Remove the file if we don't need it
             if Path(f) not in to_keep:
                 os.remove(f)
-            # Otherwise, pad the audio signal to be the same length as the input audio and save
-            else:
-                padded_audio = self.pad_audio_signal(f)
-                with open(f, 'wb') as fp:
-                    sf.write(fp, padded_audio, utils.SAMPLE_RATE)
+        # Otherwise, pad the audio signal to be the same length as the input audio and save
+        padded_audios = self.align_audio_signals(to_keep)
+        for audio, fname in zip(padded_audios, to_keep):
+            if new_dirpath is not None:
+                fname = Path(os.path.join(new_dirpath, fname.parts[-1]))
+            with open(fname, 'wb') as fp:
+                # We have to transpose the audio signal (i.e. columns -> rows) so that soundfile will accept it
+                sf.write(fp, audio.transpose(), utils.SAMPLE_RATE)
 
 
 def return_timestamp(timestamp: str = "start", ) -> int:
     """Returns a formatted timestamp from a JSON element"""
-
     try:
         fmt = '%M:%S' if len(timestamp) < 6 else '%H:%M:%S'
         dt = datetime.strptime(timestamp, fmt)
@@ -577,11 +641,13 @@ if __name__ == '__main__':
     import logging
     logger = logging.getLogger(__name__)
     # Create the `CorpusMaker` object
-    cm = utils.CorpusMaker.from_excel('corpus_updated', only_30_corpus=False)
-    # Subset to get a random track
-    rb = [i for i in cm.tracks if '2d30e91b' in i['mbz_id']][0]
-    # Create the `ItemMaker` object and process the item
-    im = ItemMaker(item=rb, use_spleeter=False, use_demucs=False, logger=logger)
-    im.get_item()
-    im.separate_audio()
-    im.finalize_output()
+    cm = utils.CorpusMaker.from_excel('corpus_updated', only_annotated=True, only_30_corpus=False)
+    for track in cm.tracks:
+        # Create the `ItemMaker` object and process the item
+        # im = ItemMaker(item=rb, use_spleeter=False, use_demucs=False, logger=logger)
+        # im.get_item()
+        # im.separate_audio()
+        # im.finalize_output()
+        make = _MVSEPMaker(item=track, logger=logger)
+        make.cleanup_post_separation(new_dirpath=f'{utils.get_project_root()}/data/processed/mvsep_audio_shifted')
+
