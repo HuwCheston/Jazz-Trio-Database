@@ -80,9 +80,9 @@ class OnsetMaker:
         # Construct the default file paths where our audio is saved
         self.instrs = {
             'mix': rf'{self.data_dir}/raw/audio/{self.item["fname"]}.{utils.AUDIO_FILE_FMT}',
-            'piano': rf'{self.data_dir}/processed/spleeter_audio/{self.item["fname"]}_piano.{utils.AUDIO_FILE_FMT}',
-            'bass': rf'{self.data_dir}/processed/demucs_audio/{self.item["fname"]}_bass.{utils.AUDIO_FILE_FMT}',
-            'drums': rf'{self.data_dir}/processed/demucs_audio/{self.item["fname"]}_drums.{utils.AUDIO_FILE_FMT}'
+            'piano': rf'{self.data_dir}/processed/mvsep_audio/{self.item["fname"]}_piano.{utils.AUDIO_FILE_FMT}',
+            'bass': rf'{self.data_dir}/processed/mvsep_audio/{self.item["fname"]}_bass.{utils.AUDIO_FILE_FMT}',
+            'drums': rf'{self.data_dir}/processed/mvsep_audio/{self.item["fname"]}_drums.{utils.AUDIO_FILE_FMT}'
         }
         # Dictionary to hold arrays of onset envelopes for each instrument
         self.env = {}

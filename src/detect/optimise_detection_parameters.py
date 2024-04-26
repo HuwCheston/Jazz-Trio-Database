@@ -429,7 +429,7 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
     help='Optimize onset detection in given stems (e.g. piano, bass, drums)'
 )
 @click.option(
-    "-optimize_mix", "optimize_mix", is_flag=True, default=True, help='Optimize beat detection in mixed audio'
+    "-optimize_mix", "optimize_mix", is_flag=True, default=False, help='Optimize beat detection in mixed audio'
 )
 @click.option(
     "-maxeval", "maxeval", type=click.IntRange(-1, clamp=True), default=-1,
@@ -459,14 +459,12 @@ def main(
     # Configure the logger here
     logger = logging.getLogger(__name__)
     # Load in the results for tracks which have already been optimized
-    corpus = utils.CorpusMaker.from_excel(fname=corpus_fname, only_30_corpus=True).tracks
-    # Remove any tracks we don't want to use in the optimization process at this point
-    to_optimise = [track for track in corpus if track['has_annotations']]
+    to_optimise = utils.CorpusMaker.from_excel(fname=corpus_fname, only_30_corpus=False, only_annotated=True).tracks
     # Optimize stems
     if optimize_stems:
         stems = ", ".join(i for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys())
         logger.info(f'optimizing onset detection for {stems} ...')
-        optimize_onset_detection_cnn(corpus_fname, tracks=to_optimise[:4])
+        optimize_onset_detection_cnn(corpus_fname, tracks=to_optimise)
         # optimize_onset_detection_sf(
         #     json_name=corpus_fname, n_jobs=n_jobs, maxtime=maxtime, maxeval=maxeval, tracks=to_optimise
         # )
