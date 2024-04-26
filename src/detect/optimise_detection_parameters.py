@@ -28,7 +28,7 @@ class Optimizer:
 
     def __init__(self, json_name: str, items: list[dict], instr: str, args: list[tuple], **kwargs):
         # Define the directory to store results from optimization in
-        self.results_fpath = rf'{utils.get_project_root()}\references\parameter_optimisation\{json_name}'
+        self.results_fpath = rf'{utils.get_project_root()}/references/parameter_optimisation/{json_name}'
         # The dictionary from the corpus JSON containing item metadata
         self.items = items
         # The name of the track we're optimizing
@@ -97,7 +97,7 @@ class Optimizer:
 
     def get_f_score(self, onsetmaker) -> float:
         """Returns F-score between detected onsets and manual annotation file"""
-        fn = rf'{utils.get_project_root()}\references\manual_annotation\{onsetmaker.item["fname"]}_{self.instr}.txt'
+        fn = rf'{utils.get_project_root()}/references/manual_annotation/{onsetmaker.item["fname"]}_{self.instr}.txt'
         # TODO: this is gross, fix
         return list(onsetmaker.compare_onset_detection_accuracy(
             fname=fn, instr=self.instr, onsets=[onsetmaker.ons[self.instr]], audio_cutoff=self.audio_cutoff
