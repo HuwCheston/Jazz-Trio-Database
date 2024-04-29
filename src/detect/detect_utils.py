@@ -158,6 +158,7 @@ class OnsetMaker:
         mono = kwargs.get('mono', True)
         dtype = kwargs.get('dtype', np.float64)
         filter_audio = kwargs.get('filter_audio', True)
+        normalize_audio = kwargs.get('normalize_audio', False)
         # Empty dictionary to hold audio
         audio = {}
         # Iterate through all the source separated tracks
@@ -190,7 +191,8 @@ class OnsetMaker:
                         f'item {self.item["fname"]}, track {name} exceeds silence threshold: '
                         f'({round(self.silent_perc[name], 2)} > {round(self.silence_threshold, 2)})'
                     )
-            audio[name] = y
+            # We normalize the audio envelope here, after applying any filters etc
+            audio[name] = librosa.util.normalize(y)
             # Get the signal-to-noise ratio and mean spectral flatness for the track
             self.snr[name] = self.get_signal_to_noise_ratio(y)
             self.spectral_flatness[name] = np.mean(self.get_spectral_flatness(y))
