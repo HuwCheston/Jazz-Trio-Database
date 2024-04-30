@@ -38,6 +38,7 @@ FREQUENCY_BANDS = {
         fmax=20000,     # Approximately the upper limit of human hearing
     ),
 }
+TO_FILTER = ['piano']    # apply filtering to these stems
 
 
 class OnsetMaker:
@@ -157,8 +158,6 @@ class OnsetMaker:
         res_type = kwargs.get('res_type', 'soxr_vhq')
         mono = kwargs.get('mono', True)
         dtype = kwargs.get('dtype', np.float64)
-        filter_audio = kwargs.get('filter_audio', True)
-        normalize_audio = kwargs.get('normalize_audio', False)
         # Empty dictionary to hold audio
         audio = {}
         # Iterate through all the source separated tracks
@@ -175,8 +174,8 @@ class OnsetMaker:
                     dtype=dtype,
                     res_type=res_type,
                 )
-            # We apply the bandpass filter to the audio here in order to be sure that it's applied when detecting
-            if filter_audio:
+            # We apply the bandpass filter to the required audio here
+            if name in TO_FILTER:
                 y = bandpass_filter(
                     audio=y,
                     lowcut=FREQUENCY_BANDS[name]['fmin'],
@@ -1123,6 +1122,7 @@ def bandpass_filter(
         order (int): the sharpness of the filter, defaults to 30
         pad_len (float): the number of seconds to pad the audio by, defaults to 1
         fade_dur (float): the length of time to fade the audio in and out by
+        sample_rate (float): sample rate to use for processing audio, defaults to project default (44100)
 
     Returns:
         np.array: the filtered audio array
@@ -1198,7 +1198,7 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO, format=fmt)
     # Load in the first track from the Bill Evans corpus, for demonstration
-    corpus = utils.CorpusMaker.from_excel(fname='corpus_bill_evans')
+    corpus = utils.CorpusMaker.from_excel(fname='corpus_updated')
     corpus_item = corpus.tracks[0]
     # Create the OnsetMaker class instance for this item in the corpus
     made = OnsetMaker(corpus_name='corpus_bill_evans', item=corpus_item)

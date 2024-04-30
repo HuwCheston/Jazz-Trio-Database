@@ -66,7 +66,7 @@ class Optimizer:
         kwargs = self.return_kwargs(x)
         # Get the IDs and F-scores of tracks we've already processed with this set of parameters
         cached_ids, cached_fs = self.lookup_results_from_cache(params=kwargs)
-        res = Parallel(n_jobs=self.n_jobs, backend=self.joblib_backend)(
+        res = Parallel(n_jobs=1, backend=self.joblib_backend)(
             delayed(self.analyze_track)(item, **kwargs)
             for item in [item_ for item_ in self.items if item_['mbz_id'] not in cached_ids]
         )
@@ -137,7 +137,6 @@ class OptimizeOnsetDetectCNN(Optimizer):
 
     def __init__(self, json_name: str, items: dict, instr: str, **kwargs):
         super().__init__(json_name, items, instr, self.args, **kwargs)
-        self.filter_audio = kwargs.get('filter_audio', True)
         self.csv_name: str = f'onset_detect_cnn_{instr}'
         self.logger = self.enable_logger()
         try:
@@ -150,7 +149,6 @@ class OptimizeOnsetDetectCNN(Optimizer):
         self.logger.info(
             f'... '
             f'instrument {self.instr}, '
-            f'filtering: {self.filter_audio}, '
             f'iteration {self.opt.get_numevals()}/{"?" if self.opt.get_maxeval() < 0 else self.opt.get_maxeval()}, '
             f'mean F: {round(np.nanmean(f_scores), 4)}, '
             f'stdev F: {round(np.nanstd(f_scores), 4)}, '
@@ -160,7 +158,7 @@ class OptimizeOnsetDetectCNN(Optimizer):
     def analyze_track(self, item: dict, **kwargs) -> dict:
         """Detect onsets in one track using a given combination of parameters."""
         # Create the onset detection maker class for this track
-        made = OnsetMaker(item=item, filter_audio=self.filter_audio)
+        made = OnsetMaker(item=item)
         # Create the onset envelope
         made.ons[self.instr] = made.onset_detect_cnn(
             self.instr,
@@ -173,7 +171,6 @@ class OptimizeOnsetDetectCNN(Optimizer):
             mbz_id=item['mbz_id'],
             fname=item['fname'],
             instrument=self.instr,
-            filter_audio=self.filter_audio,
             f_score=self.get_f_score(onsetmaker=made),
             iterations=self.opt.get_numevals(),
             time=datetime.now().strftime("%d-%m-%y_%H-%M-%S"),
@@ -361,14 +358,13 @@ def optimize_onset_detection_cnn(json_name: str, tracks: list[dict], **kwargs) -
 
     """
 
-    def optimize_(instr_: str, filter_audio: bool) -> None:
+    def optimize_(instr_: str) -> None:
         o = OptimizeOnsetDetectCNN(
-            json_name=json_name, items=tracks, instr=instr_, filter_audio=filter_audio, **kwargs
+            json_name=json_name, items=tracks, instr=instr_, **kwargs
         )
         optimized_args, optimized_f_score = o.run_optimization()
         d = dict(
             instrument=o.instr,
-            filter_audio=filter_audio,
             f_score=optimized_f_score,
             iterations=o.opt.get_numevals(),
             time=datetime.now().strftime("%d-%m-%y_%H-%M-%S"),
@@ -382,7 +378,6 @@ def optimize_onset_detection_cnn(json_name: str, tracks: list[dict], **kwargs) -
     # Get our combinations of instruments and filter parameters
     all_args = list(product(*[
         utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),   # instruments
-        [False, True],    # filter
     ]))
     # Optimize all combinations of parameters in series
     for args in all_args:
