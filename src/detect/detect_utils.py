@@ -757,7 +757,7 @@ class OnsetMaker:
         """
         # Get the sections of the track that are not silent
         non_silent = librosa.effects.split(
-            librosa.util.normalize(aud).T,
+            aud.T,
             hop_length=utils.HOP_LENGTH,
             **kwargs
         )
