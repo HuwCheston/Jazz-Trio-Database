@@ -23,7 +23,7 @@ from src import utils
 FREQUENCY_BANDS = {
     'piano': dict(
         fmin=110,    # A2, the A lying two octaves below middle C4
-        fmax=1760,    # A6, the A lying three octaves above middle C4
+        fmax=3520,    # A7, the A lying three octaves above middle C4
     ),
     'bass': dict(
         fmin=30,     # B0, the lowest string on a five-string double bass
