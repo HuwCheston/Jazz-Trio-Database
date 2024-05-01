@@ -13,6 +13,7 @@ import nlopt
 import numpy as np
 from dotenv import find_dotenv, load_dotenv
 from joblib import Parallel, delayed
+from mir_eval.onset import f_measure
 
 from src import utils
 from src.detect.detect_utils import OnsetMaker, FREQUENCY_BANDS
@@ -66,7 +67,7 @@ class Optimizer:
         kwargs = self.return_kwargs(x)
         # Get the IDs and F-scores of tracks we've already processed with this set of parameters
         cached_ids, cached_fs = self.lookup_results_from_cache(params=kwargs)
-        res = Parallel(n_jobs=self.n_jobs, backend=self.joblib_backend)(
+        res = Parallel(n_jobs=1, backend=self.joblib_backend)(
             delayed(self.analyze_track)(item, **kwargs)
             for item in [item_ for item_ in self.items if item_['mbz_id'] not in cached_ids]
         )
@@ -274,15 +275,33 @@ class OptimizeBeatTrackRNN(Optimizer):
         except FileNotFoundError:
             pass
 
+    def get_f_score_downbeats(self, onsetmaker: OnsetMaker, y_pred: np.array) -> float:
+        """Calculates F-measure only for detected downbeats"""
+        # Load in the ground truth beats
+        fn = rf'{utils.get_project_root()}/references/manual_annotation/{onsetmaker.item["fname"]}_mix.txt'
+        gt = np.loadtxt(fn, delimiter='\t', usecols=[0, 1])
+        # Subset ground truth beats to get only those marked as downbeats
+        y_true = np.array([ts for ts, met in gt if int(str(met).split('.')[-1]) == 1])
+        # Truncate both timestamp arrays if we're not using the whole audio file for processing
+        if self.audio_cutoff is not None:
+            y_true = np.array([i for i in y_true if i <= self.audio_cutoff])
+            y_pred = np.array([i for i in y_pred if i <= self.audio_cutoff])
+        # Calculate f, precision, and recall, then return f
+        f, _, __ = f_measure(y_true, y_pred)
+        return f
+
     def analyze_track(self, item: dict, **kwargs) -> dict:
         """Detect beats in one track using a given combination of parameters."""
         # Create the onset detection maker class for this track
         made = OnsetMaker(item=item)
         # Track the beats using recurrent neural networks
-        # We're not interested in getting the downbeat positions here separately
-        timestamps, _ = made.beat_track_rnn(audio_cutoff=self.audio_cutoff, **kwargs)
+        timestamps, positions = made.beat_track_rnn(audio_cutoff=self.audio_cutoff, **kwargs)
         made.ons['mix'] = timestamps
+        # Get the f score for beat positions
         f = self.get_f_score(onsetmaker=made)
+        # Subset to get timestamps only for downbeats, then calculate F
+        downbeat_ts = np.array([i1 for i1, i2 in zip(timestamps, positions) if i2 == 1])
+        f_downbeats = self.get_f_score_downbeats(made, downbeat_ts)
         # Return the results from this iteration, formatted as a dictionary
         return dict(
             track_name=item['track_name'],
@@ -291,6 +310,7 @@ class OptimizeBeatTrackRNN(Optimizer):
             instrument=self.instr,
             correct=self.correct,
             f_score=f,
+            f_score_downbeats=f_downbeats,
             iterations=self.opt.get_numevals(),
             time=datetime.now().strftime("%d-%m-%y_%H-%M-%S"),
             **kwargs
@@ -304,8 +324,8 @@ class OptimizeBeatTrackRNN(Optimizer):
             f'instrument {self.instr}, '
             f'correct: {self.correct}, '
             f'iteration {self.opt.get_numevals()}/{"?" if self.opt.get_maxeval() < 0 else self.opt.get_maxeval()}, '
-            f'mean F: {round(np.nanmean(f_scores), 4)}, '
-            f'stdev F: {round(np.nanstd(f_scores), 4)}, '
+            f'mean F (beats): {round(np.nanmean(f_scores), 4)}, '
+            f'stdev F (beats): {round(np.nanstd(f_scores), 4)}, '
             f'{len(f_scores)} tracks ({len(cached_ids)} loaded from cache),'
         )
 
@@ -420,23 +440,11 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
 
 @click.command()
 @click.option(
-    "-optimize_stems", "optimize_stems", is_flag=True, default=True,
+    "-optimize_stems", "optimize_stems", is_flag=True, default=False,
     help='Optimize onset detection in given stems (e.g. piano, bass, drums)'
 )
 @click.option(
-    "-optimize_mix", "optimize_mix", is_flag=True, default=False, help='Optimize beat detection in mixed audio'
-)
-@click.option(
-    "-maxeval", "maxeval", type=click.IntRange(-1, clamp=True), default=-1,
-    help='Maximum number of iterations to use when optimizing before forcing convergence (-1 default = no limit)'
-)
-@click.option(
-    "-maxtime", "maxtime", type=click.IntRange(-1, clamp=True), default=-1,
-    help='Maximum number of seconds to wait when optimizing before forcing convergence (-1 default = no limit)'
-)
-@click.option(
-    "-n_jobs", "n_jobs", type=click.IntRange(-1, clamp=True), default=-1,
-    help='Number of CPU cores to use in parallel processing, defaults to maximum available'
+    "-optimize_mix", "optimize_mix", is_flag=True, default=True, help='Optimize beat detection in mixed audio'
 )
 @click.option(
     "-corpus", "corpus_fname", type=str, default='corpus_updated',
@@ -445,9 +453,6 @@ def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None
 def main(
         optimize_stems: bool,
         optimize_mix: bool,
-        maxeval: int,
-        maxtime: int,
-        n_jobs: int,
         corpus_fname: str
 ):
     """Run the onset detection procedure for the given corpus, using the given parameters"""

@@ -230,7 +230,7 @@ class OnsetMaker:
             starting_max: int = 300,
             use_nonoptimised_defaults: bool = False,
             audio_start: int = 0,
-            audio_cutoff: int = 0,
+            audio_cutoff: int = None,
             passes: int = 1,
             **kwargs
     ) -> np.array:
@@ -264,7 +264,7 @@ class OnsetMaker:
         # Define the start point for sampling the audio
         start = audio_start * utils.SAMPLE_RATE
         # If we haven't passed a cutoff, our last sample is the very end of the audio file
-        if audio_cutoff == 0:
+        if audio_cutoff is None:
             end = len(self.audio['mix'])
         # Otherwise, create the cutoff by adding it to the start time and multiplying by the sample rate
         else:
