@@ -182,9 +182,10 @@ class ItemMaker:
             self.links = self._get_valid_links()
             # Download the item from YouTube
             self._download_audio_excerpt_from_youtube()
-            # Separate the audio file into left and right channels and create audio files for each as required
-            # This function won't do anything if we haven't specifically called for channel overrides
-            self._split_left_right_audio_channels()
+        # Separate the audio file into left and right channels and create audio files for each as required
+        # This function won't do anything if we haven't specifically called for channel overrides
+        # We want to do this regardless of if the file is stored locally
+        self._split_left_right_audio_channels()
 
     def _split_left_right_audio_channels(self, timeout: int = 10) -> None:
         """Splits audio into left and right channels for independent processing"""
@@ -649,5 +650,6 @@ if __name__ == '__main__':
         # im.get_item()
         # im.separate_audio()
         # im.finalize_output()
+        logger.info(f'Now working on ')
         make = _MVSEPMaker(item=track, logger=logger)
         make.cleanup_post_separation(new_dirpath=f'{utils.get_project_root()}/data/processed/mvsep_audio_shifted')

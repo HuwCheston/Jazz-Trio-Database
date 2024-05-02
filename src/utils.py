@@ -50,9 +50,11 @@ SILENCE_THRESHOLD = 1/3
 PREDICTORS_CATEGORIES = {
     'Swing': ['bur_log_mean', 'bur_log_std'],
     'Complexity': ['lz77_mean', 'lz77_std', 'n_onsets_mean', 'n_onsets_std'],
-    'Feel': ['bass_prop_async_nanmean', 'drums_prop_async_nanmean', 'bass_prop_async_nanstd', 'drums_prop_async_nanstd'],
+    'Feel': [
+        'bass_prop_async_nanmean', 'drums_prop_async_nanmean', 'bass_prop_async_nanstd', 'drums_prop_async_nanstd'
+    ],
     'Interaction': ['self_coupling', 'coupling_drums', 'coupling_bass', 'coupling_piano_drums', 'coupling_piano_bass'],
-    'Tempo': ['rolling_std_median', 'tempo', 'tempo_slope',]
+    'Tempo': ['rolling_std_median', 'tempo', 'tempo_slope']
 }
 PREDICTORS = [it for sl in list(PREDICTORS_CATEGORIES.values()) for it in sl]
 
@@ -613,6 +615,22 @@ class CorpusMaker:
         except ValueError:
             return np.nan
 
+    @staticmethod
+    def add_missing_channel_overrides(
+            channel_overrides: dict
+    ) -> dict:
+        """In cases where one instrument is hard panned, set all other instruments to use the other channel"""
+        if len(channel_overrides) == 1:
+            # Get the channel which one instrument is panned to
+            channel_used = list(channel_overrides.values())[0]
+            # Get the other channel
+            channel_touse = 'l' if channel_used == 'r' else 'r'
+            # Set all remaining instruments to use this channel for panning
+            for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+                if instr not in channel_overrides.keys():
+                    channel_overrides[instr] = channel_touse
+        return channel_overrides
+
     def format_track_dict(
             self,
             track_dict: dict
@@ -661,7 +679,8 @@ class CorpusMaker:
             track['fname'] = self.construct_filename(track)
             # Format channel overrides as dictionary, or set key to empty dictionary if overrides are not present
             try:
-                track['channel_overrides'] = self.str_to_dict(track['channel_overrides'])
+                co = self.str_to_dict(track['channel_overrides'])
+                track['channel_overrides'] = self.add_missing_channel_overrides(co)
             except AttributeError:
                 track['channel_overrides'] = {}
             # Remove key-value pairs we no longer need
