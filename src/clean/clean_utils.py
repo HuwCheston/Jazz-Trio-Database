@@ -555,10 +555,11 @@ class _MVSEPMaker(ItemMaker):
         # Get the array of sample values to shift the demixed audio by
         shifter = range(int(-utils.SAMPLE_RATE * max_shift), int(utils.SAMPLE_RATE * max_shift), step)
         # In parallel, shift the demixed signal by each sample value
-        with Parallel(n_jobs=-1, verbose=5, backend='threading') as par:
+        with Parallel(n_jobs=-1, verbose=1, backend='threading') as par:
             res = par(delayed(shift_signals)(i) for i in shifter)
-        # Get the number of samples that resulted in the best positive `r` score
+        # Get the number of samples that resulted in the best positive `r` score and log
         bigr = max(i[1] for i in res)
+        logger.info(f'Best r: {round(bigr, 2)}')
         return [i[0] for i in res if i[1] == bigr][0]
 
     @staticmethod
@@ -641,7 +642,7 @@ if __name__ == '__main__':
     import logging
     logger = logging.getLogger(__name__)
     # Create the `CorpusMaker` object
-    cm = utils.CorpusMaker.from_excel('corpus_updated', only_annotated=True, only_30_corpus=False)
+    cm = utils.CorpusMaker.from_excel('corpus_updated', only_annotated=False, only_30_corpus=False)
     for track in cm.tracks:
         # Create the `ItemMaker` object and process the item
         # im = ItemMaker(item=rb, use_spleeter=False, use_demucs=False, logger=logger)
@@ -650,4 +651,3 @@ if __name__ == '__main__':
         # im.finalize_output()
         make = _MVSEPMaker(item=track, logger=logger)
         make.cleanup_post_separation(new_dirpath=f'{utils.get_project_root()}/data/processed/mvsep_audio_shifted')
-
