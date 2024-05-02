@@ -171,7 +171,7 @@ def normalized_entropy(
 if __name__ == '__main__':
     # Extract our melody from a random sample file
     fp = f'{utils.get_project_root()}\data\cambridge-jazz-trio-database-v01\corpus_chronology\evansb-ttttwelvetonetune-gomezemorellm-1971-360d7a67'
-    track = utils.load_track_from_files(fp)
+    track = utils.load_annotations_from_files(fp)
     maker = MelodyMaker(fp + '\piano_midi.mid', track)
     # Create our MelodyChunkManager for each feature we want to extract and convert to a single dictionary
     mel_list = [MelodyChunkManager(feature, maker) for feature in __all__]

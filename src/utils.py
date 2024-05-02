@@ -371,22 +371,10 @@ def initialise_queue(target_func: Callable = serialise_from_queue, *target_func_
     return p, q
 
 
-def get_cached_track_ids(fpath: str, **kwargs) -> Generator:
-    """Open a pickle file and get the IDs of tracks that have already been processed
-
-    Args:
-        fpath (str): filepath to load object from
-        **kwargs: passed to `unserialise_object`
-
-    Yields:
-        str: the Musicbrainz ID of the processed track
-
-    Returns:
-        None: if `fpath` is not found
-
-    """
+def get_cached_track_ids(fpath: str = f'{get_project_root()}/data/cambridge-jazz-trio-database-v02') -> Generator:
+    """Gets the names of tracks which have already been processed"""
     try:
-        data = unserialise_object(fpath, **kwargs)
+        data = load_corpus_from_files(fpath)
     # If we have not created the item yet, return None
     except FileNotFoundError:
         return
@@ -689,57 +677,22 @@ class CorpusMaker:
             yield track
 
 
-def save_annotations(track, trackpath):
-    """Saves all annotations from a given `OnsetMaker` instance inside `trackpath`"""
-    # Iterate through each instrument
-    for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-        # Save a `.csv` file of this performer's onsets
-        ons = pd.Series(track.ons[instr])
-        ons.to_csv(fr"{trackpath}/{track.item['fname']}_{instr}.csv", header=False, index=False)
-    # Save a `.csv` file of the matched beats and onsets
-    beats = pd.DataFrame(track.summary_dict)
-    beats.to_csv(fr"{trackpath}/{track.item['fname']}_beats.csv", header=True, index=True)
-    # Save a `.json` file of the track metadata
-    save_json(track.item, trackpath, "metadata")
-
-
-def generate_corpus_files(corpus_fname: str) -> None:
-    """Generates the `.csv` and `.json` files for a single `corpus_fname`"""
-    def mkdir(path: str):
-        try:
-            os.mkdir(path)
-        except FileExistsError:
-            pass
-
-    # Load in the corpus file
-    res = unserialise_object(rf'{get_project_root()}/models/matched_onsets_{corpus_fname}')
-    # Make a master directory for this corpus
-    dirpath = fr"{get_project_root()}/models/{corpus_fname}"
-    mkdir(dirpath)
-    # Iterate through each track in the corpus
-    for track in res:
-        # Make a folder for this track
-        trackpath = dirpath + fr'/{track.item["fname"]}'
-        mkdir(trackpath)
-        save_annotations(track, trackpath)
-
-
 # TODO: think about refactoring below two functions into src.detect.detect_utils
-def load_track_from_files(trackpath: str):
+def load_annotations_from_files(dirpath: str):
     """Loads a single track from loose files generated in `src.utils.generate_corpus_files`"""
     from src.detect.detect_utils import OnsetMaker
     # Load the JSON metadata file
-    item = load_json(fpath=trackpath, fname='metadata')
+    item = load_json(fpath=dirpath, fname='metadata')
     # Use this to create a new `OnsetMaker`, but skip processing
     om = OnsetMaker(item=item, skip_processing=True)
     # Read the summary dictionary `.csv` file
-    sd = pd.read_csv(rf'{trackpath}/beats.csv', index_col=0)
+    sd = pd.read_csv(rf'{dirpath}/beats.csv', index_col=0)
     # Append the requisite columns to our new `OnsetMaker.summary_dict`
     for col in sd.columns:
         om.summary_dict[col] = sd[col].to_numpy()
     # This starts creating the `OnsetMaker.ons` dictionary
     for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-        om.ons[instr] = np.genfromtxt(rf'{trackpath}/{instr}.csv', delimiter=',')
+        om.ons[instr] = np.genfromtxt(rf'{dirpath}/{instr}_onsets.csv', delimiter=',')
     om.ons['mix'] = sd['beats'].to_numpy()
     # Get both automatically and manually generated downbeats and coerce into correct format
     for var_ in ['auto', 'manual']:
@@ -751,11 +704,11 @@ def load_track_from_files(trackpath: str):
 
 
 def load_corpus_from_files(dirpath: str) -> list:
-    """Loads corpus from the loose files generated in `src.utils.generate_corpus_files`"""
+    """Loads an entire folder of tracks as `OnsetMaker` instances"""
     # Filter warnings generated when an onset file has no data in it
     warnings.simplefilter('ignore', UserWarning)
     # Iterate through each folder in our directory and return the completed `OnsetMaker` instances
-    return [load_track_from_files(dirpath + '/' + track) for track in os.listdir(dirpath)]
+    return [load_annotations_from_files(dirpath + '/' + track) for track in os.listdir(dirpath)]
 
 
 def convert_to_mp3(dirpath: str, ext: str = '.wav', delete: bool = False, cutoff: int = False) -> None:

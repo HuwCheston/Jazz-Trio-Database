@@ -16,18 +16,16 @@ from src.detect.detect_utils import OnsetMaker
 
 
 def process_item(
-        corpus_json_name: str,
         corpus_item: dict,
         generate_click: bool,
-        item_queue
-) -> None:
+) -> OnsetMaker:
     """Process one item from the corpus, used in parallel contexts (i.e. called with joblib.Parallel)"""
     # We need to initialise the logger here again, otherwise it won't work with joblib
     fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO, format=fmt)
     # Create the OnsetMaker class instance for this item in the corpus
-    made = OnsetMaker(corpus_name=corpus_json_name, item=corpus_item)
+    made = OnsetMaker(item=corpus_item)
     # Run our processing on the mixed audio
     logger.info(f'processing audio mix for item {corpus_item["mbz_id"]}, track name {corpus_item["track_name"]} ...')
     made.process_mixed_audio(generate_click)
@@ -37,56 +35,36 @@ def process_item(
     # Clean up the results
     made.finalize_output()
     logger.info(f'... item {corpus_item["mbz_id"]} done !')
-    # Put the completed class instance into the queue for saving
-    item_queue.put(made)
+    return made
 
 
 @click.command()
-@click.option("-corpus", "corpus_filename", type=str, default="corpus_bill_evans", help='Name of the corpus to use')
+@click.option("-corpus", "corpus_filename", type=str, default="corpus_updated", help='Name of the corpus to use')
 @click.option("-n_jobs", "n_jobs", type=click.IntRange(-1, clamp=True), default=-1, help='Number of CPU cores to use')
 @click.option("-no_click", "generate_click", is_flag=True, default=False, help='Suppress click track generation')
-@click.option("-annotated-only", "annotated_only", is_flag=True, default=False, help='Only use items with annotations')
-@click.option("-one-track-only", "one_track_only", is_flag=True, default=False, help='Only process one item')
 @click.option("-ignore-cache", "ignore_cache", is_flag=True, default=False, help='Ignore any cached items')
 def main(
         corpus_filename: str,
         n_jobs: int,
         generate_click: bool,
-        annotated_only: bool,
-        one_track_only: bool,
-        ignore_cache: bool,
+        ignore_cache: bool
 ) -> list[OnsetMaker]:
     """Runs scripts to detect onsets in audio from (../raw and ../processed) and generate data for modelling"""
-
     # Start the counter
     start = time()
     # Initialise the logger
     logger = logging.getLogger(__name__)
-    corpus = utils.CorpusMaker.from_excel(fname=corpus_filename)
-    fname = rf"{utils.get_project_root()}\models\matched_onsets_{corpus_filename}"
+    corpus = utils.CorpusMaker.from_excel(fname=corpus_filename, only_annotated=True, only_30_corpus=False)
+    fname = rf"{utils.get_project_root()}/data/cambridge-jazz-trio-database-v02"
     # Remove any tracks which we've already processed
     from_cache = 0
     if not ignore_cache:
-        cached_ids = list(utils.get_cached_track_ids(fname, use_pickle=True))
+        cached_ids = list(utils.get_cached_track_ids(fname))
         from_cache = len(cached_ids)
         corpus.tracks = [track for track in corpus.tracks if track['mbz_id'] not in cached_ids]
-    # If we only want to analyse tracks which have corresponding manual annotation files present
-    if annotated_only:
-        corpus.tracks = [track for track in corpus.tracks if track['has_annotations']]
-    # If we only want to process one track, useful for debugging
-    if one_track_only:
-        corpus.tracks = [corpus.tracks[0]]
     # Process each item in the corpus, using multiprocessing in job-lib
     logger.info(f"detecting onsets in {len(corpus.tracks)} tracks ({from_cache} from disc) using {n_jobs} CPUs ...")
-    p, q = utils.initialise_queue(utils.serialise_from_queue, fname)    # worker process for saving tracks
-    res = Parallel(n_jobs=n_jobs, backend='loky')(delayed(process_item)(
-        corpus_filename, corpus_item, not generate_click, q,
-    ) for corpus_item in corpus.tracks)    # worker processes for detecting onsets
-    # Kill the track saving worker by adding a NoneType object to its queue
-    q.put(None)
-    p.join()
-    # Save the `.csv` `.json` files for this corpus in their own directory
-    utils.generate_corpus_files(corpus_filename)
+    res = Parallel(n_jobs=n_jobs)(delayed(process_item)(item, not generate_click) for item in corpus.tracks)
     # Log the completion time
     logger.info(f'onsets detected for all tracks in {corpus_filename} in {round(time() - start)} secs !')
     # Return the class instances

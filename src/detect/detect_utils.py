@@ -847,6 +847,24 @@ class OnsetMaker:
         if generate_click:
             self.generate_click_track('mix', db)
 
+    def save_annotations(self, dirpath: str = None):
+        """Saves all annotations from a given `OnsetMaker` instance inside their own folder"""
+        from os import makedirs
+        # Make the folder to save the annotations in
+        if dirpath is None:
+            dirpath = self.data_dir + f'/cambridge-jazz-trio-database-v02/{self.item["fname"]}/'
+        makedirs(dirpath, exist_ok=True)
+        # Iterate through each instrument
+        for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
+            # Save a `.csv` file of this performer's onsets
+            ons = pd.Series(self.ons[instr])
+            ons.to_csv(fr"{dirpath}/{instr}_onsets.csv", header=False, index=False)
+        # Save a `.csv` file of the matched beats and onsets
+        beats = pd.DataFrame(self.summary_dict)
+        beats.to_csv(fr"{dirpath}/beats.csv", header=True, index=True)
+        # Save a `.json` file of the track metadata
+        utils.save_json(self.item, dirpath, "metadata")
+
     def finalize_output(
             self
     ) -> None:
@@ -861,8 +879,14 @@ class OnsetMaker:
         self.summary_dict.update(dict(metre_auto=self.ons['metre_auto']))
         if self.item['first_downbeat'] is not None:
             self.summary_dict.update(dict(metre_manual=self.ons['metre_manual']))
+        # Add some items to our metadata
+        self.item['tempo'] = self.tempo
+        self.item['validation'] = self.onset_evaluation
+        self.item['stem_silent_perc'] = self.silent_perc
         # Delete the raw audio as it will take up a lot of space when serialised
         del self.audio
+        # Save the annotations
+        self.save_annotations()
 
     def metre_from_annotated_downbeat(
             self,
@@ -1056,7 +1080,7 @@ if __name__ == '__main__':
     fmt = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO, format=fmt)
-    # Load in the first track from the Bill Evans corpus, for demonstration
+    # Load in the first track from the corpus, for demonstration
     corpus = utils.CorpusMaker.from_excel(fname='corpus_updated')
     corpus_item = corpus.tracks[0]
     # Create the OnsetMaker class instance for this item in the corpus

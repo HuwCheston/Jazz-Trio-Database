@@ -255,7 +255,6 @@ def proc_inner(
     logger.info(f"... detecting onsets")
     om.process_separated_audio(generate_click, remove_silence=True)
     om.finalize_output()
-    utils.save_annotations(om, f"{filename}/annotations")
     logger.info(f"... the annotations can be found in {os.getcwd()}/{filename}/annotations")
     # Extract features from the annotations
     logger.info(f"extracting features from detected annotations ...")
