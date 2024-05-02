@@ -33,7 +33,7 @@ def process_item(
     made.process_mixed_audio(generate_click)
     # Run our processing on the separated audio
     logger.info(f'processing audio stems for item {corpus_item["mbz_id"]}, track name {corpus_item["track_name"]} ...')
-    made.process_separated_audio(generate_click, remove_silence=True)
+    made.process_separated_audio(generate_click, remove_silence=False)
     # Clean up the results
     made.finalize_output()
     logger.info(f'... item {corpus_item["mbz_id"]} done !')

@@ -13,10 +13,9 @@ import nlopt
 import numpy as np
 from dotenv import find_dotenv, load_dotenv
 from joblib import Parallel, delayed
-from mir_eval.onset import f_measure
 
 from src import utils
-from src.detect.detect_utils import OnsetMaker, FREQUENCY_BANDS
+from src.detect.detect_utils import OnsetMaker
 
 
 class Optimizer:
@@ -27,10 +26,10 @@ class Optimizer:
     csv_name = ''
     n_jobs = -1
 
-    def __init__(self, json_name: str, items: list[dict], instr: str, args: list[tuple], **kwargs):
+    def __init__(self, items: list[dict], instr: str, args: list[tuple], **kwargs):
         # Define the directory to store results from optimization in
-        self.results_fpath = rf'{utils.get_project_root()}/references/parameter_optimisation/{json_name}'
-        # The dictionary from the corpus JSON containing item metadata
+        self.results_fpath = rf'{utils.get_project_root()}/references/parameter_optimisation'
+        # The list of dictionaries containing item metadata for each track
         self.items = items
         # The name of the track we're optimizing
         self.instr = instr
@@ -99,10 +98,9 @@ class Optimizer:
     def get_f_score(self, onsetmaker) -> float:
         """Returns F-score between detected onsets and manual annotation file"""
         fn = rf'{utils.get_project_root()}/references/manual_annotation/{onsetmaker.item["fname"]}_{self.instr}.txt'
-        # TODO: this is gross, fix
-        return list(onsetmaker.compare_onset_detection_accuracy(
-            fname=fn, instr=self.instr, onsets=[onsetmaker.ons[self.instr]], audio_cutoff=self.audio_cutoff
-        ))[0]['f_score']
+        return onsetmaker.compare_onset_detection_accuracy(
+            fname=fn, onsets=onsetmaker.ons[self.instr], audio_cutoff=self.audio_cutoff
+        )['f_score']
 
     def lookup_results_from_cache(self, params: dict) -> tuple[list, list]:
         """Returns lists of IDs and F-scores for tracks that have already been processed with this set of parameters"""
@@ -136,8 +134,8 @@ class OptimizeOnsetDetectCNN(Optimizer):
         ('post_max', float, 0, 2, 1 / fps)
     ]
 
-    def __init__(self, json_name: str, items: dict, instr: str, **kwargs):
-        super().__init__(json_name, items, instr, self.args, **kwargs)
+    def __init__(self, items: dict, instr: str, **kwargs):
+        super().__init__(items, instr, self.args, **kwargs)
         self.csv_name: str = f'onset_detect_cnn_{instr}'
         self.logger = self.enable_logger()
         try:
@@ -179,78 +177,6 @@ class OptimizeOnsetDetectCNN(Optimizer):
         )
 
 
-class OptimizeOnsetDetectSF(Optimizer):
-    """Optimizes the `OnsetMaker.onset_detect` and `OnsetMaker.onset_strength` function for an instrument"""
-    # These are the arguments we're passing into the optimizer
-    args = [
-        ('max_size', int, 1, 200, 5),    # Used in `OnsetMaker.onset_strength`
-        ('wait', int, 0, 100, 5),    # Used in `OnsetMaker.onset_detect` (same for all below)
-        ('delta', float, 0, 1, 0.05),
-        ('pre_max', int, 0, 100, 5),
-        ('post_max', int, 1, 100, 5),
-        ('pre_avg', int, 0, 100, 5),
-        ('post_avg', int, 1, 100, 5),
-    ]
-
-    def __init__(self, json_name: str, items: dict, instr: str, **kwargs):
-        super().__init__(json_name, items, instr, self.args, **kwargs)
-        self.center: bool = kwargs.get('center', True)
-        self.backtrack: bool = kwargs.get('backtrack', False)
-        self.csv_name: str = f'onset_detect_{self.instr}'
-        self.logger = self.enable_logger()
-        try:
-            self.cached_results = utils.load_csv(self.results_fpath, self.csv_name)
-        except FileNotFoundError:
-            pass
-
-    def log_iteration(self, cached_ids: list, f_scores: list) -> None:
-        """Log the results from a single iteration"""
-        self.logger.info(
-            f'... '
-            f'instrument {self.instr}, '
-            f'center: {self.center}, '
-            f'backtrack: {self.backtrack}, '
-            f'iteration {self.opt.get_numevals()}/{"?" if self.opt.get_maxeval() < 0 else self.opt.get_maxeval()}, '
-            f'mean F: {round(np.nanmean(f_scores), 4)}, '
-            f'stdev F: {round(np.nanstd(f_scores), 4)}, '
-            f'{len(f_scores)} tracks ({len(cached_ids)} loaded from cache),'
-        )
-
-    def analyze_track(self, item: dict, **kwargs) -> dict:
-        """Detect onsets in one track using a given combination of parameters."""
-        # Create the onset detection maker class for this track
-        made = OnsetMaker(item=item)
-        # Create the onset envelope
-        max_size = utils.try_get_kwarg_and_remove('max_size', kwargs)
-        made.env[self.instr] = made.onset_strength(
-            instr=self.instr,
-            center=self.center,
-            max_size=max_size,    # This is the only argument we use from our optimizer for this function
-            **FREQUENCY_BANDS[self.instr]    # These arguments are our frequency bands
-        )
-        # Detect onsets using all the remaining keyword arguments
-        made.ons[self.instr] = made.onset_detect(
-            instr=self.instr,
-            env=made.env[self.instr],
-            backtrack=self.backtrack,
-            **kwargs    # We pass in all the arguments from our optimizer here, barring max_size
-        )
-        # Return the results from this iteration, formatted as a dictionary
-        return dict(
-            track_name=item['track_name'],
-            mbz_id=item['mbz_id'],
-            fname=item['fname'],
-            instrument=self.instr,
-            center=self.center,
-            backtrack=self.backtrack,
-            f_score=self.get_f_score(onsetmaker=made),
-            iterations=self.opt.get_numevals(),
-            time=datetime.now().strftime("%d-%m-%y_%H-%M-%S"),
-            max_size=max_size,
-            **kwargs
-        )
-
-
 class OptimizeBeatTrackRNN(Optimizer):
     """Optimizes the `OnsetMaker.beat_track_rnn` function"""
     args = [
@@ -265,8 +191,8 @@ class OptimizeBeatTrackRNN(Optimizer):
     # We can't use multithreading with MadMom, so this line ensures that joblib will process tracks linearly
     n_jobs = 1
 
-    def __init__(self, json_name: str, items: dict, **kwargs):
-        super().__init__(json_name, items, self.instr, self.args, **kwargs)
+    def __init__(self, items: dict, **kwargs):
+        super().__init__(items, self.instr, self.args, **kwargs)
         self.correct: bool = kwargs.get('correct', True)
         self.csv_name: str = f'beat_track_{self.instr}'
         self.logger = self.enable_logger()
@@ -283,12 +209,9 @@ class OptimizeBeatTrackRNN(Optimizer):
         # Subset ground truth beats to get only those marked as downbeats
         y_true = np.array([ts for ts, met in gt if int(str(met).split('.')[-1]) == 1])
         # Truncate both timestamp arrays if we're not using the whole audio file for processing
-        if self.audio_cutoff is not None:
-            y_true = np.array([i for i in y_true if i <= self.audio_cutoff])
-            y_pred = np.array([i for i in y_pred if i <= self.audio_cutoff])
-        # Calculate f, precision, and recall, then return f
-        f, _, __ = f_measure(y_true, y_pred)
-        return f
+        return onsetmaker.compare_onset_detection_accuracy(
+            ref=y_true, onsets=y_pred, audio_cutoff=self.audio_cutoff
+        )['f_score']
 
     def analyze_track(self, item: dict, **kwargs) -> dict:
         """Detect beats in one track using a given combination of parameters."""
@@ -330,49 +253,10 @@ class OptimizeBeatTrackRNN(Optimizer):
         )
 
 
-def optimize_onset_detection_sf(json_name: str, tracks: list[dict], **kwargs) -> None:
+def optimize_onset_detection_cnn(tracks: list[dict], **kwargs) -> None:
     """Central function for optimizing onset detection across all reference tracks and instrument stems
 
     Arguments:
-        json_name (str): the name of the corpus we're using
-        tracks (list[dict]): the metadata for the tracks to be used in optimization
-        **kwargs: passed onto optimization class
-
-    """
-    def optimize_(instr_: str, center_: bool = True, backtrack_: bool = False) -> None:
-        o = OptimizeOnsetDetectSF(
-            json_name=json_name, items=tracks, instr=instr_, center=center_, backtrack=backtrack_, **kwargs
-        )
-        optimized_args, optimized_f_score = o.run_optimization()
-        d = dict(
-            instrument=o.instr,
-            center=o.center,
-            backtrack=o.backtrack,
-            f_score=optimized_f_score,
-            iterations=o.opt.get_numevals(),
-            time=datetime.now().strftime("%d-%m-%y_%H-%M-%S"),
-            **optimized_args
-        )
-        utils.save_csv(d, o.results_fpath, 'converged_parameters', )
-
-    # Log the number of tracks we're optimizing
-    logger = logging.getLogger(__name__)
-    logger.info(f"optimising parameters across {len(tracks)} track/instrument combinations ...")
-    # Get our combinations of instruments, center, and backtrack parameters
-    all_args = list(product(*[
-        utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),   # instruments
-        # [False, True],    # center
-        # [False, True],    # backtrack
-    ]))
-    # Optimize all combinations of parameters in parallel
-    Parallel(n_jobs=1)(delayed(optimize_)(*args) for args in all_args)
-
-
-def optimize_onset_detection_cnn(json_name: str, tracks: list[dict], **kwargs) -> None:
-    """Central function for optimizing onset detection across all reference tracks and instrument stems
-
-    Arguments:
-        json_name (str): the name of the corpus we're using
         tracks (list[dict]): the metadata for the tracks to be used in optimization
         **kwargs: passed onto optimization class
 
@@ -380,7 +264,7 @@ def optimize_onset_detection_cnn(json_name: str, tracks: list[dict], **kwargs) -
 
     def optimize_(instr_: str) -> None:
         o = OptimizeOnsetDetectCNN(
-            json_name=json_name, items=tracks, instr=instr_, **kwargs
+            items=tracks, instr=instr_, **kwargs
         )
         optimized_args, optimized_f_score = o.run_optimization()
         d = dict(
@@ -404,17 +288,16 @@ def optimize_onset_detection_cnn(json_name: str, tracks: list[dict], **kwargs) -
         optimize_(*args)
 
 
-def optimize_beat_tracking(json_name: str, tracks: list[dict], **kwargs) -> None:
+def optimize_beat_tracking(tracks: list[dict], **kwargs) -> None:
     """Central function for optimizing onset detection across all reference tracks and instrument stems
 
     Arguments:
-        json_name (str): the name of the corpus we're using
         tracks (list[dict]): the metadata for the tracks to be used in optimization
         **kwargs: passed onto optimization class
 
     """
     def optimize_(correct_: bool = True,) -> None:
-        o = OptimizeBeatTrackRNN(json_name=json_name, items=tracks, correct=correct_, **kwargs)
+        o = OptimizeBeatTrackRNN(items=tracks, correct=correct_, **kwargs)
         optimized_args, optimized_f_score = o.run_optimization()
         d = dict(
             instrument=o.instr,
@@ -464,15 +347,12 @@ def main(
     if optimize_stems:
         stems = ", ".join(i for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys())
         logger.info(f'optimizing onset detection for {stems} ...')
-        optimize_onset_detection_cnn(corpus_fname, tracks=to_optimise)
-        # optimize_onset_detection_sf(
-        #     json_name=corpus_fname, n_jobs=n_jobs, maxtime=maxtime, maxeval=maxeval, tracks=to_optimise
-        # )
+        optimize_onset_detection_cnn(tracks=to_optimise)
         logger.info(f"... finished optimizing onset detection !")
     # Optimize beat tracking
     if optimize_mix:
         logger.info(f'optimizing beat detection for raw audio ...')
-        optimize_beat_tracking(json_name=corpus_fname, tracks=to_optimise)
+        optimize_beat_tracking(tracks=to_optimise)
 
 
 if __name__ == '__main__':

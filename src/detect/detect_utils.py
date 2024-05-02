@@ -49,7 +49,6 @@ class OnsetMaker:
         left=1/32,
         right=1/16
     )
-    silence_threshold = utils.SILENCE_THRESHOLD  # Warn when more of a track is silent than this threshold
     # The threshold to use when matching onsets
     window = 0.05
     top_db = dict(
@@ -60,24 +59,22 @@ class OnsetMaker:
 
     def __init__(
             self,
-            corpus_name: str = 'corpus_bill_evans',
             item: dict = None,
             **kwargs
     ):
         # Set inputs as class parameters
         self.item = item
-        self.corpus_name = corpus_name
         # Define file paths
         output_dir = kwargs.get('output_filepath', utils.get_project_root())
         self.references_dir: str = kwargs.get('references_filepath', f"{output_dir}/references")
         self.data_dir: str = kwargs.get('data_filepath', f"{output_dir}/data")
         self.reports_dir: str = kwargs.get('reports_filepath', f"{output_dir}/reports")
-        self.click_track_dir = kwargs.get('click_track_dir', rf'{self.reports_dir}/click_tracks/{self.corpus_name}')
+        self.click_track_dir = kwargs.get('click_track_dir', rf'{self.reports_dir}/click_tracks')
         # The sharpness of the filter
         self.order = kwargs.get('order', 30)
-        # Define optimised defaults for onset_strength and onset_detect functions, for each instrument
+        # Define optimised defaults for onset_detect function, for each instrument
         # These defaults were found through a parameter search against a reference set of onsets, annotated manually
-        self.onset_strength_params, self.onset_detect_params = self.return_converged_paramaters()
+        self.onset_detect_params_cnn = self.return_converged_parameters_cnn()
         # Construct the default file paths where our audio is saved
         self.instrs = {
             'mix': rf'{self.data_dir}/raw/audio/{self.item["fname"]}.{utils.AUDIO_FILE_FMT}',
@@ -85,8 +82,6 @@ class OnsetMaker:
             'bass': rf'{self.data_dir}/processed/mvsep_audio/{self.item["fname"]}_bass.{utils.AUDIO_FILE_FMT}',
             'drums': rf'{self.data_dir}/processed/mvsep_audio/{self.item["fname"]}_drums.{utils.AUDIO_FILE_FMT}'
         }
-        # Dictionary to hold arrays of onset envelopes for each instrument
-        self.env = {}
         # Dictionary to hold arrays of detected onsets for each instrument
         self.ons = {}
         # Empty attribute to hold our tempo
@@ -98,7 +93,7 @@ class OnsetMaker:
         # Empty attribute to hold our matched onset dictionary
         self.summary_dict = {}
         # Empty attribute to hold our evaluation with a reference
-        self.onset_evaluation: list = []
+        self.onset_evaluation = {i: None for i in [*utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(), 'mix']}
         # Load our audio file in when we initialise the item: we won't be changing this much
         if self.item is not None and not kwargs.get('skip_processing', False):
             self.audio = self._load_audio(**kwargs)
@@ -107,31 +102,32 @@ class OnsetMaker:
         """Overrides default method so that summary dictionary is printed when the class is printed"""
         return repr(self.summary_dict)
 
-    def return_converged_paramaters(self) -> tuple[dict, dict]:
-        def fmt(val):
-            if isinstance(val, bool):
-                return val
-            elif int(val) == val:
-                return int(val)
-            else:
-                return float(val)
+    @staticmethod
+    def format_arg(val):
+        try:
+            val = eval(val)
+        except TypeError:
+            pass
+        if isinstance(val, bool):
+            return val
+        elif int(val) == val:
+            return int(val)
+        else:
+            return float(val)
 
-        onset_detect_args = [
-            *utils.return_function_kwargs(librosa.util.peak_pick),
+    def return_converged_parameters_cnn(self):
+        args = [
             *utils.return_function_kwargs(DBNDownBeatTrackingProcessor.__init__),
+            *utils.return_function_kwargs(OnsetPeakPickingProcessor.__init__),
             *utils.return_function_kwargs(self.beat_track_rnn),
-            *utils.return_function_kwargs(librosa.onset.onset_detect)
         ]
-        onset_strength_args = utils.return_function_kwargs(librosa.onset.onset_strength)
-        od_fmt, os_fmt = {}, {}
         js = utils.load_json(
-            fpath=fr'{self.references_dir}/parameter_optimisation/{self.corpus_name}', fname='converged_parameters'
+            fpath=fr'{self.references_dir}/parameter_optimisation', fname='converged_parameters'
         )
+        od_fmt = {}
         for item in js:
-            od_fmt[item['instrument']] = {k: fmt(v) for k, v in item.items() if k in onset_detect_args}
-            os_fmt[item['instrument']] = {k: fmt(v) for k, v in item.items() if k in onset_strength_args}
-            os_fmt[item['instrument']].update(FREQUENCY_BANDS[item['instrument']])
-        return os_fmt, od_fmt
+            od_fmt[item['instrument']] = {k: self.format_arg(v) for k, v in item.items() if k in args}
+        return od_fmt
 
     def _load_audio(
             self,
@@ -185,10 +181,10 @@ class OnsetMaker:
             # Warn if our track exceeds silence threshold
             if name in self.top_db.keys():
                 self.silent_perc[name] = self.get_silent_track_percent(y.T, top_db=self.top_db[name])
-                if self.silent_perc[name] > self.silence_threshold:
+                if self.silent_perc[name] > utils.SILENCE_THRESHOLD:
                     warnings.warn(
                         f'item {self.item["fname"]}, track {name} exceeds silence threshold: '
-                        f'({round(self.silent_perc[name], 2)} > {round(self.silence_threshold, 2)})'
+                        f'({round(self.silent_perc[name], 2)} > {round(utils.SILENCE_THRESHOLD, 2)})'
                     )
             # We normalize the audio envelope here, after applying any filters etc
             audio[name] = librosa.util.normalize(y)
@@ -257,10 +253,10 @@ class OnsetMaker:
         """
 
         # If we're using defaults, set kwargs to an empty dictionary
-        kws = self.onset_detect_params['mix'] if not use_nonoptimised_defaults else dict()
+        kws = self.onset_detect_params_cnn['mix'] if not use_nonoptimised_defaults else dict()
         # Update our default parameters with any kwargs we've passed in
         kws.update(**kwargs)
-        passes = utils.try_get_kwarg_and_remove('passes', kws)
+        passes = utils.try_get_kwarg_and_remove('passes', kws, default_=passes)
         # Define the start point for sampling the audio
         start = audio_start * utils.SAMPLE_RATE
         # If we haven't passed a cutoff, our last sample is the very end of the audio file
@@ -336,129 +332,6 @@ class OnsetMaker:
         self.tempo = calculate_tempo(timestamps)
         return timestamps, metre_positions
 
-    def onset_strength(
-            self,
-            instr: str,
-            aud: np.array = None,
-            use_nonoptimised_defaults: bool = False,
-            **kwargs
-    ) -> np.array:
-        """Generates an onset strength envelope for a given instrument
-
-        Wrapper around `librosa.onset.onset_strength` that allows for the use of per-instrument defaults. Any \*\*kwargs
-        should be accepted by this function, and can be passed to override optimised per-instrument defaults.
-
-        Arguments:
-            instr (str): the name of the instrument to generate an onset strength envelope for
-            aud (np.array, optional): an audio time-series array to generate the envelope for
-            use_nonoptimised_defaults (bool, optional): whether to use default parameters, defaults to False
-            **kwargs: any additional keyword arguments must be accepted by `librosa.onset.onset_strength`
-
-        Returns:
-            np.array: the onset strength envelope as an array
-
-        """
-        # If we haven't passed any audio in, then construct this using the instrument name that we've passed
-        if aud is None:
-            aud = self.audio[instr]
-            # If the audio is stereo, convert it to mono for the onset strength calculation
-            if len(aud.shape) == 2:
-                aud = aud.mean(axis=1)
-
-        # If we're using defaults, set kwargs to an empty dictionary
-        kws = self.onset_strength_params[instr] if not use_nonoptimised_defaults else dict()
-        # Update our default parameters with any kwargs we've passed in
-        kws.update(**kwargs)
-        # Suppress any user warnings that Librosa might throw
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore', UserWarning)
-            # Return the onset strength envelope using our default (i.e. hard-coded) sample rate and hop length
-            return librosa.onset.onset_strength(
-                y=aud,
-                sr=utils.SAMPLE_RATE,
-                hop_length=utils.HOP_LENGTH,
-                # We pass our minimum and maximum frequencies in to this function
-                **kws
-            )
-
-    def onset_detect(
-            self,
-            instr: str,
-            aud: np.array = None,
-            env: np.array = None,
-            units: str = 'time',
-            use_nonoptimised_defaults: bool = False,
-            **kwargs
-    ) -> np.array:
-        """Detects onsets in an audio signal.
-
-        Wrapper around `librosa.onset.onset_detect` that enables per-instrument defaults to be used. Arguments passed as
-        kwargs should be accepted by `librosa.onset.onset_detect`, except for rms: set this to True to use a custom
-        energy function when backtracking detected onsets to local minima. Other keyword arguments overwrite
-        current per-instrument defaults.
-
-        Arguments:
-            instr (str): the name of the instrument to detect onsets in
-            aud (np.array, optional): an audio time-series to detect onsets in
-            env (np.array, optional): the envelope to use when detecting onsets
-            units (str, optional): the units to return detected onsets in, defaults to 'time',
-            use_nonoptimised_defaults (bool, optional): whether to use default parameters, defaults to False
-            **kwargs: additional keyword arguments passed to `librosa.onset.onset_detect`
-
-        Returns:
-            np.array: the position of detected onsets
-
-        """
-        # If we haven't passed any input audio, get this now
-        if aud is None:
-            aud = self.audio[instr]
-            # If the audio is stereo, convert it to mono for the onset strength calculation
-            if len(aud.shape) == 2:
-                aud = aud.mean(axis=1)
-
-        # If we haven't passed an input onset envelope, get this now
-        if env is None:
-            env = self.env[instr]
-
-        # Update the default parameters for the input instrument with any kwargs we've passed in
-        self.onset_detect_params[instr].update(**kwargs)
-        # The RMS argument can't be passed to .onset_detect(). We need to try and get it, then remove it from our dict
-        rms = utils.try_get_kwarg_and_remove(
-            kwarg='rms',
-            kwargs=self.onset_detect_params[instr],
-            default_=False
-        )
-        # If we're using defaults, set kwargs to an empty dictionary
-        kws = self.onset_detect_params[instr] if not use_nonoptimised_defaults else dict()
-        # Update our default parameters with any kwargs we've passed in
-        kws.update(**kwargs)
-        # If we're backtracking onsets from the picked peak
-        if self.onset_detect_params[instr]['backtrack']:
-            # If we want to use RMS values instead of our onset envelope when back tracking onsets
-            if rms:
-                energy = librosa.feature.rms(S=np.abs(librosa.stft(self.audio[instr].mean(axis=1))))[0]
-            else:
-                energy = env
-            return librosa.onset.onset_detect(
-                y=aud,
-                sr=utils.SAMPLE_RATE,
-                hop_length=utils.HOP_LENGTH,
-                units=units,
-                energy=energy,
-                onset_envelope=env,
-                **kws
-            )
-        # If we're not backtracking, and using the picked peaks themselves
-        else:
-            return librosa.onset.onset_detect(
-                y=aud,
-                sr=utils.SAMPLE_RATE,
-                hop_length=utils.HOP_LENGTH,
-                units=units,
-                onset_envelope=env,
-                **kws
-            )
-
     def onset_detect_cnn(
             self,
             instr: str,
@@ -476,13 +349,18 @@ class OnsetMaker:
             np.array: the position of detected onsets, in seconds
 
         """
+        # Update the default parameters for the input instrument with any kwargs we've passed in
+        self.onset_detect_params_cnn[instr].update(**kwargs)
         # Get parameters for onset detection
         fps = utils.try_get_kwarg_and_remove('fps', kwargs, default_=utils.FPS)
+        # If we're using defaults, set kwargs to an empty dictionary
+        kws = self.onset_detect_params_cnn[instr] if not use_nonoptimised_defaults else dict()
+        # Get the audio for the required instrument
         audio = self.audio[instr]
         # Initialise the activation function
         act = CNNOnsetProcessor()(audio)
         # Process the activation function using the processor and given parameters
-        proc = OnsetPeakPickingProcessor(fps=fps, **kwargs)
+        proc = OnsetPeakPickingProcessor(fps=fps, **kws)
         return proc(act)
 
     def generate_click_track(
@@ -515,12 +393,9 @@ class OnsetMaker:
             self,
             ref: np.array = None,
             fname: str = None,
-            instr: str = None,
-            onsets: list[np.array] = None,
-            onsets_name: list[str] = None,
+            onsets: np.array = None,
             audio_cutoff: int = None,
             window: float = None,
-            **kwargs
     ) -> dict:
         """Evaluates onset detection algorithm against reference onsets.
 
@@ -536,12 +411,9 @@ class OnsetMaker:
         Arguments:
             ref (np.array): an array of reference onsets (in seconds) to use for evaluation
             fname (str): the file path to a reference set of onsets, one onset per line
-            instr (str): the name of an instrument or track
-            onsets (list[np.array]): a list of arrays, each array should be the results from one algorithm
-            onsets_name (list[str]): a list of names that should match with the algorithm results in onsets
+            onsets (np.array): an array of onsets, beats, etc. to use for evaluation
             window (float): the size of the window used for matching each onset to a reference
             audio_cutoff (int, optional): stop reading audio after this point (in total seconds)
-            **kwargs: additional key-value pairs passed to the returned summary dictionary
 
         Yields:
             dict: each dictionary contains summary statistics for one evaluation
@@ -552,39 +424,30 @@ class OnsetMaker:
         # If we haven't passed in reference onsets but we have passed in a file path, generate the array from the file
         elif ref is None and fname is not None:
             ref = np.loadtxt(fname, ndmin=1, usecols=0)
-        # If we haven't provided any names for our different onset lists, create these now
-        if onsets_name is None:
-            onsets_name = [None for _ in range(len(onsets))]
         # If we haven't provided a window value, use our default (50 ms)
         if window is None:
             window = self.window
         # Iterate through all the onset detection algorithms passed in
-        for (name, estimate) in zip(onsets_name, onsets):
-            with warnings.catch_warnings():
-                # If we've passed a cutoff value, remove all reference and estimated onsets above this
-                if audio_cutoff is not None:
-                    ref = np.array([i for i in ref if i < audio_cutoff])
-                    estimate = np.array([i for i in estimate if i < audio_cutoff])
-                # If we have no onsets, both mir_eval and numpy will throw warnings, so catch them here
-                warnings.simplefilter('ignore', RuntimeWarning)
-                warnings.simplefilter('ignore', UserWarning)
-                # Calculate the mean asynchrony between the reference and estimate onsets
-                matched = match_events(ref, estimate, window)
-                mean_async = np.nanmean([estimate[e] - ref[r] for r, e in matched])
-                # Generate the F, precision, and recall values from mir_eval and yield as a dictionary
-                # TODO: I wonder if we could get rid of the dependency on mir_eval here? This is a simple function.
-                f, p, r = f_measure(ref, estimate, window=window)
-            yield {
-                'name': name,
-                'instr': instr,
-                'f_score': f,
-                'precision': p,
-                'recall': r,
-                'mean_asynchrony': mean_async,
-                'track': self.item['track_name'],
-                'fraction_matched': len(matched) / len(ref),
-                **kwargs
-            }
+        with warnings.catch_warnings():
+            # If we've passed a cutoff value, remove all reference and estimated onsets above this
+            if audio_cutoff is not None:
+                ref = np.array([i for i in ref if i < audio_cutoff])
+                onsets = np.array([i for i in onsets if i < audio_cutoff])
+            # If we have no onsets, both mir_eval and numpy will throw warnings, so catch them here
+            warnings.simplefilter('ignore', RuntimeWarning)
+            warnings.simplefilter('ignore', UserWarning)
+            # Calculate the mean asynchrony between the reference and estimate onsets
+            matched = match_events(ref, onsets, window)
+            mean_async = np.nanmean([onsets[e] - ref[r] for r, e in matched])
+            # Generate the F, precision, and recall values from mir_eval and yield as a dictionary
+            f, p, r = f_measure(ref, onsets, window=window)
+        return {
+            'f_score': f,
+            'precision': p,
+            'recall': r,
+            'mean_asynchrony': mean_async,
+            'fraction_matched': len(matched) / len(ref),
+        }
 
     def match_onsets_and_beats(
             self,
@@ -914,26 +777,24 @@ class OnsetMaker:
         """
         # Iterate through each instrument name
         for ins in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-            # Get the onset envelope for this instrument
-            self.env[ins] = self.onset_strength(ins, use_nonoptimised_defaults=False)
-            # Get the onsets
-            self.ons[ins] = self.onset_detect(ins, env=self.env[ins], use_nonoptimised_defaults=False)
+            # Get the onsets, using our CNN approach
+            self.ons[ins] = self.onset_detect_cnn(ins, use_nonoptimised_defaults=False)
             # If we're removing onsets when the audio is silent, do that now
+            # TODO: this seems to be lowering F-score rather dramatically?
             if remove_silence:
-                sil = self.get_nonsilent_sections(aud=self.audio[ins], top_db=self.top_db[ins])
-                self.ons[ins] = self.remove_onsets_in_silent_passages(onsets=self.ons[ins], silent=sil)
+                pass
+                # sil = self.get_nonsilent_sections(aud=self.audio[ins], top_db=self.top_db[ins])
+                # self.ons[ins] = self.remove_onsets_in_silent_passages(onsets=self.ons[ins], silent=sil)
             # If we have manually annotated onsets for this item, try and evaluate the accuracy of detected onsets
             try:
-                eval_ = list(self.compare_onset_detection_accuracy(
+                eval_ = self.compare_onset_detection_accuracy(
                     fname=rf'{self.references_dir}/manual_annotation/{self.item["fname"]}_{ins}.txt',
-                    onsets=[self.ons[ins]],
-                    onsets_name=['optimised_librosa'],
-                    instr=ins,
-                ))
+                    onsets=self.ons[ins],
+                )
             except FileNotFoundError:
                 pass
             else:
-                self.onset_evaluation.append(eval_)
+                self.onset_evaluation[ins] = eval_
             # Match the detected onsets with our detected crotchet beats from the mad-mom output
             matched = self.match_onsets_and_beats(beats=self.ons['mix'], onsets=self.ons[ins])
             # Output our click track of detected beats + matched onsets
@@ -974,16 +835,14 @@ class OnsetMaker:
                 warnings.warn(f'item {self.item["fname"]}: manual and automatic metre detection diverge')
         # Try and get manual annotations for our crotchet beats, if we have them
         try:
-            eval_ = list(self.compare_onset_detection_accuracy(
+            eval_ = self.compare_onset_detection_accuracy(
                 fname=rf'{self.references_dir}/manual_annotation/{self.item["fname"]}_mix.txt',
-                onsets=[self.ons['mix']],
-                onsets_name=['madmom'],
-                instr='mix',
-            ))
+                onsets=self.ons['mix'],
+            )
         except FileNotFoundError:
             pass
         else:
-            self.onset_evaluation.append(eval_)
+            self.onset_evaluation['mix'] = eval_
         # Generate the click track for the tracked beats, including the manually-annotated downbeats
         if generate_click:
             self.generate_click_track('mix', db)
@@ -995,8 +854,8 @@ class OnsetMaker:
         # Match the detected onsets together with the detected beats to generate our summary dictionary
         self.summary_dict = self.generate_matched_onsets_dictionary(
             beats=self.ons['mix'],
-            onsets_list=[self.ons['piano'], self.ons['bass'], self.ons['drums']],
-            instrs_list=['piano', 'bass', 'drums'],
+            onsets_list=[self.ons[i] for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()],
+            instrs_list=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
             use_hard_threshold=False
         )
         self.summary_dict.update(dict(metre_auto=self.ons['metre_auto']))
@@ -1201,13 +1060,13 @@ if __name__ == '__main__':
     corpus = utils.CorpusMaker.from_excel(fname='corpus_updated')
     corpus_item = corpus.tracks[0]
     # Create the OnsetMaker class instance for this item in the corpus
-    made = OnsetMaker(corpus_name='corpus_bill_evans', item=corpus_item)
+    made = OnsetMaker(item=corpus_item)
     # Run our processing on the mixed audio
     logger.info(f'processing audio mix for item {corpus_item["mbz_id"]}, track name {corpus_item["track_name"]} ...')
-    made.process_mixed_audio(generate_click=False)
+    made.process_mixed_audio(generate_click=True)
     # Run our processing on the separated audio
     logger.info(f'processing audio stems for item {corpus_item["mbz_id"]}, track name {corpus_item["track_name"]} ...')
-    made.process_separated_audio(generate_click=False, remove_silence=True)
+    made.process_separated_audio(generate_click=True, remove_silence=False)
     # Clean up the results
     made.finalize_output()
     logger.info(f'... processing finished !')
