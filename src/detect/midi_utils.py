@@ -150,7 +150,7 @@ class MIDIMaker:
     def __init__(self, item: dict):
         self.item = item
         desired_channel = self.item['channel_overrides'][self.INSTR] if (
-                self.INSTR in self.item['channel_overrides'].keys()
+            self.INSTR in self.item['channel_overrides'].keys()
         ) else None
         raw_fpath = os.path.join(
             utils.get_project_root(),
@@ -188,18 +188,18 @@ class MIDIMaker:
         return y_shifted if abs(shifted_tuning) < original_tuning else audio
 
     def preprocess_audio(self, audio: np.array) -> np.array:
-        padded_audio = self.pad_audio(audio)
-        shifted_audio = self.pitch_correction(padded_audio)
-        filtered_audio = bandpass_filter(
-            shifted_audio,
-            # Cut at ~170 Hz to remove bass
-            lowcut=FREQUENCY_BANDS[self.INSTR]['fmin'],
-            # Use the whole upper frequency range
-            highcut=(sample_rate / 2) - 1,
-            pad_len=0,
-            sample_rate=sample_rate
-        )
-        return filtered_audio
+        audio = self.pitch_correction(audio)
+        # TODO: this should be a parameter
+        # filtered_audio = bandpass_filter(
+        #     shifted_audio,
+        #     # Cut at ~170 Hz to remove bass
+        #     lowcut=FREQUENCY_BANDS[self.INSTR]['fmin'],
+        #     # Use the whole upper frequency range
+        #     highcut=(sample_rate / 2) - 1,
+        #     pad_len=0,
+        #     sample_rate=sample_rate
+        # )
+        return audio
 
     def convert_to_midi(self, output_fpath: str = None) -> dict:
         processed_audio = self.preprocess_audio(self.proc_audio)
@@ -210,15 +210,15 @@ class MIDIMaker:
 
 
 if __name__ == '__main__':
-    corpus_fname = 'corpus_chronology'
+    corpus_fname = 'corpus_updated'
     corpus = utils.CorpusMaker.from_excel(corpus_fname)
-    track = corpus.tracks[0]
-    mm = MIDIMaker(track)
-    midi = mm.convert_to_midi()
-    os.makedirs(f'{utils.get_project_root()}/models/{corpus_fname}/{track["fname"]}', exist_ok=True)
-    write_events_to_midi(
-        start_time=0,
-        note_events=midi['est_note_events'],
-        pedal_events=midi['est_pedal_events'],
-        midi_path=f'{utils.get_project_root()}/models/{corpus_fname}/{track["fname"]}/piano_midi.mid'
-    )
+    for track in corpus.tracks:
+        mm = MIDIMaker(track)
+        midi = mm.convert_to_midi()
+        os.makedirs(f'{utils.get_project_root()}/models/{corpus_fname}/{track["fname"]}', exist_ok=True)
+        write_events_to_midi(
+            start_time=0,
+            note_events=midi['est_note_events'],
+            pedal_events=midi['est_pedal_events'],
+            midi_path=f'{utils.get_project_root()}/models/{corpus_fname}/{track["fname"]}/piano_midi.mid'
+        )
