@@ -352,7 +352,7 @@ class OnsetMaker:
         # Update the default parameters for the input instrument with any kwargs we've passed in
         self.onset_detect_params_cnn[instr].update(**kwargs)
         # Get parameters for onset detection
-        fps = utils.try_get_kwarg_and_remove('fps', kwargs, default_=utils.FPS)
+        fps = utils.try_get_kwarg_and_remove('fps', self.onset_detect_params_cnn[instr], default_=utils.FPS)
         # If we're using defaults, set kwargs to an empty dictionary
         kws = self.onset_detect_params_cnn[instr] if not use_nonoptimised_defaults else dict()
         # Get the audio for the required instrument

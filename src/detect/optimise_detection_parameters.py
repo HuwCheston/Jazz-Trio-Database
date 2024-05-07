@@ -66,7 +66,7 @@ class Optimizer:
         kwargs = self.return_kwargs(x)
         # Get the IDs and F-scores of tracks we've already processed with this set of parameters
         cached_ids, cached_fs = self.lookup_results_from_cache(params=kwargs)
-        res = Parallel(n_jobs=1, backend=self.joblib_backend)(
+        res = Parallel(n_jobs=self.n_jobs, backend=self.joblib_backend)(
             delayed(self.analyze_track)(item, **kwargs)
             for item in [item_ for item_ in self.items if item_['mbz_id'] not in cached_ids]
         )
