@@ -182,7 +182,7 @@ class OptimizeBeatTrackRNN(Optimizer):
     args = [
         ('threshold', float, 0, 1, 0.05),
         ('transition_lambda', float, 0, 500, 5),
-        ('passes', int, 1, 5, 2),
+        ('passes', int, 1, 5, 3),
     ]
     instr = 'mix'
     # If the track is longer than 1 minute, only use the first 60 seconds (reduces processing time)
