@@ -273,7 +273,7 @@ class OnsetMaker:
 
         def tracker(
                 tempo_min_: int = 100,
-                tempo_max_: int = 300,
+                tempo_max_: int = 400,
                 **kws_
         ) -> tuple[np.array, np.array]:
             """Wrapper around classes from `madmom.features.downbeat`"""
