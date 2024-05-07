@@ -201,18 +201,6 @@ class OptimizeBeatTrackRNN(Optimizer):
         except FileNotFoundError:
             pass
 
-    def get_f_score_downbeats(self, onsetmaker: OnsetMaker, y_pred: np.array) -> float:
-        """Calculates F-measure only for detected downbeats"""
-        # Load in the ground truth beats
-        fn = rf'{utils.get_project_root()}/references/manual_annotation/{onsetmaker.item["fname"]}_mix.txt'
-        gt = np.loadtxt(fn, delimiter='\t', usecols=[0, 1])
-        # Subset ground truth beats to get only those marked as downbeats
-        y_true = np.array([ts for ts, met in gt if int(str(met).split('.')[-1]) == 1])
-        # Truncate both timestamp arrays if we're not using the whole audio file for processing
-        return onsetmaker.compare_onset_detection_accuracy(
-            ref=y_true, onsets=y_pred, audio_cutoff=self.audio_cutoff
-        )['f_score']
-
     def analyze_track(self, item: dict, **kwargs) -> dict:
         """Detect beats in one track using a given combination of parameters."""
         # Create the onset detection maker class for this track
@@ -224,7 +212,7 @@ class OptimizeBeatTrackRNN(Optimizer):
         f = self.get_f_score(onsetmaker=made)
         # Subset to get timestamps only for downbeats, then calculate F
         downbeat_ts = np.array([i1 for i1, i2 in zip(timestamps, positions) if i2 == 1])
-        f_downbeats = self.get_f_score_downbeats(made, downbeat_ts)
+        f_downbeats = made.compare_downbeats(downbeat_ts)['f_score']
         # Return the results from this iteration, formatted as a dictionary
         return dict(
             track_name=item['track_name'],

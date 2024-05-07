@@ -801,6 +801,15 @@ class OnsetMaker:
             if generate_click:
                 self.generate_click_track(ins, matched)
 
+    def compare_downbeats(self, y_pred: np.array) -> dict:
+        """Compares accuracy of downbeat detection"""
+        # Load in the ground truth beats
+        fn = rf'{utils.get_project_root()}/references/manual_annotation/{self.item["fname"]}_mix.txt'
+        gt = np.loadtxt(fn, delimiter='\t', usecols=[0, 1])
+        # Subset ground truth beats to get only those marked as downbeats
+        y_true = np.array([ts for ts, met in gt if int(str(met).split('.')[-1]) == 1])
+        return self.compare_onset_detection_accuracy(ref=y_true, onsets=y_pred)
+
     def process_mixed_audio(
             self,
             generate_click: bool,
@@ -843,6 +852,9 @@ class OnsetMaker:
             pass
         else:
             self.onset_evaluation['mix'] = eval_
+            # Compare downbeat detection accuracy as well if we have these
+            downbeat_ts = np.array([i1 for i1, i2 in zip(timestamps, metre_auto) if i2 == 1])
+            self.onset_evaluation['mix_downbeats'] = self.compare_downbeats(downbeat_ts)
         # Generate the click track for the tracked beats, including the manually-annotated downbeats
         if generate_click:
             self.generate_click_track('mix', db)
