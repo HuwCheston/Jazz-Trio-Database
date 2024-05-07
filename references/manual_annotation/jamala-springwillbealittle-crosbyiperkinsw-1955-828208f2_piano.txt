@@ -1,3 +1,4 @@
+0.089977324	New Point
 0.845714286	New Point
 1.474829932	New Point
 2.022675737	New Point
@@ -249,3 +250,4 @@
 56.257596372	New Point
 56.426303855	New Point
 57.155555556	New Point
+57.765079365	New Point

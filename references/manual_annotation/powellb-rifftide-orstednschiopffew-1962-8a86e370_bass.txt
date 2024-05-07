@@ -1,3 +1,4 @@
+0.148027211	New Point
 0.343945578	New Point
 0.661768707	New Point
 0.957823129	New Point

@@ -1,4 +1,5 @@
 0.000000000	New Point
+0.000000000	New Point
 0.769614512	New Point
 0.892970522	New Point
 0.989115646	New Point
