@@ -45,6 +45,7 @@ INSTRUMENTS_TO_PERFORMER_ROLES = {
 }
 PERFORMER_ROLES_TO_INSTRUMENTS = {v: k for k, v in INSTRUMENTS_TO_PERFORMER_ROLES.items()}
 SILENCE_THRESHOLD = 1/3
+MIN_TEMPO, MAX_TEMPO = 100, 400
 
 # These are the underlying categories each predictor belongs to
 PREDICTORS_CATEGORIES = {
@@ -263,7 +264,7 @@ def save_csv(
 def try_get_kwarg_and_remove(
         kwarg: str,
         kwargs: dict,
-        default_: bool = False
+        default_=False
 ) -> Any:
     """Try and get an argument from a kwargs dictionary, remove after getting, and return the value (or a default).
 

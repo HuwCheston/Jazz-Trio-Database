@@ -25,21 +25,8 @@ FREQUENCY_BANDS = {
     'piano': dict(
         fmin=110,    # A2, the A lying two octaves below middle C4
         fmax=3520,    # A7, the A lying three octaves above middle C4
-    ),
-    'bass': dict(
-        fmin=30,     # B0, the lowest string on a five-string double bass
-        fmax=494,     # B4, four octaves above lowest note let through in band
-    ),
-    'drums': dict(
-        fmin=2000,    # Approximate upper range of the snare drum, to be filtered out
-        fmax=11000,    # Upper frequency range of a cymbal
-    ),
-    'mix': dict(
-        fmin=20,    # Approximately the lower limit of human hearing
-        fmax=20000,     # Approximately the upper limit of human hearing
-    ),
+    )
 }
-TO_FILTER = ['piano']    # apply filtering to these stems
 
 
 class OnsetMaker:
@@ -172,7 +159,7 @@ class OnsetMaker:
                     res_type=res_type,
                 )
             # We apply the bandpass filter to the required audio here
-            if name in TO_FILTER:
+            if name in FREQUENCY_BANDS.keys():
                 y = bandpass_filter(
                     audio=y,
                     lowcut=FREQUENCY_BANDS[name]['fmin'],
@@ -222,9 +209,8 @@ class OnsetMaker:
 
     def beat_track_rnn(
             self,
-            starting_min: int = 100,
-            # TODO: do we need to set this higher to account for extremely fast tracks, e.g. Peterson Tristeza?!
-            starting_max: int = 300,
+            starting_min: int = utils.MIN_TEMPO,
+            starting_max: int = utils.MAX_TEMPO,
             use_nonoptimised_defaults: bool = False,
             audio_start: int = 0,
             audio_cutoff: int = None,
@@ -242,7 +228,7 @@ class OnsetMaker:
 
         Arguments:
             starting_min (int, optional): the minimum possible tempo (in BPM) to use for the first pass, defaults to 100
-            starting_max (int, optional): the maximum possible tempo (in BPM) to use for the first pass, defaults to 300
+            starting_max (int, optional): the maximum possible tempo (in BPM) to use for the first pass, defaults to 400
             use_nonoptimised_defaults (bool, optional): use default parameters over optimised, defaults to False
             audio_start (int, optional): start reading audio from this point (in total seconds)
             audio_cutoff (int, optional): stop reading audio after this point (in total seconds)
@@ -273,8 +259,8 @@ class OnsetMaker:
         samples = self.audio['mix'][start: end]
 
         def tracker(
-                tempo_min_: int = 100,
-                tempo_max_: int = 400,
+                tempo_min_: int = utils.MIN_TEMPO,
+                tempo_max_: int = utils.MAX_TEMPO,
                 **kws_
         ) -> tuple[np.array, np.array]:
             """Wrapper around classes from `madmom.features.downbeat`"""
@@ -286,7 +272,7 @@ class OnsetMaker:
                 proc = DBNDownBeatTrackingProcessor(
                     min_bpm=tempo_min_,
                     max_bpm=tempo_max_,
-                    fps=100,
+                    fps=utils.FPS,
                     **kws_
                 )
                 # Fit the processor to the audio
@@ -836,13 +822,13 @@ class OnsetMaker:
         self.ons['downbeats_auto'] = self.extract_downbeats(timestamps, metre_auto)
         db = self.ons['downbeats_auto']    # Only used if no manual downbeats created
         # Estimate the metre using a known downbeat and time signature
-        if self.item['first_downbeat'] is not None:
-            self.ons['metre_manual'] = self.metre_from_annotated_downbeat(timestamps)
-            self.ons['downbeats_manual'] = self.extract_downbeats(timestamps, self.ons['metre_manual'])
-            db = self.ons['downbeats_manual']    # Used in favour of 'downbeats_auto'
-            # Warn if we're getting different results for automatic and manual metre detection
-            if not all(self.ons['metre_auto'] == self.ons['metre_manual']):
-                warnings.warn(f'item {self.item["fname"]}: manual and automatic metre detection diverge')
+        # if self.item['first_downbeat'] is not None:
+        #     self.ons['metre_manual'] = self.metre_from_annotated_downbeat(timestamps)
+        #     self.ons['downbeats_manual'] = self.extract_downbeats(timestamps, self.ons['metre_manual'])
+        #     db = self.ons['downbeats_manual']    # Used in favour of 'downbeats_auto'
+        #     # Warn if we're getting different results for automatic and manual metre detection
+        #     if not all(self.ons['metre_auto'] == self.ons['metre_manual']):
+        #         warnings.warn(f'item {self.item["fname"]}: manual and automatic metre detection diverge')
         # Try and get manual annotations for our crotchet beats, if we have them
         try:
             eval_ = self.compare_onset_detection_accuracy(
@@ -1058,7 +1044,7 @@ def calculate_tempo(
     """Extract the average tempo from an array of times corresponding to crotchet beat positions"""
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)
-        return np.nanmean(np.array([60 / p for p in np.diff(pass_)]))
+        return float(np.nanmean(np.array([60 / p for p in np.diff(pass_)])))
 
 
 def create_silent_clicktrack(
