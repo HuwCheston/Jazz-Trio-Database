@@ -17,7 +17,7 @@ from joblib import load
 
 from src import utils
 from src.clean.clean_utils import ItemMaker, return_timestamp
-from src.detect.detect_utils import OnsetMaker
+from src.detect.onset_utils import OnsetMaker
 from src.features.features_utils import *
 
 

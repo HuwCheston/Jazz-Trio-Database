@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Automatically detects note and beat onsets in the source separated tracks for each item in the corpus"""
+"""Process note onsets and piano MIDI for every track in the corpus"""
 
 import logging
 from pathlib import Path
@@ -12,7 +12,8 @@ from dotenv import find_dotenv, load_dotenv
 from joblib import Parallel, delayed
 
 from src import utils
-from src.detect.detect_utils import OnsetMaker
+from src.detect.onset_utils import OnsetMaker
+from src.detect.midi_utils import MIDIMaker
 
 
 def process_item(
@@ -32,8 +33,16 @@ def process_item(
     # Run our processing on the separated audio
     logger.info(f'processing audio stems for item {corpus_item["mbz_id"]}, track name {corpus_item["track_name"]} ...')
     made.process_separated_audio(generate_click, remove_silence=False)
-    # Clean up the results
+    # Create the MIDIMaker class instance for this item in the corpus
+    logger.info(f'processing midi for item {corpus_item["mbz_id"]}, track name {corpus_item["track_name"]} ...')
+    mm = MIDIMaker(corpus_item)
+    # Preprocess the audio by pitch correcting, but not filtering
+    mm.preprocess_audio(filter_audio=False, pitch_correction=True)
+    # Convert to MIDI
+    mm.convert_to_midi()
+    # Clean up the results for both the MIDIMaker and OnsetMaker
     made.finalize_output()
+    mm.finalize_output()
     logger.info(f'... item {corpus_item["mbz_id"]} done !')
     return made
 

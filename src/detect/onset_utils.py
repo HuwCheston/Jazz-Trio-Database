@@ -5,6 +5,7 @@
 
 import warnings
 from typing import Generator
+from os import makedirs
 
 import librosa
 import numpy as np
@@ -861,7 +862,6 @@ class OnsetMaker:
 
     def save_annotations(self, dirpath: str = None):
         """Saves all annotations from a given `OnsetMaker` instance inside their own folder"""
-        from os import makedirs
         # Make the folder to save the annotations in
         if dirpath is None:
             dirpath = self.data_dir + f'/cambridge-jazz-trio-database-v02/{self.item["fname"]}/'

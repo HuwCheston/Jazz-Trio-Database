@@ -7,6 +7,7 @@ import os
 from itertools import groupby
 from typing import Generator
 from math import isclose
+from os import makedirs
 
 import numpy as np
 import pretty_midi
@@ -15,7 +16,7 @@ from piano_transcription_inference import PianoTranscription, load_audio, sample
 from piano_transcription_inference.utilities import write_events_to_midi
 
 from src import utils
-from src.detect.detect_utils import FREQUENCY_BANDS, OnsetMaker, bandpass_filter
+from src.detect.onset_utils import FREQUENCY_BANDS, OnsetMaker, bandpass_filter
 from src.clean.clean_utils import HidePrints
 
 
@@ -145,80 +146,96 @@ class MelodyMaker:
 
 
 class MIDIMaker:
+    """Create MIDI for a single instrument (defaults to piano)"""
     INSTR = 'piano'
 
-    def __init__(self, item: dict):
+    def __init__(self, item: dict, **kwargs):
         self.item = item
         desired_channel = self.item['channel_overrides'][self.INSTR] if (
             self.INSTR in self.item['channel_overrides'].keys()
         ) else None
-        raw_fpath = os.path.join(
-            utils.get_project_root(),
-            'data/raw/audio',
-            utils.construct_audio_fpath_with_channel_overrides(
-                self.item['fname'], instr=None, channel=desired_channel
-            )
-        )
+        # Construct filepaths for the audio
+        self.data_dir = kwargs.get('data_dir', f'{utils.get_project_root()}/data')
         proc_fpath = os.path.join(
             utils.get_project_root(),
-            'data/processed/mvsep_audio',
+            f'{self.data_dir}/processed/mvsep_audio',
             utils.construct_audio_fpath_with_channel_overrides(
                 self.item['fname'], instr=self.INSTR, channel=desired_channel
             )
         )
-        self.raw_audio = load_audio(raw_fpath, sr=sample_rate, mono=True)[0]
-        self.proc_audio = load_audio(proc_fpath, sr=sample_rate, mono=True)[0]
+        # Load in the source separated audio
+        self.proc_audio, _ = load_audio(
+            proc_fpath,
+            sr=sample_rate,
+            mono=True,
+            res_type='soxr_vhq',
+            dtype=np.float64,
+            offset=0,
+            duration=None
+        )
         self.midi = None
-
-    def pad_audio(self, proc: np.array) -> np.array:
-        raw_samples, proc_samples = max(self.raw_audio.shape), max(proc.shape)
-        pad = np.zeros(raw_samples - proc_samples)
-        conc = np.concatenate([pad, proc])
-        conc_samples = max(conc.shape)
-        assert conc_samples == raw_samples
-        return conc
 
     @staticmethod
     def pitch_correction(audio: np.array) -> np.array:
+        """Pitch-shift given audio to A=440 Hz"""
         original_tuning = librosa.estimate_tuning(audio, sr=sample_rate)
         # Shift by -semitones to return to A=440
         y_shifted = librosa.effects.pitch_shift(audio, sr=sample_rate, n_steps=-original_tuning)
         shifted_tuning = librosa.estimate_tuning(y_shifted, sr=sample_rate)
+        # Check that we've actually shifted the audio closer to A=440
         assert isclose(shifted_tuning, 0, abs_tol=0.1)
+        # If the original audio was somehow closer to A=440 than the shifted version, use that
         return y_shifted if abs(shifted_tuning) < original_tuning else audio
 
-    def preprocess_audio(self, audio: np.array) -> np.array:
-        audio = self.pitch_correction(audio)
-        # TODO: this should be a parameter
-        # filtered_audio = bandpass_filter(
-        #     shifted_audio,
-        #     # Cut at ~170 Hz to remove bass
-        #     lowcut=FREQUENCY_BANDS[self.INSTR]['fmin'],
-        #     # Use the whole upper frequency range
-        #     highcut=(sample_rate / 2) - 1,
-        #     pad_len=0,
-        #     sample_rate=sample_rate
-        # )
-        return audio
+    def preprocess_audio(self, filter_audio: bool = False, pitch_correction: bool = True) -> np.array:
+        """Preprocess audio by filtering and/or applying pitch correction"""
+        if pitch_correction:
+            self.proc_audio = self.pitch_correction(self.proc_audio)
+        if filter_audio:
+            self.proc_audio = bandpass_filter(
+                self.proc_audio,
+                lowcut=FREQUENCY_BANDS[self.INSTR]['fmin'],
+                # Use the whole upper frequency range
+                highcut=(sample_rate / 2) - 1,
+                pad_len=0,
+                sample_rate=sample_rate
+            )
+        return self.proc_audio
 
-    def convert_to_midi(self, output_fpath: str = None) -> dict:
-        processed_audio = self.preprocess_audio(self.proc_audio)
+    def convert_to_midi(self) -> dict:
+        """Convert processed audio into MIDI"""
         with HidePrints():
             transcriptor = PianoTranscription(device='cuda', checkpoint_path=None)
-            self.midi = transcriptor.transcribe(processed_audio, output_fpath)
+            self.midi = transcriptor.transcribe(self.proc_audio, midi_path=None)
         return self.midi
+
+    def finalize_output(self, dirpath: str = None, filename: str = 'piano_midi.mid') -> None:
+        """Finalize output by saving processed MIDI into the correct directory"""
+        # Make the folder to save the annotations in
+        if dirpath is None:
+            dirpath = self.data_dir + f'/cambridge-jazz-trio-database-v02/{self.item["fname"]}/'
+        makedirs(dirpath, exist_ok=True)
+        # Format the filename correctly
+        if not filename.endswith('.mid'):
+            filename = filename.split('.')[0] + '.mid'
+        # Write the midi output into the correct directory
+        write_events_to_midi(
+            start_time=0,
+            note_events=self.midi['est_note_events'],
+            pedal_events=self.midi['est_pedal_events'],
+            midi_path=f'{dirpath}/{filename}'
+        )
 
 
 if __name__ == '__main__':
     corpus_fname = 'corpus_updated'
     corpus = utils.CorpusMaker.from_excel(corpus_fname)
     for track in corpus.tracks:
+        # Create the MIDIMaker instance for the given track
         mm = MIDIMaker(track)
-        midi = mm.convert_to_midi()
-        os.makedirs(f'{utils.get_project_root()}/models/{corpus_fname}/{track["fname"]}', exist_ok=True)
-        write_events_to_midi(
-            start_time=0,
-            note_events=midi['est_note_events'],
-            pedal_events=midi['est_pedal_events'],
-            midi_path=f'{utils.get_project_root()}/models/{corpus_fname}/{track["fname"]}/piano_midi.mid'
-        )
+        # Preprocess the audio by pitch correcting, but not filtering
+        mm.preprocess_audio(filter_audio=False, pitch_correction=True)
+        # Convert to MIDI
+        mm.convert_to_midi()
+        # Clean up the results
+        mm.finalize_output()

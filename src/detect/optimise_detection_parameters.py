@@ -15,7 +15,7 @@ from dotenv import find_dotenv, load_dotenv
 from joblib import Parallel, delayed
 
 from src import utils
-from src.detect.detect_utils import OnsetMaker
+from src.detect.onset_utils import OnsetMaker
 
 
 class Optimizer:

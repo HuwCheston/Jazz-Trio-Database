@@ -136,3 +136,4 @@ target/
 /pretrained_models/
 MVSEP-MDX23-music-separation-model/*
 /MVSEP-MDX23-music-separation-model/
+/mvsep-mdx23/

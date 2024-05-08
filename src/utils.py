@@ -680,7 +680,7 @@ class CorpusMaker:
 # TODO: think about refactoring below two functions into src.detect.detect_utils
 def load_annotations_from_files(dirpath: str):
     """Loads a single track from loose files generated in `src.utils.generate_corpus_files`"""
-    from src.detect.detect_utils import OnsetMaker
+    from src.detect.onset_utils import OnsetMaker
     # Load the JSON metadata file
     item = load_json(fpath=dirpath, fname='metadata')
     # Use this to create a new `OnsetMaker`, but skip processing

@@ -19,7 +19,7 @@ from mir_eval.util import match_events
 
 import src.visualise.visualise_utils as vutils
 from src import utils
-from src.detect.detect_utils import FREQUENCY_BANDS
+from src.detect.onset_utils import FREQUENCY_BANDS
 
 __all__ = [
     'BarPlotFScores', 'TimelinePlotBandleaders', 'BarPlotBandleaderDuration', 'BarPlotLastFMStreams',
