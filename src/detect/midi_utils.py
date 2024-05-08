@@ -14,13 +14,15 @@ import pretty_midi
 import librosa
 from piano_transcription_inference import PianoTranscription, load_audio, sample_rate
 from piano_transcription_inference.utilities import write_events_to_midi
+from torch import device
+from torch.cuda import is_available
 
 from src import utils
 from src.detect.onset_utils import FREQUENCY_BANDS, OnsetMaker, bandpass_filter
 from src.clean.clean_utils import HidePrints
 
 
-__all__ = ['Note', 'Interval', 'MelodyMaker', 'MIDIMaker']
+__all__ = ['Note', 'Interval', 'MelodyMaker', 'MIDIMaker', 'group_onsets']
 
 
 class Note(pretty_midi.Note):
@@ -204,8 +206,9 @@ class MIDIMaker:
 
     def convert_to_midi(self) -> dict:
         """Convert processed audio into MIDI"""
+        use = device('cuda') if is_available() else device('cpu')
         with HidePrints():
-            transcriptor = PianoTranscription(device='cuda', checkpoint_path=None)
+            transcriptor = PianoTranscription(device=use, checkpoint_path=None)
             self.midi = transcriptor.transcribe(self.proc_audio, midi_path=None)
         return self.midi
 
@@ -225,6 +228,22 @@ class MIDIMaker:
             pedal_events=self.midi['est_pedal_events'],
             midi_path=f'{dirpath}/{filename}'
         )
+
+
+def group_onsets(onsets: np.array, window: float = 0.05) -> np.array:
+    """Group near-simultaneous `onsets` within a given `window`, keeping only the first onset."""
+    to_keep = []
+    seen = []
+    # Iterate through each onset
+    for on in onsets:
+        # Calculate the difference between this onset and every other onset
+        diff = onsets - on
+        # Keep only the onsets within the window, and the current onset
+        grouped = list(sorted(set(onsets[(diff <= window) & (diff >= 0)])))
+        if not any(i in seen for i in grouped):
+            to_keep.append(grouped[0])
+        seen.extend(grouped[1:])
+    return np.array(sorted(set(to_keep)))
 
 
 if __name__ == '__main__':
