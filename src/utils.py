@@ -45,7 +45,7 @@ INSTRUMENTS_TO_PERFORMER_ROLES = {
 }
 PERFORMER_ROLES_TO_INSTRUMENTS = {v: k for k, v in INSTRUMENTS_TO_PERFORMER_ROLES.items()}
 SILENCE_THRESHOLD = 1/3
-MIN_TEMPO, MAX_TEMPO = 100, 400
+MIN_TEMPO, MAX_TEMPO = 100, 300
 
 # These are the underlying categories each predictor belongs to
 PREDICTORS_CATEGORIES = {
@@ -695,10 +695,9 @@ def load_annotations_from_files(dirpath: str):
     for instr in INSTRUMENTS_TO_PERFORMER_ROLES.keys():
         om.ons[instr] = np.genfromtxt(rf'{dirpath}/{instr}_onsets.csv', delimiter=',')
     om.ons['mix'] = sd['beats'].to_numpy()
-    # Get both automatically and manually generated downbeats and coerce into correct format
-    for var_ in ['auto', 'manual']:
-        om.ons[f'metre_{var_}'] = sd[f'metre_{var_}'].to_numpy()
-        om.ons[f'downbeats_{var_}'] = om.ons['mix'][np.where(om.ons[f'metre_{var_}'] == 1)]
+    # Coerce metre annotations into correct format
+    om.ons['metre_auto'] = sd['metre_auto'].to_numpy()
+    om.ons['downbeats_auto'] = om.ons['mix'][np.where(om.ons['metre_auto'] == 1)]
     # Update this attribute as it won't be present by default
     om.tempo = np.mean(60 / np.diff(om.ons['mix']))
     return om
