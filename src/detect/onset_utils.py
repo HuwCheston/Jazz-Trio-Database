@@ -821,14 +821,6 @@ class OnsetMaker:
         self.ons['metre_auto'] = metre_auto
         self.ons['downbeats_auto'] = self.extract_downbeats(timestamps, metre_auto)
         db = self.ons['downbeats_auto']    # Only used if no manual downbeats created
-        # Estimate the metre using a known downbeat and time signature
-        # if self.item['first_downbeat'] is not None:
-        #     self.ons['metre_manual'] = self.metre_from_annotated_downbeat(timestamps)
-        #     self.ons['downbeats_manual'] = self.extract_downbeats(timestamps, self.ons['metre_manual'])
-        #     db = self.ons['downbeats_manual']    # Used in favour of 'downbeats_auto'
-        #     # Warn if we're getting different results for automatic and manual metre detection
-        #     if not all(self.ons['metre_auto'] == self.ons['metre_manual']):
-        #         warnings.warn(f'item {self.item["fname"]}: manual and automatic metre detection diverge')
         # Try and get manual annotations for our crotchet beats, if we have them
         try:
             eval_ = self.compare_onset_detection_accuracy(
@@ -875,8 +867,6 @@ class OnsetMaker:
             use_hard_threshold=False
         )
         self.summary_dict.update(dict(metre_auto=self.ons['metre_auto']))
-        if self.item['first_downbeat'] is not None:
-            self.summary_dict.update(dict(metre_manual=self.ons['metre_manual']))
         # Add some items to our metadata
         self.item['tempo'] = self.tempo
         self.item['validation'] = self.onset_evaluation
@@ -885,33 +875,6 @@ class OnsetMaker:
         del self.audio
         # Save the annotations
         self.save_annotations()
-
-    def metre_from_annotated_downbeat(
-            self,
-            timestamps_arr: np.array,
-    ) -> np.array:
-        """Constructs an array of metre positions from a known downbeat and time signature"""
-        downbeat_position = np.argmin(np.abs(timestamps_arr - self.item['first_downbeat']))
-        backwards_metre = []
-        # First, we work backwards from the known downbeat
-        val = self.item['time_signature']
-        for i in reversed(range(downbeat_position)):
-            if i >= 0:
-                backwards_metre.append(float(val))
-                val -= 1
-                if val < 1:
-                    val = self.item['time_signature']
-        # Now, we work forwards from the annotated downbeat
-        val = 1
-        forwards_metre = []
-        for i in range(len(timestamps_arr)):
-            if i >= downbeat_position:
-                forwards_metre.append(float(val))
-                val += 1
-                if val > self.item['time_signature']:
-                    val = 1
-        # Concatenate both arrays together
-        return np.array(list(reversed(backwards_metre)) + forwards_metre)
 
     @staticmethod
     def extract_downbeats(
