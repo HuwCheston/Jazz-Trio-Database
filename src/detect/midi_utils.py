@@ -230,19 +230,42 @@ class MIDIMaker:
         )
 
 
-def group_onsets(onsets: np.array, window: float = 0.05) -> np.array:
-    """Group near-simultaneous `onsets` within a given `window`, keeping only the first onset."""
+def group_onsets(onsets: np.array, window: float = 0.05, keep_func: callable = np.min) -> np.array:
+    """Group near-simultaneous `onsets` within a given `window`.
+
+    Parameters:
+        onsets (np.array): the array of onsets to group
+        window (float, optional): the window to use for grouping, defaults to 0.05 seconds
+        keep_func (callable, optional): the function used to select an onset to keep from the group, defaults to np.min
+
+    Returns:
+        np.array: the grouped array
+
+    Examples:
+        >>> x = np.array([0.01, 0.05, 0.06, 0.07, 0.96, 1.00, 1.05, 1.06, 1.06])
+        >>> group_onsets(x)
+        np.array([0.01, 0.07, 0.96, 1.05])
+
+        >>> x = np.array([0.01, 0.05, 0.06, 0.07, 0.96, 1.00, 1.05, 1.06, 1.06])
+        >>> group_onsets(x, keep_func=np.mean)
+        np.array([0.04 , 0.07 , 0.98 , 1.055])
+
+    """
     to_keep = []
-    seen = []
+    # Sort the array
+    onsets = np.sort(onsets)
     # Iterate through each onset
     for on in onsets:
         # Calculate the difference between this onset and every other onset
         diff = onsets - on
         # Keep only the onsets within the window, and the current onset
         grouped = list(sorted(set(onsets[(diff <= window) & (diff >= 0)])))
-        if not any(i in seen for i in grouped):
-            to_keep.append(grouped[0])
-        seen.extend(grouped[1:])
+        # If we have onsets in our group, apply the keep func to this group
+        if len(grouped) > 0:
+            to_keep.append(keep_func(grouped))
+        # Remove the onsets in our group from our list of onsets
+        onsets = np.sort(np.array([o for o in onsets if o not in grouped]))
+    # Return the sorted, non-duplicate list of onsets
     return np.array(sorted(set(to_keep)))
 
 
