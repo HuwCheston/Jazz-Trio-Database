@@ -35,7 +35,7 @@ def main(
     # Start the timer
     start = time()
     # Open the corpus Excel file using our custom class
-    corpus = utils.CorpusMaker.from_excel(corpus_filename, only_30_corpus=True, only_annotated=True)
+    corpus = utils.CorpusMaker.from_excel(corpus_filename, only_30_corpus=False)
     # Iterate through each item in the corpus and make it
     for corpus_item in corpus.tracks:
         im = ItemMaker(
@@ -51,7 +51,8 @@ def main(
         if not no_sep:
             try:
                 im.separate_audio()
-            except:
+            except Exception as e:
+                logger.warning(e)
                 logger.warning(f'failed to separate {corpus_item["track_name"]}, skipping')
             else:
                 im.finalize_output()

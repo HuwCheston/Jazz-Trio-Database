@@ -560,7 +560,7 @@ class _MVSEPMaker(ItemMaker):
             res = par(delayed(shift_signals)(i) for i in shifter)
         # Get the number of samples that resulted in the best positive `r` score and log
         bigr = max(i[1] for i in res)
-        logger.info(f'Best r: {round(bigr, 2)}')
+        print(f'Best r: {round(bigr, 2)}')
         return [i[0] for i in res if i[1] == bigr][0]
 
     @staticmethod
