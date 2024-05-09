@@ -93,7 +93,7 @@ class BasePlot:
         self._create_plot()
         self._format_ax()
         self._format_fig()
-        fname = rf'{self.output_dir}\{self.figure_title}'
+        fname = rf'{self.output_dir}/{self.figure_title}'
         return self.fig, fname
 
     def _create_plot(self) -> None:
@@ -107,31 +107,3 @@ class BasePlot:
     def _format_fig(self) -> None:
         """This function should contain the code for formatting the `self.fig` objects"""
         return
-
-
-# from src import utils
-# from src.features.features_utils import BeatUpbeatRatio
-# import pandas as pd
-#
-# # ons = utils.unserialise_object(fr'{utils.get_project_root()}\models\matched_onsets_corpus_chronology.p')
-# # res = []
-# # # Iterate through each track
-# # for num, track in enumerate(ons, 1):
-# #     print(f'{num} / {len(ons)}')
-# #     # Iterate through each instrument
-# #     for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
-# #         # Subset to get my onsets and partner onsets as separate dataframes
-# #         my_onsets = track.ons[instr]
-# #         my_beats = track.summary_dict[instr]
-# #         # Extract BURs using our feature class
-# #         bm = BeatUpbeatRatio(my_onsets=my_onsets, my_beats=my_beats, clean_outliers=False)
-# #         res.append(track.item | {'instr': instr, 'musician': track.item['musicians'][utils.INSTRUMENTS_TO_PERFORMER_ROLES[instr]]} | bm.summary_dict)
-# df = pd.DataFrame(res)
-# mapper = {'track_name': 'Track name', 'fname': 'fname', 'pianist': 'Bandleader', 'musician': 'Musician', 'instr': 'Instrument', 'time_signature': 'Time signature', 'bur_mean': 'BUR (mean)', 'bur_std': 'BUR (std)', 'bur_count_nonzero': 'BUR (count)'}
-# data = df.rename(columns=mapper)[mapper.values()].round(2).values.tolist()
-# result = {"data": data}
-#
-# # # Convert the dictionary to a JSON string with an indentation of 2
-# json_string = pd.Series(result).to_json(orient="values", indent=2)
-# with open(rf'{utils.get_project_root()}/test.txt', 'w+') as fh:
-#     fh.write(json_string)

@@ -35,7 +35,7 @@ class BarPlotSoloDuration(vutils.BasePlot):
 
     def __init__(self, df, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus_updated')
-        super().__init__(figure_title=fr'corpus_plots\barplot_solo_duration_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'corpus_plots/barplot_solo_duration_{self.corpus_title}', **kwargs)
         self.df = df[df['musicians'].apply(pd.Series)['leader'] == 'pianist']
         self.df['excerpt_duration'] = pd.to_timedelta('00:' + self.df['excerpt_duration']).dt.total_seconds()
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
@@ -67,7 +67,7 @@ class BarPlotFScores(vutils.BasePlot):
     """Creates bar plot showing F-scores for all reference tracks and instruments"""
     def __init__(self, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus_chronology')
-        super().__init__(figure_title=fr'corpus_plots\barplot_fscores_{self.corpus_title}',
+        super().__init__(figure_title=fr'corpus_plots/barplot_fscores_{self.corpus_title}',
                          **kwargs)
         self.df = (
             pd.concat(self._format_df(), axis=0)
@@ -80,12 +80,12 @@ class BarPlotFScores(vutils.BasePlot):
 
     def _format_df(self) -> list:
         """Coerces f-scores into correct formats"""
-        fpath = rf'{utils.get_project_root()}\references\parameter_optimisation\{self.corpus_title}'
+        fpath = rf'{utils.get_project_root()}/references/parameter_optimisation/{self.corpus_title}'
         cols = ['mbz_id', 'instrument', 'f_score']
         for f in os.listdir(fpath):
             if not f.endswith('.csv'):
                 continue
-            df = pd.read_csv(fr'{fpath}\{f}')
+            df = pd.read_csv(fr'{fpath}/{f}')
             df = df[df['iterations'] == df['iterations'].max()][cols]
             yield df
 
@@ -131,7 +131,7 @@ class BarPlotSubjectiveRatings(vutils.BasePlot):
 
     def __init__(self, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus_chronology')
-        super().__init__(figure_title=fr'corpus_plots\barplot_subjective_rating_{self.corpus_title}',
+        super().__init__(figure_title=fr'corpus_plots/barplot_subjective_rating_{self.corpus_title}',
                          **kwargs)
         self.df = self._format_df()
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 3))
@@ -193,7 +193,7 @@ class BarPlotSubjectiveRatings(vutils.BasePlot):
 
 class TimelinePlotBandleaders(vutils.BasePlot):
     """Creates plots showing timeline for included bandleaders and recording dates"""
-    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    img_loc = fr'{utils.get_project_root()}/references/images/musicians'
     SCATTER_KWS = dict(s=50, marker='x', color=vutils.BLACK, alpha=1, zorder=1, label='Recording')
     TEXT_KWS = dict(va='center', ha='left', zorder=2, fontsize=vutils.FONTSIZE / 1.2)
     BAR_KWS = dict(edgecolor=vutils.BLACK, zorder=0, label=None)
@@ -204,7 +204,7 @@ class TimelinePlotBandleaders(vutils.BasePlot):
         self.include_images = kwargs.get('include_images', True)
         self.timeline_df = self._format_timeline_df(bandleaders_df)
         self.corpus_df = self._format_corpus_df(bandleaders_df)
-        fig_title = fr'corpus_plots\timeline_bandleaders_{self.corpus_title}'
+        fig_title = fr'corpus_plots/timeline_bandleaders_{self.corpus_title}'
         if not self.include_images:
             fig_title += '_no_images'
         super().__init__(figure_title=fig_title, **kwargs)
@@ -253,7 +253,7 @@ class TimelinePlotBandleaders(vutils.BasePlot):
 
     def _add_pianist_image(self, bandleader_name: str, x: float, y: float) -> None:
         """Adds image of given pianist `bandleader_name` to positions `x` and `y`"""
-        fpath = fr'{self.img_loc}\{bandleader_name.replace(" ", "_").lower()}.png'
+        fpath = fr'{self.img_loc}/{bandleader_name.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
             plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
         )
@@ -288,7 +288,7 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
     def __init__(self, cleaned_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_updated'
         self.df = self._format_df(cleaned_df)
-        super().__init__(figure_title=fr'corpus_plots\barplot_bandleader_duration_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'corpus_plots/barplot_bandleader_duration_{self.corpus_title}', **kwargs)
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
 
     @staticmethod
@@ -401,7 +401,7 @@ class BarPlotLastFMStreams(vutils.BasePlot):
 
     def __init__(self, streams_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'corpus_plots\batplot_lastfmstreams_total_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'corpus_plots/batplot_lastfmstreams_total_{self.corpus_title}', **kwargs)
         self.df = streams_df.copy(deep=True).iloc[:20]
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
 
@@ -434,7 +434,7 @@ class CountPlotPanning(vutils.BasePlot):
 
     def __init__(self, track_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'corpus_plots\countplot_panning_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'corpus_plots/countplot_panning_{self.corpus_title}', **kwargs)
         self.df = (
             track_df['channel_overrides']
             .apply(pd.Series, dtype=object)
@@ -485,13 +485,13 @@ class SpecPlotBands(vutils.BasePlot):
         self.corpus_title = 'corpus_chronology'
         self.track = track
         self.fname = track['fname']
-        super().__init__(figure_title=fr'corpus_plots\specplot_bands_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'corpus_plots/specplot_bands_{self.corpus_title}', **kwargs)
         self.df = self._format_df()
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
 
     def _format_df(self) -> np.array:
         """Returns an array containing the spectrogram output"""
-        y, _ = librosa.load(fr"{utils.get_project_root()}\data\raw\audio\{self.fname}.wav", sr=utils.SAMPLE_RATE)
+        y, _ = librosa.load(fr"{utils.get_project_root()}/data/raw/audio/{self.fname}.wav", sr=utils.SAMPLE_RATE)
         y = y[:utils.SAMPLE_RATE * self.TRACK_LEN]
         return librosa.amplitude_to_db(np.abs(librosa.stft(y)), ref=np.max)
 
@@ -527,13 +527,13 @@ class SpecPlotBands(vutils.BasePlot):
 
 class BoxPlotRecordingLength(vutils.BasePlot):
     """Creates box plot showing distribution of recording durations for each bandleader"""
-    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    img_loc = fr'{utils.get_project_root()}/references/images/musicians'
     PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=2, n_colors=10, as_cmap=False)
     TICKS = np.linspace(0, 2100, 8)
 
     def __init__(self, cleaned_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'corpus_plots\boxplot_recording_length_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'corpus_plots/boxplot_recording_length_{self.corpus_title}', **kwargs)
         self.df = cleaned_df.sort_values(by='birth')
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
@@ -556,13 +556,13 @@ class BoxPlotRecordingLength(vutils.BasePlot):
         """Formats the name of a given bandleader `bl` for use in axis ticks"""
         d = self.df[self.df['piano'] == bl].iloc[0]
         if bl == 'Ahmad Jamal' or d['death'].year < 2023:
-            return f"{bl}\n({d['birth'].year}–{d['death'].year})"
+            return f"{bl}/n({d['birth'].year}–{d['death'].year})"
         else:
-            return f"{bl}\n(b. {d['birth'].year})"
+            return f"{bl}/n(b. {d['birth'].year})"
 
     def _add_bandleader_images(self, bl: str, y: int) -> None:
         """Adds images of pianist `bl` at given position `y` to main axis"""
-        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        fpath = fr'{self.img_loc}/{bl.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
             plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
         )
@@ -613,7 +613,7 @@ class RainPlotAlgoHumanOnset(vutils.BasePlot):
 
     def __init__(self, all_onsets, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'corpus_plots\rainplot_algohuman_onsets_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'corpus_plots/rainplot_algohuman_onsets_{self.corpus_title}', **kwargs)
         self.df = pd.DataFrame(self._format_df(all_onsets))
         self.vals = [grp['async'].values * 1000 for _, grp in self.df.groupby('instr', sort=False)]
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
@@ -624,7 +624,7 @@ class RainPlotAlgoHumanOnset(vutils.BasePlot):
         for an in [o for o in ons if o.item['has_annotations']]:
             for instr in ['mix', *utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]:
                 estimate = an.ons[instr]
-                fname = rf'{an.references_dir}\manual_annotation\{an.item["fname"]}_{instr}.txt'
+                fname = rf'{an.references_dir}/manual_annotation/{an.item["fname"]}_{instr}.txt'
                 ref = np.loadtxt(fname, ndmin=1, usecols=0)
                 matched = match_events(ref, estimate, window=0.05)
                 for asy in np.array([estimate[e] - ref[r] for r, e in matched]):
@@ -674,10 +674,10 @@ class RainPlotAlgoHumanOnset(vutils.BasePlot):
 
     def _format_ax(self) -> None:
         """Sets axis-level parameters"""
-        wlab = r'Window boundaries ($\pm$ 50 ms)'
+        wlab = r'Window boundaries ($/pm$ 50 ms)'
         for x, ls, lab in zip((-50, 0, 50), (vutils.LINESTYLE, 'dashed', 'dashed'), (None, wlab, None)):
             self.ax.axvline(x, 0, 1, color=vutils.BLACK, lw=vutils.LINEWIDTH, ls=ls, zorder=0, label=lab)
-        ylab = [f'{ins.title()}\nN = {len(self.df[self.df["instr"] == ins])}' for ins in self.INSTRS]
+        ylab = [f'{ins.title()}/nN = {len(self.df[self.df["instr"] == ins])}' for ins in self.INSTRS]
         self.ax.set(
             ylim=(-1, 7), xlim=(-55, 55), xticks=[-50, -25, 0, 25, 50], yticks=[-0.25, 1.75, 3.75, 5.75],
             yticklabels=reversed(ylab), xlabel=self.XLABEL, ylabel='Instrument'
@@ -712,7 +712,7 @@ class LinePlotOptimizationIterations(vutils.BasePlot):
     def __init__(self, opt_fpath: str, **kwargs):
         self.corpus_title = 'corpus_chronology'
         # Initialise the base plot with our given kwargs
-        super().__init__(figure_title=fr'corpus_plots\lineplot_optimziationiterations_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'corpus_plots/lineplot_optimziationiterations_{self.corpus_title}', **kwargs)
         self.df = pd.concat(self._format_df(opt_fpath))
         self.grp_mean = (
             self.df.groupby(['instrument', 'iterations'], as_index=False)
@@ -781,7 +781,7 @@ class LinePlotOptimizationIterations(vutils.BasePlot):
 
 class BarPlotCorpusDuration(vutils.BasePlot):
     """Creates bar plot showing duration of recordings by each bandleader"""
-    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    img_loc = fr'{utils.get_project_root()}/references/images/musicians'
     BAR_KWS = dict(
         stacked=True, color=[vutils.RED, vutils.GREEN],
         zorder=10, lw=vutils.LINEWIDTH, edgecolor=vutils.BLACK,
@@ -791,7 +791,7 @@ class BarPlotCorpusDuration(vutils.BasePlot):
     def __init__(self, corp_df: str, **kwargs):
         self.corpus_title = 'corpus_chronology'
         self.include_images = kwargs.get('include_images', True)
-        fig_title = fr'corpus_plots\barplot_corpusduration_{self.corpus_title}'
+        fig_title = fr'corpus_plots/barplot_corpusduration_{self.corpus_title}'
         if not self.include_images:
             fig_title += '_no_images'
         # Initialise the base plot with our given kwargs
@@ -822,7 +822,7 @@ class BarPlotCorpusDuration(vutils.BasePlot):
 
     def _add_bandleader_images(self, bl: str, y: float) -> None:
         """Adds image for a given pianist `bl` at position `y`"""
-        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        fpath = fr'{self.img_loc}/{bl.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
             plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
         )
@@ -869,7 +869,7 @@ class WavePlotOnsets(vutils.BasePlot):
         self.corpus_title = 'corpus_chronology'
         self.ons = onsetmaker
         super().__init__(
-            figure_title=fr'corpus_plots\waveplot_onsets{self.ons.item["fname"]}_{self.corpus_title}',
+            figure_title=fr'corpus_plots/waveplot_onsets{self.ons.item["fname"]}_{self.corpus_title}',
             **kwargs
         )
         self.fig, self.ax = plt.subplots(nrows=4, ncols=1, sharex=True, sharey=True,
@@ -877,10 +877,10 @@ class WavePlotOnsets(vutils.BasePlot):
         self.duration = kwargs.get('duration', 5)
         self.offset = kwargs.get('offset', 45)
         self.fpaths = {
-            'mix': fr'{utils.get_project_root()}\data\raw\audio\{self.ons.item["fname"]}.wav',
-            'piano': fr'{utils.get_project_root()}\data\processed\spleeter_audio\{self.ons.item["fname"]}_piano.wav',
-            'bass': fr'{utils.get_project_root()}\data\processed\demucs_audio\{self.ons.item["fname"]}_bass.wav',
-            'drums': fr'{utils.get_project_root()}\data\processed\demucs_audio\{self.ons.item["fname"]}_drums.wav',
+            'mix': fr'{utils.get_project_root()}/data/raw/audio/{self.ons.item["fname"]}.wav',
+            'piano': fr'{utils.get_project_root()}/data/processed/spleeter_audio/{self.ons.item["fname"]}_piano.wav',
+            'bass': fr'{utils.get_project_root()}/data/processed/demucs_audio/{self.ons.item["fname"]}_bass.wav',
+            'drums': fr'{utils.get_project_root()}/data/processed/demucs_audio/{self.ons.item["fname"]}_drums.wav',
         }
 
     def _create_plot(self) -> None:
@@ -928,13 +928,13 @@ class WavePlotOnsets(vutils.BasePlot):
 
 class BoxPlotExcerptDuration(vutils.BasePlot):
     """Creates box plot showing distribution of recording durations for each bandleader"""
-    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    img_loc = fr'{utils.get_project_root()}/references/images/musicians'
     PAL = sns.cubehelix_palette(dark=1 / 3, gamma=.3, light=2 / 3, start=2, n_colors=10, as_cmap=False)
     TICKS = np.linspace(0, 420, 8)
 
     def __init__(self, cleaned_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'corpus_plots\boxplot_excerpt_duration_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'corpus_plots/boxplot_excerpt_duration_{self.corpus_title}', **kwargs)
         self.df = cleaned_df.copy(deep=True)
         self.df['excerpt_duration'] = self.df['excerpt_duration'].apply(self.get_time)
         self.df['birth'] = pd.to_datetime(self.df['birth'])
@@ -969,13 +969,13 @@ class BoxPlotExcerptDuration(vutils.BasePlot):
         birth = pd.to_datetime(d['birth']).year
         death = pd.to_datetime(d['death']).year
         if bl == 'Ahmad Jamal' or death < 2023:
-            return f"{bl}\n({birth}–{death})"
+            return f"{bl}/n({birth}–{death})"
         else:
-            return f"{bl}\n(b. {birth})"
+            return f"{bl}/n(b. {birth})"
 
     def _add_bandleader_images(self, bl: str, y: int) -> None:
         """Adds images of pianist `bl` at given position `y` to main axis"""
-        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        fpath = fr'{self.img_loc}/{bl.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
             plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.4
         )
@@ -1058,7 +1058,7 @@ class HistPlotTempo(vutils.BasePlot):
 # from matplotlib.lines import Line2D
 # import subprocess
 #
-# ons = utils.unserialise_object(fr'{utils.get_project_root()}\models\matched_onsets_corpus_bill_evans')
+# ons = utils.unserialise_object(fr'{utils.get_project_root()}/models/matched_onsets_corpus_bill_evans')
 # ons = [o for o in ons if o.item['mbz_id'] == '608bf73e-4161-4ca8-9802-5a95ffb71abf'][0]
 #
 #
@@ -1070,7 +1070,7 @@ class HistPlotTempo(vutils.BasePlot):
 #         self.for_movie = kwargs.get('for_movie', False)
 #         self.ons = onsetmaker
 #         fig_title = kwargs.get('fig_title',
-#                                fr'corpus_plots\waveplot_onsets{self.ons.item["fname"]}_{self.corpus_title}')
+#                                fr'corpus_plots/waveplot_onsets{self.ons.item["fname"]}_{self.corpus_title}')
 #         super().__init__(figure_title=fig_title, **kwargs)
 #         px = 1 / plt.rcParams['figure.dpi']
 #         self.fig, self.ax = plt.subplots(nrows=2, ncols=1, sharex=True, sharey=True,
@@ -1078,8 +1078,8 @@ class HistPlotTempo(vutils.BasePlot):
 #         self.duration = kwargs.get('duration', 5)
 #         self.offset = kwargs.get('offset', 45)
 #         self.fpaths = {
-#             'mix': fr'{utils.get_project_root()}\data\raw\audio\{self.ons.item["fname"]}.wav',
-#             'piano': fr'{utils.get_project_root()}\data\processed\spleeter_audio\{self.ons.item["fname"]}_piano.wav',
+#             'mix': fr'{utils.get_project_root()}/data/raw/audio/{self.ons.item["fname"]}.wav',
+#             'piano': fr'{utils.get_project_root()}/data/processed/spleeter_audio/{self.ons.item["fname"]}_piano.wav',
 #         }
 #
 #     def _create_plot(self) -> None:
@@ -1139,7 +1139,7 @@ class HistPlotTempo(vutils.BasePlot):
 #
 # class WavePlotOnsetsMovie(WavePlotOnsets):
 #     def __init__(self, onsetmaker, audio_dict, **kwargs):
-#         self.fig_title = fr'corpus_plots\waveplot_video\{kwargs.get("ft", "")}'
+#         self.fig_title = fr'corpus_plots/waveplot_video/{kwargs.get("ft", "")}'
 #         super().__init__(onsetmaker, fig_title=self.fig_title, **kwargs)
 #         self.audio_dict = audio_dict
 #
@@ -1190,12 +1190,12 @@ class HistPlotTempo(vutils.BasePlot):
 #     wp = WavePlotOnsetsMovie(ons, offset=offset, duration=5, ft=f"img{str(num).zfill(3)}", for_movie=True,
 #                              audio_dict=ad)
 #     wp.create_plot()
-#     return rf'{utils.get_project_root()}\{wp.fig_title}.png'
+#     return rf'{utils.get_project_root()}/{wp.fig_title}.png'
 #
 #
 # ad = {
-#     'mix': fr'{utils.get_project_root()}\data\raw\audio\{ons.item["fname"]}.wav',
-#     'piano': fr'{utils.get_project_root()}\data\processed\spleeter_audio\{ons.item["fname"]}_piano.wav',
+#     'mix': fr'{utils.get_project_root()}/data/raw/audio/{ons.item["fname"]}.wav',
+#     'piano': fr'{utils.get_project_root()}/data/processed/spleeter_audio/{ons.item["fname"]}_piano.wav',
 # }
 # ad = {k: librosa.util.normalize(librosa.load(v, sr=utils.SAMPLE_RATE)[0]) for k, v in ad.items()}
 # with Parallel(n_jobs=-1, verbose=5) as parallel:
@@ -1204,7 +1204,7 @@ class HistPlotTempo(vutils.BasePlot):
 #
 # import subprocess
 # proc = ["ffmpeg", "-y", "-framerate", "30",
-#         "-i", r"C:\Python Projects\jazz-corpus-analysis\reports\figures\corpus_plots\waveplot_video\img%03d.png",
+#         "-i", r"C:/Python Projects/jazz-corpus-analysis/reports/figures/corpus_plots/waveplot_video/img%03d.png",
 #         "-c:v", "libx264", "-vf", '"pad=ceil(iw/2)*2:ceil(ih/2)*2"', "-pix_fmt", "yuv420p",
 #         "out.mp4"]
 # p = subprocess.Popen(proc)
