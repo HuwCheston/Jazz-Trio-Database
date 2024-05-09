@@ -76,7 +76,7 @@ class BasePlot:
     """Base plotting class from which all others inherit"""
     mpl.rcParams.update(mpl.rcParamsDefault)
 
-    output_dir = fr'{utils.get_project_root()}\reports\figures'
+    output_dir = fr'{utils.get_project_root()}/reports/figures'
     # These variables should all be overridden at will in child classes
     df = None
     fig, ax = None, None

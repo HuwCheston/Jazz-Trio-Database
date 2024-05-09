@@ -28,6 +28,41 @@ __all__ = [
 ]
 
 
+class BarPlotSoloDuration(vutils.BasePlot):
+    PAL = sns.cubehelix_palette(dark=1 / 3, gamma=.3, light=2 / 3, start=2, n_colors=29, as_cmap=False)
+    BAR_KWS = dict(edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, palette=reversed(PAL), capsize=0.2,
+                   width=0.8, errwidth=2., errcolor=vutils.BLACK, orient='h', errorbar='se', )
+
+    def __init__(self, df, **kwargs):
+        self.corpus_title = kwargs.get('corpus_title', 'corpus_updated')
+        super().__init__(figure_title=fr'corpus_plots\barplot_solo_duration_{self.corpus_title}', **kwargs)
+        self.df = df[df['musicians'].apply(pd.Series)['leader'] == 'pianist']
+        self.df['excerpt_duration'] = pd.to_timedelta('00:' + self.df['excerpt_duration']).dt.total_seconds()
+        self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
+
+    def _create_plot(self):
+        order = reversed(self.df.groupby('bandleader')['excerpt_duration'].mean().sort_values().index.values)
+        sns.barplot(data=self.df, y='bandleader', x='excerpt_duration', order=order, ax=self.ax,
+                    **self.BAR_KWS)
+
+    @staticmethod
+    def format_func(x, _):
+        minutes = int((x % 3600) // 60)
+        seconds = int(x % 60)
+        return "{:d}:{:02d}".format(minutes, seconds)
+
+    def _format_ax(self):
+        self.ax.get_xaxis().set_major_formatter(mpl.ticker.FuncFormatter(self.format_func))
+        self.ax.grid(visible=True, which='major', axis='x', zorder=0, **vutils.GRID_KWS)
+        self.ax.set(xlabel='Mean duration of solo (MM:SS)', ylabel='Pianist', xticks=np.linspace(0, 240, 5),
+                    xlim=(0, 270))
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
 class BarPlotFScores(vutils.BasePlot):
     """Creates bar plot showing F-scores for all reference tracks and instruments"""
     def __init__(self, **kwargs):
@@ -247,13 +282,11 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
     """Creates barplot showing duration of recordings by bandleaders included in the corpus"""
     BAR_KWS = dict(
         edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=5, dodge=False,
-        palette=[vutils.RED, vutils.GREEN], estimator=np.sum, orient='h'
+        estimator=np.sum, orient='h',
     )
-    bandleaders = ['Bill Evans', 'Ahmad Jamal', 'Bud Powell', 'Oscar Peterson', 'Keith Jarrett', 'Tommy Flanagan',
-                   'Junior Mance', 'Kenny Barron', 'John Hicks', 'McCoy Tyner']
 
     def __init__(self, cleaned_df: pd.DataFrame, **kwargs):
-        self.corpus_title = 'corpus_chronology'
+        self.corpus_title = 'corpus_updated'
         self.df = self._format_df(cleaned_df)
         super().__init__(figure_title=fr'corpus_plots\barplot_bandleader_duration_{self.corpus_title}', **kwargs)
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
@@ -269,37 +302,37 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
         """Abbreviates a name to surname, first initial"""
         return f'{s.split()[-1]}, {self.initials(s.split()[0:-1])}'
 
-    def _format_df(self, cleaned_df: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def _format_df(cleaned_df: pd.DataFrame) -> pd.DataFrame:
         """Coerces dataframe into correct format for plotting"""
-        cleaned_df['recording_length_'] = (
-            cleaned_df['recording_length']
-            .astype(int)
-            .apply(lambda x: timedelta(milliseconds=x))
-            .dt
-            .total_seconds()
-        )
+        cleaned_df['excerpt_duration'] = pd.to_timedelta('00:' + cleaned_df['excerpt_duration']).dt.total_seconds()
+        cleaned_df.loc[cleaned_df['in_30_corpus'], 'excerpt_duration_30'] = cleaned_df['excerpt_duration']
+        cleaned_df['instr'] = cleaned_df['musicians'].apply(pd.Series)['leader']
         small_df = (
             cleaned_df.groupby('bandleader')
-            .agg({'recording_title': 'count', 'recording_length_': 'sum'})
+            .agg({
+                'track_name': 'count',
+                'excerpt_duration': 'sum',
+                'excerpt_duration_30': 'sum',
+                'instr': 'first'
+            })
             .reset_index(drop=False)
         )
-        small_df['bandleader_'] = (
-            small_df['bandleader']
-            .apply(self.abbreviate)
-            .apply(lambda s: "".join(c for c in s if ord(c) < 128))
+        small_df['excerpt_duration'] /= 3600
+        small_df['excerpt_duration_30'] /= 3600
+        return (
+            small_df.sort_values(by='excerpt_duration', ascending=False)
+            .reset_index(drop=True)
         )
-        small_df['in_corpus'] = small_df['bandleader'].isin(self.bandleaders)
-        small_df['recording_length_'] /= 3600
-        return small_df.sort_values(by='recording_length_', ascending=False)
 
     def _create_plot(self) -> None:
         """Creates main plot: bar chart of bandleader recording length"""
-        g = sns.barplot(
-            data=self.df, y='bandleader_', x='recording_length_', ax=self.ax, hue='in_corpus', **self.BAR_KWS
-        )
-        for patch, (idx_, row_) in zip(g.patches, self.df.iterrows()):
-            if not row_['in_corpus']:
-                patch.set_hatch(vutils.HATCHES[0])
+        for v, l, c in zip(
+                ['excerpt_duration', 'excerpt_duration_30'],
+                ['JTD', 'JTD-300'],
+                [vutils.YELLOW, vutils.BLUE]
+        ):
+            sns.barplot(data=self.df, y='bandleader', x=v, ax=self.ax, color=c, label=l, **self.BAR_KWS)
 
     def _format_ax(self) -> None:
         """Sets axis-level parameters"""
@@ -307,10 +340,9 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
             self.ax.get_yticks(), self.ax.get_yticklabels(), rotation=0, ha='right',
             fontsize=vutils.FONTSIZE / 1.5, rotation_mode="anchor"
         )
-        self.ax.set(xlabel='Total recording duration (hours)', ylabel='Bandleader')
+        self.ax.set(xlabel='Total duration of all excerpts (hours)', ylabel='Bandleader')
         self.ax.grid(visible=True, which='major', axis='x', zorder=0, **vutils.GRID_KWS)
         self.ax.tick_params(width=vutils.TICKWIDTH, which='both')
-        self.ax.set_xscale('log')
         self.ax.minorticks_off()
         self.ax.set_xticklabels([1, 10, 100])
         self.ax.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
@@ -319,19 +351,47 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
             -0.5, 9.5, 0, self.ax.get_xlim()[1], alpha=vutils.ALPHA, color=vutils.BLACK,
             lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE
         )
-        self.ax.set_ylim(self.ax.get_ylim()[0] - 1.5, -0.5,)
-        self.ax.text(50, 9, r'$\it{Top}$ $\mathit{10}$', rotation=0, va='center', ha='center', c=vutils.WHITE)
+        self.ax.set_ylim(self.ax.get_ylim()[0] - 1.5, -0.5, )
+        self.ax.text(4.5, 9, r'JTD-300 bandleaders', rotation=0, va='center', ha='center', c=vutils.WHITE)
         hand, lab = self.ax.get_legend_handles_labels()
-        self.ax.get_legend().remove()
-        p = mpl.patches.Patch(facecolor=vutils.RED, lw=2, hatch=vutils.HATCHES[0], edgecolor=vutils.BLACK)
-        self.ax.legend(
-            [p, hand[-1]], lab, loc='lower right', frameon=True, title='Included?', framealpha=1, edgecolor=vutils.BLACK
-        )
+        self.ax.legend(hand, lab, loc='lower right', frameon=True, title='Subset', framealpha=1, edgecolor=vutils.BLACK)
         self.ax.get_legend().get_frame().set_linewidth(vutils.LINEWIDTH)
 
     def _format_fig(self) -> None:
         """Sets figure-level parameters"""
-        self.fig.subplots_adjust(right=0.95, left=0.175, bottom=0.1, top=0.95)
+        self.fig.subplots_adjust(right=0.95, left=0.205, bottom=0.1, top=0.95)
+
+
+class BarPlotRecordingYear(vutils.BasePlot):
+    BAR_KWS = dict(
+        palette=[vutils.YELLOW, vutils.BLUE], edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE,
+        zorder=5, binrange=[1945, 2015], multiple='dodge', stat='count', bins=8,
+    )
+
+    def __init__(self, df, **kwargs):
+        self.corpus_title = 'corpus_updated'
+        self.df = self._format_df(df)
+        super().__init__(figure_title=fr'corpus_plots/barplot_recording_year_{self.corpus_title}', **kwargs)
+        self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
+
+    @staticmethod
+    def _format_df(df):
+        df['recording_year'] = df['recording_year'].astype(int)
+        df['in_30_corpus'] = df['in_30_corpus'].map({False: 'JTD', True: 'JTD-300'})
+        return df
+
+    def _create_plot(self):
+        sns.histplot(data=self.df, x='recording_year', hue='in_30_corpus',  ax=self.ax, **self.BAR_KWS)
+
+    def _format_ax(self):
+        self.ax.set(xlabel='Year of recording', ylabel='Number of recordings', xlim=(1943, 2017))
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)
+        self.ax.grid(visible=True, which='major', axis='y', **vutils.GRID_KWS)
+        sns.move_legend(self.ax, loc='upper right', title='', frameon=True, framealpha=1, edgecolor=vutils.BLACK)
+
+    def _format_fig(self):
+        self.fig.tight_layout()
 
 
 class BarPlotLastFMStreams(vutils.BasePlot):
@@ -955,31 +1015,30 @@ class BoxPlotExcerptDuration(vutils.BasePlot):
 
 class HistPlotTempo(vutils.BasePlot):
     HIST_KWS = dict(
-        bins=15, color=vutils.RGB[0], edgecolor=vutils.BLACK,
-        linewidth=vutils.LINEWIDTH, linestyle=vutils.LINESTYLE, kde=True,
-        stat='count', binrange=[100, 300], kde_kws=dict(clip=[100, 300]),
-        zorder=10, alpha=1
+        bins=8, color=vutils.RGB[0], edgecolor=vutils.BLACK,
+        linewidth=vutils.LINEWIDTH, linestyle=vutils.LINESTYLE, kde=False,
+        stat='count', binrange=[100, 300], zorder=10, alpha=1,
+        palette=[vutils.YELLOW, vutils.BLUE], multiple='dodge'
     )
 
     def __init__(self, df, **kwargs):
-        self.df = df
-        self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'corpus_plots\histplot_tempo_{self.corpus_title}', **kwargs)
+        self.df = df.copy(deep=True)
+        self.df['in_30_corpus'] = self.df['in_30_corpus'].map({True: 'JTD-300', False: 'JTD'})
+        self.corpus_title = 'corpus_updated'
+        super().__init__(figure_title=fr'corpus_plots/histplot_tempo_{self.corpus_title}', **kwargs)
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
         self.ax.yaxis.grid(True, **vutils.GRID_KWS, zorder=0)
         self.ax.set_axisbelow(True)
 
     def _create_plot(self):
-        sns.histplot(data=self.df, x='tempo', ax=self.ax, **self.HIST_KWS)
+        sns.histplot(data=self.df, x='tempo', hue='in_30_corpus', ax=self.ax, **self.HIST_KWS)
 
     def _format_ax(self):
         self.ax.set(
             xlim=(95, 305), xlabel='Track tempo (BPM)', ylabel='Number of tracks',
-            yticks=np.linspace(0, 40, 5), xticks=np.linspace(100, 300, 5)
+            xticks=np.linspace(100, 300, 5)
         )
-        self.ax.lines[0].set_color(vutils.BLACK)
-        self.ax.lines[0].set_linewidth(vutils.LINEWIDTH * 2)
-        self.ax.lines[0].set_zorder(100)
+        sns.move_legend(self.ax, loc='upper right', title='', frameon=True, framealpha=1, edgecolor=vutils.BLACK)
         self.ax.tick_params(width=vutils.TICKWIDTH, which='both')
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
 
