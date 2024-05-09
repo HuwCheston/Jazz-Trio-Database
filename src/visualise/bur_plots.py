@@ -39,7 +39,7 @@ def add_bur_images(ax, y) -> Generator:
         ax.axvline(x, ymin=-0.5, ymax=9, color=vutils.BLACK, alpha=1, lw=2, ls='dashed', zorder=1)
         # Try and get the image of the notation type for this BUR value
         try:
-            img = plt.imread(fr'{utils.get_project_root()}\references\images\bur_notation\bur_{x}.png')
+            img = plt.imread(fr'{utils.get_project_root()}/references/images/bur_notation/bur_{x}.png')
         except FileNotFoundError:
             pass
         # If we can get the image, then yield it to add to our plot
@@ -53,7 +53,7 @@ def add_bur_images(ax, y) -> Generator:
 class ViolinPlotBURs(vutils.BasePlot):
     """Plots the distribution of BUR values obtained for each musician on a specific instrument"""
     BURS_WITH_IMAGES = [0.5, 1, 2, 3]
-    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    img_loc = fr'{utils.get_project_root()}/references/images/musicians'
     PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=0, n_colors=20, as_cmap=False)
     VP_KWS = dict(vert=False, showmeans=False, showextrema=False)
     EBAR_KWS = dict(
@@ -65,7 +65,7 @@ class ViolinPlotBURs(vutils.BasePlot):
     def __init__(self, bur_df: pd.DataFrame, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus')
         self.include_images = kwargs.get('include_images', True)
-        fig_title = fr'bur_plots\violinplot_burs_{self.corpus_title}'
+        fig_title = fr'bur_plots/violinplot_burs_{self.corpus_title}'
         if not self.include_images:
             fig_title += '_no_images'
         super().__init__(figure_title=fig_title, **kwargs)
@@ -89,7 +89,7 @@ class ViolinPlotBURs(vutils.BasePlot):
             self.ax.axvline(np.log2(x), ymin=-0.5, ymax=9, color=vutils.BLACK, alpha=1, lw=2, ls='dashed', zorder=1)
             # Try and get the image of the notation type for this BUR value
             try:
-                img = plt.imread(fr'{utils.get_project_root()}\references\images\bur_notation\bur_{x}.png')
+                img = plt.imread(fr'{utils.get_project_root()}/references/images/bur_notation/bur_{x}.png')
             except FileNotFoundError:
                 pass
             # If we can get the image, then yield it to add to our plot
@@ -101,7 +101,7 @@ class ViolinPlotBURs(vutils.BasePlot):
 
     def _add_bandleader_images(self, bl: str, y: float) -> None:
         """Adds images corresponding to a given bandleader `bl` at position `y`"""
-        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        fpath = fr'{self.img_loc}/{bl.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
             plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
         )
@@ -179,7 +179,7 @@ class HistPlotBURByInstrument(vutils.BasePlot):
 
     def __init__(self, bur: pd.DataFrame, peaks: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        ftitle = kwargs.get('figure_title', fr'bur_plots\histplot_bursbyinstrumentgmm_{self.corpus_title}')
+        ftitle = kwargs.get('figure_title', fr'bur_plots/histplot_bursbyinstrumentgmm_{self.corpus_title}')
         super().__init__(figure_title=ftitle,)
         self.bur_df = bur
         self.peak_df = peaks
@@ -194,7 +194,7 @@ class HistPlotBURByInstrument(vutils.BasePlot):
         for x in self.BURS_WITH_IMAGES:
             # Try and get the image of the notation type for this BUR value
             try:
-                img = plt.imread(fr'{utils.get_project_root()}\references\images\bur_notation\bur_{x}.png')
+                img = plt.imread(fr'{utils.get_project_root()}/references/images/bur_notation/bur_{x}.png')
             except FileNotFoundError:
                 pass
             # If we can get the image, then yield it to add to our plot
@@ -229,9 +229,9 @@ class HistPlotBURByInstrument(vutils.BasePlot):
             self.HIST_KWS.update(dict(x=edges[:-1], height=heights, width=np.diff(edges)))
             ax.bar(fc=col, edgecolor='None', alpha=vutils.ALPHA, **self.HIST_KWS)
             ax.bar(fc='None', edgecolor=vutils.BLACK, alpha=1, **self.HIST_KWS)
-            # # Plot the kde
+            # Plot the kde
             x, y = self._kde(grp['bur'])
-            ax.plot(x, y, color=col, label=f'{idx.title()}\n({len(grp)})', **self.KDE_KWS)
+            ax.plot(x, y, color=col, label=f'{idx.title()}/n({len(grp)})', **self.KDE_KWS)
             self._add_peaks(ax, idx)
 
     def _add_peaks(self, ax: plt.Axes, ins: str) -> None:
@@ -281,7 +281,7 @@ class BarPlotBUR(vutils.BasePlot):
 
     def __init__(self, bur_df, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'bur_plots\barplot_mean_bur_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'bur_plots/barplot_mean_bur_{self.corpus_title}', **kwargs)
         self.df = bur_df
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
 
@@ -295,7 +295,7 @@ class BarPlotBUR(vutils.BasePlot):
         for x in self.BURS_WITH_IMAGES:
             # Try and get the image of the notation type for this BUR value
             try:
-                img = plt.imread(fr'{utils.get_project_root()}\references\images\bur_notation\bur_{x}.png')
+                img = plt.imread(fr'{utils.get_project_root()}/references/images/bur_notation/bur_{x}.png')
             except FileNotFoundError:
                 pass
             # If we can get the image, then yield it to add to our plot
@@ -354,7 +354,7 @@ class RegPlotBURTempo(vutils.BasePlot):
         """Called when initialising the class"""
         self.corpus_title = 'corpus_chronology'
         # Initialise the base plot with our given kwargs
-        super().__init__(figure_title=fr'bur_plots\regplot_burtempo_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'bur_plots/regplot_burtempo_{self.corpus_title}', **kwargs)
         # Format the dataframe
         self.average = self._format_df(bur_df)
         # Create our initial model, using the actual data
@@ -393,7 +393,7 @@ class RegPlotBURTempo(vutils.BasePlot):
         for x in self.BURS_WITH_IMAGES:
             # Try and get the image of the notation type for this BUR value
             try:
-                img = plt.imread(fr'{utils.get_project_root()}\references\images\bur_notation\bur_{x}.png')
+                img = plt.imread(fr'{utils.get_project_root()}/references/images/bur_notation/bur_{x}.png')
             except FileNotFoundError:
                 pass
             # If we can get the image, then yield it to add to our plot
@@ -580,13 +580,13 @@ class RegPlotBURTempo(vutils.BasePlot):
 class HistPlotBURTrack(HistPlotBURByInstrument):
     def __init__(self, onset_maker, **kwargs):
         bur_df, peak_df = self.format_df(onset_maker)
-        self.fname = rf'onsets_plots\histplot_bur_{onset_maker.item["mbz_id"]}'
+        self.fname = rf'onsets_plots/histplot_bur_{onset_maker.item["mbz_id"]}'
         self.title = onset_maker.item['fname']
         super().__init__(bur_df, peak_df, figure_title=self.fname, n_bins=kwargs.get('n_bins', 10))
 
     @staticmethod
     def format_df(om):
-        from src.features.features_utils import BeatUpbeatRatio
+        from src.features.rhythm_features import BeatUpbeatRatio
         res = []
         for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
             my_beats = om.summary_dict[instr]
@@ -612,7 +612,7 @@ class HistPlotBURTrack(HistPlotBURByInstrument):
                 xlim=(np.log2(LOW_BUR_CUTOFF), np.log2(HIGH_BUR_CUTOFF)), yticks=np.linspace(0, 1, 5), ylim=(0, 1)
             )
             grp = self.bur_df[self.bur_df['instrument'] == name]
-            ax.set_title((f'{name.title()} ($N$ = {len(grp.dropna())})'), y=1.15)
+            ax.set_title(f'{name.title()} ($N$ = {len(grp.dropna())})', y=1.15)
             plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
             ax.tick_params(axis='both', top=True, bottom=True, labeltop=False, labelbottom=True, width=vutils.TICKWIDTH)
             hand, lab = ax.get_legend_handles_labels()
