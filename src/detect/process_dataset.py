@@ -63,7 +63,7 @@ def main(
     start = time()
     # Initialise the logger
     logger = logging.getLogger(__name__)
-    corpus = utils.CorpusMaker.from_excel(fname=corpus_filename, only_annotated=True, only_30_corpus=False)
+    corpus = utils.CorpusMaker.from_excel(fname=corpus_filename, only_annotated=False, only_30_corpus=False)
     fname = rf"{utils.get_project_root()}/data/cambridge-jazz-trio-database-v02"
     # Remove any tracks which we've already processed
     from_cache = 0

@@ -833,7 +833,11 @@ class OnsetMaker:
             self.onset_evaluation['mix'] = eval_
             # Compare downbeat detection accuracy as well if we have these
             downbeat_ts = np.array([i1 for i1, i2 in zip(timestamps, metre_auto) if i2 == 1])
-            self.onset_evaluation['mix_downbeats'] = self.compare_downbeats(downbeat_ts)
+            # Compare downbeat accuracy, if this has been properly formatted
+            try:
+                self.onset_evaluation['mix_downbeats'] = self.compare_downbeats(downbeat_ts)
+            except ValueError:
+                pass
         # Generate the click track for the tracked beats, including the manually-annotated downbeats
         if generate_click:
             self.generate_click_track('mix', db)
