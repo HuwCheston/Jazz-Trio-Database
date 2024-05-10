@@ -21,8 +21,22 @@ from src.features.features_utils import BaseExtractor
 
 __all__ = [
     "PhaseCorrection", "BeatUpbeatRatio", "IOIComplexity", "TempoSlope",
-    "ProportionalAsynchrony", "RollingIOISummaryStats", "Asynchrony"
+    "ProportionalAsynchrony", "RollingIOISummaryStats", "Asynchrony",
+    "get_beats_from_matched_onsets"
 ]
+
+
+def get_beats_from_matched_onsets(summary_dict: dict) -> pd.DataFrame:
+    """Gets mean beat timestamps from a `summary_dict` marked by more than two instruments in the trio"""
+    # Convert the summary dictionary to a dataframe and subset to get beats played by the trio
+    df = summary_dict
+    if not isinstance(summary_dict, pd.DataFrame):
+        df = pd.DataFrame(summary_dict)
+    tdf = df[utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
+    # Get rows where we have more than one value set to missing
+    miss = np.where(tdf.isnull().sum(1) > 1, True, False)
+    # Calculate mean onset position for all rows other than missing ones
+    return pd.Series(np.where(miss, np.nan, tdf.mean(axis=1)))
 
 
 class IOISummaryStats(BaseExtractor):
