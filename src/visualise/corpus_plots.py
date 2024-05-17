@@ -24,7 +24,8 @@ from src.detect.onset_utils import FREQUENCY_BANDS
 __all__ = [
     'BarPlotFScores', 'TimelinePlotBandleaders', 'BarPlotBandleaderDuration', 'BarPlotLastFMStreams',
     'BarPlotSubjectiveRatings', 'BoxPlotRecordingLength', 'SpecPlotBands', 'CountPlotPanning',
-    'LinePlotOptimizationIterations', 'BarPlotCorpusDuration'
+    'LinePlotOptimizationIterations', 'BarPlotCorpusDuration', 'HistPlotRecordingYear',
+    'BarPlotSoloDuration'
 ]
 
 
@@ -362,7 +363,7 @@ class BarPlotBandleaderDuration(vutils.BasePlot):
         self.fig.subplots_adjust(right=0.95, left=0.205, bottom=0.1, top=0.95)
 
 
-class BarPlotRecordingYear(vutils.BasePlot):
+class HistPlotRecordingYear(vutils.BasePlot):
     BAR_KWS = dict(
         palette=[vutils.YELLOW, vutils.BLUE], edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE,
         zorder=5, binrange=[1945, 2015], multiple='dodge', stat='count', bins=8,
