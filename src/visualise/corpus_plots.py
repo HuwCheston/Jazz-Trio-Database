@@ -192,6 +192,53 @@ class BarPlotSubjectiveRatings(vutils.BasePlot):
         self.fig.tight_layout()
 
 
+class BarPlotRhythmSectionMusicians(vutils.BasePlot):
+    BAR_KWS = dict(
+        palette=vutils.RGB, dodge=False, alpha=vutils.ALPHA,
+        edgecolor=vutils.BLACK, lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE,
+        width=0.8, orient='h',
+    )
+    N_MUSICIANS = 10
+
+    def __init__(self, df, **kwargs):
+        self.corpus_title = 'corpus_updated'
+        fig_title = fr'corpus_plots/barplot_rhythm_section_musicians_{self.corpus_title}'
+        super().__init__(figure_title=fig_title, **kwargs)
+        self.df = self._format_df(df.copy(deep=True))
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
+
+    def _format_df(self, df):
+        mus = df['musicians'].apply(pd.Series)
+        big = []
+        for ins, role in utils.INSTRUMENTS_TO_PERFORMER_ROLES.items():
+            fmt = pd.DataFrame(
+                mus[role]
+                .value_counts()
+                .sort_values(ascending=False)
+                .head(self.N_MUSICIANS)
+                .rename('recordings')
+            )
+            fmt['Instrument'] = ins.title()
+            big.append(fmt)
+        return (
+            pd.concat(big)
+            .reset_index(drop=False)
+            .rename(columns=dict(index='musician'))
+        )
+
+    def _create_plot(self):
+        sns.barplot(data=self.df, x='recordings', y='musician', hue='Instrument', ax=self.ax, **self.BAR_KWS)
+
+    def _format_ax(self):
+        plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH)
+        self.ax.tick_params(axis='both', width=vutils.TICKWIDTH)
+        self.ax.set(xlabel='Recordings', ylabel='Musician')
+        self.ax.grid(visible=True, which='major', axis='x', **vutils.GRID_KWS)
+
+    def _format_fig(self):
+        self.fig.tight_layout()
+
+
 class TimelinePlotBandleaders(vutils.BasePlot):
     """Creates plots showing timeline for included bandleaders and recording dates"""
     img_loc = fr'{utils.get_project_root()}/references/images/musicians'

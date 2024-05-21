@@ -14,6 +14,7 @@ import scipy.stats as stats
 import seaborn as sns
 import statsmodels.formula.api as smf
 from statsmodels.tools.sm_exceptions import ConvergenceWarning
+from joblib import Parallel, delayed
 
 import src.visualise.visualise_utils as vutils
 from src import utils
@@ -245,7 +246,7 @@ class HistPlotBURByInstrument(vutils.BasePlot):
         # Add images for each BUR value we want to plot
         hands, labs = [], []
         for ax, name in zip(self.ax.flatten(), utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()):
-            for artist in self.add_bur_images(y=1.05):
+            for artist in self.add_bur_images(y=1.15):
                 ax.add_artist(artist)
             ax.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
             ax.get_xaxis().set_minor_formatter(mpl.ticker.NullFormatter())
@@ -339,8 +340,8 @@ class RegPlotBURTempo(vutils.BasePlot):
     FILL_KWS = dict(lw=0, ls=vutils.LINESTYLE, alpha=vutils.ALPHA)
     SCATTER_KWS = dict(
         hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
-        palette=vutils.RGB, markers=['o', 's', 'D'], s=40,
-        edgecolor=vutils.BLACK, zorder=1
+        palette=vutils.RGB, markers=['o', 's', 'D'], s=20,
+        edgecolor=vutils.BLACK, zorder=1, alpha=0.4
     )
     HIST_KWS = dict(
         kde=False, color=vutils.BLACK, alpha=vutils.ALPHA,
@@ -383,6 +384,7 @@ class RegPlotBURTempo(vutils.BasePlot):
         clean.columns = ['_'.join(col).strip() for col in clean.columns.values]
         # Drop BURs without enough values
         clean = clean[clean['bur_count'] > self.BUR_THRESHOLD]
+        clean = clean[(clean['tempo_median'] <= utils.MAX_TEMPO) & (clean['tempo_median'] >= utils.MIN_TEMPO)]
         # Standardise the tempo into Z-scores and return
         clean['tempo_standard'] = (clean['tempo_median'] - clean['tempo_median'].mean()) / clean['tempo_median'].std()
         return clean
@@ -401,7 +403,7 @@ class RegPlotBURTempo(vutils.BasePlot):
                 yield mpl.offsetbox.AnnotationBbox(
                     mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.5), (y, np.log2(x)),
                     frameon=False, xycoords='data', clip_on=False, annotation_clip=False
-                 )
+                )
 
     def _mixedlm(self, model_data: pd.DataFrame):
         """Creates a mixed effects model with given parameters from a dataset"""
@@ -434,19 +436,18 @@ class RegPlotBURTempo(vutils.BasePlot):
             tempo_coeff = tempo * bpm_z
             # Iterate through each instrument and both coefficients
             for instr_, coeff_, interact_ in zip(
-                utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
-                [is_piano, is_bass, is_drums],
-                [is_piano_tempo, is_bass_tempo, is_drums_tempo]
+                    utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
+                    [is_piano, is_bass, is_drums],
+                    [is_piano_tempo, is_bass_tempo, is_drums_tempo]
             ):
                 # Construct the BUR value by following the regression equation
                 bur_ = intercept + tempo_coeff + coeff_ + (interact_ * bpm_z)
                 # Yield a dictionary of the results
                 yield dict(tempo=bpm, tempo_std=bpm_z, instr=instr_, bur=bur_)
 
-    def _format_bootstrap_lines(self, boot_models: list) -> list:
+    def _format_bootstrap_lines(self, big: pd.DataFrame) -> list:
         """Formats data from a series of bootstrapped models into one dataframe of errors"""
         # Get a straight line for each bootstrapped model and combine into one dataframe
-        big = pd.concat([pd.DataFrame(self._get_line(boot)) for boot in boot_models], axis=1)
         # Iterate through each tempo value
         for idx, row in big.iterrows():
             sem = stats.sem(row['bur'].to_numpy())
@@ -462,30 +463,30 @@ class RegPlotBURTempo(vutils.BasePlot):
 
     def _get_bootstrapped_sample(self) -> list:
         """Returns bootstrapped samples of the full dataset"""
+
         def bootstrap(state: int):
             """Bootstrapping function"""
-            # Take a random sample of bandleaders and iterate through each
-            for _, leader in bandleaders.sample(frac=1, replace=True, random_state=state).items():
-                # Get all the data belonging to each bandleader
-                yield self.average[self.average['bandleader_first'] == leader]
+            # Have to suppress warnings here to as not carried through from class
+            warnings.simplefilter('ignore', ConvergenceWarning)
+            warnings.simplefilter('ignore', UserWarning)
+            # Take a random sample of bandleaders and get the data from each
+            temp = pd.concat([
+                self.average[self.average['bandleader_first'] == leader]
+                for leader in bandleaders.sample(frac=1, replace=True, random_state=state).values
+            ]).reset_index(drop=True)
+            return pd.DataFrame(self._get_line(self._mixedlm(temp)))
 
         # These are the names of all bandleaders
         bandleaders = pd.Series(self.average['bandleader_first'].unique())
-        for i in range(self.N_BOOT):
-            # Print the current iteration to act as a log
-            print(i)
-            # Return each bootstrapped sample as a single dataframe
-            yield pd.concat(bootstrap(i), axis=0)
+        with Parallel(n_jobs=-1, verbose=1) as par:
+            return pd.concat(par(delayed(bootstrap)(s) for s in range(self.N_BOOT)), axis=1)
 
     def _create_main_plot(self) -> None:
         """Plots regression and scatter plot onto the main axis, with bootstrapped errorbars"""
         # Get the line for the actual data
         line_df = pd.DataFrame(self._get_line(self.md))
         # Bootstrap to get random samples, replacement unit is bandleader
-        boot_samples = self._get_bootstrapped_sample()
-        # Create model for each sample of data
-        boot_mds = [self._mixedlm(sample) for sample in boot_samples]
-        # Convert all bootstrapped models into one single dataframe of errors
+        boot_mds = self._get_bootstrapped_sample()
         boot_lines = pd.DataFrame(self._format_bootstrap_lines(boot_mds))
         # Iterate through each instrument and line color
         for instr_, col_ in zip(utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(), vutils.RGB):
@@ -510,12 +511,12 @@ class RegPlotBURTempo(vutils.BasePlot):
         # Top marginal plot
         sns.histplot(
             data=self.average, x='tempo_median', ax=self.marginal_ax[0],
-            bins=int(vutils.N_BINS * self.BIN_MULTIPLER),  **self.HIST_KWS
+            bins=int(vutils.N_BINS * self.BIN_MULTIPLER), **self.HIST_KWS
         )
         # Right marginal plot
         sns.histplot(
             data=self.average, y='bur_mean', ax=self.marginal_ax[1],
-            bins=int(vutils.N_BINS / self.BIN_MULTIPLER),  **self.HIST_KWS
+            bins=int(vutils.N_BINS / self.BIN_MULTIPLER), **self.HIST_KWS
         )
 
     def _create_plot(self) -> None:
@@ -541,14 +542,12 @@ class RegPlotBURTempo(vutils.BasePlot):
     def _format_main_ax(self) -> None:
         """Formats axis-level properties for the main axis"""
         # Add BUR images onto the right-hand side of the main plot
-        for artist in self.add_bur_images(y=315):
+        for artist in self.add_bur_images(y=310):
             self.main_ax.add_artist(artist)
         # Add a grid onto the plot
         self.main_ax.grid(visible=True, axis='both', which='major', zorder=0, **vutils.GRID_KWS)
         # Get our legend handles, and set their edge color to black
         hand, _ = self.main_ax.get_legend_handles_labels()
-        for ha in hand:
-            ha.set_edgecolor(vutils.BLACK)
         # Remove the old legend, then add the new one on
         self.main_ax.get_legend().remove()
         self.main_ax.legend(
@@ -556,9 +555,12 @@ class RegPlotBURTempo(vutils.BasePlot):
             loc='lower left', title='Instrument', frameon=True, framealpha=1,
             edgecolor=vutils.BLACK
         )
+        for lh in self.main_ax.get_legend().legend_handles:
+            lh.set_alpha(1)
+            lh.set_markersize(10)
         # Final attributes to set here
         self.main_ax.set(
-            xticks=[100, 150, 200, 250, 300], yticks=[-1, 0, 1], xlim=(100, 325),
+            xticks=[100, 150, 200, 250, 300], yticks=[-1, 0, 1], xlim=(100, 320),
             xlabel='Tempo (BPM)', ylabel='${Log_2}$ beat-upbeat ratio', ylim=(-1.35, 1.7)
         )
 
