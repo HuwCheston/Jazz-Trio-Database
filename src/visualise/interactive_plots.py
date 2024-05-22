@@ -61,7 +61,7 @@ class ScatterPlotFeelInteractive(BasePlotPlotly):
         """Formats provided onset maker into correct dataframe format for plotting"""
         for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
             instr_ons = self.onset_maker.ons[instr]
-            z = zip(self.onset_maker.ons['mix'], self.onset_maker.ons['mix'][1:], self.onset_maker.ons['metre_manual'])
+            z = zip(self.onset_maker.ons['mix'], self.onset_maker.ons['mix'][1:], self.onset_maker.ons['metre_auto'])
             yield {
                 'instrument': instr,
                 'timestamp': np.nan,
@@ -130,7 +130,7 @@ class HistPlotComplexityInteractive(BasePlotPlotly):
 
     @staticmethod
     def _format_df(om):
-        from src.features.features_utils import IOIComplexity
+        from src.features.rhythm_features import IOIComplexity
         downbeats = om.ons['downbeats_manual']
         time_signature = om.item['time_signature']
         tempo = om.tempo
@@ -246,7 +246,7 @@ class BarPlotCoordinationInteractive(BasePlotPlotly):
 
     @staticmethod
     def _format_df(om):
-        from src.features.features_utils import PhaseCorrection
+        from src.features.rhythm_features import PhaseCorrection
         sd = pd.DataFrame(om.summary_dict)
         res = []
         for my_instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
@@ -321,7 +321,7 @@ class HistPlotSwingInteractive(BasePlotPlotly):
 
     @staticmethod
     def format_df(om):
-        from src.features.features_utils import BeatUpbeatRatio
+        from src.features.rhythm_features import BeatUpbeatRatio
         res = []
         for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
             my_beats = om.summary_dict[instr]

@@ -71,7 +71,7 @@ class CountPlotMissingValues(vutils.BasePlot):
         self.cat_map = category_mapping
         self.df = self._format_df(predictors_df)
         super().__init__(
-            figure_title=fr'random_forest_plots\countplot_missing_values_{self.corpus_title}', **kwargs
+            figure_title=fr'random_forest_plots/countplot_missing_values_{self.corpus_title}', **kwargs
         )
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
 
@@ -122,7 +122,7 @@ class HeatMapFeatureCorrelation(vutils.BasePlot):
         self.corpus_title = 'corpus_chronology'
         self.df = features
         super().__init__(
-            figure_title=fr'random_forest_plots\heatmap_feature_correlations_{self.corpus_title}', **kwargs
+            figure_title=fr'random_forest_plots/heatmap_feature_correlations_{self.corpus_title}', **kwargs
         )
         self.fig = plt.figure(figsize=(vutils.WIDTH, vutils.WIDTH))
         self.gs0 = mpl.gridspec.GridSpec(1, 2, width_ratios=[40, 1], hspace=0.00)
@@ -203,7 +203,7 @@ class BarPlotFeatureImportances(vutils.BasePlot):
 
     def __init__(self, importances: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'random_forest_plots\barplot_feature_importances_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'random_forest_plots/barplot_feature_importances_{self.corpus_title}', **kwargs)
         # Create both dataframes
         self.importances = (
             importances.copy(deep=True)
@@ -271,7 +271,7 @@ class BarPlotCategoryImportances(vutils.BasePlot):
     def __init__(self, importances: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
         super().__init__(
-            figure_title=fr'random_forest_plots\barplot_category_importances_{self.corpus_title}', **kwargs
+            figure_title=fr'random_forest_plots/barplot_category_importances_{self.corpus_title}', **kwargs
         )
         # Create both dataframes
         self.grouped_importances = (
@@ -319,7 +319,7 @@ class BarPlotCategoryImportances(vutils.BasePlot):
 
 class HeatMapPredictionProbDendro(vutils.BasePlot):
     """Creates a heatmap of probabilities for all pianists in a dataset, with attached clustering dendrogram"""
-    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    img_loc = fr'{utils.get_project_root()}/references/images/musicians'
     PAL = sns.cubehelix_palette(dark=1/3, gamma=.3, light=2/3, start=0, n_colors=20, as_cmap=False)
     MODEL_KWS = dict(n_clusters=None, distance_threshold=0, metric='precomputed', linkage='average')
     DENDRO_KWS = dict(truncate_mode=None, no_labels=False, color_threshold=0, above_threshold_color=vutils.BLACK)
@@ -327,7 +327,7 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
     def __init__(self, prob_df, **kwargs):
         self.corpus_title = 'corpus_chronology'
         self.include_images = kwargs.get('include_images', True)
-        fig_title = fr'random_forest_plots\heatmap_prediction_prob_dendro_{self.corpus_title}'
+        fig_title = fr'random_forest_plots/heatmap_prediction_prob_dendro_{self.corpus_title}'
         if not self.include_images:
             fig_title += 'no_images'
         super().__init__(figure_title=fig_title, **kwargs)
@@ -389,7 +389,7 @@ class HeatMapPredictionProbDendro(vutils.BasePlot):
             for f in os.listdir(self.img_loc):
                 if mus.get_text().lower() in f.lower():
                     img = mpl.offsetbox.OffsetImage(
-                        plt.imread(fr'{self.img_loc}\{f}'), clip_on=False, transform=self.ax.transAxes, zoom=0.75
+                        plt.imread(fr'{self.img_loc}/{f}'), clip_on=False, transform=self.ax.transAxes, zoom=0.75
                     )
                     ab = mpl.offsetbox.AnnotationBbox(
                         img, (num + 0.5, -0.5), xycoords='data', clip_on=False, transform=self.ax.transAxes,
@@ -471,7 +471,7 @@ class RocPlotLogRegression(vutils.BasePlot):
     """Creates a plot showing the receiver-operator curve from true and predicted values from a logistic regression"""
     def __init__(self, y_true: np.array, y_predict: np.array, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'random_forest_plots\rainplot_algohuman_onsets_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'random_forest_plots/rainplot_algohuman_onsets_{self.corpus_title}', **kwargs)
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2))
         self.y_true = y_true
         self.y_pred = y_predict
@@ -515,7 +515,7 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
     def __init__(self, logit_md, category_mapping, **kwargs):
         self.corpus_title = 'corpus_chronology'
         super().__init__(
-            figure_title=fr'random_forest_plots\stripplot_logitcoeffs_{self.corpus_title}', **kwargs
+            figure_title=fr'random_forest_plots/stripplot_logitcoeffs_{self.corpus_title}', **kwargs
         )
         self.cat_map = category_mapping
         self.df = self._format_df(logit_md)
@@ -615,7 +615,7 @@ class HistPlotFirstLastP(vutils.BasePlot):
         self.acc_scores = acc_scores
         self.first_acc, self.last_acc = first_acc, last_acc
         super().__init__(
-            figure_title=fr'random_forest_plots\histplot_firstlastp_{self.corpus_title}', **kwargs
+            figure_title=fr'random_forest_plots/histplot_firstlastp_{self.corpus_title}', **kwargs
         )
         self.fig, self.ax = plt.subplots(
             nrows=1, ncols=2, sharex=True, sharey=True, figsize=(vutils.WIDTH, vutils.WIDTH / 4)
@@ -692,7 +692,7 @@ class RegPlotPredictorsCareerProgress(vutils.BasePlot):
         self.cat_mapping = cat_mapping
         self.df = model_df
         super().__init__(
-            figure_title=fr'random_forest_plots\regplot_careerprogress_{self.corpus_title}', **kwargs
+            figure_title=fr'random_forest_plots/regplot_careerprogress_{self.corpus_title}', **kwargs
         )
         self.fig, self.ax = plt.subplots(
             nrows=2, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 2), sharex=True, sharey=False
@@ -752,7 +752,7 @@ class RegPlotCareerJazzProgress(vutils.BasePlot):
         self.cat_mapping = cat_mapping
         self.df = model_df.copy(deep=True)
         super().__init__(
-            figure_title=fr'random_forest_plots\regplot_careerjazzprogress_{self.corpus_title}', **kwargs
+            figure_title=fr'random_forest_plots/regplot_careerjazzprogress_{self.corpus_title}', **kwargs
         )
         self.fig, self.ax = plt.subplots(
             nrows=2, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 2), sharex=True, sharey=False
