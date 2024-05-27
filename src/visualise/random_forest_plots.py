@@ -53,9 +53,9 @@ COL_MAPPING = {
     'coupling_drums': 'Piano→Drums, coupling',
     'coupling_piano_drums': 'Drums→Piano, coupling',
     'self_coupling': 'Piano→Piano, coupling',
-    'rolling_std_median': 'Tempo stability',
-    'tempo': 'Tempo average',
-    'tempo_slope': 'Tempo slope',
+    'rolling_std_median': 'Pianist tempo stability',
+    'tempo': 'Performance mean tempo',
+    'tempo_slope': 'Performance tempo slope',
 }
 
 
@@ -305,7 +305,7 @@ class BarPlotCategoryImportances(vutils.BasePlot):
         self.ax.set(ylabel='Category', xlabel='Feature Importance (%)')
         self._format_ticks()
         # Remove the legend
-        self.ax.get_legend().remove()
+        # self.ax.get_legend().remove()
         # Set the width of the edges and ticks
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK)

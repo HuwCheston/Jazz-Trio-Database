@@ -548,7 +548,7 @@ class RegPlotPianistAsynchrony(vutils.BasePlot):
 
 class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
     """Creates density plots for each pianist, showing asynchrony with both accompanying instruments"""
-    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    img_loc = fr'{utils.get_project_root()}/references/images/musicians'
     PLOT_KWS = dict(lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=10)
     FILL_KWS = dict(alpha=0.1, zorder=5)
     VLINE_KWS = dict(linestyle='dashed', alpha=1, zorder=1, linewidth=vutils.LINEWIDTH * 1.5)
@@ -557,7 +557,7 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
         """Called when initialising the class"""
         self.corpus_title = 'corpus_chronology'
         self.include_images = kwargs.get('include_images', True)
-        fig_title = fr'asynchrony_plots\histplot_asynchronytriospiano_{self.corpus_title}'
+        fig_title = fr'asynchrony_plots/histplot_asynchronytriospiano_{self.corpus_title}'
         if not self.include_images:
             fig_title += '_no_images'
         # Initialise the base plot with our given kwargs
@@ -581,7 +581,7 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
     def _kde(vals: np.array) -> tuple:
         """Fit the KDE to the data and evaluate on a linear space of integers, then scale between 0 and 1"""
         # Fit the actual KDE to the data, using the default parameters
-        kde = stats.gaussian_kde(vals.T)
+        kde = stats.gaussian_kde(vals.T, bw_method=.185)
         # Create a linear space of integers ranging from our lowest to our highest BUR
         x = np.linspace(vals.min(), vals.max(), 100)[:, np.newaxis].T[0]
         # Evaluate the KDE on our linear space of integers
@@ -610,7 +610,7 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
 
     def _add_bandleader_images(self, bl: str, ax: plt.Axes, y: float = 0.5, ) -> None:
         """Adds images corresponding with each bandleader `bl` to the provided axis object `ax`"""
-        fpath = fr'{self.img_loc}\{bl.replace(" ", "_").lower()}.png'
+        fpath = fr'{self.img_loc}/{bl.replace(" ", "_").lower()}.png'
         img = mpl.offsetbox.OffsetImage(
             plt.imread(fpath), clip_on=False, transform=ax.transAxes, zoom=0.5
         )
@@ -627,7 +627,7 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
             ax.text(0, y - .25, r'$\pm$0', ha='center', va='center', clip_on=False, zorder=1000)
             for val in [-16, -32, -64, 32, 64, 16]:
                 try:
-                    img = plt.imread(fr'{utils.get_project_root()}\references\images\notation\notation_{abs(val)}.png')
+                    img = plt.imread(fr'{utils.get_project_root()}/references/images/notation/notation_{abs(val)}.png')
                 except FileNotFoundError:
                     pass
                 # If we can get the image, then yield it to add to our plot
@@ -655,8 +655,8 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
                 else:
                     spines = ['bottom', 'top']
                     yl = (-0.35, 2)
-                ax.text(-1/16 + 0.001, yl[1] - 0.2, '$N$ = ', va='top')
-                ax.text(-1/16 + 0.012, yl[1] - 0.2, len(grp), va='top', ha='left', color=col)
+                # ax.text(-1/16 + 0.001, yl[1] - 0.2, '$N$ = ', va='top')
+                # ax.text(-1/16 + 0.012, yl[1] - 0.2, len(grp), va='top', ha='left', color=col)
                 ax.spines[spines].set_visible(False)
                 ax.axvline(0, 0, 1, color=vutils.BLACK, linewidth=vutils.LINEWIDTH, linestyle=vutils.LINESTYLE)
                 ax.axhline(

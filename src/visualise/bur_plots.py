@@ -107,7 +107,7 @@ class ViolinPlotBURs(vutils.BasePlot):
             plt.imread(fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
         )
         ab = mpl.offsetbox.AnnotationBbox(
-            img, (-2.15, y - 0.05), xycoords='data', clip_on=False, transform=self.ax.transAxes,
+            img, (-2.15, y + 0.2), xycoords='data', clip_on=False, transform=self.ax.transAxes,
             annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
         )
         self.ax.add_artist(ab)
@@ -116,7 +116,8 @@ class ViolinPlotBURs(vutils.BasePlot):
         """Creates violinplot in seaborn"""
         self.g = sns.violinplot(
             data=self.df, x='bur', y='bandleader', linecolor=vutils.BLACK, density_norm='count', hue=True,
-            palette=self.PAL, hue_order=[True, False], split=True, legend=False, inner=None, ax=self.ax, bw=0.1,
+            palette=self.PAL, hue_order=[True, False], split=True, legend=False, inner=None, ax=self.ax,
+            bw_method='scott',
         )
         for patch, col in zip(self.ax.collections, self.PAL):
             patch.set_facecolor(col)
@@ -129,23 +130,22 @@ class ViolinPlotBURs(vutils.BasePlot):
         for collect in self.ax.collections:
             collect.set_edgecolor(vutils.BLACK)
             collect.set_linewidth(vutils.LINEWIDTH)
-        self.ax.scatter(med['mean'], med['bandleader'], **self.SCAT_KWS)
+        self.ax.scatter(med['mean'], [i + 0.4 for i in range(len(med))], **self.SCAT_KWS)
         for idx, row in med.iterrows():
-            self.ax.errorbar(x=[row['mean'], row['mean']], y=[idx, idx], xerr=[row['std'], row['std']], **self.EBAR_KWS)
+            self.ax.errorbar(
+                x=[row['mean'], row['mean']], y=[idx + 0.4, idx + 0.4], xerr=[row['std'], row['std']], **self.EBAR_KWS
+            )
 
     def _add_nburs_to_tick(self) -> None:
         """Add the total number of BURs gathered for each musician next to their name"""
         for num, (idx, grp) in enumerate(self.df.groupby('bandleader', sort=False)):
-            self.ax.text(-1.95, num - 0.15, f'$N$ = ')
-            self.ax.text(-1.805, num - 0.15, len(grp['bur'].dropna()), color=vutils.RED)
+            self.ax.text(-1.95, num + 0.05, f'$N$ = ')
+            self.ax.text(-1.805, num + 0.05, len(grp['bur'].dropna()), color=vutils.RED)
 
     def _format_ax(self) -> None:
         """Format axis-level properties"""
         # Here we set the line styles
-        self.ax.get_legend().remove()
-        # Add in a horizontal line for each performer on the y-axis
-        for tick in self.ax.get_yticks():
-            self.ax.axhline(tick, 0, 3.25, color=vutils.BLACK, alpha=vutils.ALPHA, lw=vutils.LINEWIDTH)
+        # self.ax.get_legend().remove()
         # Add in notation images for each of the BUR values we want to the top of the plot
         for artist in self.add_bur_images(y=-1.3):
             self.ax.add_artist(artist)
@@ -153,8 +153,11 @@ class ViolinPlotBURs(vutils.BasePlot):
         self._add_nburs_to_tick()
         self.ax.set(
             xticks=[np.log2(b) for b in self.BURS_WITH_IMAGES], xlabel='', ylabel='',
-            xticklabels=[-1, 0, 1, 1.585], xlim=(-2, 2), ylim=(9.5, -0.5),
+            xticklabels=[-1, 0, 1, 1.585], xlim=(-2, 2), ylim=(9.6, -0.5),
+            yticks=[i + 0.4 for i in self.ax.get_yticks()]
         )
+        self.ax.set_yticklabels([i for i in self.ax.get_yticklabels()], va='bottom')
+        self.ax.grid(False)
         self.ax.tick_params(axis='y', which='major', pad=70)
         if self.include_images:
             for num, pi in enumerate(self.df['bandleader'].unique()):
@@ -341,7 +344,7 @@ class RegPlotBURTempo(vutils.BasePlot):
     SCATTER_KWS = dict(
         hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys(),
         palette=vutils.RGB, markers=['o', 's', 'D'], s=20,
-        edgecolor=vutils.BLACK, zorder=1, alpha=0.4
+        edgecolor=vutils.BLACK, zorder=1, alpha=0.2
     )
     HIST_KWS = dict(
         kde=False, color=vutils.BLACK, alpha=vutils.ALPHA,
@@ -384,7 +387,7 @@ class RegPlotBURTempo(vutils.BasePlot):
         clean.columns = ['_'.join(col).strip() for col in clean.columns.values]
         # Drop BURs without enough values
         clean = clean[clean['bur_count'] > self.BUR_THRESHOLD]
-        clean = clean[(clean['tempo_median'] <= utils.MAX_TEMPO) & (clean['tempo_median'] >= utils.MIN_TEMPO)]
+        # clean = clean[(clean['tempo_median'] <= utils.MAX_TEMPO) & (clean['tempo_median'] >= utils.MIN_TEMPO)]
         # Standardise the tempo into Z-scores and return
         clean['tempo_standard'] = (clean['tempo_median'] - clean['tempo_median'].mean()) / clean['tempo_median'].std()
         return clean
@@ -445,7 +448,7 @@ class RegPlotBURTempo(vutils.BasePlot):
                 # Yield a dictionary of the results
                 yield dict(tempo=bpm, tempo_std=bpm_z, instr=instr_, bur=bur_)
 
-    def _format_bootstrap_lines(self, big: pd.DataFrame) -> list:
+    def _format_bootstrap_lines(self, big: list) -> list:
         """Formats data from a series of bootstrapped models into one dataframe of errors"""
         # Get a straight line for each bootstrapped model and combine into one dataframe
         # Iterate through each tempo value
@@ -531,11 +534,11 @@ class RegPlotBURTempo(vutils.BasePlot):
             ax.spines[[spine, 'right', 'top']].set_visible(False)
         # Set other features for the main axis
         self.marginal_ax[0].set(
-            xlabel='', ylabel='', yticks=[0], yticklabels=[''], xticklabels=[], xlim=(100, 325),
+            xlabel='', ylabel='', yticks=[0], yticklabels=[''], xticklabels=[], xlim=(90, 320),
             xticks=[100, 150, 200, 250, 300]
         )
         self.marginal_ax[1].set(
-            xlabel='', ylabel='', xticks=[0], xticklabels=[''], yticklabels=[], ylim=(-1.35, 1.7),
+            xlabel='', ylabel='', xticks=[0], xticklabels=[''], yticklabels=[], ylim=(-1.35, 2.0),
             yticks=[-1, 0, 1]
         )
 
@@ -560,8 +563,8 @@ class RegPlotBURTempo(vutils.BasePlot):
             lh.set_markersize(10)
         # Final attributes to set here
         self.main_ax.set(
-            xticks=[100, 150, 200, 250, 300], yticks=[-1, 0, 1], xlim=(100, 320),
-            xlabel='Tempo (BPM)', ylabel='${Log_2}$ beat-upbeat ratio', ylim=(-1.35, 1.7)
+            xticks=[100, 150, 200, 250, 300], yticks=[-1, 0, 1], xlim=(90, 320),
+            xlabel='Tempo (BPM)', ylabel='${Log_2}$ beat-upbeat ratio', ylim=(-1.35, 2.0)
         )
 
     def _format_ax(self) -> None:
