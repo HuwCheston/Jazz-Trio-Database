@@ -40,7 +40,7 @@ class TriangleAxis:
 
 
     """
-    img_loc = fr'{utils.get_project_root()}\references\images\musicians'
+    img_loc = fr'{utils.get_project_root()}/references/images/musicians'
 
     def __init__(self, grp: pd.DataFrame, ax: plt.Axes, **kwargs):
         self.starting_zoom = kwargs.get('starting_zoom', 1)
@@ -177,10 +177,10 @@ class TriangleAxis:
             mus = str(self.grp[self.grp['instrument'] == txt]['performer'].iloc[0]).replace(' ', '_').lower()
             # Try and get the image corresponding to the performers name
             try:
-                img = plt.imread(fr'{self.img_loc}\{mus}.png')
+                img = plt.imread(fr'{self.img_loc}/{mus}.png')
             # If we don't have the image, use the default image corresponding to that instrument
             except FileNotFoundError:
-                img = plt.imread(fr'{self.img_loc}\_{txt}.png')
+                img = plt.imread(fr'{self.img_loc}/_{txt}.png')
             else:
                 boxstyle = 'sawtooth'
                 zoom *= self.performer_picture_zoom
@@ -209,7 +209,7 @@ class TrianglePlotChronology(vutils.BasePlot):
 
     def __init__(self, df: pd.DataFrame, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus')
-        super().__init__(figure_title=fr'{FOLDER_PATH}\triangleplot_trios_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'{FOLDER_PATH}/triangleplot_trios_{self.corpus_title}', **kwargs)
         self.nobs_cutoff = kwargs.get('nobs_cutoff', 30)
         self.df = df[df['nobs'] < self.nobs_cutoff]
         self.fig, self.ax = plt.subplots(nrows=5, ncols=2, figsize=(vutils.WIDTH, vutils.WIDTH * 2))
@@ -231,7 +231,7 @@ class BarPlotCouplingCoefficients(vutils.BasePlot):
 
     def __init__(self, data, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus')
-        super().__init__(figure_title=fr'{FOLDER_PATH}\barplot_couplingcoefficients_{self.corpus_title}',
+        super().__init__(figure_title=fr'{FOLDER_PATH}/barplot_couplingcoefficients_{self.corpus_title}',
                          **kwargs)
         self.df = (
             data.melt(
@@ -306,7 +306,7 @@ class RegPlotCouplingHalves(vutils.BasePlot):
     def __init__(self, halves_df, **kwargs):
         self.corpus_title = 'corpus_chronology'
         # Initialise the base plot with our given kwargs
-        super().__init__(figure_title=fr'{FOLDER_PATH}\regplot_recordinghalves_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'{FOLDER_PATH}/regplot_recordinghalves_{self.corpus_title}', **kwargs)
         self.df = halves_df
         self.fig, self.ax = plt.subplots(
             nrows=2, ncols=2, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2),
@@ -440,7 +440,7 @@ class RegPlotCouplingGrangerCross(vutils.BasePlot):
     def __init__(self, model_df, **kwargs):
         self.corpus_title = 'corpus_chronology'
         # Initialise the base plot with our given kwargs
-        super().__init__(figure_title=fr'{FOLDER_PATH}\regplot_couplinggrangercross_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'{FOLDER_PATH}/regplot_couplinggrangercross_{self.corpus_title}', **kwargs)
         self.df = self._format_df(model_df)
         self.fig, self.ax = plt.subplots(
             nrows=2, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 2), sharey='row', sharex='col',
@@ -557,7 +557,7 @@ class BarPlotCouplingCoefficients(vutils.BasePlot):
 
     def __init__(self, model_df, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus_chronology')
-        super().__init__(figure_title=fr'coordination_plots\barplot_coefficients_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'coordination_plots/barplot_coefficients_{self.corpus_title}', **kwargs)
         self.df = (
             model_df.melt(
                 id_vars=['mbz_id', 'instrument'],
@@ -614,7 +614,7 @@ class BarPlotSimulationComparison(vutils.BasePlot):
 
     def __init__(self, all_sims, all_params: list, **kwargs):
         self.corpus_title = kwargs.get('corpus_title', 'corpus_chronology')
-        super().__init__(figure_title=fr'coordination_plots\barplot_simulationcomparison_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'coordination_plots/barplot_simulationcomparison_{self.corpus_title}', **kwargs)
         self.df = self._format_df(all_sims)
         self.params = all_params
         self.fig = plt.figure(figsize=(vutils.WIDTH, vutils.WIDTH / 3))
@@ -690,7 +690,7 @@ class HistPlotCouplingTerms(vutils.BasePlot):
 
     def __init__(self, coupling_df, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'coordination_plots\histplot_couplingterms_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'coordination_plots/histplot_couplingterms_{self.corpus_title}', **kwargs)
         self.df = (
             coupling_df.set_index('instrument')
             .loc[utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
@@ -771,7 +771,7 @@ class TrianglePlotTrack(vutils.BasePlot):
 
     def __init__(self, onset_maker):
         self.df = self._format_df(onset_maker)
-        self.fname = rf'onsets_plots\triangleplot_coordination_{onset_maker.item["mbz_id"]}'
+        self.fname = rf'onsets_plots/triangleplot_coordination_{onset_maker.item["mbz_id"]}'
         self.title = onset_maker.item['fname']
         super().__init__(figure_title=self.fname)
         self.bar_df = self._format_bar_df()
@@ -779,7 +779,7 @@ class TrianglePlotTrack(vutils.BasePlot):
 
     @staticmethod
     def _format_df(om):
-        from src.features.features_utils import PhaseCorrection
+        from src.features.rhythm_features import PhaseCorrection
         sd = pd.DataFrame(om.summary_dict)
         res = []
         for my_instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
