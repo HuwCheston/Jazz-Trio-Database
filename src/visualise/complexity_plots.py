@@ -15,13 +15,134 @@ from src import utils
 
 __all__ = [
     'HistPlotBins', 'HistPlotBinsTrack', 'BarPlotComplexityDensity', 'BarPlotTotalBins',
-    'RegPlotTempoDensityComplexity', 'FRACS', 'FRACS_S'
+    'RegPlotTempoDensityComplexity', 'FRACS', 'FRACS_S', 'ViolinPlotOnsetComplexity'
 
 ]
 
 FRACS = [1, 1 / 2, 5 / 12, 3 / 8, 1 / 3, 1 / 4, 1 / 6, 1 / 8, 1 / 12, 0]
 FRACS_S = [r'>$\frac{1}{2}$', r'$\frac{1}{2}$', r'$\frac{5}{12}$', r'$\frac{3}{8}$', r'$\frac{1}{3}$',
            r'$\frac{1}{4}$', r'$\frac{1}{6}$', r'$\frac{1}{8}$', r'$\frac{1}{12}$', r'<$\frac{1}{12}$']
+
+
+class ViolinPlotOnsetComplexity(vutils.BasePlot):
+    PAL = sns.cubehelix_palette(dark=1 / 3, gamma=.3, light=2 / 3, start=0, n_colors=20, as_cmap=False)
+    img_loc = fr'{utils.get_project_root()}/references/images/musicians'
+    KDE_KWS = dict(
+        linecolor=vutils.BLACK, density_norm='count', hue=True,
+        palette=PAL, hue_order=[True, False], split=True,
+        legend=False, inner=None, bw_method='scott', cut=0,
+        gridsize=vutils.N_BOOT
+    )
+    EBAR_KWS = dict(
+        ls='none', color=vutils.RED, linewidth=vutils.LINEWIDTH * 1.5, capsize=5,
+        capthick=vutils.LINEWIDTH * 1.5, ecolor=vutils.RED, zorder=10
+    )
+    SCAT_KWS = dict(
+        facecolor=vutils.RED, lw=vutils.LINEWIDTH / 2,
+        edgecolor=vutils.BLACK, s=100, zorder=15
+    )
+
+    def __init__(self, complex_df: pd.DataFrame, **kwargs):
+        self.corpus_title = kwargs.get('corpus_title', 'corpus_updated')
+        self.include_images = kwargs.get('include_images', True)
+        fig_title = fr'complexity_plots/violinplot_complexity_{self.corpus_title}'
+        if not self.include_images:
+            fig_title += '_no_images'
+        super().__init__(figure_title=fig_title, **kwargs)
+        self.df = self._format_df(complex_df)
+        self.fig, self.ax = plt.subplots(
+            nrows=1, ncols=2, sharex=False, sharey=True,
+            figsize=(vutils.WIDTH, vutils.WIDTH / 2)
+        )
+
+    @staticmethod
+    def _format_df(df):
+        order = reversed(
+            df.groupby('bandleader', as_index=False)
+            ['n_onsets']
+            .mean()
+            .sort_values(by='n_onsets')
+            ['bandleader']
+            .values
+        )
+        return (
+            df.copy(deep=True)
+            .set_index('bandleader')
+            .loc[order]
+            .reset_index(drop=False)
+        )
+
+    def _create_plot(self):
+        for a, v in zip(self.ax.flatten(), ['n_onsets', 'lz77']):
+            bwa = 1 if v == 'n_onsets' else 1.6
+            sns.violinplot(
+                data=self.df, x=v, y='bandleader', ax=a, bw_adjust=bwa, **self.KDE_KWS
+            )
+            for patch, col in zip(a.collections, self.PAL):
+                patch.set_facecolor(col)
+                patch.set_edgecolor(vutils.BLACK)
+                patch.set_linewidth(vutils.LINEWIDTH)
+            for line in a.lines:
+                line.set_linestyle(vutils.LINESTYLE)
+                line.set_color(vutils.BLACK)
+                line.set_alpha(0.8)
+            med = self.df.groupby('bandleader', as_index=False, sort=False).agg({v: ['mean', 'std']})
+            med.columns = [col[0] if col[1] == '' else col[1] for col in med.columns]
+            a.scatter(med['mean'], [i + 0.4 for i in range(len(med))], **self.SCAT_KWS)
+            for idx, row in med.iterrows():
+                a.errorbar(
+                    x=[row['mean'], row['mean']], y=[idx + 0.4, idx + 0.4],
+                    xerr=[row['std'], row['std']], **self.EBAR_KWS
+                )
+                a.axhline(
+                    idx + 0.4, 0, 1, color=vutils.BLACK,
+                    linewidth=vutils.LINEWIDTH, linestyle=vutils.LINESTYLE, zorder=0
+                )
+
+    def _add_bandleader_images(self, ax, bl: str, y: float) -> None:
+        """Adds images corresponding to a given bandleader `bl` at position `y`"""
+        fpath = fr'{self.img_loc}/{bl.replace(" ", "_").lower()}.png'
+        img = mpl.offsetbox.OffsetImage(
+            plt.imread(fpath), clip_on=False, transform=ax.transAxes, zoom=0.5
+        )
+        ab = mpl.offsetbox.AnnotationBbox(
+            img, (-6, y + 0.2), xycoords='data', clip_on=False, transform=ax.transAxes,
+            annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
+        )
+        ax.add_artist(ab)
+
+    def _format_ax(self):
+        """Format axis-level properties"""
+        # Set final properties
+        # self._add_nburs_to_tick()
+        for ax, xlim, xlab in zip(
+                self.ax.flatten(),
+                [(0, 64), (4, 20)],
+                ['Density ($N$ onsets)', 'Compression (LZ77)']
+        ):
+            ax.set(
+                xticks=np.linspace(xlim[0], xlim[1], 5),
+                # xticklabels=[-1, 0, 1, 1.585],
+                xlabel=xlab, ylabel='', xlim=xlim, ylim=(9.6, -0.3),
+                yticks=np.linspace(0.4, 9.4, 10)
+            )
+            ax.set_xlabel(xlab, fontsize=vutils.FONTSIZE * 1.1)
+            # ax.set_yticklabels([i.get_text() for i in ax.get_yticklabels()], va='bottom')
+            ax.grid(axis='x', which='major', **vutils.GRID_KWS)
+            ax.tick_params(axis='y', which='major', pad=70)
+            # Adjust line and tick width
+            plt.setp(ax.spines.values(), linewidth=vutils.LINEWIDTH)
+            ax.tick_params(axis='both', width=vutils.TICKWIDTH)
+        if self.include_images:
+            for num, pi in enumerate(self.df['bandleader'].unique()):
+                self._add_bandleader_images(self.ax[0], pi, num)
+
+    def _format_fig(self) -> None:
+        """Format figure-level properties"""
+        # self.fig.supxlabel('Four measure window', x=0.55)
+        self.fig.supylabel('Pianist')
+        # Adjust subplot positioning
+        self.fig.subplots_adjust(left=0.2, right=0.95, top=0.85, bottom=0.1, hspace=0, wspace=0.05)
 
 
 class HistPlotBins(vutils.BasePlot):
@@ -35,7 +156,7 @@ class HistPlotBins(vutils.BasePlot):
 
     def __init__(self, ioi_df: pd.DataFrame, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        fname = kwargs.get('figure_title', fr'complexity_plots\histplot_ioibins_{self.corpus_title}')
+        fname = kwargs.get('figure_title', fr'complexity_plots/histplot_ioibins_{self.corpus_title}')
         super().__init__(figure_title=fname)
         self.n_bins = kwargs.get('n_bins', 300)
         self.ioi_df = ioi_df
@@ -97,7 +218,7 @@ class BarPlotComplexityDensity(vutils.BasePlot):
 
     def __init__(self, complex_df, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'complexity_plots\barplot_complexity_density_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'complexity_plots/barplot_complexity_density_{self.corpus_title}', **kwargs)
         self.df = (
             complex_df.set_index('instr')
             .loc[utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
@@ -137,7 +258,7 @@ class BarPlotComplexityDensity(vutils.BasePlot):
 
 class BarPlotTotalBins(vutils.BasePlot):
     """Creates a barplot showing the number of inter-onset intervals contained within each bin"""
-    img_loc = fr'{utils.get_project_root()}\references\images\notation'
+    img_loc = fr'{utils.get_project_root()}/references/images/notation'
     BAR_KWS = dict(
         color=vutils.RGB, zorder=10, lw=vutils.LINEWIDTH, edgecolor=vutils.BLACK, ylabel='Count', label='Bin',
         kind='bar', stacked=True,
@@ -145,7 +266,7 @@ class BarPlotTotalBins(vutils.BasePlot):
 
     def __init__(self, ioi_df, **kwargs):
         self.corpus_title = 'corpus_chronology'
-        super().__init__(figure_title=fr'complexity_plots\barplot_totalbins_{self.corpus_title}', **kwargs)
+        super().__init__(figure_title=fr'complexity_plots/barplot_totalbins_{self.corpus_title}', **kwargs)
         # Coerce provided dataframe into correct format for plotting
         self.df = (
             ioi_df.groupby(['instr', 'bin'], as_index=True, sort=False)
@@ -165,7 +286,7 @@ class BarPlotTotalBins(vutils.BasePlot):
     def _add_notation_images(self, y: int = 155000) -> None:
         """Adds notation images to plot at given position `y`"""
         for tick in self.ax.get_xticklabels()[1:-1]:
-            fpath = r'\notation_' + '_'.join(tick.get_text().split('{')[1:])[:-1].replace('}', '') + '.png'
+            fpath = r'/notation_' + '_'.join(tick.get_text().split('{')[1:])[:-1].replace('}', '') + '.png'
             img = mpl.offsetbox.OffsetImage(
                 plt.imread(self.img_loc + fpath), clip_on=False, transform=self.ax.transAxes, zoom=0.5
             )
@@ -226,7 +347,7 @@ class RegPlotTempoDensityComplexity(vutils.BasePlot):
         self.corpus_title = 'corpus_chronology'
         # Initialise the base plot with our given kwargs
         super().__init__(
-            figure_title=fr'complexity_plots\regplot_tempo_density_complexity_{self.corpus_title}', **kwargs
+            figure_title=fr'complexity_plots/regplot_tempo_density_complexity_{self.corpus_title}', **kwargs
         )
         self.df = average_df
         self.fig, self.ax = plt.subplots(
@@ -323,12 +444,12 @@ class RegPlotTempoDensityComplexity(vutils.BasePlot):
 class HistPlotBinsTrack(HistPlotBins):
     def __init__(self, onset_maker, **kwargs):
         self.df = self._format_df(onset_maker)
-        self.fname = rf'onsets_plots\histplot_complexity_{onset_maker.item["mbz_id"]}'
+        self.fname = rf'onsets_plots/histplot_complexity_{onset_maker.item["mbz_id"]}'
         self.title = onset_maker.item['fname']
         super().__init__(self.df, figure_title=self.fname, n_bins=kwargs.get('n_bins', 10))
 
     def _format_df(self, om):
-        from src.features.features_utils import IOIComplexity
+        from src.features.rhythm_features import IOIComplexity
         downbeats = om.ons['downbeats_manual']
         time_signature = om.item['time_signature']
         tempo = om.tempo
