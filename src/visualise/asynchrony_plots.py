@@ -552,10 +552,12 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
     PLOT_KWS = dict(lw=vutils.LINEWIDTH, ls=vutils.LINESTYLE, zorder=10)
     FILL_KWS = dict(alpha=0.1, zorder=5)
     VLINE_KWS = dict(linestyle='dashed', alpha=1, zorder=1, linewidth=vutils.LINEWIDTH * 1.5)
+    XTICKS = [-1 / 16, -1 / 32, -1 / 64, 0, 1 / 64, 1 / 32, 1 / 16]
+    XTICKLABELS = [f'{round(i * 400, 1)}%' if i != 0 else r'$\pm$0%' for i in XTICKS]
 
     def __init__(self, async_df: pd.DataFrame, **kwargs):
         """Called when initialising the class"""
-        self.corpus_title = 'corpus_chronology'
+        self.corpus_title = 'corpus_updated'
         self.include_images = kwargs.get('include_images', True)
         fig_title = fr'asynchrony_plots/histplot_asynchronytriospiano_{self.corpus_title}'
         if not self.include_images:
@@ -564,7 +566,8 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
         super().__init__(figure_title=fig_title, **kwargs)
         self.df = async_df.copy(deep=True)
         order = reversed(
-            self.df.groupby('bandleader', as_index=False)
+            self.df[self.df['instr'] == 'drums']
+            .groupby('bandleader', as_index=False)
             ['asynchrony']
             .mean()
             .sort_values(by='asynchrony')
@@ -578,10 +581,11 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
         )
 
     @staticmethod
-    def _kde(vals: np.array) -> tuple:
+    def _kde(vals: np.array, bw_adjust: float = 1.2) -> tuple:
         """Fit the KDE to the data and evaluate on a linear space of integers, then scale between 0 and 1"""
         # Fit the actual KDE to the data, using the default parameters
-        kde = stats.gaussian_kde(vals.T, bw_method=.185)
+        kde = stats.gaussian_kde(vals.T, bw_method='scott')
+        kde.set_bandwidth(kde.factor * bw_adjust)
         # Create a linear space of integers ranging from our lowest to our highest BUR
         x = np.linspace(vals.min(), vals.max(), 100)[:, np.newaxis].T[0]
         # Evaluate the KDE on our linear space of integers
@@ -615,7 +619,7 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
             plt.imread(fpath), clip_on=False, transform=ax.transAxes, zoom=0.5
         )
         ab = mpl.offsetbox.AnnotationBbox(
-            img, (-1/16 - 0.015, y), xycoords='data', clip_on=False, transform=ax.transAxes,
+            img, (-1 / 16 - 0.02, y), xycoords='data', clip_on=False, transform=ax.transAxes,
             annotation_clip=False, bboxprops=dict(edgecolor='none', facecolor='none')
         )
         ax.add_artist(ab)
@@ -633,12 +637,12 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
                 # If we can get the image, then yield it to add to our plot
                 else:
                     ax.text(
-                        1/val - 0.001, y, '–' if val < 0 else '+', ha='right', va='center', clip_on=False, zorder=1000
+                        1 / val - 0.001, y, '–' if val < 0 else '+', ha='right', va='center', clip_on=False, zorder=1000
                     )
                     ax.add_artist(mpl.offsetbox.AnnotationBbox(
-                        mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.75), (1/val, y+.25),
+                        mpl.offsetbox.OffsetImage(img, clip_on=False, zoom=0.75), (1 / val, y + .25),
                         frameon=False, xycoords='data', clip_on=False, annotation_clip=False, zorder=0
-                     ))
+                    ))
 
     def _format_ax(self) -> None:
         """Format axis-level parameters"""
@@ -676,21 +680,15 @@ class HistPlotProportionalAsynchronyTriosPiano(vutils.BasePlot):
                         self._add_bandleader_images(i, ax, y)
                     lab = i
                 ax.set(
-                    xlim=(-1/16 - 0.005, 1/16 + 0.005), ylim=yl,
-                    yticks=[0], yticklabels=[lab],
-                    xticks=[-1/16, -1/32, -1/64, 0, 1/64, 1/32, 1/16],
-                    xticklabels=[
-                        r'–$\frac{1}{16}$', r'–$\frac{1}{32}$', r'–$\frac{1}{64}$',
-                        r'$\pm$0',
-                        r'+$\frac{1}{64}$', r'+$\frac{1}{32}$', r'+$\frac{1}{16}$'
-                    ]
+                    xlim=(-1 / 16 - 0.01, 1 / 16 + 0.01), ylim=yl, yticks=[0], yticklabels=[lab], xticks=self.XTICKS,
+                    xticklabels=self.XTICKLABELS
                 )
                 if num != 9:
                     plt.setp(ax.yaxis.get_majorticklabels(), va="bottom")
 
     def _format_fig(self) -> None:
         """Format figure-level parameters"""
-        self.fig.supxlabel('Relative position of piano', x=0.55)
+        self.fig.supxlabel('Relative position of piano (% of quarter note duration)', x=0.55)
         self.fig.supylabel('Pianist')
         # Adjust subplot positioning
         self.fig.subplots_adjust(left=0.2, right=0.95, top=0.85, bottom=0.1, hspace=0, wspace=0.05)

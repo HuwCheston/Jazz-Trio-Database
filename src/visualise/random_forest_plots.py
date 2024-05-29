@@ -513,7 +513,7 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
     palette = [palette[2], palette[4], palette[0], palette[1],   palette[3]]
 
     def __init__(self, logit_md, category_mapping, **kwargs):
-        self.corpus_title = 'corpus_chronology'
+        self.corpus_title = 'corpus_updated'
         super().__init__(
             figure_title=fr'random_forest_plots/stripplot_logitcoeffs_{self.corpus_title}', **kwargs
         )
@@ -568,7 +568,7 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
         self.ax.set(
             ylim=(17.5, -0.5), xlabel='Odds ratio (95% CI, log scale)', xticks=[0.1, 1, 10],
-            xlim=(0.099, 20.5), ylabel='Predictor', xticklabels=[0.1, 1, 10],
+            xlim=(0.099, 20.5), ylabel='Feature', xticklabels=[0.1, 1, 10],
             yticklabels=[COL_MAPPING[i.get_text()] for i in self.ax.get_yticklabels()],
         )
         self._format_legend()
@@ -583,9 +583,9 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
         """Formats axis legend"""
         handles, labels = self.ax.get_legend_handles_labels()
         for ha in handles:
-            ha.set_edgecolor(vutils.BLACK)
+            # ha.set_edgecolor(vutils.BLACK)
             ha.set_linewidth(vutils.LINEWIDTH)
-            ha.set_sizes([100])
+            # ha.set_sizes([100])
         self.ax.legend(handles, labels, loc='upper right', title='Category', **self.LEGEND_KWS)
 
     def _format_yticks(self) -> None:
@@ -596,8 +596,9 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
 
     def _format_fig(self) -> None:
         """Formats figure-level parameters"""
-        self.ax.text(0.15, -1, '← More likely to be "Impressionist"', fontsize=vutils.FONTSIZE * 1.1)
-        self.ax.text(1.15, -1, 'More likely to be "Blues" →', fontsize=vutils.FONTSIZE * 1.1)
+        # self.ax.text(0.3, -1.75, 'Increases in a given predictor mean a pianist is...', fontsize=vutils.FONTSIZE * 1.1)
+        # self.ax.text(0.15, -1, '←←← ...more likely to be in cluster (1)', fontsize=vutils.FONTSIZE * 1.1)
+        # self.ax.text(1.15, -1, '...more likely to be in cluster (2) →→→', fontsize=vutils.FONTSIZE * 1.1)
         self.fig.tight_layout()
 
 

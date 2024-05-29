@@ -150,7 +150,7 @@ class ViolinPlotBURs(vutils.BasePlot):
         for artist in self.add_bur_images(y=-1.3):
             self.ax.add_artist(artist)
         # Set final properties
-        self._add_nburs_to_tick()
+        # self._add_nburs_to_tick()
         self.ax.set(
             xticks=[np.log2(b) for b in self.BURS_WITH_IMAGES], xlabel='', ylabel='',
             xticklabels=[-1, 0, 1, 1.585], xlim=(-2, 2), ylim=(9.6, -0.5),
