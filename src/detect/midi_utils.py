@@ -46,8 +46,8 @@ class Interval:
 
     def __init__(self, firstnote: Note, secondnote: Note):
         self.start = firstnote.start
-        self.interval = firstnote.pitch - secondnote.pitch
-        self.interval_class = firstnote.pitch_class - secondnote.pitch_class
+        self.interval = secondnote.pitch - firstnote.pitch
+        self.interval_class = secondnote.pitch_class - firstnote.pitch_class
         self.ioi = secondnote.start - firstnote.start
         self.velocity_change = firstnote.velocity - secondnote.velocity
 
