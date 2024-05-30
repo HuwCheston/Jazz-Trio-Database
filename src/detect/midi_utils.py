@@ -58,18 +58,27 @@ class Interval:
 
 
 class MelodyMaker:
+    """Extracts melody from MIDI using skyline algorithm, and also provides functions for chunking into measures"""
     SHORTEST_RHYTHM = 1 / 64
     TIME_THRESH = 0.01    # notes shorted than 10 milliseconds will be removed
-    NOTE_LB, NOTE_UB = (int(pretty_midi.hz_to_note_number(FREQUENCY_BANDS['piano'][fm])) for fm in ['fmin', 'fmax'])
+    # We don't need these thresholds, as we didn't filter the piano audio before generation
+    # NOTE_LB, NOTE_UB = (int(pretty_midi.hz_to_note_number(FREQUENCY_BANDS['piano'][fm])) for fm in ['fmin', 'fmax'])
     MIDDLE_C = 60
 
-    def __init__(self, midi_fpath: str, om: OnsetMaker):
+    def __init__(
+            self,
+            midi_fpath: str,
+            beats: np.array,
+            downbeats: np.array,
+            tempo: float,
+            time_signature: int
+    ):
         # Attributes taken directly from the `OnsetMaker` class
-        self.beats = om.summary_dict['beats']
-        self.downbeats = om.ons['downbeats_manual']
-        self.tempo = om.tempo
+        self.beats = beats
+        self.downbeats = downbeats
+        self.tempo = tempo
         self.quarter_note = 60 / self.tempo    # duration of a quarter note in seconds
-        self.time_signature = om.item['time_signature']
+        self.time_signature = time_signature
         self.tempo_thresh = (self.quarter_note * self.time_signature) / 1 / 64  # len(one bar) / (musical value)
         self.midi = self.load_midi(midi_fpath)
 
@@ -90,8 +99,8 @@ class MelodyMaker:
     def _remove_pitches_below_threshold(self, notes: list[pretty_midi.Note]) -> list[pretty_midi.Note]:
         return sorted(
             [n for n in notes if not any([
-                n.pitch <= self.NOTE_LB,
-                n.pitch >= self.NOTE_UB,
+                # n.pitch <= self.NOTE_LB,
+                # n.pitch >= self.NOTE_UB,
                 n.pitch <= self.MIDDLE_C
             ])],
             key=lambda n: n.start
@@ -104,6 +113,7 @@ class MelodyMaker:
             notes: list[pretty_midi.Note],
             num_ticks: int = 8
     ) -> Generator[pretty_midi.Note, None, None]:
+        """Quantize notes within a beat to the nearest 64th note (default)"""
         ticks = np.linspace(beat1, beat2, num_ticks)
         closest = lambda n: ticks[np.argmin(np.abs(n.start - ticks))]
         yield from (pretty_midi.Note(start=closest(n), end=n.end, pitch=n.pitch, velocity=n.velocity) for n in notes)
@@ -116,15 +126,22 @@ class MelodyMaker:
             yield Note(max(vals, key=lambda n: n.pitch))
 
     def extract_melody(self):
+        """Applies skyline algorithm to extract melody from MIDI"""
+        # Remove any notes with rhythms or pitches below our thresholds
         notes = self._remove_pitches_below_threshold(self._remove_iois_below_threshold(self.midi.notes))
+        # Iterate over the MIDI contained within each beat
+        # TODO: do we want to add a window around here? I.e. a 32nd note before each beat?
         for beat1, beat2 in zip(self.beats, self.beats[1:]):
+            # Quantize the notes within this beat to the nearest 64th note
             quantized_notes = self._quantize_notes_in_beat(beat1, beat2, [n for n in notes if beat1 <= n.start < beat2])
+            # Yield the highest note from the quantized MIDI
             yield from self._extract_highest_note(quantized_notes)
 
     def extract_intervals(
             self,
             melody_notes: list[Note]
     ) -> Generator[Interval, None, None]:
+        """Extracts intervals from a sequence of melody notes"""
         if melody_notes is None:
             # Extract the melody and convert it to a list: we can't subscript a generator object
             melody_notes = list(self.extract_melody())
@@ -137,6 +154,7 @@ class MelodyMaker:
             chunk_measures: int = 4,
             overlapping_chunks: bool = True,
     ) -> list[tuple[Note]]:
+        """Chunks a melody into slices, corresponding to a number of measures (consecutive chunks can be overlapping)"""
         if notes is None:
             notes = self.extract_melody()
         if overlapping_chunks:
