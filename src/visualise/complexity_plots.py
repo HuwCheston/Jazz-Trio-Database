@@ -265,7 +265,7 @@ class BarPlotTotalBins(vutils.BasePlot):
     )
 
     def __init__(self, ioi_df, **kwargs):
-        self.corpus_title = 'corpus_chronology'
+        self.corpus_title = 'corpus_updated'
         super().__init__(figure_title=fr'complexity_plots/barplot_totalbins_{self.corpus_title}', **kwargs)
         # Coerce provided dataframe into correct format for plotting
         self.df = (
@@ -279,9 +279,12 @@ class BarPlotTotalBins(vutils.BasePlot):
         )
         self.fig, self.ax = plt.subplots(1, 1, figsize=(vutils.WIDTH, vutils.WIDTH / 2))
 
-    def _create_plot(self) -> plt.Axes:
-        """Creates stacked barplot object using pandas plotting interface"""
-        return self.df.plot(ax=self.ax, **self.BAR_KWS)
+    def _create_plot(self):
+        return self.df.plot(
+            kind='bar', stacked=True, ax=self.ax, color=vutils.RED, zorder=10,
+            lw=vutils.LINEWIDTH, edgecolor=vutils.BLACK, ylabel='Count',
+            xlabel='Binned inter-onset interval'
+        )
 
     def _add_notation_images(self, y: int = 155000) -> None:
         """Adds notation images to plot at given position `y`"""
@@ -296,18 +299,14 @@ class BarPlotTotalBins(vutils.BasePlot):
             )
             self.ax.add_artist(ab)
 
-    def _format_ax(self) -> None:
-        """Formats axis-level parameters"""
+    def _format_ax(self):
+        """Format axis-level parameters"""
         self.ax.set(xticklabels=reversed(FRACS_S))
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.ax.grid(zorder=0, axis='y', **vutils.GRID_KWS)
-        hand, _ = self.ax.get_legend_handles_labels()
-        self.ax.legend(
-            hand, [i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()], title='Instrument',
-            loc='upper right', frameon=True, framealpha=1, edgecolor=vutils.BLACK
-        )
-        self._add_notation_images()
+        self.ax.get_legend().remove()
+        self._add_notation_images(y=90000)
         ax_t = self.ax.secondary_xaxis('top')
         ax_t.set_xticks(self.ax.get_xticks(), labels=[])
         ax_t.tick_params(width=vutils.TICKWIDTH)

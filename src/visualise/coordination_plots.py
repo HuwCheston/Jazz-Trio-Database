@@ -18,8 +18,55 @@ FOLDER_PATH = 'coordination_plots'
 
 __all__ = [
     'TriangleAxis', 'TrianglePlotChronology', 'RegPlotCouplingHalves', 'BarPlotSimulationComparison',
-    'RegPlotCouplingGrangerCross', 'BarPlotCouplingCoefficients', 'HistPlotCouplingTerms', 'TrianglePlotTrack'
+    'RegPlotCouplingGrangerCross', 'BarPlotCouplingCoefficients', 'HistPlotCouplingTerms', 'TrianglePlotTrack',
+    'BarPlotModelComparison'
 ]
+
+
+class BarPlotModelComparison(vutils.BasePlot):
+    BAR_KWS = dict(
+        errorbar=('ci', 95), estimator=np.nanmean, errwidth=2,
+        errcolor=vutils.BLACK, edgecolor=vutils.BLACK, lw=2,
+        n_boot=10, seed=1, capsize=0.1, width=0.8,
+        palette=vutils.RGB, hue_order=utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()
+    )
+
+    def __init__(self, model_df, **kwargs):
+        self.corpus_title = kwargs.get('corpus_title', 'corpus_chronology')
+        super().__init__(figure_title=fr'coordination_plots\barplot_modelcomparison_{self.corpus_title}', **kwargs)
+        self.df = (
+            model_df.set_index('instr')
+            .loc[utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]
+            .reset_index(drop=False)
+        )
+        self.fig, self.ax = plt.subplots(
+            nrows=2, ncols=1, sharex=True, sharey=False, figsize=(vutils.WIDTH / 2, vutils.WIDTH / 2)
+        )
+        self.hand, self.lab = None, None
+
+    def _create_plot(self):
+        for ax, var in zip(self.ax.flatten(), ['r2', 'bic']):
+            sns.barplot(data=self.df, x='order', y=var, hue='instr', ax=ax, **self.BAR_KWS)
+
+    def _format_ax(self):
+        repeater = lambda x: [val for val in x for _ in range(0, 4)]
+        for ax in self.ax.flatten():
+            self.hand, self.lab = ax.get_legend_handles_labels()
+            ax.get_legend().remove()
+            plt.setp(ax.spines.values(), linewidth=2)
+            ax.tick_params(axis='both', width=3)
+            for patch, hatch in zip(ax.patches, repeater(vutils.HATCHES[:3])):
+                patch.set_hatch(hatch)
+        self.ax[0].set(ylabel=r'Mean $R^{2}_{adj}$', xlabel='', ylim=(0, 1))
+        self.ax[1].set(ylabel='Mean BIC', ylim=(-1250, 0), xlabel='Model order ($k$)')
+
+    def _format_fig(self):
+        self.ax[1].legend(
+            self.hand, ['Piano', 'Bass', 'Drums'],
+            loc='lower right', title='Instrument', frameon=True,
+            framealpha=1, edgecolor=vutils.BLACK
+        )
+        self.fig.tight_layout()
 
 
 class TriangleAxis:
@@ -805,9 +852,11 @@ class TrianglePlotTrack(vutils.BasePlot):
         instr = model_df['variable'].str.replace('coupling_', '').str.title()
         model_df['variable'] = instr + '→' + model_df['instrument'].str.title()
         model_df['instrument'] = instr
-        return (model_df.set_index('instrument')
+        return (
+            model_df.set_index('instrument')
             .loc[[i.title() for i in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()]]
-            .reset_index(drop=False))
+            .reset_index(drop=False)
+        )
 
     def _create_plot(self):
         ta = TriangleAxis(

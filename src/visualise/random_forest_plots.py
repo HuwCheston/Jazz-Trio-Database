@@ -12,9 +12,11 @@ import pandas as pd
 import scipy.stats as stats
 import seaborn as sns
 import statsmodels.formula.api as smf
+import warnings
 from scipy.cluster.hierarchy import dendrogram
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import confusion_matrix, RocCurveDisplay
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
 from joblib import Parallel, delayed
 
 from src import utils
@@ -202,7 +204,7 @@ class BarPlotFeatureImportances(vutils.BasePlot):
     hatches = {k: h for k, h in zip(PREDICTORS_CATEGORIES.keys(), vutils.HATCHES)}
 
     def __init__(self, importances: pd.DataFrame, **kwargs):
-        self.corpus_title = 'corpus_chronology'
+        self.corpus_title = 'corpus_updated'
         super().__init__(figure_title=fr'random_forest_plots/barplot_feature_importances_{self.corpus_title}', **kwargs)
         # Create both dataframes
         self.importances = (
@@ -210,9 +212,9 @@ class BarPlotFeatureImportances(vutils.BasePlot):
             .melt(id_vars=['feature', 'category'], var_name='fold')
             .groupby('feature')
             [['value', 'category']]
-            .agg({'value': [np.mean, stats.sem], 'category': 'first'})
+            .agg({'value': ['mean', 'sem'], 'category': 'first'})
             .droplevel(0, axis=1)
-            .rename(columns={'first': 'category', 'sem': 'std'})
+            .rename(columns={'first': 'category'})
             .reset_index(drop=False)
             .sort_values(by='mean')
         )
@@ -225,9 +227,15 @@ class BarPlotFeatureImportances(vutils.BasePlot):
     def _create_plot(self) -> plt.Axes:
         """Creates all plots in seaborn with given arguments"""
         self.importances['mean'] *= 100
+        self.importances['sem'] *= 100
+        self.importances['sem'] *= 1.96
         sns.barplot(
             data=self.importances, x='mean', y='feature', hue='category',
             ax=self.ax, **self.BAR_KWS
+        )
+        self.ax.errorbar(
+            x=self.importances['mean'], y=self.importances['feature'],
+            xerr=self.importances['sem'], **self.ERROR_KWS
         )
 
     def _format_ticks(self) -> None:
@@ -242,7 +250,7 @@ class BarPlotFeatureImportances(vutils.BasePlot):
     def _format_ax(self) -> None:
         """Formats axis-level properties"""
         # Set variable labelling
-        self.ax.set(ylabel='Variable', xlabel='Feature Importance (%)')
+        self.ax.set(ylabel='Feature', xlabel='Importance (accuracy loss, %)', ylim=(18, -1))
         self._format_ticks()
         # Remove the legend
         self.ax.get_legend().remove()
@@ -269,17 +277,17 @@ class BarPlotCategoryImportances(vutils.BasePlot):
     hatches = {k: h for k, h in zip(PREDICTORS_CATEGORIES.keys(), vutils.HATCHES)}
 
     def __init__(self, importances: pd.DataFrame, **kwargs):
-        self.corpus_title = 'corpus_chronology'
+        self.corpus_title = 'corpus_updated'
         super().__init__(
             figure_title=fr'random_forest_plots/barplot_category_importances_{self.corpus_title}', **kwargs
         )
         # Create both dataframes
         self.grouped_importances = (
             importances.copy(deep=True)
-            .mean(axis=1)
-            .sort_values(ascending=True)
+            .agg(['mean', 'sem'], axis=1)
+            .sort_values(by='mean', ascending=True)
             .reset_index(drop=False)
-            .rename(columns={'index': 'category', 0: 'mean'})
+            .rename(columns={'index': 'category'})
         )
         # Create subplot matrix
         self.fig, self.ax = plt.subplots(
@@ -289,9 +297,15 @@ class BarPlotCategoryImportances(vutils.BasePlot):
     def _create_plot(self) -> plt.Axes:
         """Creates all plots in seaborn with given arguments"""
         self.grouped_importances['mean'] *= 100
+        self.grouped_importances['sem'] *= 100
+        self.grouped_importances['sem'] *= 1.96
         sns.barplot(
             data=self.grouped_importances, x='mean', y='category',
             hue='category', ax=self.ax, **self.BAR_KWS
+        )
+        self.ax.errorbar(
+            x=self.grouped_importances['mean'], y=self.grouped_importances['category'],
+            xerr=self.grouped_importances['sem'], **self.ERROR_KWS
         )
 
     def _format_ticks(self) -> None:
@@ -302,7 +316,7 @@ class BarPlotCategoryImportances(vutils.BasePlot):
     def _format_ax(self) -> None:
         """Formats axis-level properties"""
         # Set variable labelling
-        self.ax.set(ylabel='Category', xlabel='Feature Importance (%)')
+        self.ax.set(ylabel='Category', xlabel='Importance (accuracy loss, %)')
         self._format_ticks()
         # Remove the legend
         # self.ax.get_legend().remove()
@@ -739,11 +753,11 @@ class RegPlotPredictorsCareerProgress(vutils.BasePlot):
 
 
 class RegPlotCareerJazzProgress(vutils.BasePlot):
-    predictors = ['drums_prop_async_nanmean', 'tempo_slope', 'bur_log_mean', 'n_onsets_mean', 'coupling_piano_drums']
+    predictors = ['drums_prop_async_nanmean', 'n_onsets_std', 'bur_log_mean', 'bass_prop_async_nanstd']
     palette = sns.color_palette('tab10')
-    palette = [palette[2], palette[4], palette[0], palette[1],   palette[3]]
-    markers = ['o', 's', 'D', '^', 'p']
-    categories = ['Feel', 'Tempo', 'Swing', 'Complexity', 'Interaction']
+    palette = [palette[2], palette[1], palette[0], palette[2]]
+    markers = ['o', 'o', 'o', 'o']
+    categories = ['Feel', 'Complexity', 'Swing', 'Feel']
     REG_KWS = dict(color=vutils.BLACK, linewidth=vutils.LINEWIDTH * 2, ls=vutils.LINESTYLE)
     xspace = np.linspace(0, 1, 100)
     N_JOBS = -1
@@ -756,9 +770,9 @@ class RegPlotCareerJazzProgress(vutils.BasePlot):
             figure_title=fr'random_forest_plots/regplot_careerjazzprogress_{self.corpus_title}', **kwargs
         )
         self.fig, self.ax = plt.subplots(
-            nrows=2, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 2), sharex=True, sharey=False
+            nrows=2, ncols=2, figsize=(vutils.WIDTH, vutils.WIDTH / 2), sharex=True, sharey=False
         )
-        self.ax.flatten()[-1].axis('off')
+        # self.ax.flatten()[-1].axis('off')
 
     def get_line(self, model, mean):
         params = model.params
@@ -779,11 +793,12 @@ class RegPlotCareerJazzProgress(vutils.BasePlot):
 
     def bootstrap(self, data_, predict_) -> pd.DataFrame:
         def shuffle_data_and_fit(state):
+            warnings.simplefilter('ignore', ConvergenceWarning)
             samp = data_.sample(frac=1, replace=True, random_state=state)
             mode = self.fit_model(samp, predict_)
             return pd.Series(self.get_line(mode, np.mean(samp['jazz_progress'])))
 
-        with Parallel(n_jobs=self.N_JOBS, verbose=3) as par:
+        with Parallel(n_jobs=-1, verbose=3) as par:
             boots = par(delayed(shuffle_data_and_fit)(num) for num in range(vutils.N_BOOT))
         boot_ys = pd.concat(boots, axis=1)
         low = boot_ys.apply(lambda r: np.percentile(r, 2.5), axis=1)
@@ -812,18 +827,18 @@ class RegPlotCareerJazzProgress(vutils.BasePlot):
             hand.extend(h)
             a.get_legend().remove()
             a.grid(axis='x', which='major', **vutils.GRID_KWS)
-            a.set_title(tit, color=col)
+            # a.set_title(tit, color=col)
             a.set_ylabel(COL_MAPPING[a.get_ylabel()], color=col)
             a.set(xlabel='', xlim=(-0.05, 1.05))
             plt.setp(a.spines.values(), linewidth=vutils.LINEWIDTH)
             a.tick_params(axis='both', bottom=True, width=vutils.TICKWIDTH)
-        self.fig.legend(
-            leg, hand, loc='lower right', title='Category', frameon=True,
-            framealpha=1, edgecolor=vutils.BLACK, bbox_to_anchor=(0.9, 0.15)
-        )
+        # self.fig.legend(
+        #     leg, hand, loc='lower right', title='Category', frameon=True,
+        #     framealpha=1, edgecolor=vutils.BLACK, bbox_to_anchor=(0.9, 0.15)
+        # )
 
     def _format_fig(self):
-        self.fig.supxlabel('Career progress (0 = earliest recording, 1 = final recording)')
+        self.fig.supxlabel('Career progress')
         self.fig.subplots_adjust(left=0.07, right=0.99, bottom=0.1, top=0.95, wspace=0.25)
 
 
