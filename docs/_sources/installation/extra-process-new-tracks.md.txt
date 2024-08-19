@@ -1,0 +1,25 @@
+# Process individual tracks
+(process-individual-track)=
+
+*Hit the button to process tracks online!* <a target="_blank" href="https://colab.research.google.com/github/HuwCheston/Jazz-Trio-Database/blob/main/example.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+To process a piano trio recording using our pipeline, you can use a command line interface to run the code in `src/process.py`. For example, to process 30 seconds of audio from [Chick Corea's Akoustic Band 'Spain'](https://www.youtube.com/watch?v=BguWLXMARHk):
+
+```
+git clone https://github.com/HuwCheston/Jazz-Trio-Database.git
+cd Jazz-Trio-Database
+python -m venv venv
+call venv/Scripts/activate.bat    # Windows
+source venv/bin/activate    # Linux/OSX
+pip install -r requirements.txt
+bash postBuild    # Linux/OSX only: download pretrained models to prevent having to do this on first run
+python src/process.py -i "https://www.youtube.com/watch?v=BguWLXMARHk" --begin "03:00" --end "03:30"
+```
+
+This will create a new folder in the root directory of the repository: source audio is stored in `/data`, annotations in `/annotations`, and extracted features in `/outputs`. Extracted features follow the format given in `Cheston, Schlichting, Cross, & Harrison (2024)`.
+
+By default, the script will use the parameter settings described in `Cheston, Schlichting, Cross, & Harrison (2024)` for extracting onsets and beats. This can be changed by passing `-p`/`--params`, followed by the name of a folder (inside `references/parameter_optimisation`) containing a `converged_parameters.json` file.
+
+The script will also use a set of default parameters for the given track (e.g. time signature). To override these, pass in the `-j`/`--json` argument, followed by a path to a `.json` file following the format outlined in the `metadata` table above.

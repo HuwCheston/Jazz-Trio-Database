@@ -1,0 +1,1129 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>src.clean package &#8212; Jazz Trio Database</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=bd9e20870c6007c4c509" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=bd9e20870c6007c4c509"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'src.clean';</script>
+    <link rel="icon" href="_static/html_favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <header>
+  
+    <div class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Jazz Trio Database</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="installation/getting-started.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="src/modules.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="resources/online-resources.html">
+                        Resources
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/huwcheston" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </div>
+  
+  </header>
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="installation/getting-started.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="src/modules.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="resources/online-resources.html">
+                        Resources
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://twitter.com/huwcheston" title="Twitter" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-twitter fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Twitter</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">src.clean package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.detect.html">src.detect package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.features.html">src.features package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.visualise.html">src.visualise package</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">src.clean package</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="src-clean-package">
+<h1>src.clean package<a class="headerlink" href="#src-clean-package" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="module-src.clean.clean_utils">
+<span id="src-clean-clean-utils-module"></span><h2>src.clean.clean_utils module<a class="headerlink" href="#module-src.clean.clean_utils" title="Permalink to this heading">#</a></h2>
+<p>Utility classes, functions, and variables used in the data cleaning process</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.clean.clean_utils.HidePrints">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.clean.clean_utils.</span></span><span class="sig-name descname"><span class="pre">HidePrints</span></span><a class="headerlink" href="#src.clean.clean_utils.HidePrints" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper class that prevents a function from printing to stdout when used as a context manager</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.clean.clean_utils.</span></span><span class="sig-name descname"><span class="pre">ItemMaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.clean.clean_utils.ItemMaker" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Makes a single item in the corpus by downloading from YouTube, splitting audio channels, and separating</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker._download_audio_excerpt_from_youtube">
+<span class="sig-name descname"><span class="pre">_download_audio_excerpt_from_youtube</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils.ItemMaker._download_audio_excerpt_from_youtube" title="Permalink to this definition">#</a></dt>
+<dd><p>Downloads an item in the corpus from a YouTube link</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker._get_valid_links">
+<span class="sig-name descname"><span class="pre">_get_valid_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bad_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'&quot;playabilityStatus&quot;:{&quot;status&quot;:&quot;ERROR&quot;'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.clean.clean_utils.ItemMaker._get_valid_links" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a list of valid YouTube links from the Corpus JSON</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker._logger_wrapper">
+<span class="sig-name descname"><span class="pre">_logger_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils.ItemMaker._logger_wrapper" title="Permalink to this definition">#</a></dt>
+<dd><p>Simple wrapper that logs a given message and indexes it for later access</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker._split_left_right_audio_channels">
+<span class="sig-name descname"><span class="pre">_split_left_right_audio_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils.ItemMaker._split_left_right_audio_channels" title="Permalink to this definition">#</a></dt>
+<dd><p>Splits audio into left and right channels for independent processing</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker.abs_tol">
+<span class="sig-name descname"><span class="pre">abs_tol</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.05</span></em><a class="headerlink" href="#src.clean.clean_utils.ItemMaker.abs_tol" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker.finalize_output">
+<span class="sig-name descname"><span class="pre">finalize_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils.ItemMaker.finalize_output" title="Permalink to this definition">#</a></dt>
+<dd><p>Finalizes the output by cleaning up leftover files and setting any final attributes</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker.fmt">
+<span class="sig-name descname"><span class="pre">fmt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'wav'</span></em><a class="headerlink" href="#src.clean.clean_utils.ItemMaker.fmt" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker.get_item">
+<span class="sig-name descname"><span class="pre">get_item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils.ItemMaker.get_item" title="Permalink to this definition">#</a></dt>
+<dd><p>Tries to find a corpus item locally, and downloads it from the internet if not present</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker.instrs">
+<span class="sig-name descname"><span class="pre">instrs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['piano',</span> <span class="pre">'bass',</span> <span class="pre">'drums']</span></em><a class="headerlink" href="#src.clean.clean_utils.ItemMaker.instrs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker.separate_audio">
+<span class="sig-name descname"><span class="pre">separate_audio</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils.ItemMaker.separate_audio" title="Permalink to this definition">#</a></dt>
+<dd><p>Checks whether to separate audio, gets requred commands, opens subprocessses, then cleans up</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils.ItemMaker.ydl_opts">
+<span class="sig-name descname"><span class="pre">ydl_opts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extract_audio':</span> <span class="pre">True,</span> <span class="pre">'format':</span> <span class="pre">'wav/bestaudio[ext=wav]/best',</span> <span class="pre">'logger':</span> <span class="pre">&lt;class</span> <span class="pre">'src.clean.clean_utils.YtDlpFakeLogger'&gt;,</span> <span class="pre">'overwrites':</span> <span class="pre">True,</span> <span class="pre">'postprocessors':</span> <span class="pre">[{'key':</span> <span class="pre">'FFmpegExtractAudio',</span> <span class="pre">'preferredcodec':</span> <span class="pre">'wav'}],</span> <span class="pre">'quiet':</span> <span class="pre">True}</span></em><a class="headerlink" href="#src.clean.clean_utils.ItemMaker.ydl_opts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.clean.clean_utils.YtDlpFakeLogger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.clean.clean_utils.</span></span><span class="sig-name descname"><span class="pre">YtDlpFakeLogger</span></span><a class="headerlink" href="#src.clean.clean_utils.YtDlpFakeLogger" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Fake logging class passed to yt-dlp instances to disable overly-verbose logging and unnecessary warnings</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils.YtDlpFakeLogger.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.clean.clean_utils.YtDlpFakeLogger.debug" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils.YtDlpFakeLogger.error">
+<span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.clean.clean_utils.YtDlpFakeLogger.error" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils.YtDlpFakeLogger.warning">
+<span class="sig-name descname"><span class="pre">warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.clean.clean_utils.YtDlpFakeLogger.warning" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.clean.clean_utils.</span></span><span class="sig-name descname"><span class="pre">_DemucsMaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="src/src.clean.html#src.clean.clean_utils.ItemMaker" title="src.clean.clean_utils.ItemMaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">ItemMaker</span></code></a></p>
+<p>Internal class called in ItemMaker for separating audio using Facebook’s HTDemucs model</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker._download_audio_excerpt_from_youtube">
+<span class="sig-name descname"><span class="pre">_download_audio_excerpt_from_youtube</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker._download_audio_excerpt_from_youtube" title="Permalink to this definition">#</a></dt>
+<dd><p>Downloads an item in the corpus from a YouTube link</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker._get_valid_links">
+<span class="sig-name descname"><span class="pre">_get_valid_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bad_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'&quot;playabilityStatus&quot;:{&quot;status&quot;:&quot;ERROR&quot;'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker._get_valid_links" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a list of valid YouTube links from the Corpus JSON</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker._logger_wrapper">
+<span class="sig-name descname"><span class="pre">_logger_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker._logger_wrapper" title="Permalink to this definition">#</a></dt>
+<dd><p>Simple wrapper that logs a given message and indexes it for later access</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker._split_left_right_audio_channels">
+<span class="sig-name descname"><span class="pre">_split_left_right_audio_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker._split_left_right_audio_channels" title="Permalink to this definition">#</a></dt>
+<dd><p>Splits audio into left and right channels for independent processing</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.abs_tol">
+<span class="sig-name descname"><span class="pre">abs_tol</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.05</span></em><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.abs_tol" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.cleanup_post_separation">
+<span class="sig-name descname"><span class="pre">cleanup_post_separation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.cleanup_post_separation" title="Permalink to this definition">#</a></dt>
+<dd><p>Cleans up after demucs by removing unnecessary files and moving file locations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.finalize_output">
+<span class="sig-name descname"><span class="pre">finalize_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.finalize_output" title="Permalink to this definition">#</a></dt>
+<dd><p>Finalizes the output by cleaning up leftover files and setting any final attributes</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.fmt">
+<span class="sig-name descname"><span class="pre">fmt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'wav'</span></em><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.fmt" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.fname">
+<span class="sig-name descname"><span class="pre">fname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.fname" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.get_cmd">
+<span class="sig-name descname"><span class="pre">get_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.get_cmd" title="Permalink to this definition">#</a></dt>
+<dd><p>Gets the required command for running demucs as a subprocess</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.get_item">
+<span class="sig-name descname"><span class="pre">get_item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.get_item" title="Permalink to this definition">#</a></dt>
+<dd><p>Tries to find a corpus item locally, and downloads it from the internet if not present</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.get_lr_audio">
+<span class="sig-name descname"><span class="pre">get_lr_audio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.get_lr_audio" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.in_file">
+<span class="sig-name descname"><span class="pre">in_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.in_file" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.instrs">
+<span class="sig-name descname"><span class="pre">instrs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['piano',</span> <span class="pre">'bass',</span> <span class="pre">'drums']</span></em><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.instrs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.run_separation">
+<span class="sig-name descname"><span class="pre">run_separation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.run_separation" title="Permalink to this definition">#</a></dt>
+<dd><p>Conducts separation in Demucs by opening a new subprocess</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.separate_audio">
+<span class="sig-name descname"><span class="pre">separate_audio</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.separate_audio" title="Permalink to this definition">#</a></dt>
+<dd><p>Checks whether to separate audio, gets requred commands, opens subprocessses, then cleans up</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.use_demucs">
+<span class="sig-name descname"><span class="pre">use_demucs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.use_demucs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.use_mvsep">
+<span class="sig-name descname"><span class="pre">use_mvsep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.use_mvsep" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.use_spleeter">
+<span class="sig-name descname"><span class="pre">use_spleeter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.use_spleeter" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._DemucsMaker.ydl_opts">
+<span class="sig-name descname"><span class="pre">ydl_opts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extract_audio':</span> <span class="pre">True,</span> <span class="pre">'format':</span> <span class="pre">'wav/bestaudio[ext=wav]/best',</span> <span class="pre">'logger':</span> <span class="pre">&lt;class</span> <span class="pre">'src.clean.clean_utils.YtDlpFakeLogger'&gt;,</span> <span class="pre">'overwrites':</span> <span class="pre">True,</span> <span class="pre">'postprocessors':</span> <span class="pre">[{'key':</span> <span class="pre">'FFmpegExtractAudio',</span> <span class="pre">'preferredcodec':</span> <span class="pre">'wav'}],</span> <span class="pre">'quiet':</span> <span class="pre">True}</span></em><a class="headerlink" href="#src.clean.clean_utils._DemucsMaker.ydl_opts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.clean.clean_utils.</span></span><span class="sig-name descname"><span class="pre">_MVSEPMaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="src/src.clean.html#src.clean.clean_utils.ItemMaker" title="src.clean.clean_utils.ItemMaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">ItemMaker</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.LOAD_KWS">
+<span class="sig-name descname"><span class="pre">LOAD_KWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'dtype':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">'offset':</span> <span class="pre">0,</span> <span class="pre">'res_type':</span> <span class="pre">'soxr_vhq',</span> <span class="pre">'sr':</span> <span class="pre">44100}</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.LOAD_KWS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.MVSEP_KWARGS">
+<span class="sig-name descname"><span class="pre">MVSEP_KWARGS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'chunk_size':</span> <span class="pre">500000,</span> <span class="pre">'cpu':</span> <span class="pre">False,</span> <span class="pre">'large_gpu':</span> <span class="pre">False,</span> <span class="pre">'only_vocals':</span> <span class="pre">False,</span> <span class="pre">'overlap_large':</span> <span class="pre">0.4,</span> <span class="pre">'overlap_small':</span> <span class="pre">0.3,</span> <span class="pre">'single_onnx':</span> <span class="pre">False,</span> <span class="pre">'use_kim_model_1':</span> <span class="pre">False}</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.MVSEP_KWARGS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.MVSEP_LOCATION">
+<span class="sig-name descname"><span class="pre">MVSEP_LOCATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis/MVSEP-MDX23-music-separation-model'</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.MVSEP_LOCATION" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker._download_audio_excerpt_from_youtube">
+<span class="sig-name descname"><span class="pre">_download_audio_excerpt_from_youtube</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker._download_audio_excerpt_from_youtube" title="Permalink to this definition">#</a></dt>
+<dd><p>Downloads an item in the corpus from a YouTube link</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker._get_valid_links">
+<span class="sig-name descname"><span class="pre">_get_valid_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bad_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'&quot;playabilityStatus&quot;:{&quot;status&quot;:&quot;ERROR&quot;'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker._get_valid_links" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a list of valid YouTube links from the Corpus JSON</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker._logger_wrapper">
+<span class="sig-name descname"><span class="pre">_logger_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker._logger_wrapper" title="Permalink to this definition">#</a></dt>
+<dd><p>Simple wrapper that logs a given message and indexes it for later access</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker._split_left_right_audio_channels">
+<span class="sig-name descname"><span class="pre">_split_left_right_audio_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker._split_left_right_audio_channels" title="Permalink to this definition">#</a></dt>
+<dd><p>Splits audio into left and right channels for independent processing</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.abs_tol">
+<span class="sig-name descname"><span class="pre">abs_tol</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.05</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.abs_tol" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.align_audio_signals">
+<span class="sig-name descname"><span class="pre">align_audio_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files_to_pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.align_audio_signals" title="Permalink to this definition">#</a></dt>
+<dd><p>For a list of demixes stems <cite>files_to_pad</cite>, align these with their raw audio file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.calculate_best_shift">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_best_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proc_env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.calculate_best_shift" title="Permalink to this definition">#</a></dt>
+<dd><p>Calculate the number of samples required to shift <cite>proc_env</cite> to maximise <cite>r</cite> vs <cite>proc_env</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.cleanup_post_separation">
+<span class="sig-name descname"><span class="pre">cleanup_post_separation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_dirpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.cleanup_post_separation" title="Permalink to this definition">#</a></dt>
+<dd><p>Cleans up after running MVSEP by renaming files and removing any unnecessary files</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.finalize_output">
+<span class="sig-name descname"><span class="pre">finalize_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.finalize_output" title="Permalink to this definition">#</a></dt>
+<dd><p>Finalizes the output by cleaning up leftover files and setting any final attributes</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.fmt">
+<span class="sig-name descname"><span class="pre">fmt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'wav'</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.fmt" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.fname">
+<span class="sig-name descname"><span class="pre">fname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.fname" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.get_cmd">
+<span class="sig-name descname"><span class="pre">get_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.get_cmd" title="Permalink to this definition">#</a></dt>
+<dd><p>Gets the required command for running MVSEP as a subprocess</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.get_files_to_keep">
+<span class="sig-name descname"><span class="pre">get_files_to_keep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.get_files_to_keep" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a generator of files to keep from the separation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.get_item">
+<span class="sig-name descname"><span class="pre">get_item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.get_item" title="Permalink to this definition">#</a></dt>
+<dd><p>Tries to find a corpus item locally, and downloads it from the internet if not present</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.get_lr_audio">
+<span class="sig-name descname"><span class="pre">get_lr_audio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.get_lr_audio" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.in_file">
+<span class="sig-name descname"><span class="pre">in_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.in_file" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.instrs">
+<span class="sig-name descname"><span class="pre">instrs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['piano',</span> <span class="pre">'bass',</span> <span class="pre">'drums']</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.instrs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.rename_piano_file">
+<span class="sig-name descname"><span class="pre">rename_piano_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.rename_piano_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Tries to rename the <cite>other</cite> file to <cite>piano</cite>, if it can be found</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.run_separation">
+<span class="sig-name descname"><span class="pre">run_separation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.run_separation" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs separation in MVSEP</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.separate_audio">
+<span class="sig-name descname"><span class="pre">separate_audio</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.separate_audio" title="Permalink to this definition">#</a></dt>
+<dd><p>Checks whether to separate audio, gets requred commands, opens subprocessses, then cleans up</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.shift_audio_signal">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shift_audio_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_to_match</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.shift_audio_signal" title="Permalink to this definition">#</a></dt>
+<dd><p>Shift a signal <cite>audio</cite> by samples <cite>n_samples</cite> and pad to the same shape as <cite>shape_to_match</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.use_demucs">
+<span class="sig-name descname"><span class="pre">use_demucs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.use_demucs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.use_mvsep">
+<span class="sig-name descname"><span class="pre">use_mvsep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.use_mvsep" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.use_spleeter">
+<span class="sig-name descname"><span class="pre">use_spleeter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.use_spleeter" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._MVSEPMaker.ydl_opts">
+<span class="sig-name descname"><span class="pre">ydl_opts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extract_audio':</span> <span class="pre">True,</span> <span class="pre">'format':</span> <span class="pre">'wav/bestaudio[ext=wav]/best',</span> <span class="pre">'logger':</span> <span class="pre">&lt;class</span> <span class="pre">'src.clean.clean_utils.YtDlpFakeLogger'&gt;,</span> <span class="pre">'overwrites':</span> <span class="pre">True,</span> <span class="pre">'postprocessors':</span> <span class="pre">[{'key':</span> <span class="pre">'FFmpegExtractAudio',</span> <span class="pre">'preferredcodec':</span> <span class="pre">'wav'}],</span> <span class="pre">'quiet':</span> <span class="pre">True}</span></em><a class="headerlink" href="#src.clean.clean_utils._MVSEPMaker.ydl_opts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.clean.clean_utils.</span></span><span class="sig-name descname"><span class="pre">_SpleeterMaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="src/src.clean.html#src.clean.clean_utils.ItemMaker" title="src.clean.clean_utils.ItemMaker"><code class="xref py py-class docutils literal notranslate"><span class="pre">ItemMaker</span></code></a></p>
+<p>Internal class called in ItemMaker for separating audio using Deezer’s Spleeter model</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker._download_audio_excerpt_from_youtube">
+<span class="sig-name descname"><span class="pre">_download_audio_excerpt_from_youtube</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker._download_audio_excerpt_from_youtube" title="Permalink to this definition">#</a></dt>
+<dd><p>Downloads an item in the corpus from a YouTube link</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker._get_valid_links">
+<span class="sig-name descname"><span class="pre">_get_valid_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bad_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'&quot;playabilityStatus&quot;:{&quot;status&quot;:&quot;ERROR&quot;'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker._get_valid_links" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a list of valid YouTube links from the Corpus JSON</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker._logger_wrapper">
+<span class="sig-name descname"><span class="pre">_logger_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker._logger_wrapper" title="Permalink to this definition">#</a></dt>
+<dd><p>Simple wrapper that logs a given message and indexes it for later access</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker._split_left_right_audio_channels">
+<span class="sig-name descname"><span class="pre">_split_left_right_audio_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker._split_left_right_audio_channels" title="Permalink to this definition">#</a></dt>
+<dd><p>Splits audio into left and right channels for independent processing</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.abs_tol">
+<span class="sig-name descname"><span class="pre">abs_tol</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.05</span></em><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.abs_tol" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.cleanup_post_separation">
+<span class="sig-name descname"><span class="pre">cleanup_post_separation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.cleanup_post_separation" title="Permalink to this definition">#</a></dt>
+<dd><p>Cleans up after spleeter by removing unnecessary files and unused files</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.finalize_output">
+<span class="sig-name descname"><span class="pre">finalize_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.finalize_output" title="Permalink to this definition">#</a></dt>
+<dd><p>Finalizes the output by cleaning up leftover files and setting any final attributes</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.fmt">
+<span class="sig-name descname"><span class="pre">fmt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'wav'</span></em><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.fmt" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.fname">
+<span class="sig-name descname"><span class="pre">fname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.fname" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.get_cmd">
+<span class="sig-name descname"><span class="pre">get_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.get_cmd" title="Permalink to this definition">#</a></dt>
+<dd><p>Gets the required command for running Spleeter as a subprocess</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.get_item">
+<span class="sig-name descname"><span class="pre">get_item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.get_item" title="Permalink to this definition">#</a></dt>
+<dd><p>Tries to find a corpus item locally, and downloads it from the internet if not present</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.get_lr_audio">
+<span class="sig-name descname"><span class="pre">get_lr_audio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.get_lr_audio" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.in_file">
+<span class="sig-name descname"><span class="pre">in_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.in_file" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.instrs">
+<span class="sig-name descname"><span class="pre">instrs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['piano',</span> <span class="pre">'bass',</span> <span class="pre">'drums']</span></em><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.instrs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.run_separation">
+<span class="sig-name descname"><span class="pre">run_separation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">good_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'written</span> <span class="pre">succesfully'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.run_separation" title="Permalink to this definition">#</a></dt>
+<dd><p>Conducts separation in Spleeter by opening a new subprocess</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.separate_audio">
+<span class="sig-name descname"><span class="pre">separate_audio</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.separate_audio" title="Permalink to this definition">#</a></dt>
+<dd><p>Checks whether to separate audio, gets requred commands, opens subprocessses, then cleans up</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.use_demucs">
+<span class="sig-name descname"><span class="pre">use_demucs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.use_demucs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.use_mvsep">
+<span class="sig-name descname"><span class="pre">use_mvsep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.use_mvsep" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.use_spleeter">
+<span class="sig-name descname"><span class="pre">use_spleeter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.use_spleeter" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.clean.clean_utils._SpleeterMaker.ydl_opts">
+<span class="sig-name descname"><span class="pre">ydl_opts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extract_audio':</span> <span class="pre">True,</span> <span class="pre">'format':</span> <span class="pre">'wav/bestaudio[ext=wav]/best',</span> <span class="pre">'logger':</span> <span class="pre">&lt;class</span> <span class="pre">'src.clean.clean_utils.YtDlpFakeLogger'&gt;,</span> <span class="pre">'overwrites':</span> <span class="pre">True,</span> <span class="pre">'postprocessors':</span> <span class="pre">[{'key':</span> <span class="pre">'FFmpegExtractAudio',</span> <span class="pre">'preferredcodec':</span> <span class="pre">'wav'}],</span> <span class="pre">'quiet':</span> <span class="pre">True}</span></em><a class="headerlink" href="#src.clean.clean_utils._SpleeterMaker.ydl_opts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.clean.clean_utils.return_timestamp">
+<span class="sig-prename descclassname"><span class="pre">src.clean.clean_utils.</span></span><span class="sig-name descname"><span class="pre">return_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'start'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.clean.clean_utils.return_timestamp" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a formatted timestamp from a JSON element</p>
+</dd></dl>
+
+</section>
+<section id="module-src.clean.make_dataset">
+<span id="src-clean-make-dataset-module"></span><h2>src.clean.make_dataset module<a class="headerlink" href="#module-src.clean.make_dataset" title="Permalink to this heading">#</a></h2>
+<p>Generates the final dataset of separated recordings from the items in the corpus</p>
+</section>
+<section id="module-src.clean">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.clean" title="Permalink to this heading">#</a></h2>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.clean.clean_utils">src.clean.clean_utils module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.HidePrints"><code class="docutils literal notranslate"><span class="pre">HidePrints</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker"><code class="docutils literal notranslate"><span class="pre">ItemMaker</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker._download_audio_excerpt_from_youtube"><code class="docutils literal notranslate"><span class="pre">ItemMaker._download_audio_excerpt_from_youtube()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker._get_valid_links"><code class="docutils literal notranslate"><span class="pre">ItemMaker._get_valid_links()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker._logger_wrapper"><code class="docutils literal notranslate"><span class="pre">ItemMaker._logger_wrapper()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker._split_left_right_audio_channels"><code class="docutils literal notranslate"><span class="pre">ItemMaker._split_left_right_audio_channels()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker.abs_tol"><code class="docutils literal notranslate"><span class="pre">ItemMaker.abs_tol</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker.finalize_output"><code class="docutils literal notranslate"><span class="pre">ItemMaker.finalize_output()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker.fmt"><code class="docutils literal notranslate"><span class="pre">ItemMaker.fmt</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker.get_item"><code class="docutils literal notranslate"><span class="pre">ItemMaker.get_item()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker.instrs"><code class="docutils literal notranslate"><span class="pre">ItemMaker.instrs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker.separate_audio"><code class="docutils literal notranslate"><span class="pre">ItemMaker.separate_audio()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.ItemMaker.ydl_opts"><code class="docutils literal notranslate"><span class="pre">ItemMaker.ydl_opts</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.YtDlpFakeLogger"><code class="docutils literal notranslate"><span class="pre">YtDlpFakeLogger</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.YtDlpFakeLogger.debug"><code class="docutils literal notranslate"><span class="pre">YtDlpFakeLogger.debug()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.YtDlpFakeLogger.error"><code class="docutils literal notranslate"><span class="pre">YtDlpFakeLogger.error()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.YtDlpFakeLogger.warning"><code class="docutils literal notranslate"><span class="pre">YtDlpFakeLogger.warning()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker._download_audio_excerpt_from_youtube"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker._download_audio_excerpt_from_youtube()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker._get_valid_links"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker._get_valid_links()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker._logger_wrapper"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker._logger_wrapper()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker._split_left_right_audio_channels"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker._split_left_right_audio_channels()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.abs_tol"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.abs_tol</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.cleanup_post_separation"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.cleanup_post_separation()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.finalize_output"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.finalize_output()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.fmt"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.fmt</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.fname"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.fname</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.get_cmd"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.get_cmd()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.get_item"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.get_item()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.get_lr_audio"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.get_lr_audio</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.in_file"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.in_file</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.instrs"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.instrs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.run_separation"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.run_separation()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.separate_audio"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.separate_audio()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.use_demucs"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.use_demucs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.use_mvsep"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.use_mvsep</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.use_spleeter"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.use_spleeter</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._DemucsMaker.ydl_opts"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.ydl_opts</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.LOAD_KWS"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.LOAD_KWS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.MVSEP_KWARGS"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.MVSEP_KWARGS</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.MVSEP_LOCATION"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.MVSEP_LOCATION</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker._download_audio_excerpt_from_youtube"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker._download_audio_excerpt_from_youtube()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker._get_valid_links"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker._get_valid_links()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker._logger_wrapper"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker._logger_wrapper()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker._split_left_right_audio_channels"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker._split_left_right_audio_channels()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.abs_tol"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.abs_tol</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.align_audio_signals"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.align_audio_signals()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.calculate_best_shift"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.calculate_best_shift()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.cleanup_post_separation"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.cleanup_post_separation()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.finalize_output"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.finalize_output()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.fmt"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.fmt</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.fname"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.fname</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.get_cmd"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.get_cmd()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.get_files_to_keep"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.get_files_to_keep()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.get_item"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.get_item()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.get_lr_audio"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.get_lr_audio</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.in_file"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.in_file</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.instrs"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.instrs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.rename_piano_file"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.rename_piano_file()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.run_separation"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.run_separation()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.separate_audio"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.separate_audio()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.shift_audio_signal"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.shift_audio_signal()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.use_demucs"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.use_demucs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.use_mvsep"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.use_mvsep</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.use_spleeter"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.use_spleeter</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._MVSEPMaker.ydl_opts"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.ydl_opts</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker._download_audio_excerpt_from_youtube"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker._download_audio_excerpt_from_youtube()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker._get_valid_links"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker._get_valid_links()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker._logger_wrapper"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker._logger_wrapper()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker._split_left_right_audio_channels"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker._split_left_right_audio_channels()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.abs_tol"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.abs_tol</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.cleanup_post_separation"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.cleanup_post_separation()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.finalize_output"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.finalize_output()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.fmt"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.fmt</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.fname"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.fname</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.get_cmd"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.get_cmd()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.get_item"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.get_item()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.get_lr_audio"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.get_lr_audio</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.in_file"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.in_file</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.instrs"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.instrs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.run_separation"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.run_separation()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.separate_audio"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.separate_audio()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.use_demucs"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.use_demucs</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.use_mvsep"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.use_mvsep</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.use_spleeter"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.use_spleeter</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils._SpleeterMaker.ydl_opts"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.ydl_opts</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.clean.clean_utils.return_timestamp"><code class="docutils literal notranslate"><span class="pre">return_timestamp()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.clean.make_dataset">src.clean.make_dataset module</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.clean">Module contents</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/src.clean.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=bd9e20870c6007c4c509"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=bd9e20870c6007c4c509"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright Huw Cheston 2024.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

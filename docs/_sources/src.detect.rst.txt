@@ -1,0 +1,45 @@
+src.detect package
+==================
+
+Submodules
+----------
+
+src.detect.midi\_utils module
+-----------------------------
+
+.. automodule:: src.detect.midi_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.detect.onset\_utils module
+------------------------------
+
+.. automodule:: src.detect.onset_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.detect.optimise\_detection\_parameters module
+-------------------------------------------------
+
+.. automodule:: src.detect.optimise_detection_parameters
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.detect.process\_dataset module
+----------------------------------
+
+.. automodule:: src.detect.process_dataset
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: src.detect
+   :members:
+   :undoc-members:
+   :show-inheritance:

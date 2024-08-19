@@ -1,0 +1,32 @@
+# Database Structure
+(database-structure)=
+
+After downloading or building the database, you'll end up with an individual directory for each track in the database. The filename is constructed in the form `bandleader-trackname-musician1musician2-year-mbzid`. Names are given in the format `surnamefirstinitial`, e.g. Bill Evans would become `evansb`. In most cases, the bandleader is the pianist, and `musician1musician2` are the bassist and drummer, respectively. In cases where another musician was the bandleader, the pianist always takes priority in the ordering of names.
+
+Inside each directory are the following files:
+- `*_onset.csv` files: contain the raw onsets for `piano`, `bass`, and `drums`, with one onset per line;
+- `beats.csv`: contain the onsets matched to each beat, as well as the estimated metre and downbeats, with one beat per line;
+- `piano_midi.mid`: contains the automatically transcribed piano midi;
+- `metadata.json`: contains (surprisingly) track and recording metadata.
+
+## Recording metadata
+
+The metadata files contain the following fields for every recording:
+
+| Field               | Type | Description                                                                                   |
+|---------------------|------|-----------------------------------------------------------------------------------------------|
+| `track_name`        | str  | Title of the recording                                                                        |
+| `album_name`        | str  | Title of the earliest album released that contains the track                                  |
+| `in_30_corpus`      | bool | Whether the track is in smaller JTD-300 subset of the data                                    |
+| `recording_year`    | int  | Year of recording                                                                             |
+| `channel_overrides` | dict | Key-value pairs relating to panning: `piano: l` means the piano is panned to the left channel |
+| `mbz_id`            | str  | Unique ID assigned to the track on MusicBrainz                                                |
+| `time_signature`    | int  | The number of quarter note beats per measure for the track                                    |
+| `first_downbeat`    | int  | The first clear quarter note downbeat in the track                                            |
+| `rating_audio`      | int  | Subjective rating (1–3, 3 = best) of source-separation quality                                |
+| `rating_detection`  | int  | Subjective rating of onset detection quality                                                  |
+| `links`             | dict | YouTube URL for the recording                                                                 |
+| `excerpt_duration`  | str  | Duration of recording, in `Minutes:Seconds` format                                            |
+| `timestamps`        | dict | Start and end timestamps for the piano solo in the recording                                  |
+| `musicians`         | dict | Key-value pairs of the musicians included in the recording                                    |
+| `fname`             | str  | Audio filename                                                                                |

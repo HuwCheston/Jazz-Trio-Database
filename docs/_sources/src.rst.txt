@@ -1,0 +1,40 @@
+src package
+===========
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   src.clean
+   src.detect
+   src.features
+   src.visualise
+
+Submodules
+----------
+
+src.process module
+------------------
+
+.. automodule:: src.process
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.utils module
+----------------
+
+.. automodule:: src.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: src
+   :members:
+   :undoc-members:
+   :show-inheritance:

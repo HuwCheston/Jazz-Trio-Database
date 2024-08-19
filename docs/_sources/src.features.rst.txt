@@ -1,0 +1,45 @@
+src.features package
+====================
+
+Submodules
+----------
+
+src.features.features\_utils module
+-----------------------------------
+
+.. automodule:: src.features.features_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.features.melody\_features module
+------------------------------------
+
+.. automodule:: src.features.melody_features
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.features.rhythm\_features module
+------------------------------------
+
+.. automodule:: src.features.rhythm_features
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.features.simulations\_utils module
+--------------------------------------
+
+.. automodule:: src.features.simulations_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: src.features
+   :members:
+   :undoc-members:
+   :show-inheritance:
