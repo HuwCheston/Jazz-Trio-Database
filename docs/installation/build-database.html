@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Building the database &#8212; Cambridge Jazz Trio Database</title>
+    <title>Building the database &#8212; Jazz Trio Database</title>
   
   
   
@@ -51,7 +51,7 @@
     <link rel="icon" href="../_static/html_favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Create new manual annotations" href="extra-create-manual-annotations.html" />
+    <link rel="next" title="Database Structure" href="database-structure.html" />
     <link rel="prev" title="Downloading the database" href="download-database.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">Cambridge Jazz Trio Database</p>
+    <p class="title logo__title">Jazz Trio Database</p>
   
 </a></div>
     
@@ -145,13 +145,6 @@
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="getting-started.html">
                         Getting started
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
-                        User guide
                       </a>
                     </li>
                 
@@ -215,7 +208,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -288,13 +281,6 @@ document.write(`
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
-                        User guide
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../src/modules.html">
                         API
                       </a>
@@ -339,7 +325,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -365,17 +351,18 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Get the database</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Download</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="download-database.html">Download (for new users 👨‍🎓)</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Build from source (for experienced users 👩‍💻)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download-database.html">Download the database</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Build from source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database-structure.html">Database structure</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Extras</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="extra-create-manual-annotations.html">Create ground truth annotations ✅</a></li>
-<li class="toctree-l1"><a class="reference internal" href="extra-parameter-optimization.html">Run parameter optimization 📈</a></li>
-<li class="toctree-l1"><a class="reference internal" href="extra-new-corpus.html">Run pipeline on new corpus 📰</a></li>
-<li class="toctree-l1"><a class="reference internal" href="extra-build-documentation.html">Build documentation 📄</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-create-manual-annotations.html">Create ground truth annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-parameter-optimization.html">Run parameter optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-new-corpus.html">Run pipeline on a new corpus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-build-documentation.html">Build documentation</a></li>
 </ul>
 </div>
 </nav></div>
@@ -448,19 +435,19 @@ document.write(`
 </section>
 <section id="setting-up">
 <h3>Setting up<a class="headerlink" href="#setting-up" title="Permalink to this heading">#</a></h3>
-<p id="build-database-setup">First things first, you’ll need to clone the source code repository for the Cambridge Jazz Trio Database to a new folder on your local machine by running the following command on a local terminal:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">HuwCheston</span><span class="o">/</span><span class="n">Cambridge</span><span class="o">-</span><span class="n">Jazz</span><span class="o">-</span><span class="n">Trio</span><span class="o">-</span><span class="n">Database</span>
+<p id="build-database-setup">First things first, you’ll need to clone the source code repository for the Jazz Trio Database to a new folder on your local machine by running the following command on a local terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">HuwCheston</span><span class="o">/</span><span class="n">Jazz</span><span class="o">-</span><span class="n">Trio</span><span class="o">-</span><span class="n">Database</span>
 </pre></div>
 </div>
-<p>We’d now recommend that you create a new virtual environment to keep the dependencies required for the Cambridge Jazz Trio Database separate from your main Python environment. To do so, run the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">Cambridge</span><span class="o">-</span><span class="n">Jazz</span><span class="o">-</span><span class="n">Trio</span><span class="o">-</span><span class="n">Database</span>
+<p>We’d now recommend that you create a new virtual environment to keep the dependencies required for the Jazz Trio Database separate from your main Python environment. To do so, run the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">Jazz</span><span class="o">-</span><span class="n">Trio</span><span class="o">-</span><span class="n">Database</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="n">virtualenv</span>
 <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">venv</span>
 <span class="n">python</span> <span class="n">test_environment</span><span class="o">.</span><span class="n">py</span>
 <span class="n">call</span> <span class="n">venv</span>\<span class="n">Scripts</span>\<span class="n">activate</span><span class="o">.</span><span class="n">bat</span>
 </pre></div>
 </div>
-<p>Your terminal input should now have a <code class="docutils literal notranslate"><span class="pre">(venv)</span></code> preface, reading something like <code class="docutils literal notranslate"><span class="pre">(venv)</span> <span class="pre">C:\Cambridge-Jazz-Trio-Database</span></code>.</p>
+<p>Your terminal input should now have a <code class="docutils literal notranslate"><span class="pre">(venv)</span></code> preface, reading something like <code class="docutils literal notranslate"><span class="pre">(venv)</span> <span class="pre">C:\Jazz-Trio-Database</span></code>.</p>
 <p>Next, install the project dependencies:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
@@ -480,7 +467,7 @@ document.write(`
 <p>This command will begin by downloading the audio from a given track on YouTube (stored in <code class="docutils literal notranslate"><span class="pre">.\data\raw</span></code>), and then separating this into separate piano, bass, and drums stems (stored in <code class="docutils literal notranslate"><span class="pre">.\data\processed</span></code>). <a class="reference external" href="https://doi.org/10.21105/joss.02154">Hennequin et al., 2020</a> is used for piano separation, and <a class="reference external" href="https://doi.org/10.48550/arXiv.2211.08553">Rouard et al., 2022</a> for bass and drums separation.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>By default, if a YouTube source cannot be found, the program will try to retry downloading a set number of times before terminating prematurely. Sources that cannot be found will be printed directly to the console. If this occurs, first check your internet connection and the source itself. If a particular source has been removed from YouTube, please <a class="reference external" href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database/issues/new">open a new issue on the GitHub repository</a> or [contact us](mailto:hwc31&#64;cam.ac.uk?subject=Missing YouTube link&amp;cc=huwcheston&#64;gmail.com).</p>
+<p>By default, if a YouTube source cannot be found, the program will try to retry downloading a set number of times before terminating prematurely. Sources that cannot be found will be printed directly to the console. If this occurs, first check your internet connection and the source itself. If a particular source has been removed from YouTube, please <a class="reference external" href="https://github.com/HuwCheston/Jazz-Trio-Database/issues/new">open a new issue on the GitHub repository</a> or [contact us](mailto:hwc31&#64;cam.ac.uk?subject=Missing YouTube link&amp;cc=huwcheston&#64;gmail.com).</p>
 </div>
 <p>By default, this command will process audio for tracks contained in <code class="docutils literal notranslate"><span class="pre">.\references\corpus_chronology.xlsx</span></code>: this contains 300 tracks by 30 different pianists, and is the dataset used in <code class="docutils literal notranslate"><span class="pre">Cheston</span> <span class="pre">et</span> <span class="pre">al.</span> <span class="pre">(2024)</span></code>. To process audio from a different corpus, pass the <code class="docutils literal notranslate"><span class="pre">-corpus</span></code> flag to the above command, followed by the name of the corpus spreadsheet inside <code class="docutils literal notranslate"><span class="pre">.\references</span></code>. For example, to process audio from <code class="docutils literal notranslate"><span class="pre">.\references\corpus_bill_evans.xlsx</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python src\clean\make_dataset.py -corpus corpus_bill_evans
@@ -530,7 +517,7 @@ document.write(`
 <p>To run the onset detection without generating click tracks, pass in the <code class="docutils literal notranslate"><span class="pre">-no_click</span></code> argument when running the command.</p>
 </div>
 <p>The program will also output a Python <code class="docutils literal notranslate"><span class="pre">pickle</span></code> file inside the <code class="docutils literal notranslate"><span class="pre">.\models</span></code> directory. This contains the serialised <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> class instances (defined in <code class="docutils literal notranslate"><span class="pre">src\detect\detect_utils.py</span></code>).</p>
-<p>You can now run many of the analysis scripts contained inside the <code class="docutils literal notranslate"><span class="pre">.\notebooks</span></code> directory, or pass the serialised <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> instances to the feature extraction classes defined in <code class="docutils literal notranslate"><span class="pre">src\features\features_utils.py</span></code>. For more info here, check the <a class="reference internal" href="../usage/user-guide.html#user-guide"><span class="std std-ref">User guide</span></a>.</p>
+<p>You can now run many of the analysis scripts contained inside the <code class="docutils literal notranslate"><span class="pre">.\notebooks</span></code> directory, or pass the serialised <code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code> instances to the feature extraction classes defined in <code class="docutils literal notranslate"><span class="pre">src\features\features_utils.py</span></code>.</p>
 </section>
 </section>
 <section id="linux-installation">
@@ -559,11 +546,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="extra-create-manual-annotations.html"
+       href="database-structure.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Create new manual annotations</p>
+        <p class="prev-next-title">Database Structure</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Building the documentation &#8212; Cambridge Jazz Trio Database</title>
+    <title>Building the documentation &#8212; Jazz Trio Database</title>
   
   
   
@@ -51,7 +51,7 @@
     <link rel="icon" href="../_static/html_favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Usage" href="../usage/user-guide.html" />
+    <link rel="next" title="src" href="../src/modules.html" />
     <link rel="prev" title="Run pipeline on a new corpus" href="extra-new-corpus.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">Cambridge Jazz Trio Database</p>
+    <p class="title logo__title">Jazz Trio Database</p>
   
 </a></div>
     
@@ -145,13 +145,6 @@
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="getting-started.html">
                         Getting started
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
-                        User guide
                       </a>
                     </li>
                 
@@ -215,7 +208,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -288,13 +281,6 @@ document.write(`
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
-                        User guide
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../src/modules.html">
                         API
                       </a>
@@ -339,7 +325,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -365,17 +351,18 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Get the database</span></p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Download</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="download-database.html">Download (for new users 👨‍🎓)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="build-database.html">Build from source (for experienced users 👩‍💻)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download-database.html">Download the database</a></li>
+<li class="toctree-l1"><a class="reference internal" href="build-database.html">Build from source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database-structure.html">Database structure</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Extras</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="extra-create-manual-annotations.html">Create ground truth annotations ✅</a></li>
-<li class="toctree-l1"><a class="reference internal" href="extra-parameter-optimization.html">Run parameter optimization 📈</a></li>
-<li class="toctree-l1"><a class="reference internal" href="extra-new-corpus.html">Run pipeline on new corpus 📰</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Build documentation 📄</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-create-manual-annotations.html">Create ground truth annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-parameter-optimization.html">Run parameter optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extra-new-corpus.html">Run pipeline on a new corpus</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Build documentation</a></li>
 </ul>
 </div>
 </nav></div>
@@ -443,7 +430,7 @@ document.write(`
 <p>If you’ve already followed the instructions in <a class="reference internal" href="build-database.html#build-database-setup"><span class="std std-ref">Building the database</span></a>, you can skip this stage.</p>
 </div>
 <p>Clone our repository to a new directory on your local machine:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">HuwCheston</span><span class="o">/</span><span class="n">Cambridge</span><span class="o">-</span><span class="n">Jazz</span><span class="o">-</span><span class="n">Trio</span><span class="o">-</span><span class="n">Database</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">HuwCheston</span><span class="o">/</span><span class="n">Jazz</span><span class="o">-</span><span class="n">Trio</span><span class="o">-</span><span class="n">Database</span>
 </pre></div>
 </div>
 <p>In the repository root directory, create a new virtual environment, enter it, and install project dependencies (these are required for <code class="docutils literal notranslate"><span class="pre">sphinx.ext.autodoc</span></code>):</p>
@@ -502,11 +489,11 @@ Hosting on GitHub pages<div class="sd-summary-down docutils">
       </div>
     </a>
     <a class="right-next"
-       href="../usage/user-guide.html"
+       href="../src/modules.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Usage</p>
+        <p class="prev-next-title">src</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

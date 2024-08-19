@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Combining multiple Extractors together &#8212; Cambridge Jazz Trio Database</title>
+    <title>Combining multiple Extractors together &#8212; Jazz Trio Database</title>
   
   
   
@@ -51,8 +51,6 @@
     <link rel="icon" href="../_static/html_favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Defining your own Extractor classes" href="define-extractors.html" />
-    <link rel="prev" title="Working with Extractor classes" href="feature-extractor.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -128,7 +126,7 @@
   
   
   
-    <p class="title logo__title">Cambridge Jazz Trio Database</p>
+    <p class="title logo__title">Jazz Trio Database</p>
   
 </a></div>
     
@@ -145,13 +143,6 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../installation/getting-started.html">
                         Getting started
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="user-guide.html">
-                        User guide
                       </a>
                     </li>
                 
@@ -215,7 +206,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -267,7 +258,9 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -283,13 +276,6 @@ document.write(`
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../installation/getting-started.html">
                         Getting started
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="user-guide.html">
-                        User guide
                       </a>
                     </li>
                 
@@ -339,7 +325,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -359,32 +345,6 @@ document.write(`
       </div>
     
   </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Loading data</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="loading-data.html">Loading the database in Python</a></li>
-<li class="toctree-l1"><a class="reference internal" href="onsetmaker-classes.html">Working with `OnsetMaker` classes</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Feature extraction</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="feature-extractor.html">Working with `Extractor` classes</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Combining multiple `Extractor` classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="define-extractors.html">Defining new `Extractor` classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="implemented-extractors.html">Currently implemented `Extractor` classes</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Visualising results</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="plotting-workflow.html">General plotting workflow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="visualise-performance.html">Visualizing a single performance</a></li>
-</ul>
-</div>
-</nav></div>
-    </div>
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
@@ -418,9 +378,6 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="user-guide.html" class="nav-link">Usage</a></li>
-    
     <li class="breadcrumb-item active" aria-current="page">Combining...</li>
   </ul>
 </nav>
@@ -614,24 +571,6 @@ document.write(`
                 <footer class="prev-next-footer">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="feature-extractor.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Working with <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> classes</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="define-extractors.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Defining your own <code class="docutils literal notranslate"><span class="pre">Extractor</span></code> classes</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               

@@ -44,5 +44,5 @@ function getYTLink(jsObj) {
 }
 
 function formatTitle(jsObj) {
-    return jsObj['musicians']['pianist']+ ': ' + jsObj['track_name'] + ` (${jsObj['recording_year']})`;
+    return jsObj['bandleader']+ ': ' + jsObj['track_name'] + ` (${jsObj['recording_year']})`;
 }

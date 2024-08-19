@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Data explorer &#8212; Cambridge Jazz Trio Database</title>
+    <title>Data explorer &#8212; Jazz Trio Database</title>
   
   
   
@@ -126,7 +126,7 @@
   
   
   
-    <p class="title logo__title">Cambridge Jazz Trio Database</p>
+    <p class="title logo__title">Jazz Trio Database</p>
   
 </a></div>
     
@@ -143,13 +143,6 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../installation/getting-started.html">
                         Getting started
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
-                        User guide
                       </a>
                     </li>
                 
@@ -213,7 +206,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -284,13 +277,6 @@ document.write(`
                 
 
                     <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
-                        User guide
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
                       <a class="nav-link nav-internal" href="../src/modules.html">
                         API
                       </a>
@@ -335,7 +321,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -407,7 +393,7 @@ document.write(`
                   
   <section id="data-explorer">
 <h1>Data explorer<a class="headerlink" href="#data-explorer" title="Permalink to this heading">#</a></h1>
-<p>Use the interactive table below to search through features extracted from our database. Clicking any row will open a new pop-up window containing interactive plots, audio, and metadata for the selected track. <em>Make sure you allow pop-ups in your browser for this feature to work correctly!</em></p>
+<p>Use the interactive table below to search through features extracted from JTD piano recordings. Clicking any row will open a new pop-up window containing interactive plots, audio, and metadata for the selected track. <em>Make sure you allow pop-ups in your browser for this feature to work correctly!</em></p>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -452,71 +438,76 @@ document.write(`
 <body>
     <div>
         <label>Show/hide columns: </label>
-        <button id="togensemble" onclick="hideCols('2', '5')">Ensemble</button>
-        <button id="toginteract" onclick="hideCols('6', '8')">Interaction</button>
-        <button id="togswing" onclick="hideCols('9', '11')">Swing</button>
-        <button id="togfeel" onclick="hideCols('12', '17')">Feel</button>
-        <button id="togcomplexity" onclick="hideCols('18', '21')">Complexity</button>
-        <button id="hideall" onclick="modifyAll('2', '21', false)">Hide all</button>
-        <button id="showall" onclick="modifyAll('2', '21', true)">Show all</button>
+        <button id="togmeta" onclick="hideCols('1', '5')">Metadata</button>
+        <button id="togswing" onclick="hideCols('6', '7')">Swing</button>
+        <button id="togcomplexity" onclick="hideCols('8', '11')">Complexity</button>
+        <button id="togfeel" onclick="hideCols('12', '15')">Feel</button>
+        <button id="toginteract" onclick="hideCols('16', '20')">Interaction</button>
+        <button id="togtempo" onclick="hideCols('21', '23')">Tempo</button>
+        <button id="hideall" onclick="modifyAll('1', '23', false, 'togmeta')">Hide all</button>
+        <button id="showall" onclick="modifyAll('1', '23', true, 'togmeta')">Show all</button>
     </div>
     <p></p>
     <div id="container">
         <table id="data" class="dataTable" width="100%">
             <thead>
                 <tr>
-                    <th rowspan="2">Track name</th>
-                    <th colspan="5">Ensemble</th>
-                    <th colspan="3">Interaction (coupling to)</th>
-                    <th colspan="3">Swing (ratio, log2)</th>
-                    <th colspan="6">Feel (asynchrony with, proportional to measure)</th>
-                    <th colspan="4">Complexity (windowed over four measures)</th>
+<!--                    <th rowspan="2">Track name</th>-->
+                    <th colspan="6">Metadata</th>
+                    <th colspan="2">Swing (log2 BUR)</th>
+                    <th colspan="4">Complexity (4 measure window)</th>
+                    <th colspan="4">Feel (piano → instrument, % of measure)</th>
+                    <th colspan="5">Interaction (phase coupling between instruments)</th>
+                    <th colspan="3">Tempo (BPM)</th>
                 </tr>
                 <tr>
+                    <th>fname_placeholder</th>
+                    <th>Track</th>
+                    <th>Year</th>
                     <th>Bandleader</th>
                     <th>Pianist</th>
-                    <th>Musician</th>
-                    <th>Instrument</th>
-                    <th>Time signature</th>
-                    <th>Piano</th>
-                    <th>Bass</th>
-                    <th>Drums</th>
+                    <th>JTD-300</th>
                     <th>Mean</th>
-                    <th>Stdev.</th>
-                    <th>Count</th>
-                    <th>Piano (mean)</th>
-                    <th>Bass (mean)</th>
-                    <th>Drums (mean)</th>
-                    <th>Piano (stdev.)</th>
-                    <th>Bass (stdev.)</th>
-                    <th>Drums (stdev.)</th>
-                    <th>Compression (mean)</th>
-                    <th>Compression (stdev.)</th>
-                    <th>Density (mean)</th>
-                    <th>Density (stdev.)</th>
+                    <th>SD</th>
+                    <th>Mean</th>
+                    <th>SD</th>
+                    <th>Mean</th>
+                    <th>SD</th>
+                    <th>Bass, mean</th>
+                    <th>Bass, SD</th>
+                    <th>Drums, mean</th>
+                    <th>Drums, SD</th>
+                    <th>Piano→Piano</th>
+                    <th>Piano→Bass</th>
+                    <th>Piano→Drums</th>
+                    <th>Drums→Piano</th>
+                    <th>Bass→Piano</th>
+                    <th>Mean</th>
+                    <th>SD</th>
+                    <th>Slope</th>
                 </tr>
             </thead>
             <tfoot>
                 <tr>
-                    <th colspan="1">Track name</th>
-                    <th colspan="5">Ensemble</th>
-                    <th colspan="3">Interaction</th>
-                    <th colspan="3">Swing</th>
-                    <th colspan="6">Asynchrony</th>
+                    <th colspan="6">Metadata</th>
+                    <th colspan="2">Swing</th>
                     <th colspan="4">Complexity</th>
+                    <th colspan="4">Feel</th>
+                    <th colspan="5">Interaction</th>
+                    <th colspan="3">Tempo</th>
                 </tr>
             </tfoot>
         </table>
     </div>
     <script>
         var table = new DataTable('#data', {
-            ajax: '../_static/data-explorer/swing.txt',
+            ajax: '../_static/data-explorer/table.txt',
             dom: "<'row'<'col-sm-6'l><'col-sm-6'f>>" +
             "<'row'<'col-sm-12'tr>>" +
             "<'row'<'col-sm-5'i><'col-sm-7'p>>B",
             columnDefs: [
                 {
-                    target: 1,
+                    target: 0,
                     visible: false,
                 }
             ],
@@ -529,8 +520,8 @@ document.write(`
             scrollX: true,
         });
         $(document).on('click','table tbody tr',function(){
-            console.log(table.row(this).data()[1])
-            window.open(`../_static/data-explorer/${table.row(this).data()[1]}/display.html`, '', 'fullscreen=0,menubar=0,scrollbars=0,status=0,titlebar=0,toolbar=0,')
+            console.log(table.row(this).data()[0])
+            window.open(`../_static/data-explorer/${table.row(this).data()[0]}/display.html`, '', 'fullscreen=0,menubar=0,scrollbars=0,status=0,titlebar=0,toolbar=0,')
         });
 
         function rangeOfNumbers(a, b){
@@ -541,7 +532,7 @@ document.write(`
             return arr;
         }
 
-        function hideCols (firstCol, lastCol) {
+        function hideCols (firstCol, lastCol, colId) {
             let rang = rangeOfNumbers(Number(firstCol), Number(lastCol))
             for (const id_ of rang){
                 let column = table.column(id_);
@@ -552,7 +543,7 @@ document.write(`
         function modifyAll(firstCol, lastCol, modifier) {
             table.columns(rangeOfNumbers(Number(firstCol), Number(lastCol))).visible(modifier);
         }
-        modifyAll(6, 21, false)
+        // modifyAll(6, 21, false)
 
     </script>
 </body>

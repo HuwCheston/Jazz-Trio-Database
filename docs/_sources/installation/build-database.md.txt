@@ -13,23 +13,23 @@
 ### Setting up
 (build-database-setup)=
 
-First things first, you'll need to clone the source code repository for the Cambridge Jazz Trio Database to a new folder on your local machine by running the following command on a local terminal:
+First things first, you'll need to clone the source code repository for the Jazz Trio Database to a new folder on your local machine by running the following command on a local terminal:
 
 ```
-git clone https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database
+git clone https://github.com/HuwCheston/Jazz-Trio-Database
 ```
  
-We'd now recommend that you create a new virtual environment to keep the dependencies required for the Cambridge Jazz Trio Database separate from your main Python environment. To do so, run the following:
+We'd now recommend that you create a new virtual environment to keep the dependencies required for the Jazz Trio Database separate from your main Python environment. To do so, run the following:
 
 ```
-cd Cambridge-Jazz-Trio-Database
+cd Jazz-Trio-Database
 pip install virtualenv
 python -m venv venv
 python test_environment.py
 call venv\Scripts\activate.bat
 ```
 
-Your terminal input should now have a `(venv)` preface, reading something like `(venv) C:\Cambridge-Jazz-Trio-Database`. 
+Your terminal input should now have a `(venv)` preface, reading something like `(venv) C:\Jazz-Trio-Database`. 
 
 Next, install the project dependencies:
 
@@ -54,7 +54,7 @@ python src\clean\make_dataset.py
 This command will begin by downloading the audio from a given track on YouTube (stored in `.\data\raw`), and then separating this into separate piano, bass, and drums stems (stored in `.\data\processed`). [Hennequin et al., 2020](https://doi.org/10.21105/joss.02154) is used for piano separation, and [Rouard et al., 2022](https://doi.org/10.48550/arXiv.2211.08553) for bass and drums separation.
 
 ```{warning}
-By default, if a YouTube source cannot be found, the program will try to retry downloading a set number of times before terminating prematurely. Sources that cannot be found will be printed directly to the console. If this occurs, first check your internet connection and the source itself. If a particular source has been removed from YouTube, please [open a new issue on the GitHub repository](https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database/issues/new) or [contact us](mailto:hwc31@cam.ac.uk?subject=Missing YouTube link&cc=huwcheston@gmail.com).
+By default, if a YouTube source cannot be found, the program will try to retry downloading a set number of times before terminating prematurely. Sources that cannot be found will be printed directly to the console. If this occurs, first check your internet connection and the source itself. If a particular source has been removed from YouTube, please [open a new issue on the GitHub repository](https://github.com/HuwCheston/Jazz-Trio-Database/issues/new) or [contact us](mailto:hwc31@cam.ac.uk?subject=Missing YouTube link&cc=huwcheston@gmail.com).
 ```
 
 By default, this command will process audio for tracks contained in `.\references\corpus_chronology.xlsx`: this contains 300 tracks by 30 different pianists, and is the dataset used in `Cheston et al. (2024)`. To process audio from a different corpus, pass the `-corpus` flag to the above command, followed by the name of the corpus spreadsheet inside `.\references`. For example, to process audio from `.\references\corpus_bill_evans.xlsx`:
@@ -113,7 +113,7 @@ To run the onset detection without generating click tracks, pass in the `-no_cli
 
 The program will also output a Python `pickle` file inside the `.\models` directory. This contains the serialised `OnsetMaker` class instances (defined in `src\detect\detect_utils.py`).
 
-You can now run many of the analysis scripts contained inside the `.\notebooks` directory, or pass the serialised `OnsetMaker` instances to the feature extraction classes defined in `src\features\features_utils.py`. For more info here, check the {ref}`User guide <user-guide>`.
+You can now run many of the analysis scripts contained inside the `.\notebooks` directory, or pass the serialised `OnsetMaker` instances to the feature extraction classes defined in `src\features\features_utils.py`.
 
 ## Linux installation
 

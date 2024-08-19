@@ -8,7 +8,7 @@ Make sure you have access to the database before following the instructions in t
 ## Loading `.csv` files (pre-built database)
 (load-from-zip)=
 
-Unarchive the downloaded `cambridge-jazz-trio-database-vXXX.zip` file to a new directory. The resulting file structure should look something like:
+Unarchive the downloaded `jazz-trio-database-vXXX.zip` file to a new directory. The resulting file structure should look something like:
 
 ```
 ├── corpus_bill_evans                                         <- The Bill Evans Trio dataset

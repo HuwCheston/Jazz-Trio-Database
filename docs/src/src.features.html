@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>src.features package &#8212; Cambridge Jazz Trio Database</title>
+    <title>src.features package &#8212; Jazz Trio Database</title>
   
   
   
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">Cambridge Jazz Trio Database</p>
+    <p class="title logo__title">Jazz Trio Database</p>
   
 </a></div>
     
@@ -145,13 +145,6 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../installation/getting-started.html">
                         Getting started
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
-                        User guide
                       </a>
                     </li>
                 
@@ -215,7 +208,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -287,13 +280,6 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
-                        User guide
-                      </a>
-                    </li>
-                
-
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="modules.html">
                         API
@@ -339,7 +325,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -438,90 +424,44 @@ document.write(`
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 </section>
-<section id="module-src.features.extract_features">
-<span id="src-features-extract-features-module"></span><h2>src.features.extract_features module<a class="headerlink" href="#module-src.features.extract_features" title="Permalink to this heading">#</a></h2>
-<p>Extracts the required features for each item in the corpus, using the automatically detected onsets.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="src.features.extract_features.process_item">
-<span class="sig-prename descclassname"><span class="pre">src.features.extract_features.</span></span><span class="sig-name descname"><span class="pre">process_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">onset_maker</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker" title="src.detect.detect_utils.OnsetMaker"><span class="pre">OnsetMaker</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_queue</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.features.extract_features.process_item" title="Permalink to this definition">#</a></dt>
-<dd><p>Process the data in a single OnsetMaker class, used in parallel contexts (i.e. called with joblib.Parallel)</p>
-</dd></dl>
-
+<section id="src-features-extract-features-module">
+<h2>src.features.extract_features module<a class="headerlink" href="#src-features-extract-features-module" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="module-src.features.features_utils">
 <span id="src-features-features-utils-module"></span><h2>src.features.features_utils module<a class="headerlink" href="#module-src.features.features_utils" title="Permalink to this heading">#</a></h2>
-<p>Utility classes, functions, and variables used specifically in the analysis and feature extraction process</p>
+<p>Utility classes, functions, and variables used in the feature extraction process</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="src.features.features_utils.BeatUpbeatRatio">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.features.features_utils.</span></span><span class="sig-name descname"><span class="pre">BeatUpbeatRatio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_onsets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_beats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_outliers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.features.features_utils.BeatUpbeatRatio" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExtractor</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.features.features_utils.BeatUpbeatRatio.HIGH_THRESH">
-<span class="sig-name descname"><span class="pre">HIGH_THRESH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#src.features.features_utils.BeatUpbeatRatio.HIGH_THRESH" title="Permalink to this definition">#</a></dt>
-<dd><p>Extract various features related to beat-upbeat ratios (BURs)</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.features.features_utils.BeatUpbeatRatio.LOW_THRESH">
-<span class="sig-name descname"><span class="pre">LOW_THRESH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.25</span></em><a class="headerlink" href="#src.features.features_utils.BeatUpbeatRatio.LOW_THRESH" title="Permalink to this definition">#</a></dt>
-<dd><p>Extract various features related to beat-upbeat ratios (BURs)</p>
-</dd></dl>
-
+<dt class="sig sig-object py" id="src.features.features_utils.BaseExtractor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.features.features_utils.</span></span><span class="sig-name descname"><span class="pre">BaseExtractor</span></span><a class="headerlink" href="#src.features.features_utils.BaseExtractor" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base feature extraction class, with some methods that are useful for all classes</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.BeatUpbeatRatio.count_nonzero">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.features.features_utils.BeatUpbeatRatio.count_nonzero" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.features.features_utils.BaseExtractor.count_nonzero">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.features.features_utils.BaseExtractor.count_nonzero" title="Permalink to this definition">#</a></dt>
 <dd><p>Simple wrapper around <cite>np.count_nonzero</cite> that removes NaN values from an array</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.BeatUpbeatRatio.extract_burs">
-<span class="sig-name descname"><span class="pre">extract_burs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_onsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_log_burs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.features.features_utils.BeatUpbeatRatio.extract_burs" title="Permalink to this definition">#</a></dt>
-<dd><p>Extracts beat-upbeat ratio (BUR) values from an array of onsets.</p>
-<p>The beat-upbeat ratio is introduced in [1] as a concept for analyzing the individual amount of ‘swing’ in two
-consecutive eighth note beat durations. It is calculated simply by dividing the duration of the first, ‘long’
-eighth note beat by the second, ‘short’ beat. A BUR value of 2 indicates ‘perfect’ swing, i.e. a triplet quarter
-note followed by a triplet eighth note, while a BUR of 1 indicates ‘even’ eighth note durations.</p>
-<dl>
-<dt>Arguments:</dt><dd><p>my_onsets (np.array, optional): the array of raw onsets.
-my_beats (np.array, optional): the array of crotchet beat positions.
-use_log_burs (bool, optional): whether to use the log^2 of inter-onset intervals to calculate BURs,</p>
-<blockquote>
-<div><p>as employed in [2]. Defaults to False.</p>
-</div></blockquote>
-</dd>
-<dt>Returns:</dt><dd><p>np.array: the calculated BUR values</p>
-</dd>
-<dt>References:</dt><dd><dl class="simple">
-<dt>[1]: Benadon, F. (2006). Slicing the Beat: Jazz Eighth-Notes as Expressive Microrhythm. Ethnomusicology,</dt><dd><p>50/1 (pp. 73-98).</p>
-</dd>
-<dt>[2]: Corcoran, C., &amp; Frieler, K. (2021). Playing It Straight: Analyzing Jazz Soloists’ Swing Eighth-Note</dt><dd><p>Distributions with the Weimar Jazz Database. Music Perception, 38(4), 372–385.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.BeatUpbeatRatio.get_between">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.features.features_utils.BeatUpbeatRatio.get_between" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.features.features_utils.BaseExtractor.get_between">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.features.features_utils.BaseExtractor.get_between" title="Permalink to this definition">#</a></dt>
 <dd><p>From an array <cite>arr</cite>, get all onsets between an upper and lower bound <cite>i1</cite> and <cite>i2</cite> respectively</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.BeatUpbeatRatio.quantile25">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile25</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.BeatUpbeatRatio.quantile25" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.features.features_utils.BaseExtractor.quantile25">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile25</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.BaseExtractor.quantile25" title="Permalink to this definition">#</a></dt>
 <dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.BeatUpbeatRatio.quantile75">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile75</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.BeatUpbeatRatio.quantile75" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.features.features_utils.BaseExtractor.quantile75">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile75</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.BaseExtractor.quantile75" title="Permalink to this definition">#</a></dt>
 <dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.BeatUpbeatRatio.truncate_df">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">truncate_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_nans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.features.features_utils.BeatUpbeatRatio.truncate_df" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.features.features_utils.BaseExtractor.truncate_df">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">truncate_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_nans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.features.features_utils.BaseExtractor.truncate_df" title="Permalink to this definition">#</a></dt>
 <dd><p>Truncate a dataframe or series between a low and high threshold.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>arr (pd.DataFrame | pd.Series): dataframe to truncate
@@ -538,436 +478,9 @@ fill_nans (bool, optional): whether to replace values outside <cite>low</cite> a
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.BeatUpbeatRatio.update_summary_dict">
-<span class="sig-name descname"><span class="pre">update_summary_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.features.features_utils.BeatUpbeatRatio.update_summary_dict" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="src.features.features_utils.BaseExtractor.update_summary_dict">
+<span class="sig-name descname"><span class="pre">update_summary_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.features.features_utils.BaseExtractor.update_summary_dict" title="Permalink to this definition">#</a></dt>
 <dd><p>Update our summary dictionary with values from this feature. Can be overridden!</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.features.features_utils.</span></span><span class="sig-name descname"><span class="pre">IOIComplexity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_onsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downbeats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tempo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_signature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_period</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.features.features_utils.IOIComplexity" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExtractor</span></code></p>
-<p>Extracts features relating to the complexity and density of inter-onset intervals.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity._bin_ioi">
-<span class="sig-name descname"><span class="pre">_bin_ioi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ioi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity._bin_ioi" title="Permalink to this definition">#</a></dt>
-<dd><p>Bins an IOI as a proportion of a quarter note at the given time signature</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity._get_summary_dict">
-<span class="sig-name descname"><span class="pre">_get_summary_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity._get_summary_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Gets summary variables for this feature</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.alphabet">
-<span class="sig-name descname"><span class="pre">alphabet</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['a',</span> <span class="pre">'b',</span> <span class="pre">'c',</span> <span class="pre">'d',</span> <span class="pre">'e',</span> <span class="pre">'f',</span> <span class="pre">'g',</span> <span class="pre">'h',</span> <span class="pre">'i',</span> <span class="pre">'j']</span></em><a class="headerlink" href="#src.features.features_utils.IOIComplexity.alphabet" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.bin_iois">
-<span class="sig-name descname"><span class="pre">bin_iois</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_onsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downbeats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity.bin_iois" title="Permalink to this definition">#</a></dt>
-<dd><p>Bins all IOIs within <cite>my_onsets</cite> according to the beats in <cite>downbeats</cite></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.col_names">
-<span class="sig-name descname"><span class="pre">col_names</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['bar_range',</span> <span class="pre">'lz77',</span> <span class="pre">'n_onsets']</span></em><a class="headerlink" href="#src.features.features_utils.IOIComplexity.col_names" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.count_nonzero">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity.count_nonzero" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.count_nonzero</cite> that removes NaN values from an array</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.extract_complexity">
-<span class="sig-name descname"><span class="pre">extract_complexity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">binned_iois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity.extract_complexity" title="Permalink to this definition">#</a></dt>
-<dd><p>Extracts complexity scores for all inter-onset intervals in <cite>binned_iois</cite></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.fracs">
-<span class="sig-name descname"><span class="pre">fracs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[1,</span> <span class="pre">0.5,</span> <span class="pre">0.4166666666666667,</span> <span class="pre">0.375,</span> <span class="pre">0.3333333333333333,</span> <span class="pre">0.25,</span> <span class="pre">0.16666666666666666,</span> <span class="pre">0.125,</span> <span class="pre">0.08333333333333333,</span> <span class="pre">0]</span></em><a class="headerlink" href="#src.features.features_utils.IOIComplexity.fracs" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.get_between">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity.get_between" title="Permalink to this definition">#</a></dt>
-<dd><p>From an array <cite>arr</cite>, get all onsets between an upper and lower bound <cite>i1</cite> and <cite>i2</cite> respectively</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.lz77_compress">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lz77_compress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4096</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity.lz77_compress" title="Permalink to this definition">#</a></dt>
-<dd><p>Runs the LZ77 compression algorithm over the input <cite>data</cite>, with given <cite>window_size</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.quantile25">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile25</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity.quantile25" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.quantile75">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile75</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity.quantile75" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.truncate_df">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">truncate_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_nans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity.truncate_df" title="Permalink to this definition">#</a></dt>
-<dd><p>Truncate a dataframe or series between a low and high threshold.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>arr (pd.DataFrame | pd.Series): dataframe to truncate
-low (float): lower boundary for truncating
-high (float): upper boundary for truncating. Must be greater than <cite>low</cite>.
-col (str): array to use when truncating. Must be provided if <cite>isinstance(arr, pd.DataFrame)</cite>
-fill_nans (bool, optional): whether to replace values outside <cite>low</cite> and <cite>high</cite> with <cite>np.nan</cite></p>
-</dd>
-<dt>Raises:</dt><dd><p>AssertionError: if <cite>high</cite> &lt; <cite>low</cite></p>
-</dd>
-<dt>Returns:</dt><dd><p>pd.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.IOIComplexity.update_summary_dict">
-<span class="sig-name descname"><span class="pre">update_summary_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.features.features_utils.IOIComplexity.update_summary_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Update our summary dictionary with values from this feature. Can be overridden!</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.features.features_utils.</span></span><span class="sig-name descname"><span class="pre">PhaseCorrection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">their_beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExtractor</span></code></p>
-<p>Extract various features related to phase correction</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>my_beats (pd.Series): onsets of instrument to model
-their_beats (pd.DataFrame | pd.Series, optional): onsets of other instrument(s), defaults to None
-order (int, optional): the order of the model to create, defaults to 1 (i.e. 1st-order model, no lagged terms)
-iqr_filter (bool, optional): whether to apply an iqr filter to data, defaults to False
-difference_iois (bool, optional): whether to take the first difference of IOI values, defaults to True</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.count_nonzero">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.count_nonzero" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.count_nonzero</cite> that removes NaN values from an array</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.extract_model_coefficients">
-<span class="sig-name descname"><span class="pre">extract_model_coefficients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.extract_model_coefficients" title="Permalink to this definition">#</a></dt>
-<dd><p>Extracts coefficients from linear phase correction model and format them correctly</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.format_array">
-<span class="sig-name descname"><span class="pre">format_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iqr_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">difference_iois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standardize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Series</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.format_array" title="Permalink to this definition">#</a></dt>
-<dd><p>Applies formatting to a single array used in creating the model</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.format_async_arrays">
-<span class="sig-name descname"><span class="pre">format_async_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">their_beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.format_async_arrays" title="Permalink to this definition">#</a></dt>
-<dd><p>Format our asynchrony columns</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.generate_model">
-<span class="sig-name descname"><span class="pre">generate_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">their_beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RegressionResultsWrapper</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.generate_model" title="Permalink to this definition">#</a></dt>
-<dd><p>Generate the phase correction linear regression model</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.get_between">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.get_between" title="Permalink to this definition">#</a></dt>
-<dd><p>From an array <cite>arr</cite>, get all onsets between an upper and lower bound <cite>i1</cite> and <cite>i2</cite> respectively</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.quantile25">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile25</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.quantile25" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.quantile75">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile75</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.quantile75" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.shifter">
-<span class="sig-name descname"><span class="pre">shifter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.shifter" title="Permalink to this definition">#</a></dt>
-<dd><p>Shift an input array by the required number of beats and return a generator</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.truncate">
-<span class="sig-name descname"><span class="pre">truncate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_beats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">their_beats</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.truncate" title="Permalink to this definition">#</a></dt>
-<dd><p>Truncates our input data between given low and high thresholds</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.truncate_df">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">truncate_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_nans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.truncate_df" title="Permalink to this definition">#</a></dt>
-<dd><p>Truncate a dataframe or series between a low and high threshold.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>arr (pd.DataFrame | pd.Series): dataframe to truncate
-low (float): lower boundary for truncating
-high (float): upper boundary for truncating. Must be greater than <cite>low</cite>.
-col (str): array to use when truncating. Must be provided if <cite>isinstance(arr, pd.DataFrame)</cite>
-fill_nans (bool, optional): whether to replace values outside <cite>low</cite> and <cite>high</cite> with <cite>np.nan</cite></p>
-</dd>
-<dt>Raises:</dt><dd><p>AssertionError: if <cite>high</cite> &lt; <cite>low</cite></p>
-</dd>
-<dt>Returns:</dt><dd><p>pd.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.PhaseCorrection.update_summary_dict">
-<span class="sig-name descname"><span class="pre">update_summary_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.features.features_utils.PhaseCorrection.update_summary_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Update our summary dictionary with values from this feature. Can be overridden!</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.features.features_utils.</span></span><span class="sig-name descname"><span class="pre">ProportionalAsynchrony</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">summary_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_instr_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metre_col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'metre_manual'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExtractor</span></code></p>
-<p>Extracts features relating to the proportional asynchrony between performers.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony.LOWER_BOUND">
-<span class="sig-name descname"><span class="pre">LOWER_BOUND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.03125</span></em><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony.LOWER_BOUND" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony.REF_INSTR">
-<span class="sig-name descname"><span class="pre">REF_INSTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'drums'</span></em><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony.REF_INSTR" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony.UPPER_BOUND">
-<span class="sig-name descname"><span class="pre">UPPER_BOUND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0625</span></em><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony.UPPER_BOUND" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony._extract_async_stats">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_extract_async_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_async</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_instr_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony._extract_async_stats" title="Permalink to this definition">#</a></dt>
-<dd><p>Extracts asynchrony stats from all pairwise combinations of instruments and returns a dictionary</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony._extract_proportional_durations">
-<span class="sig-name descname"><span class="pre">_extract_proportional_durations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">summary_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span></span></span><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony._extract_proportional_durations" title="Permalink to this definition">#</a></dt>
-<dd><p>Extracts proportional beat values for all instruments</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony._format_async_df">
-<span class="sig-name descname"><span class="pre">_format_async_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">async_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony._format_async_df" title="Permalink to this definition">#</a></dt>
-<dd><p>Coerces asynchrony dataframe into correct format</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony.count_nonzero">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony.count_nonzero" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.count_nonzero</cite> that removes NaN values from an array</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony.get_between">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony.get_between" title="Permalink to this definition">#</a></dt>
-<dd><p>From an array <cite>arr</cite>, get all onsets between an upper and lower bound <cite>i1</cite> and <cite>i2</cite> respectively</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony.quantile25">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile25</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony.quantile25" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony.quantile75">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile75</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony.quantile75" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony.truncate_df">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">truncate_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_nans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony.truncate_df" title="Permalink to this definition">#</a></dt>
-<dd><p>Truncate a dataframe or series between a low and high threshold.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>arr (pd.DataFrame | pd.Series): dataframe to truncate
-low (float): lower boundary for truncating
-high (float): upper boundary for truncating. Must be greater than <cite>low</cite>.
-col (str): array to use when truncating. Must be provided if <cite>isinstance(arr, pd.DataFrame)</cite>
-fill_nans (bool, optional): whether to replace values outside <cite>low</cite> and <cite>high</cite> with <cite>np.nan</cite></p>
-</dd>
-<dt>Raises:</dt><dd><p>AssertionError: if <cite>high</cite> &lt; <cite>low</cite></p>
-</dd>
-<dt>Returns:</dt><dd><p>pd.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.ProportionalAsynchrony.update_summary_dict">
-<span class="sig-name descname"><span class="pre">update_summary_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.features.features_utils.ProportionalAsynchrony.update_summary_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Update our summary dictionary with values from this feature. Can be overridden!</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.features.features_utils.</span></span><span class="sig-name descname"><span class="pre">RollingIOISummaryStats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_onsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downbeats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IOISummaryStats</span></code></p>
-<p>Extracts the statistics in <cite>IOISummaryStatsExtractor</cite> on a rolling basis, window defaults to 4 bars length</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats.binary_entropy">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">binary_entropy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats.binary_entropy" title="Permalink to this definition">#</a></dt>
-<dd><p>Extract the Shannon entropy from an iterable</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats.count_nonzero">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats.count_nonzero" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.count_nonzero</cite> that removes NaN values from an array</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats.extract_rolling_statistics">
-<span class="sig-name descname"><span class="pre">extract_rolling_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_onsets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downbeats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats.extract_rolling_statistics" title="Permalink to this definition">#</a></dt>
-<dd><p>Extract rolling summary statistics across the given bar period</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats.get_between">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats.get_between" title="Permalink to this definition">#</a></dt>
-<dd><p>From an array <cite>arr</cite>, get all onsets between an upper and lower bound <cite>i1</cite> and <cite>i2</cite> respectively</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats.lempel_ziv_complexity">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lempel_ziv_complexity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats.lempel_ziv_complexity" title="Permalink to this definition">#</a></dt>
-<dd><p>Extract complexity from a binary sequence using Lempel-Ziv compression algorithm,</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats.npvi">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">npvi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iois</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats.npvi" title="Permalink to this definition">#</a></dt>
-<dd><p>Extract the normalised pairwise variability index (nPVI) from an iterable</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats.quantile25">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile25</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats.quantile25" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats.quantile75">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile75</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats.quantile75" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats.truncate_df">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">truncate_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_nans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats.truncate_df" title="Permalink to this definition">#</a></dt>
-<dd><p>Truncate a dataframe or series between a low and high threshold.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>arr (pd.DataFrame | pd.Series): dataframe to truncate
-low (float): lower boundary for truncating
-high (float): upper boundary for truncating. Must be greater than <cite>low</cite>.
-col (str): array to use when truncating. Must be provided if <cite>isinstance(arr, pd.DataFrame)</cite>
-fill_nans (bool, optional): whether to replace values outside <cite>low</cite> and <cite>high</cite> with <cite>np.nan</cite></p>
-</dd>
-<dt>Raises:</dt><dd><p>AssertionError: if <cite>high</cite> &lt; <cite>low</cite></p>
-</dd>
-<dt>Returns:</dt><dd><p>pd.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.RollingIOISummaryStats.update_summary_dict">
-<span class="sig-name descname"><span class="pre">update_summary_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.features.features_utils.RollingIOISummaryStats.update_summary_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Update our summary dictionary with values from this feature. Can be overridden!</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="src.features.features_utils.TempoSlope">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.features.features_utils.</span></span><span class="sig-name descname"><span class="pre">TempoSlope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.features.features_utils.TempoSlope" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExtractor</span></code></p>
-<p>Extract features related to tempo slope, i.e. instantaneous tempo change (in beats-per-minute) per second</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.TempoSlope.count_nonzero">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count_nonzero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#src.features.features_utils.TempoSlope.count_nonzero" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.count_nonzero</cite> that removes NaN values from an array</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.TempoSlope.extract_tempo_slope">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_tempo_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">my_beats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">my_bpms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RegressionResultsWrapper</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#src.features.features_utils.TempoSlope.extract_tempo_slope" title="Permalink to this definition">#</a></dt>
-<dd><p>Create the tempo slope regression model</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.TempoSlope.get_between">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#src.features.features_utils.TempoSlope.get_between" title="Permalink to this definition">#</a></dt>
-<dd><p>From an array <cite>arr</cite>, get all onsets between an upper and lower bound <cite>i1</cite> and <cite>i2</cite> respectively</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.TempoSlope.quantile25">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile25</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.TempoSlope.quantile25" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.TempoSlope.quantile75">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">quantile75</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.features.features_utils.TempoSlope.quantile75" title="Permalink to this definition">#</a></dt>
-<dd><p>Simple wrapper around <cite>np.nanquantile</cite> with arguments set</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.TempoSlope.truncate_df">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">truncate_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_nans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#src.features.features_utils.TempoSlope.truncate_df" title="Permalink to this definition">#</a></dt>
-<dd><p>Truncate a dataframe or series between a low and high threshold.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>arr (pd.DataFrame | pd.Series): dataframe to truncate
-low (float): lower boundary for truncating
-high (float): upper boundary for truncating. Must be greater than <cite>low</cite>.
-col (str): array to use when truncating. Must be provided if <cite>isinstance(arr, pd.DataFrame)</cite>
-fill_nans (bool, optional): whether to replace values outside <cite>low</cite> and <cite>high</cite> with <cite>np.nan</cite></p>
-</dd>
-<dt>Raises:</dt><dd><p>AssertionError: if <cite>high</cite> &lt; <cite>low</cite></p>
-</dd>
-<dt>Returns:</dt><dd><p>pd.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.features.features_utils.TempoSlope.update_summary_dict">
-<span class="sig-name descname"><span class="pre">update_summary_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.features.features_utils.TempoSlope.update_summary_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Update the summary dictionary with tempo slope and drift coefficients</p>
 </dd></dl>
 
 </dd></dl>
@@ -989,7 +502,7 @@ fill_nans (bool, optional): whether to replace values outside <cite>low</cite> a
 
 <dl class="py method">
 <dt class="sig sig-object py" id="src.features.simulations_utils.Simulation._get_async_cls">
-<span class="sig-name descname"><span class="pre">_get_async_cls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Asynchrony</span></span></span><a class="headerlink" href="#src.features.simulations_utils.Simulation._get_async_cls" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">_get_async_cls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../src.features.html#src.features.rhythm_features.Asynchrony" title="src.features.rhythm_features.Asynchrony"><span class="pre">Asynchrony</span></a></span></span><a class="headerlink" href="#src.features.simulations_utils.Simulation._get_async_cls" title="Permalink to this definition">#</a></dt>
 <dd><p>Gets all <cite>src.features.features_utils.Asynchrony</cite> classes for all instruments</p>
 </dd></dl>
 
@@ -1124,91 +637,15 @@ fill_nans (bool, optional): whether to replace values outside <cite>low</cite> a
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.features.extract_features">src.features.extract_features module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.extract_features.process_item"><code class="docutils literal notranslate"><span class="pre">process_item()</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src-features-extract-features-module">src.features.extract_features module</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.features.features_utils">src.features.features_utils module</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BeatUpbeatRatio"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BeatUpbeatRatio.HIGH_THRESH"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.HIGH_THRESH</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BeatUpbeatRatio.LOW_THRESH"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.LOW_THRESH</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BeatUpbeatRatio.count_nonzero"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.count_nonzero()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BeatUpbeatRatio.extract_burs"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.extract_burs()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BeatUpbeatRatio.get_between"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.get_between()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BeatUpbeatRatio.quantile25"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.quantile25()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BeatUpbeatRatio.quantile75"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.quantile75()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BeatUpbeatRatio.truncate_df"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.truncate_df()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BeatUpbeatRatio.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.update_summary_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity"><code class="docutils literal notranslate"><span class="pre">IOIComplexity</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity._bin_ioi"><code class="docutils literal notranslate"><span class="pre">IOIComplexity._bin_ioi()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity._get_summary_dict"><code class="docutils literal notranslate"><span class="pre">IOIComplexity._get_summary_dict()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.alphabet"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.alphabet</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.bin_iois"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.bin_iois()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.col_names"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.col_names</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.count_nonzero"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.count_nonzero()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.extract_complexity"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.extract_complexity()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.fracs"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.fracs</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.get_between"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.get_between()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.lz77_compress"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.lz77_compress()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.quantile25"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.quantile25()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.quantile75"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.quantile75()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.truncate_df"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.truncate_df()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.IOIComplexity.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.update_summary_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.count_nonzero"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.count_nonzero()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.extract_model_coefficients"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.extract_model_coefficients()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.format_array"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.format_array()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.format_async_arrays"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.format_async_arrays()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.generate_model"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.generate_model()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.get_between"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.get_between()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.quantile25"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.quantile25()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.quantile75"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.quantile75()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.shifter"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.shifter()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.truncate"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.truncate()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.truncate_df"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.truncate_df()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.PhaseCorrection.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.update_summary_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony.LOWER_BOUND"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.LOWER_BOUND</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony.REF_INSTR"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.REF_INSTR</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony.UPPER_BOUND"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.UPPER_BOUND</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony._extract_async_stats"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony._extract_async_stats()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony._extract_proportional_durations"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony._extract_proportional_durations()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony._format_async_df"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony._format_async_df()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony.count_nonzero"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.count_nonzero()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony.get_between"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.get_between()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony.quantile25"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.quantile25()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony.quantile75"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.quantile75()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony.truncate_df"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.truncate_df()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.ProportionalAsynchrony.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.update_summary_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats.binary_entropy"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.binary_entropy()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats.count_nonzero"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.count_nonzero()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats.extract_rolling_statistics"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.extract_rolling_statistics()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats.get_between"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.get_between()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats.lempel_ziv_complexity"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.lempel_ziv_complexity()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats.npvi"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.npvi()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats.quantile25"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.quantile25()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats.quantile75"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.quantile75()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats.truncate_df"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.truncate_df()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.RollingIOISummaryStats.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.update_summary_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.TempoSlope"><code class="docutils literal notranslate"><span class="pre">TempoSlope</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.TempoSlope.count_nonzero"><code class="docutils literal notranslate"><span class="pre">TempoSlope.count_nonzero()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.TempoSlope.extract_tempo_slope"><code class="docutils literal notranslate"><span class="pre">TempoSlope.extract_tempo_slope()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.TempoSlope.get_between"><code class="docutils literal notranslate"><span class="pre">TempoSlope.get_between()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.TempoSlope.quantile25"><code class="docutils literal notranslate"><span class="pre">TempoSlope.quantile25()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.TempoSlope.quantile75"><code class="docutils literal notranslate"><span class="pre">TempoSlope.quantile75()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.TempoSlope.truncate_df"><code class="docutils literal notranslate"><span class="pre">TempoSlope.truncate_df()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.TempoSlope.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">TempoSlope.update_summary_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BaseExtractor"><code class="docutils literal notranslate"><span class="pre">BaseExtractor</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BaseExtractor.count_nonzero"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.count_nonzero()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BaseExtractor.get_between"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.get_between()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BaseExtractor.quantile25"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.quantile25()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BaseExtractor.quantile75"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.quantile75()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BaseExtractor.truncate_df"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.truncate_df()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.features.features_utils.BaseExtractor.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.update_summary_dict()</span></code></a></li>
 </ul>
 </li>
 </ul>

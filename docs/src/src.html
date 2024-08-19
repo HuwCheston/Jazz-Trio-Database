@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>src package &#8212; Cambridge Jazz Trio Database</title>
+    <title>src package &#8212; Jazz Trio Database</title>
   
   
   
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">Cambridge Jazz Trio Database</p>
+    <p class="title logo__title">Jazz Trio Database</p>
   
 </a></div>
     
@@ -145,13 +145,6 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../installation/getting-started.html">
                         Getting started
-                      </a>
-                    </li>
-                
-
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
-                        User guide
                       </a>
                     </li>
                 
@@ -215,7 +208,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -287,13 +280,6 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../usage/user-guide.html">
-                        User guide
-                      </a>
-                    </li>
-                
-
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="modules.html">
                         API
@@ -339,7 +325,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/HuwCheston/Jazz-Trio-Database" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -448,9 +434,15 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.abs_tol"><code class="docutils literal notranslate"><span class="pre">ItemMaker.abs_tol</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.finalize_output"><code class="docutils literal notranslate"><span class="pre">ItemMaker.finalize_output()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.fmt"><code class="docutils literal notranslate"><span class="pre">ItemMaker.fmt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.fname"><code class="docutils literal notranslate"><span class="pre">ItemMaker.fname</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.get_item"><code class="docutils literal notranslate"><span class="pre">ItemMaker.get_item()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.get_lr_audio"><code class="docutils literal notranslate"><span class="pre">ItemMaker.get_lr_audio</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.in_file"><code class="docutils literal notranslate"><span class="pre">ItemMaker.in_file</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.instrs"><code class="docutils literal notranslate"><span class="pre">ItemMaker.instrs</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.separate_audio"><code class="docutils literal notranslate"><span class="pre">ItemMaker.separate_audio()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.use_demucs"><code class="docutils literal notranslate"><span class="pre">ItemMaker.use_demucs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.use_mvsep"><code class="docutils literal notranslate"><span class="pre">ItemMaker.use_mvsep</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.use_spleeter"><code class="docutils literal notranslate"><span class="pre">ItemMaker.use_spleeter</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils.ItemMaker.ydl_opts"><code class="docutils literal notranslate"><span class="pre">ItemMaker.ydl_opts</span></code></a></li>
 </ul>
 </li>
@@ -478,8 +470,40 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._DemucsMaker.run_separation"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.run_separation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._DemucsMaker.separate_audio"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.separate_audio()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._DemucsMaker.use_demucs"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.use_demucs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._DemucsMaker.use_mvsep"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.use_mvsep</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._DemucsMaker.use_spleeter"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.use_spleeter</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._DemucsMaker.ydl_opts"><code class="docutils literal notranslate"><span class="pre">_DemucsMaker.ydl_opts</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.LOAD_KWS"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.LOAD_KWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.MVSEP_KWARGS"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.MVSEP_KWARGS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.MVSEP_LOCATION"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.MVSEP_LOCATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker._download_audio_excerpt_from_youtube"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker._download_audio_excerpt_from_youtube()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker._get_valid_links"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker._get_valid_links()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker._logger_wrapper"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker._logger_wrapper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker._split_left_right_audio_channels"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker._split_left_right_audio_channels()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.abs_tol"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.abs_tol</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.align_audio_signals"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.align_audio_signals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.calculate_best_shift"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.calculate_best_shift()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.cleanup_post_separation"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.cleanup_post_separation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.finalize_output"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.finalize_output()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.fmt"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.fmt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.fname"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.fname</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.get_cmd"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.get_cmd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.get_files_to_keep"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.get_files_to_keep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.get_item"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.get_item()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.get_lr_audio"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.get_lr_audio</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.in_file"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.in_file</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.instrs"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.instrs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.rename_piano_file"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.rename_piano_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.run_separation"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.run_separation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.separate_audio"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.separate_audio()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.shift_audio_signal"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.shift_audio_signal()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.use_demucs"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.use_demucs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.use_mvsep"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.use_mvsep</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.use_spleeter"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.use_spleeter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._MVSEPMaker.ydl_opts"><code class="docutils literal notranslate"><span class="pre">_MVSEPMaker.ydl_opts</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._SpleeterMaker"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker</span></code></a><ul>
@@ -500,6 +524,7 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._SpleeterMaker.run_separation"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.run_separation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._SpleeterMaker.separate_audio"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.separate_audio()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._SpleeterMaker.use_demucs"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.use_demucs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._SpleeterMaker.use_mvsep"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.use_mvsep</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._SpleeterMaker.use_spleeter"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.use_spleeter</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.clean.html#src.clean.clean_utils._SpleeterMaker.ydl_opts"><code class="docutils literal notranslate"><span class="pre">_SpleeterMaker.ydl_opts</span></code></a></li>
 </ul>
@@ -513,81 +538,41 @@ document.write(`
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src.detect.html">src.detect package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src.detect.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="src.detect.html#module-src.detect.detect_onsets">src.detect.detect_onsets module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.detect_onsets.process_item"><code class="docutils literal notranslate"><span class="pre">process_item()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="src.detect.html#module-src.detect.detect_utils">src.detect.detect_utils module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.ClickTrackMaker"><code class="docutils literal notranslate"><span class="pre">ClickTrackMaker</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.ClickTrackMaker.clicks_from_onsets"><code class="docutils literal notranslate"><span class="pre">ClickTrackMaker.clicks_from_onsets()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.ClickTrackMaker.generate_audio"><code class="docutils literal notranslate"><span class="pre">ClickTrackMaker.generate_audio()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.ClickTrackMaker.order"><code class="docutils literal notranslate"><span class="pre">ClickTrackMaker.order</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker"><code class="docutils literal notranslate"><span class="pre">OnsetMaker</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker._get_channel_override_fpath"><code class="docutils literal notranslate"><span class="pre">OnsetMaker._get_channel_override_fpath()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker._load_audio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker._load_audio()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.beat_track_rnn"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.beat_track_rnn()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.compare_onset_detection_accuracy"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.compare_onset_detection_accuracy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.detection_note_values"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.detection_note_values</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.extract_downbeats"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.extract_downbeats()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.finalize_output"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.finalize_output()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.generate_click_track"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.generate_click_track()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.generate_matched_onsets_dictionary"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.generate_matched_onsets_dictionary()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.get_nonsilent_sections"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.get_nonsilent_sections()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.get_signal_to_noise_ratio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.get_signal_to_noise_ratio()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.get_silent_track_percent"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.get_silent_track_percent()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.get_spectral_flatness"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.get_spectral_flatness()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.match_onsets_and_beats"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.match_onsets_and_beats()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.metre_from_annotated_downbeat"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.metre_from_annotated_downbeat()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.onset_detect"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.onset_detect()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.onset_strength"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.onset_strength()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.process_mixed_audio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.process_mixed_audio()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.process_separated_audio"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.process_separated_audio()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.remove_onsets_in_silent_passages"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.remove_onsets_in_silent_passages()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.return_converged_paramaters"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.return_converged_paramaters()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.silence_threshold"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.silence_threshold</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.top_db"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.top_db</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.OnsetMaker.window"><code class="docutils literal notranslate"><span class="pre">OnsetMaker.window</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.bandpass_filter"><code class="docutils literal notranslate"><span class="pre">bandpass_filter()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.calculate_tempo"><code class="docutils literal notranslate"><span class="pre">calculate_tempo()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.detect_utils.create_silent_clicktrack"><code class="docutils literal notranslate"><span class="pre">create_silent_clicktrack()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="src.detect.html#src-detect-detect-onsets-module">src.detect.detect_onsets module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.detect.html#src-detect-detect-utils-module">src.detect.detect_utils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.detect.html#module-src.detect.optimise_detection_parameters">src.detect.optimise_detection_parameters module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.analyze_track"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.analyze_track()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.args"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.args</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.audio_cutoff"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.audio_cutoff</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.csv_name"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.csv_name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.enable_logger"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.enable_logger()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.get_f_score"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.get_f_score()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.instr"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.instr</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.joblib_backend"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.joblib_backend</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.log_iteration"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.log_iteration()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.lookup_results_from_cache"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.lookup_results_from_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.n_jobs"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.n_jobs</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.objective_function"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.objective_function()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.return_kwargs"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.return_kwargs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrack.run_optimization"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrack.run_optimization()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.analyze_track"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.analyze_track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.args"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.args</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.audio_cutoff"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.audio_cutoff</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.csv_name"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.csv_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.enable_logger"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.enable_logger()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.get_f_score"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.get_f_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.instr"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.instr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.joblib_backend"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.joblib_backend</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.log_iteration"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.log_iteration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.lookup_results_from_cache"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.lookup_results_from_cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.n_jobs"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.n_jobs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.objective_function"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.objective_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.return_kwargs"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.return_kwargs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeBeatTrackRNN.run_optimization"><code class="docutils literal notranslate"><span class="pre">OptimizeBeatTrackRNN.run_optimization()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.analyze_track"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.analyze_track()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.args"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.args</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.audio_cutoff"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.audio_cutoff</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.csv_name"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.csv_name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.enable_logger"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.enable_logger()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.get_f_score"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.get_f_score()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.joblib_backend"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.joblib_backend</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.log_iteration"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.log_iteration()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.lookup_results_from_cache"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.lookup_results_from_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.n_jobs"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.n_jobs</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.objective_function"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.objective_function()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.return_kwargs"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.return_kwargs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetect.run_optimization"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetect.run_optimization()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.analyze_track"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.analyze_track()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.args"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.args</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.audio_cutoff"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.audio_cutoff</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.csv_name"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.csv_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.enable_logger"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.enable_logger()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.fps"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.fps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.get_f_score"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.get_f_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.joblib_backend"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.joblib_backend</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.log_iteration"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.log_iteration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.lookup_results_from_cache"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.lookup_results_from_cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.n_jobs"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.n_jobs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.objective_function"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.objective_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.return_kwargs"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.return_kwargs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.OptimizeOnsetDetectCNN.run_optimization"><code class="docutils literal notranslate"><span class="pre">OptimizeOnsetDetectCNN.run_optimization()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.Optimizer"><code class="docutils literal notranslate"><span class="pre">Optimizer</span></code></a><ul>
@@ -606,7 +591,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.optimize_beat_tracking"><code class="docutils literal notranslate"><span class="pre">optimize_beat_tracking()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.optimize_onset_detection"><code class="docutils literal notranslate"><span class="pre">optimize_onset_detection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="src.detect.html#src.detect.optimise_detection_parameters.optimize_onset_detection_cnn"><code class="docutils literal notranslate"><span class="pre">optimize_onset_detection_cnn()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="src.detect.html#module-src.detect">Module contents</a></li>
@@ -614,91 +599,15 @@ document.write(`
 </li>
 <li class="toctree-l1"><a class="reference internal" href="src.features.html">src.features package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="src.features.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="src.features.html#module-src.features.extract_features">src.features.extract_features module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src.features.html#src.features.extract_features.process_item"><code class="docutils literal notranslate"><span class="pre">process_item()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="src.features.html#src-features-extract-features-module">src.features.extract_features module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="src.features.html#module-src.features.features_utils">src.features.features_utils module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="src.features.html#src.features.features_utils.BeatUpbeatRatio"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BeatUpbeatRatio.HIGH_THRESH"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.HIGH_THRESH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BeatUpbeatRatio.LOW_THRESH"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.LOW_THRESH</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BeatUpbeatRatio.count_nonzero"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.count_nonzero()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BeatUpbeatRatio.extract_burs"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.extract_burs()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BeatUpbeatRatio.get_between"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.get_between()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BeatUpbeatRatio.quantile25"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.quantile25()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BeatUpbeatRatio.quantile75"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.quantile75()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BeatUpbeatRatio.truncate_df"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.truncate_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BeatUpbeatRatio.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">BeatUpbeatRatio.update_summary_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity"><code class="docutils literal notranslate"><span class="pre">IOIComplexity</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity._bin_ioi"><code class="docutils literal notranslate"><span class="pre">IOIComplexity._bin_ioi()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity._get_summary_dict"><code class="docutils literal notranslate"><span class="pre">IOIComplexity._get_summary_dict()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.alphabet"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.alphabet</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.bin_iois"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.bin_iois()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.col_names"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.col_names</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.count_nonzero"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.count_nonzero()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.extract_complexity"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.extract_complexity()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.fracs"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.fracs</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.get_between"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.get_between()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.lz77_compress"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.lz77_compress()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.quantile25"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.quantile25()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.quantile75"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.quantile75()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.truncate_df"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.truncate_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.IOIComplexity.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">IOIComplexity.update_summary_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.count_nonzero"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.count_nonzero()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.extract_model_coefficients"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.extract_model_coefficients()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.format_array"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.format_array()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.format_async_arrays"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.format_async_arrays()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.generate_model"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.generate_model()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.get_between"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.get_between()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.quantile25"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.quantile25()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.quantile75"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.quantile75()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.shifter"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.shifter()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.truncate"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.truncate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.truncate_df"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.truncate_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.PhaseCorrection.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">PhaseCorrection.update_summary_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony.LOWER_BOUND"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.LOWER_BOUND</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony.REF_INSTR"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.REF_INSTR</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony.UPPER_BOUND"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.UPPER_BOUND</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony._extract_async_stats"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony._extract_async_stats()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony._extract_proportional_durations"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony._extract_proportional_durations()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony._format_async_df"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony._format_async_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony.count_nonzero"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.count_nonzero()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony.get_between"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.get_between()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony.quantile25"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.quantile25()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony.quantile75"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.quantile75()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony.truncate_df"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.truncate_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.ProportionalAsynchrony.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">ProportionalAsynchrony.update_summary_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats.binary_entropy"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.binary_entropy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats.count_nonzero"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.count_nonzero()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats.extract_rolling_statistics"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.extract_rolling_statistics()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats.get_between"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.get_between()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats.lempel_ziv_complexity"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.lempel_ziv_complexity()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats.npvi"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.npvi()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats.quantile25"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.quantile25()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats.quantile75"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.quantile75()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats.truncate_df"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.truncate_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.RollingIOISummaryStats.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">RollingIOISummaryStats.update_summary_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="src.features.html#src.features.features_utils.TempoSlope"><code class="docutils literal notranslate"><span class="pre">TempoSlope</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.TempoSlope.count_nonzero"><code class="docutils literal notranslate"><span class="pre">TempoSlope.count_nonzero()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.TempoSlope.extract_tempo_slope"><code class="docutils literal notranslate"><span class="pre">TempoSlope.extract_tempo_slope()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.TempoSlope.get_between"><code class="docutils literal notranslate"><span class="pre">TempoSlope.get_between()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.TempoSlope.quantile25"><code class="docutils literal notranslate"><span class="pre">TempoSlope.quantile25()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.TempoSlope.quantile75"><code class="docutils literal notranslate"><span class="pre">TempoSlope.quantile75()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.TempoSlope.truncate_df"><code class="docutils literal notranslate"><span class="pre">TempoSlope.truncate_df()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.TempoSlope.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">TempoSlope.update_summary_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="src.features.html#src.features.features_utils.BaseExtractor"><code class="docutils literal notranslate"><span class="pre">BaseExtractor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BaseExtractor.count_nonzero"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.count_nonzero()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BaseExtractor.get_between"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.get_between()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BaseExtractor.quantile25"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.quantile25()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BaseExtractor.quantile75"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.quantile75()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BaseExtractor.truncate_df"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.truncate_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.features.html#src.features.features_utils.BaseExtractor.update_summary_dict"><code class="docutils literal notranslate"><span class="pre">BaseExtractor.update_summary_dict()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -771,6 +680,8 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.asynchrony_plots.HistPlotProportionalAsynchronyTriosPiano.FILL_KWS"><code class="docutils literal notranslate"><span class="pre">HistPlotProportionalAsynchronyTriosPiano.FILL_KWS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.asynchrony_plots.HistPlotProportionalAsynchronyTriosPiano.PLOT_KWS"><code class="docutils literal notranslate"><span class="pre">HistPlotProportionalAsynchronyTriosPiano.PLOT_KWS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.asynchrony_plots.HistPlotProportionalAsynchronyTriosPiano.VLINE_KWS"><code class="docutils literal notranslate"><span class="pre">HistPlotProportionalAsynchronyTriosPiano.VLINE_KWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.asynchrony_plots.HistPlotProportionalAsynchronyTriosPiano.XTICKLABELS"><code class="docutils literal notranslate"><span class="pre">HistPlotProportionalAsynchronyTriosPiano.XTICKLABELS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.asynchrony_plots.HistPlotProportionalAsynchronyTriosPiano.XTICKS"><code class="docutils literal notranslate"><span class="pre">HistPlotProportionalAsynchronyTriosPiano.XTICKS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.asynchrony_plots.HistPlotProportionalAsynchronyTriosPiano._add_bandleader_images"><code class="docutils literal notranslate"><span class="pre">HistPlotProportionalAsynchronyTriosPiano._add_bandleader_images()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.asynchrony_plots.HistPlotProportionalAsynchronyTriosPiano._add_notation_images"><code class="docutils literal notranslate"><span class="pre">HistPlotProportionalAsynchronyTriosPiano._add_notation_images()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.asynchrony_plots.HistPlotProportionalAsynchronyTriosPiano._create_plot"><code class="docutils literal notranslate"><span class="pre">HistPlotProportionalAsynchronyTriosPiano._create_plot()</span></code></a></li>
@@ -1049,6 +960,25 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.RegPlotTempoDensityComplexity.output_dir"><code class="docutils literal notranslate"><span class="pre">RegPlotTempoDensityComplexity.output_dir</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.EBAR_KWS"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.EBAR_KWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.KDE_KWS"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.KDE_KWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.PAL"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.PAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.SCAT_KWS"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.SCAT_KWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity._add_bandleader_images"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity._add_bandleader_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity._create_plot"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity._create_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity._format_ax"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity._format_ax()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity._format_df"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity._format_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity._format_fig"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity._format_fig()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.ax"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.ax</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.create_plot"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.create_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.df"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.fig"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.fig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.g"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.g</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.img_loc"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.img_loc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.complexity_plots.ViolinPlotOnsetComplexity.output_dir"><code class="docutils literal notranslate"><span class="pre">ViolinPlotOnsetComplexity.output_dir</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="src.visualise.html#module-src.visualise.coordination_plots">src.visualise.coordination_plots module</a><ul>
@@ -1063,6 +993,19 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotCouplingCoefficients.fig"><code class="docutils literal notranslate"><span class="pre">BarPlotCouplingCoefficients.fig</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotCouplingCoefficients.g"><code class="docutils literal notranslate"><span class="pre">BarPlotCouplingCoefficients.g</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotCouplingCoefficients.output_dir"><code class="docutils literal notranslate"><span class="pre">BarPlotCouplingCoefficients.output_dir</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison.BAR_KWS"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison.BAR_KWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison._create_plot"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison._create_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison._format_ax"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison._format_ax()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison._format_fig"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison._format_fig()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison.ax"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison.ax</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison.create_plot"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison.create_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison.df"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison.df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison.fig"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison.fig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison.g"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison.g</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotModelComparison.output_dir"><code class="docutils literal notranslate"><span class="pre">BarPlotModelComparison.output_dir</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="src.visualise.html#src.visualise.coordination_plots.BarPlotSimulationComparison"><code class="docutils literal notranslate"><span class="pre">BarPlotSimulationComparison</span></code></a><ul>
@@ -1196,7 +1139,6 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotBandleaderDuration._format_fig"><code class="docutils literal notranslate"><span class="pre">BarPlotBandleaderDuration._format_fig()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotBandleaderDuration.abbreviate"><code class="docutils literal notranslate"><span class="pre">BarPlotBandleaderDuration.abbreviate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotBandleaderDuration.ax"><code class="docutils literal notranslate"><span class="pre">BarPlotBandleaderDuration.ax</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotBandleaderDuration.bandleaders"><code class="docutils literal notranslate"><span class="pre">BarPlotBandleaderDuration.bandleaders</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotBandleaderDuration.create_plot"><code class="docutils literal notranslate"><span class="pre">BarPlotBandleaderDuration.create_plot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotBandleaderDuration.df"><code class="docutils literal notranslate"><span class="pre">BarPlotBandleaderDuration.df</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotBandleaderDuration.fig"><code class="docutils literal notranslate"><span class="pre">BarPlotBandleaderDuration.fig</span></code></a></li>
@@ -1250,6 +1192,21 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotLastFMStreams.output_dir"><code class="docutils literal notranslate"><span class="pre">BarPlotLastFMStreams.output_dir</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration.BAR_KWS"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration.BAR_KWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration.PAL"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration.PAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration._create_plot"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration._create_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration._format_ax"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration._format_ax()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration._format_fig"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration._format_fig()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration.ax"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration.ax</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration.create_plot"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration.create_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration.df"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration.df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration.fig"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration.fig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration.format_func"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration.format_func()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration.g"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration.g</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSoloDuration.output_dir"><code class="docutils literal notranslate"><span class="pre">BarPlotSoloDuration.output_dir</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSubjectiveRatings"><code class="docutils literal notranslate"><span class="pre">BarPlotSubjectiveRatings</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSubjectiveRatings.BAR_KWS"><code class="docutils literal notranslate"><span class="pre">BarPlotSubjectiveRatings.BAR_KWS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.BarPlotSubjectiveRatings.COLS"><code class="docutils literal notranslate"><span class="pre">BarPlotSubjectiveRatings.COLS</span></code></a></li>
@@ -1299,6 +1256,20 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.CountPlotPanning.fig"><code class="docutils literal notranslate"><span class="pre">CountPlotPanning.fig</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.CountPlotPanning.g"><code class="docutils literal notranslate"><span class="pre">CountPlotPanning.g</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.CountPlotPanning.output_dir"><code class="docutils literal notranslate"><span class="pre">CountPlotPanning.output_dir</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear.BAR_KWS"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear.BAR_KWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear._create_plot"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear._create_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear._format_ax"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear._format_ax()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear._format_df"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear._format_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear._format_fig"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear._format_fig()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear.ax"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear.ax</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear.create_plot"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear.create_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear.df"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear.df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear.fig"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear.fig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear.g"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear.g</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.HistPlotRecordingYear.output_dir"><code class="docutils literal notranslate"><span class="pre">HistPlotRecordingYear.output_dir</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="src.visualise.html#src.visualise.corpus_plots.LinePlotOptimizationIterations"><code class="docutils literal notranslate"><span class="pre">LinePlotOptimizationIterations</span></code></a><ul>
@@ -1572,6 +1543,12 @@ document.write(`
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">CorpusMaker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.utils.CorpusMaker" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Converts a multi-sheet Excel spreadsheet into the required format for processing</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.utils.CorpusMaker.add_missing_channel_overrides">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_missing_channel_overrides</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_overrides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.utils.CorpusMaker.add_missing_channel_overrides" title="Permalink to this definition">#</a></dt>
+<dd><p>In cases where one instrument is hard panned, set all other instruments to use the other channel</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.utils.CorpusMaker.bandleader_instr">
 <span class="sig-name descname"><span class="pre">bandleader_instr</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'piano'</span></em><a class="headerlink" href="#src.utils.CorpusMaker.bandleader_instr" title="Permalink to this definition">#</a></dt>
@@ -1654,6 +1631,12 @@ document.write(`
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="src.utils.construct_audio_fpath_with_channel_overrides">
+<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">construct_audio_fpath_with_channel_overrides</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#src.utils.construct_audio_fpath_with_channel_overrides" title="Permalink to this definition">#</a></dt>
+<dd><p>From a root file name, optional channel (<cite>“l”</cite> or <cite>“r”</cite>) and instrument, constructs the complete file name</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="src.utils.convert_to_mp3">
 <span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">convert_to_mp3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.wav'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.utils.convert_to_mp3" title="Permalink to this definition">#</a></dt>
 <dd><p>Converts all files with target <cite>.wav</cite> in <cite>dirpath</cite> to low bitrate <a href="#id1"><span class="problematic" id="id2">`</span></a>.mp3`s</p>
@@ -1672,12 +1655,6 @@ document.write(`
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="src.utils.generate_corpus_files">
-<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">generate_corpus_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.utils.generate_corpus_files" title="Permalink to this definition">#</a></dt>
-<dd><p>Generates the <cite>.csv</cite> and <cite>.json</cite> files for a single <cite>corpus_fname</cite></p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="src.utils.get_audio_duration">
 <span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">get_audio_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src.utils.get_audio_duration" title="Permalink to this definition">#</a></dt>
 <dd><p>Opens a given audio file and returns its duration</p>
@@ -1685,17 +1662,8 @@ document.write(`
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.utils.get_cached_track_ids">
-<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">get_cached_track_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span></span></span><a class="headerlink" href="#src.utils.get_cached_track_ids" title="Permalink to this definition">#</a></dt>
-<dd><p>Open a pickle file and get the IDs of tracks that have already been processed</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>fpath (str): filepath to load object from
-<a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: passed to <cite>unserialise_object</cite></p>
-</dd>
-<dt>Yields:</dt><dd><p>str: the Musicbrainz ID of the processed track</p>
-</dd>
-<dt>Returns:</dt><dd><p>None: if <cite>fpath</cite> is not found</p>
-</dd>
-</dl>
+<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">get_cached_track_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'c:\\python</span> <span class="pre">projects\\jazz-corpus-analysis/data/cambridge-jazz-trio-database-v02'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span></span></span><a class="headerlink" href="#src.utils.get_cached_track_ids" title="Permalink to this definition">#</a></dt>
+<dd><p>Gets the names of tracks which have already been processed</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1716,7 +1684,7 @@ document.write(`
 <dd><p>Initialise the objects we need for caching through multiprocessing</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>target_func (Callable, optional): target function for the worker process, defaults to <cite>serialise_from_queue</cite>
-<a href="#id5"><span class="problematic" id="id6">*</span></a>target_func_args: arguments passed to <cite>target_func</cite></p>
+<a href="#id3"><span class="problematic" id="id4">*</span></a>target_func_args: arguments passed to <cite>target_func</cite></p>
 </dd>
 <dt>Returns:</dt><dd><p>tuple</p>
 </dd>
@@ -1740,9 +1708,15 @@ fill_nans (bool, optional): replace cleaned values with <cite>np.nan</cite>, suc
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="src.utils.load_annotations_from_files">
+<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">load_annotations_from_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.utils.load_annotations_from_files" title="Permalink to this definition">#</a></dt>
+<dd><p>Loads a single track from loose files generated in <cite>src.utils.generate_corpus_files</cite></p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="src.utils.load_corpus_from_files">
 <span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">load_corpus_from_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.utils.load_corpus_from_files" title="Permalink to this definition">#</a></dt>
-<dd><p>Loads corpus from the loose files generated in <cite>src.utils.generate_corpus_files</cite></p>
+<dd><p>Loads an entire folder of tracks as <cite>OnsetMaker</cite> instances</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1773,12 +1747,6 @@ fill_nans (bool, optional): replace cleaned values with <cite>np.nan</cite>, suc
 <dt class="sig sig-object py" id="src.utils.return_function_kwargs">
 <span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">return_function_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src.utils.return_function_kwargs" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a list of keyword arguments accepted by a given function</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="src.utils.save_annotations">
-<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">save_annotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">track</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trackpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.utils.save_annotations" title="Permalink to this definition">#</a></dt>
-<dd><p>Saves all annotations from a given <cite>OnsetMaker</cite> instance inside <cite>trackpath</cite></p>
 </dd></dl>
 
 <dl class="py function">
@@ -1814,12 +1782,12 @@ fpath (str): the filepath to save items to (file will be created if it does not 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.utils.try_get_kwarg_and_remove">
-<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">try_get_kwarg_and_remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwarg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#src.utils.try_get_kwarg_and_remove" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">try_get_kwarg_and_remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwarg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#src.utils.try_get_kwarg_and_remove" title="Permalink to this definition">#</a></dt>
 <dd><p>Try and get an argument from a kwargs dictionary, remove after getting, and return the value (or a default).</p>
 <dl class="simple">
 <dt>Arguments:</dt><dd><p>kwarg (str): the argument to attempt to get from the kwargs dictionary
 kwargs (dict): the dictionary of keyword arguments
-<a href="#id7"><span class="problematic" id="id8">default_</span></a> (bool, optional): the value to return if kwarg is not found in kwargs, defaults to None</p>
+<a href="#id5"><span class="problematic" id="id6">default_</span></a> (bool, optional): the value to return if kwarg is not found in kwargs, defaults to None</p>
 </dd>
 <dt>Returns:</dt><dd><p>Any: the value returned from kwargs, or a default</p>
 </dd>
@@ -1888,6 +1856,7 @@ kwargs (dict): the dictionary of keyword arguments
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-src.utils">src.utils module</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.CorpusMaker"><code class="docutils literal notranslate"><span class="pre">CorpusMaker</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.CorpusMaker.add_missing_channel_overrides"><code class="docutils literal notranslate"><span class="pre">CorpusMaker.add_missing_channel_overrides()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.CorpusMaker.bandleader_instr"><code class="docutils literal notranslate"><span class="pre">CorpusMaker.bandleader_instr</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.CorpusMaker.construct_filename"><code class="docutils literal notranslate"><span class="pre">CorpusMaker.construct_filename()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.CorpusMaker.format_first_downbeat"><code class="docutils literal notranslate"><span class="pre">CorpusMaker.format_first_downbeat()</span></code></a></li>
@@ -1904,23 +1873,23 @@ kwargs (dict): the dictionary of keyword arguments
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.check_item_present_locally"><code class="docutils literal notranslate"><span class="pre">check_item_present_locally()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.construct_audio_fpath_with_channel_overrides"><code class="docutils literal notranslate"><span class="pre">construct_audio_fpath_with_channel_overrides()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.convert_to_mp3"><code class="docutils literal notranslate"><span class="pre">convert_to_mp3()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.disable_settingwithcopy_warning"><code class="docutils literal notranslate"><span class="pre">disable_settingwithcopy_warning()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.flatten_dict"><code class="docutils literal notranslate"><span class="pre">flatten_dict()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.generate_corpus_files"><code class="docutils literal notranslate"><span class="pre">generate_corpus_files()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.get_audio_duration"><code class="docutils literal notranslate"><span class="pre">get_audio_duration()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.get_cached_track_ids"><code class="docutils literal notranslate"><span class="pre">get_cached_track_ids()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.get_project_root"><code class="docutils literal notranslate"><span class="pre">get_project_root()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.ignore_warning"><code class="docutils literal notranslate"><span class="pre">ignore_warning()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.initialise_queue"><code class="docutils literal notranslate"><span class="pre">initialise_queue()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.iqr_filter"><code class="docutils literal notranslate"><span class="pre">iqr_filter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.load_annotations_from_files"><code class="docutils literal notranslate"><span class="pre">load_annotations_from_files()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.load_corpus_from_files"><code class="docutils literal notranslate"><span class="pre">load_corpus_from_files()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.load_csv"><code class="docutils literal notranslate"><span class="pre">load_csv()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.load_json"><code class="docutils literal notranslate"><span class="pre">load_json()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.remove_punctuation"><code class="docutils literal notranslate"><span class="pre">remove_punctuation()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.retry"><code class="docutils literal notranslate"><span class="pre">retry()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.return_function_kwargs"><code class="docutils literal notranslate"><span class="pre">return_function_kwargs()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.save_annotations"><code class="docutils literal notranslate"><span class="pre">save_annotations()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.save_csv"><code class="docutils literal notranslate"><span class="pre">save_csv()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.save_json"><code class="docutils literal notranslate"><span class="pre">save_json()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.utils.serialise_from_queue"><code class="docutils literal notranslate"><span class="pre">serialise_from_queue()</span></code></a></li>

@@ -1,9 +1,9 @@
-Cambridge Jazz Trio Database
+Jazz Trio Database
 ============================
 
 **Date**: |today| **Version**: |version|
 
-The :mod:`Cambridge Jazz Trio Database` is a dataset composed of about 16 hours of jazz performances annotated by an automated signal processing pipeline.
+The :mod:`Jazz Trio Database` is a dataset composed of about 45 hours of jazz performances annotated by an automated signal processing pipeline.
 
 
 .. grid:: 1 2 3 4
@@ -11,7 +11,7 @@ The :mod:`Cambridge Jazz Trio Database` is a dataset composed of about 16 hours 
     :class-container: sd-text-center
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/index_installation.svg
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Jazz-Trio-Database/main/docs/_static/index_installation.svg
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -29,25 +29,7 @@ The :mod:`Cambridge Jazz Trio Database` is a dataset composed of about 16 hours 
             Getting started
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/index_user_guide.svg
-        :width: 100%
-        :class-card: intro-card
-        :shadow: md
-
-        Run analyses and extract features from the database
-
-        +++
-
-        .. button-ref:: usage/user-guide
-            :ref-type: any
-            :click-parent:
-            :color: secondary
-            :expand:
-
-            User guide
-
-    .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/index_api_documentation.svg
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Jazz-Trio-Database/main/docs/_static/index_api_documentation.svg
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -65,7 +47,7 @@ The :mod:`Cambridge Jazz Trio Database` is a dataset composed of about 16 hours 
             API reference
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/index_resources.svg
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Jazz-Trio-Database/main/docs/_static/index_resources.svg
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -87,6 +69,5 @@ The :mod:`Cambridge Jazz Trio Database` is a dataset composed of about 16 hours 
     :hidden:
 
     Getting started <installation/getting-started.rst>
-    User guide <usage/user-guide>
     API <src/modules>
     Resources <resources/online-resources>

@@ -10,7 +10,7 @@ If you've already followed the instructions in {ref}`Building the database <buil
 
 Clone our repository to a new directory on your local machine:
 ```
-git clone https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database
+git clone https://github.com/HuwCheston/Jazz-Trio-Database
 ```
 
 In the repository root directory, create a new virtual environment, enter it, and install project dependencies (these are required for `sphinx.ext.autodoc`):

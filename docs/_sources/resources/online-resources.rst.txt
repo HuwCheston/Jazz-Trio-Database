@@ -6,7 +6,7 @@ Online Resources
     :class-container: sd-text-center
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/visualisation-screengrab-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Jazz-Trio-Database/main/docs/_static/visualisation-screengrab-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -24,7 +24,7 @@ Online Resources
             Performer networks
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/output-screengrab-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Jazz-Trio-Database/main/docs/_static/output-screengrab-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -42,7 +42,7 @@ Online Resources
             Example outputs
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/prediction-app-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Jazz-Trio-Database/main/docs/_static/prediction-app-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md
@@ -51,7 +51,7 @@ Online Resources
 
         +++
 
-        .. button-link:: https://huwcheston.github.io/Cambridge-Jazz-Trio-Database/_static/prediction-app.html
+        .. button-link:: https://huwcheston.github.io/Jazz-Trio-Database/_static/prediction-app.html
             :click-parent:
             :color: secondary
             :expand:
@@ -59,7 +59,7 @@ Online Resources
             Track predictions
 
     .. grid-item-card::
-        :img-top: https://raw.githubusercontent.com/HuwCheston/Cambridge-Jazz-Trio-Database/main/docs/_static/data-explore-card.png
+        :img-top: https://raw.githubusercontent.com/HuwCheston/Jazz-Trio-Database/main/docs/_static/data-explore-card.png
         :width: 100%
         :class-card: intro-card
         :shadow: md

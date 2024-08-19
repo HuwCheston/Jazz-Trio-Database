@@ -3,18 +3,20 @@
 
 ```{toctree}
 :maxdepth: 1
-:caption: Get the database
+:caption: Download
 
-Download (for new users 👨‍🎓) <download-database.md>
-Build from source (for experienced users 👩‍💻) <build-database.md>
+Download the database <download-database.md>
+Build from source <build-database.md>
+Database structure <database-structure.md>
 ```
 
 ```{toctree}
 :maxdepth: 1
 :caption: Extras
 
-Create ground truth annotations ✅ <extra-create-manual-annotations.md>
-Run parameter optimization 📈 <extra-parameter-optimization.md>
-Run pipeline on new corpus 📰 <extra-new-corpus.md>
-Build documentation 📄 <extra-build-documentation.md>
+Create ground truth annotations <extra-create-manual-annotations.md>
+Run parameter optimization <extra-parameter-optimization.md>
+Run pipeline on a new track <extra-process-new-tracks.md>
+Run pipeline on a new corpus <extra-new-corpus.md>
+Build documentation <extra-build-documentation.md>
 ```

@@ -8,7 +8,7 @@ You can set up our data extraction and analysis pipeline to run on your own corp
 First things first, we'd recommend that you clone our repository, so that you can see our example corpus files:
 
 ```
-git clone https://github.com/HuwCheston/Cambridge-Jazz-Trio-Database
+git clone https://github.com/HuwCheston/Jazz-Trio-Database
 ```
 
 The corpus files will then be located inside `.\references`, with the file extension `.xlsx` (i.e., they should be opened using Microsoft Excel or a similar spreadsheet package).
@@ -107,4 +107,4 @@ By default, tracks which did not pass the selection criteria (i.e., those where 
 
 ## Using the corpus with our pipeline
 
-Once you've confirmed that the corpus can be accessed in Python, ensure that this is present inside the `.\references` directory. Then, when running either `.\src\clean\make_dataset.py` or `.\src\detect\detect_onsets.py`, pass the `-corpus` flag, followed by the filename, in order to direct the program to use your corpus file over the defaults. For more information, see {ref}`the respective sections on this page <build-database>` and the {ref}`User guide <user-guide>`.
+Once you've confirmed that the corpus can be accessed in Python, ensure that this is present inside the `.\references` directory. Then, when running either `.\src\clean\make_dataset.py` or `.\src\detect\detect_onsets.py`, pass the `-corpus` flag, followed by the filename, in order to direct the program to use your corpus file over the defaults. For more information, see {ref}`the respective sections on this page <build-database>`.
