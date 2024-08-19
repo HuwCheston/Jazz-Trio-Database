@@ -129,9 +129,7 @@ target/
 
 *.mp3
 !/docs/*.mp3
-
-*.json
-!/docs/*.json
+/models/*.json
 
 /venv_old/
 /pretrained_models/
