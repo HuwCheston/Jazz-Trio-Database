@@ -3,9 +3,6 @@
 
 """Classes used for creating interactive plots in `plotly`"""
 
-import os
-import shutil
-import warnings
 from datetime import datetime
 
 import numpy as np
@@ -20,6 +17,15 @@ import src.visualise.visualise_utils as vutils
 from src import utils
 from src.visualise.bur_plots import BURS_WITH_IMAGES
 from src.visualise.complexity_plots import FRACS, FRACS_S
+from src.features.rhythm_features import PhaseCorrection
+from src.features.rhythm_features import IOIComplexity
+from src.features.rhythm_features import BeatUpbeatRatio
+
+
+__all__ = [
+    "ScatterPlotFeelInteractive", "HistPlotComplexityInteractive",
+    "HistPlotSwingInteractive", "BarPlotCoordinationInteractive"
+]
 
 
 class BasePlotPlotly:
@@ -130,8 +136,7 @@ class HistPlotComplexityInteractive(BasePlotPlotly):
 
     @staticmethod
     def _format_df(om):
-        from src.features.rhythm_features import IOIComplexity
-        downbeats = om.ons['downbeats_manual']
+        downbeats = om.ons['downbeats_auto']
         time_signature = om.item['time_signature']
         tempo = om.tempo
         cdfs = []
@@ -246,7 +251,6 @@ class BarPlotCoordinationInteractive(BasePlotPlotly):
 
     @staticmethod
     def _format_df(om):
-        from src.features.rhythm_features import PhaseCorrection
         sd = pd.DataFrame(om.summary_dict)
         res = []
         for my_instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
@@ -321,7 +325,6 @@ class HistPlotSwingInteractive(BasePlotPlotly):
 
     @staticmethod
     def format_df(om):
-        from src.features.rhythm_features import BeatUpbeatRatio
         res = []
         for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
             my_beats = om.summary_dict[instr]
@@ -398,47 +401,3 @@ class HistPlotSwingInteractive(BasePlotPlotly):
                 )
         # Update layout to center x-axis label
         self.fig['layout']['xaxis2']['title'] = 'Log<sub>2</sub> beat-upbeat ratio'
-
-
-def create_interactive_plots_for_one_track(track_om):
-    plotters = [
-        ScatterPlotFeelInteractive, HistPlotSwingInteractive,
-        HistPlotComplexityInteractive, BarPlotCoordinationInteractive
-    ]
-    names = ['feel', 'swing', 'complexity', 'interaction']
-    root = fr'{utils.get_project_root()}\_docssrc\static\data-explorer'
-    new_fpath = fr'{root}\{track_om.item["fname"]}'
-    try:
-        os.mkdir(new_fpath)
-    except FileExistsError:
-        pass
-    shutil.copy(fr'{root}\explorer-template.html', rf'{new_fpath}\display.html')
-    for plotter, name in zip(plotters, names):
-        try:
-            p = plotter(track_om)
-        except:
-            print(f'Error: {name}, {track_om.item["fname"]}')
-            with open(fr'{new_fpath}\{name}.html', 'w') as fp:
-                fp.write(f"""
-                <div>
-                {name.title()} plot not found! There was probably not enough data found for this track 
-                ({track_om.item["fname"]}) to create the requested plot type.<br>
-                If this is urgent, please 
-                <a href="mailto:hwc31@cam.ac.uk?subject=Missing plot!&cc=huwcheston@gmail.com">contact us</a> and
-                we'll try and fix things.
-                </div>
-                """)
-        else:
-            p.create_plot()
-            p.render_html(fpath=fr'{new_fpath}\{name}.html', div_id=name)
-    meta = pd.Series(track_om.item).to_json()
-    with open(fr'{new_fpath}\metadata.json', 'w') as f:
-        f.write(meta)
-
-
-if __name__ == '__main__':
-    from joblib import delayed, Parallel
-
-    warnings.simplefilter('ignore', FutureWarning)
-    tracks = utils.unserialise_object(fr'{utils.get_project_root()}\models\matched_onsets_corpus_chronology')
-    Parallel(n_jobs=-1)(delayed(create_interactive_plots_for_one_track)(track) for track in tracks)

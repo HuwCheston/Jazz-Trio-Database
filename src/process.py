@@ -5,7 +5,6 @@
 
 import logging
 import os
-import shutil
 import warnings
 
 import click
@@ -18,7 +17,7 @@ from joblib import load
 from src import utils
 from src.clean.clean_utils import ItemMaker, return_timestamp
 from src.detect.onset_utils import OnsetMaker
-from src.features.features_utils import *
+from src.features.rhythm_features import *
 
 
 def extract_track_features(track: OnsetMaker, exog_ins) -> dict:
