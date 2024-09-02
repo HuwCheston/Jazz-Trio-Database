@@ -161,7 +161,7 @@ class RollingIOISummaryStats(IOISummaryStats):
         """Extract rolling summary statistics across the given bar period"""
         results = {f'rolling_{func_k}': [] for func_k in self.summary_funcs.keys()}
         for bar_num, (i1, i2) in enumerate(zip(downbeats, downbeats[self.bar_period:]), 1):
-            iois_between = pd.Series(self.get_between(my_onsets.values, i1, i2)).diff()
+            iois_between = my_onsets[(my_onsets >= i1) & (my_onsets <= i2) | my_onsets.isnull()].diff()
             # Divide 60 / IOI if we want to use BPM values instead
             if kwargs.get('use_bpms', False):
                 iois_between = 60 / iois_between
@@ -225,6 +225,7 @@ class EventDensity(BaseExtractor):
         sequential_downbeats = zip(quarter_note_downbeats, quarter_note_downbeats[self.bar_period:])
         my_onsets_arr = my_onsets.to_numpy()
         matches = [
+            # Note that this get between function is buggy, but I don't think this class gets used
             {f'bars': f'{bar_num}-{bar_num + self.bar_period}', 'density': len(self.get_between(my_onsets_arr, i1, i2))}
             for bar_num, (i1, i2) in enumerate(sequential_downbeats, 1)
         ]
@@ -239,6 +240,7 @@ class BeatUpbeatRatio(BaseExtractor):
         super().__init__()
         if isinstance(my_onsets, np.ndarray):
             my_onsets = pd.Series(my_onsets)
+        assert not np.isnan(my_onsets).all(), 'Missing values found in `my_onsets`!'
         self.clean_outliers = clean_outliers
         # Extract our burs here, so we can access them as instance properties
         self.bur = self.extract_burs(my_onsets, my_beats, use_log_burs=False)
@@ -283,8 +285,11 @@ class BeatUpbeatRatio(BaseExtractor):
 
         def bur(a: float, b: float) -> float:
             """BUR calculation function"""
+            # If either the upper or lower bound is missing, return a NaN value
+            if any((np.isnan(a), np.isnan(b))):
+                return np.nan
             # Get the onsets between our first and second beat (a and b)
-            match = self.get_between(my_onsets, a, b)
+            match = my_onsets[np.where(np.logical_and(my_onsets >= a, my_onsets <= b))]
             # If we have a group of three notes (i.e. three quavers), including a and b
             if len(match) == 3:
                 bur_val = func((match[1] - match[0]) / (match[2] - match[1]))
@@ -469,7 +474,7 @@ class PhaseCorrection(BaseExtractor):
         self.model = self.generate_model(my_beats, their_beats)
         # Create the dataframe and model summary information
         self.df = pd.DataFrame(self.extract_model_coefficients())
-        # TODO: why are we subsetting here?
+        # TODO: why are we getting a subset here?
         self.summary_dict = self.df.to_dict(orient='records')[0]
 
     def truncate(self, my_beats, their_beats) -> tuple:
@@ -877,6 +882,7 @@ class IOIComplexity(BaseExtractor):
         self.bar_period = bar_period
         self.quarter_note = 60 / tempo
         self.time_signature = time_signature
+        assert not np.isnan(my_onsets).all(), 'Missing values found in `my_onsets`!'
         # Extract event density
         self.binned_iois = pd.DataFrame(self.bin_iois(my_onsets, downbeats))
         self.complexity_df = pd.DataFrame(self.extract_complexity(self.binned_iois), columns=self.col_names)
@@ -906,7 +912,10 @@ class IOIComplexity(BaseExtractor):
         for i in range(len(downbeats) - self.bar_period):
             first_bar = downbeats[i]
             last_bar = downbeats[i + self.bar_period]
-            iois_bar = np.ediff1d(self.get_between(my_onsets, first_bar, last_bar))
+            # Get the onsets between the first and last bar in this range, then extract IOIs
+            match = my_onsets[np.where(np.logical_and(my_onsets >= first_bar, my_onsets <= last_bar))]
+            iois_bar = np.ediff1d(match)
+            # Bin the IOis and remove any NaN values
             binned_iois = np.array([self._bin_ioi(i) for i in iois_bar])
             binned_iois_clean = binned_iois[~np.isnan(binned_iois)]
             for binned_ioi in binned_iois_clean:
@@ -1027,3 +1036,28 @@ class ProportionalAsynchrony(BaseExtractor):
             for instr in utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys():
                 for _, val in prop[[instr, self.metre_col]].iterrows():
                     yield dict(instr=instr, asynchrony=val[instr], beat=val[self.metre_col])
+
+
+if __name__ == "__main__":
+    import os
+    from src.utils import get_project_root, load_corpus_from_files
+    from tqdm import tqdm
+
+    crp = load_corpus_from_files(os.path.join(get_project_root(), 'data/jazz-trio-database-v02'))
+    for track in tqdm(crp):
+        # Create the summary dataframe
+        summary = pd.DataFrame(track.summary_dict)
+        # Extract piano beats and onsets, bass/drums beats, and downbeats
+        m_beats = summary['piano']
+        m_onsets = track.ons['piano']
+        t_beats = summary[['bass', 'drums']]
+        dbs = track.ons['downbeats_auto']
+        # These are the beat timestamps from the matched onsets
+        band_beats = get_beats_from_matched_onsets(track.summary_dict)
+        # The tempo and time signature of the track
+        temp = (60 / band_beats.diff()).mean()
+        time_sig = track.item['time_signature']
+        # Calculating BUR values
+        burs_extracted = BeatUpbeatRatio(my_onsets=m_onsets, my_beats=m_beats)
+        # Calculating complexity values
+        comp_extracted = IOIComplexity(my_onsets=m_onsets, downbeats=dbs, tempo=temp, time_signature=time_sig)
