@@ -454,11 +454,11 @@ document.write(`
                 <tr>
 <!--                    <th rowspan="2">Track name</th>-->
                     <th colspan="6">Metadata</th>
-                    <th colspan="2">Swing (log2 BUR)</th>
+                    <th colspan="2">Swing</th>
                     <th colspan="4">Complexity (4 measure, windowed)</th>
                     <th colspan="4">Feel (piano → instrument, % of measure)</th>
                     <th colspan="5">Interaction (phase coupling between instruments)</th>
-                    <th colspan="3">Tempo</th>
+                    <th colspan="4">Tempo</th>
                 </tr>
                 <tr>
                     <th>fname_placeholder</th>
@@ -467,16 +467,16 @@ document.write(`
                     <th>Bandleader</th>
                     <th>Pianist</th>
                     <th>JTD-300</th>
-                    <th>LZ77, mean</th>
-                    <th>LZ77, SD</th>
-                    <th>Onsets, mean</th>
-                    <th>Onsets, SD</th>
-                    <th>Mean</th>
-                    <th>SD</th>
-                    <th>Bass, mean</th>
-                    <th>Bass, SD</th>
-                    <th>Drums, mean</th>
-                    <th>Drums, SD</th>
+                    <th>BUR (log2, mean)</th>
+                    <th>BUR (log2, SD)</th>
+                    <th>LZ77 (mean)</th>
+                    <th>LZ77 (SD)</th>
+                    <th>Density (mean)</th>
+                    <th>Density (SD)</th>
+                    <th>Bass (mean)</th>
+                    <th>Bass (SD)</th>
+                    <th>Drums (mean)</th>
+                    <th>Drums (SD)</th>
                     <th>Piano→Piano</th>
                     <th>Piano→Bass</th>
                     <th>Piano→Drums</th>
@@ -484,7 +484,7 @@ document.write(`
                     <th>Bass→Piano</th>
                     <th>Mean (BPM)</th>
                     <th>Slope (BPM/s)</th>
-                    <th>Stability (ms, SD)</th>
+                    <th>Stability (s, SD)</th>
                     <th>Missing (%)</th>
                 </tr>
             </thead>
