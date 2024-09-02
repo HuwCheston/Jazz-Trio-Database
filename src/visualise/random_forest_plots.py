@@ -251,7 +251,7 @@ class BarPlotFeatureImportances(vutils.BasePlot):
     def _format_ax(self) -> None:
         """Formats axis-level properties"""
         # Set variable labelling
-        self.ax.set(ylabel='Feature', xlabel='Importance (accuracy loss, %)', ylim=(18, -1))
+        self.ax.set(ylabel='Feature', xlabel='Importance (accuracy loss, %)', ylim=(19, -1))
         self._format_ticks()
         # Remove the legend
         self.ax.get_legend().remove()
@@ -582,7 +582,7 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
         plt.setp(self.ax.spines.values(), linewidth=vutils.LINEWIDTH, color=vutils.BLACK)
         self.ax.tick_params(axis='both', width=vutils.TICKWIDTH, color=vutils.BLACK, rotation=0)
         self.ax.set(
-            ylim=(17.5, -0.5), xlabel='Odds ratio (95% CI, log scale)', xticks=[0.1, 1, 10],
+            ylim=(18.5, -0.5), xlabel='Odds ratio (95% CI, log scale)', xticks=[0.1, 1, 10],
             xlim=(0.099, 20.5), ylabel='Feature', xticklabels=[0.1, 1, 10],
             yticklabels=[COL_MAPPING[i.get_text()] for i in self.ax.get_yticklabels()],
         )
@@ -605,7 +605,7 @@ class StripPlotLogitCoeffs(vutils.BasePlot):
 
     def _format_yticks(self) -> None:
         """Formats y-axis ticks by setting them to their correct color for a given category"""
-        new_pal = [[self.palette[i1] for _ in range(i2)] for i1, i2 in zip(range(5), [4, 3, 2, 4, 5])]
+        new_pal = [[self.palette[i1] for _ in range(i2)] for i1, i2 in zip(range(5), [4, 4, 2, 4, 5])]
         for tl, tc in zip(self.ax.get_yticklabels(), [item for sublist in new_pal for item in sublist]):
             tl.set_color(tc)
 
@@ -754,11 +754,11 @@ class RegPlotPredictorsCareerProgress(vutils.BasePlot):
 
 
 class RegPlotCareerJazzProgress(vutils.BasePlot):
-    predictors = ['drums_prop_async_nanmean', 'n_onsets_std', 'bur_log_mean', 'bass_prop_async_nanstd']
+    predictors = ['drums_prop_async_nanmean', 'n_onsets_std', 'bur_log_mean', 'missing_beats_perc']
     palette = sns.color_palette('tab10')
-    palette = [palette[2], palette[1], palette[0], palette[2]]
+    palette = [palette[2], palette[1], palette[0], palette[4]]
     markers = ['o', 'o', 'o', 'o']
-    categories = ['Feel', 'Complexity', 'Swing', 'Feel']
+    categories = ['Feel', 'Complexity', 'Swing', 'Tempo']
     REG_KWS = dict(color=vutils.BLACK, linewidth=vutils.LINEWIDTH * 2, ls=vutils.LINESTYLE)
     xspace = np.linspace(0, 1, 100)
     N_JOBS = -1
