@@ -443,9 +443,9 @@ document.write(`
         <button id="togcomplexity" onclick="hideCols('8', '11')">Complexity</button>
         <button id="togfeel" onclick="hideCols('12', '15')">Feel</button>
         <button id="toginteract" onclick="hideCols('16', '20')">Interaction</button>
-        <button id="togtempo" onclick="hideCols('21', '23')">Tempo</button>
-        <button id="hideall" onclick="modifyAll('1', '23', false, 'togmeta')">Hide all</button>
-        <button id="showall" onclick="modifyAll('1', '23', true, 'togmeta')">Show all</button>
+        <button id="togtempo" onclick="hideCols('21', '24')">Tempo</button>
+        <button id="hideall" onclick="modifyAll('1', '24', false, 'togmeta')">Hide all</button>
+        <button id="showall" onclick="modifyAll('1', '24', true, 'togmeta')">Show all</button>
     </div>
     <p></p>
     <div id="container">
@@ -455,10 +455,10 @@ document.write(`
 <!--                    <th rowspan="2">Track name</th>-->
                     <th colspan="6">Metadata</th>
                     <th colspan="2">Swing (log2 BUR)</th>
-                    <th colspan="4">Complexity (4 measure window)</th>
+                    <th colspan="4">Complexity (4 measure, windowed)</th>
                     <th colspan="4">Feel (piano → instrument, % of measure)</th>
                     <th colspan="5">Interaction (phase coupling between instruments)</th>
-                    <th colspan="3">Tempo (BPM)</th>
+                    <th colspan="3">Tempo</th>
                 </tr>
                 <tr>
                     <th>fname_placeholder</th>
@@ -467,10 +467,10 @@ document.write(`
                     <th>Bandleader</th>
                     <th>Pianist</th>
                     <th>JTD-300</th>
-                    <th>Mean</th>
-                    <th>SD</th>
-                    <th>Mean</th>
-                    <th>SD</th>
+                    <th>LZ77, mean</th>
+                    <th>LZ77, SD</th>
+                    <th>Onsets, mean</th>
+                    <th>Onsets, SD</th>
                     <th>Mean</th>
                     <th>SD</th>
                     <th>Bass, mean</th>
@@ -482,9 +482,10 @@ document.write(`
                     <th>Piano→Drums</th>
                     <th>Drums→Piano</th>
                     <th>Bass→Piano</th>
-                    <th>Mean</th>
-                    <th>SD</th>
-                    <th>Slope</th>
+                    <th>Mean (BPM)</th>
+                    <th>Slope (BPM/s)</th>
+                    <th>Stability (ms, SD)</th>
+                    <th>Missing (%)</th>
                 </tr>
             </thead>
             <tfoot>
@@ -494,7 +495,7 @@ document.write(`
                     <th colspan="4">Complexity</th>
                     <th colspan="4">Feel</th>
                     <th colspan="5">Interaction</th>
-                    <th colspan="3">Tempo</th>
+                    <th colspan="4">Tempo</th>
                 </tr>
             </tfoot>
         </table>
