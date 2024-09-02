@@ -34,7 +34,7 @@ PREDICTORS_CATEGORIES = {
     'Feel': ['bass_prop_async_nanmean', 'drums_prop_async_nanmean',
              'bass_prop_async_nanstd', 'drums_prop_async_nanstd'],
     'Interaction': ['self_coupling', 'coupling_drums', 'coupling_bass', 'coupling_piano_drums', 'coupling_piano_bass'],
-    'Tempo': ['rolling_std_median', 'tempo', 'tempo_slope']
+    'Tempo': ['rolling_std_median', 'tempo', 'tempo_slope', 'missing_beats_perc']
 }
 CATEGORY_CMAP = {
     cat: col for cat, col in zip(PREDICTORS_CATEGORIES.keys(), plt.rcParams['axes.prop_cycle'].by_key()['color'])
@@ -58,6 +58,7 @@ COL_MAPPING = {
     'rolling_std_median': 'Pianist tempo stability',
     'tempo': 'Performance mean tempo',
     'tempo_slope': 'Performance tempo slope',
+    'missing_beats_perc': 'Missing beats %'
 }
 
 
