@@ -15,7 +15,7 @@ The **Jazz Trio Database** is a dataset composed of about 45 hours of jazz perfo
 
 ## Dataset
  
-To download or build the repository from source, [read the relevant page of our docs](https://huwcheston.github.io/Jazz-Trio-Database/installation/getting-started.html). Note that audio recordings are not stored directly in this repository. Instead, when you run the script to build the dataset, these files will be downloaded automatically from an official YouTube source. Note that, occasionally, individual YouTube recordings may be taken down: these tracks will be skipped when building the dataset, but please report any issues [here](mailto:huwcheston@gmail.com?subject=CJD-Missing-YouTube-link) so that working links can be added in these cases.
+To download or build the JTD annotations from source, [read the relevant page of our docs](https://huwcheston.github.io/Jazz-Trio-Database/installation/getting-started.html). Audio recordings (both mixed and unmixed) can be found on [this Zenodo record](https://zenodo.org/records/13828030). Access must be requested before JTD audio can be downloaded, and will only be granted to valid research projects. Please provide as much detail relating to how you hope to use JTD when requesting access to the audio.
 
 ## License
 
