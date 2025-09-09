@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "jazz-trio-database"
+version = "0.2.0"
+description = ""
+authors = ["Huw Cheston <h.cheston@qmul.ac.uk>"]
+packages = [{ include = "src" }]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10.12"
+click = "~7.1.2"
+coverage = "7.2.3"
+flake8 = "6.0.0"
+python-dotenv = ">=0.5.1"
+requests = "*"
+pandas = "*"
+setuptools = "~67.8.0"
+librosa = "*"
+soundfile = "~0.12.1"
+soxr = "~0.3.5"
+statsmodels = "*"
+numpy = ">=1.26,<1.27"
+audioread = "~3.0.0"
+dill = "~0.3.6"
+seaborn = "0.12.2"
+numba = "*"
+joblib = "*"
+tensorflow = "*"
+scipy = "*"
+nlopt = "*"
+mir_eval = "*"
+openpyxl = "*"
+scikit-learn = "*"
+plotly = "*"
+matplotlib = "*"
+pretty_midi = "*"
+torch = ">=1.8.1"
+tqdm = "*"
+onnxruntime-gpu = "*"
+notebook = "^7.4.5"
+madmom = { git = "https://github.com/CPJKU/madmom.git" }
+
+[tool.poetry.group.optional.dependencies]
+# For transcription + source separation
+# spleeter = "*"
+yt_dlp = ">=2023.7.6"
+museval = "*"
+musdb = "*"
+piano-transcription-inference = "*"
+
+# Demucs versions (platform specific)
+# demucs = "4.0.0"  # For Linux
+# demucs = "2.0.3"  # For Windows
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
