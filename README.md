@@ -18,7 +18,7 @@ The **Jazz Trio Database** (JTD) is a dataset composed of about 45 hours of jazz
 JTD is now integrated within the latest version of [`mirdata`](https://mirdata.readthedocs.io/en/stable/index.html), and this is the recommended way to work with the database annotations moving forwards.  To install `mirdata`, run the following code (best inside a `virtualenv`):
 
 ```
-pip install git+https://github.com/mir-dataset-loaders/mirdata.git
+pip install mirdata
 ```
 
 Now, you can download the dataset and access the annotations simply by running the following lines of Python code:
