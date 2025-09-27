@@ -182,14 +182,16 @@ class HistPlotBURByInstrument(vutils.BasePlot):
     VLINE_KWS = dict(color=vutils.BLACK, linestyle='dashed', alpha=1, zorder=4, linewidth=vutils.LINEWIDTH * 1.5)
 
     def __init__(self, bur: pd.DataFrame, peaks: pd.DataFrame, **kwargs):
-        self.corpus_title = 'corpus_chronology'
+        self.corpus_title = kwargs.get("corpus_title", 'corpus_chronology')
         ftitle = kwargs.get('figure_title', fr'bur_plots/histplot_bursbyinstrumentgmm_{self.corpus_title}')
         super().__init__(figure_title=ftitle,)
         self.bur_df = bur
         self.peak_df = peaks
+        self.instr_names = kwargs.get("instr_names", utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys())
         self.n_bins = kwargs.get('n_bins', vutils.N_BINS)
         self.fig, self.ax = plt.subplots(
-            nrows=1, ncols=3, figsize=(vutils.WIDTH, vutils.WIDTH / 3), sharex=True, sharey=True
+            nrows=1, ncols=self.bur_df["instrument"].nunique(),
+            figsize=(vutils.WIDTH, vutils.WIDTH / 3), sharex=True, sharey=True
         )
 
     def add_bur_images(self, y: float) -> list:
@@ -248,7 +250,7 @@ class HistPlotBURByInstrument(vutils.BasePlot):
         """Formats axis-level properties"""
         # Add images for each BUR value we want to plot
         hands, labs = [], []
-        for ax, name in zip(self.ax.flatten(), utils.INSTRUMENTS_TO_PERFORMER_ROLES.keys()):
+        for ax, name in zip(self.ax.flatten(), self.instr_names):
             for artist in self.add_bur_images(y=1.15):
                 ax.add_artist(artist)
             ax.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
