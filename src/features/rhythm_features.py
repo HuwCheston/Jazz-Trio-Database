@@ -977,7 +977,9 @@ class ProportionalAsynchrony(BaseExtractor):
         self.metre_col = metre_col
         asy = pd.DataFrame(self._extract_proportional_durations(summary_df))
         self.asynchronies = self._format_async_df(asy)
-        mean_async = self.asynchronies.groupby('instr')['asynchrony_adjusted_offset'].agg([np.nanmean, np.nanstd])
+        with warnings.catch_warnings():
+            warnings.simplefilter(action='ignore', category=FutureWarning)
+            mean_async = self.asynchronies.groupby('instr')['asynchrony_adjusted_offset'].agg([np.nanmean, np.nanstd])
         async_count = len(self.asynchronies[self.asynchronies['instr'] == my_instr_name].dropna())
         self.summary_dict = {
             f'prop_async_count': len(self.asynchronies[self.asynchronies['instr'] == my_instr_name]),
@@ -1028,7 +1030,8 @@ class ProportionalAsynchrony(BaseExtractor):
             lower_bound = ((bw[self.metre_col] - 1) * 1/4) - self.LOWER_BOUND
             # Set values below upper and lower bound to NaN
             for col in prop.columns:
-                prop[col][(prop[col] < lower_bound) | (prop[col] > upper_bound)] = np.nan
+                mask = (prop[col] < lower_bound) | (prop[col] > upper_bound)
+                prop.loc[mask, col] = np.nan
             # Convert values to degrees
             prop *= 360
             prop = pd.concat([prop, bw[self.metre_col]], axis=1)
